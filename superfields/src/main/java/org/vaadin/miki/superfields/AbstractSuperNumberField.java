@@ -191,9 +191,11 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
         // or, there will be at least one group of digits in the formatted number
         else {
             int leftmostGroupMaxSize = this.format.getMaximumIntegerDigits() % this.format.getGroupingSize();
-            if (leftmostGroupMaxSize == 0)
-                leftmostGroupMaxSize = this.format.getGroupingSize();
             int middleGroupCount = this.format.getMaximumIntegerDigits() / this.format.getGroupingSize() - 1;
+            if (leftmostGroupMaxSize == 0) {
+                leftmostGroupMaxSize = this.format.getGroupingSize();
+                middleGroupCount-=1; // the left-most group is full size, so there will be one less middle group; fixes https://github.com/vaadin-miki/super-fields/issues/10
+            }
 
             // if there are no middle groups, things are simple
             if(middleGroupCount == 0) {
