@@ -6,6 +6,7 @@ import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.function.SerializablePredicate;
 import org.slf4j.Logger;
@@ -19,8 +20,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 /**
  * Base class for super number fields.
@@ -86,16 +85,16 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
      * @param turnToPositiveOperator Operation to turn number into a positive one.
      * @param label Label of the field.
      * @param locale Locale to use.
-     * @param decimalPrecision Max number of fraction digits. Overwrites the settings in format obtained based on {@code locale}.
+     * @param maxFractionDigits Max number of fraction digits. Overwrites the settings in format obtained based on {@code locale}.
      */
-    protected AbstractSuperNumberField(T defaultValue, SerializablePredicate<T> negativityPredicate, SerializableFunction<T, T> turnToPositiveOperator, String label, Locale locale, int decimalPrecision) {
+    protected AbstractSuperNumberField(T defaultValue, SerializablePredicate<T> negativityPredicate, SerializableFunction<T, T> turnToPositiveOperator, String label, Locale locale, int maxFractionDigits) {
         super(defaultValue);
 
         this.negativityPredicate = negativityPredicate;
         this.turnToPositiveOperator = turnToPositiveOperator;
 
         this.format = this.getFormat(locale);
-        this.format.setMaximumFractionDigits(decimalPrecision);
+        this.format.setMaximumFractionDigits(maxFractionDigits);
         this.updateRegularExpression();
 
         this.add(this.field);
@@ -136,6 +135,7 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
 
     /**
      * Sets the minimum number of fraction digits displayed. Overwrites the value in the underlying {@link DecimalFormat}.
+     * Will be overwritten by calls to {@link #setLocale(Locale)} or {@link #setDecimalFormat(DecimalFormat)}.
      * @param digits Number of digits to use.
      */
     protected void setMinimumFractionDigits(int digits) {
@@ -145,6 +145,8 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
 
     /**
      * Sets the maximum number of fraction digits displayed and allowed. Overwrites the value in the underlying {@link DecimalFormat}.
+     * Will be overwritten by calls to {@link #setLocale(Locale)} or {@link #setDecimalFormat(DecimalFormat)}.
+     * Note: this has no effect on {@link #setValue(Object)}. If the value is set with more digits, it will stay there until input changes, even though the component shows less digits.
      * @param digits Number of digits to use.
      */
     protected void setMaximumFractionDigits(int digits) {
@@ -152,11 +154,25 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
         this.updateRegularExpression();
     }
 
+    /**
+     * Sets the maximum number of integer digits (before decimal point) displayed and allowed. Overwrites the value in the underlying {@link DecimalFormat}.
+     * Will be overwritten by calls to {@link #setLocale(Locale)} or {@link #setDecimalFormat(DecimalFormat)}.
+     * Note: this has no effect on {@link #setValue(Object)}. If the value is set with more digits, it will stay there until input changes, even though the component shows less digits.
+     * @param digits Number of digits to use.
+     */
+    public void setMaximumIntegerDigits(int digits) {
+        this.format.setMaximumIntegerDigits(digits);
+        this.updateRegularExpression();
+    }
+
+    /**
+     * Builds the regular expression for matching the input.
+     */
     private void updateRegularExpression() {
         // updating the expression may change formatting
         T value = this.getValue();
 
-        final String decSeparatorRegexp =
+        final String groupSeparatorRegexp =
                 this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE
                         ? "[ "+this.format.getDecimalFormatSymbols().getGroupingSeparator()+"]"
                         : escapeDot(this.format.getDecimalFormatSymbols().getGroupingSeparator());
@@ -166,13 +182,50 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
         if(this.isNegativeValueAllowed())
             builder.append(this.format.getDecimalFormatSymbols().getMinusSign()).append("?");
 
-        builder.append("(\\d{1,").append(this.format.getGroupingSize()).append("}(")
-                .append(decSeparatorRegexp).append("?\\d{").append(this.format.getGroupingSize()).append("})*(")
-                .append(decSeparatorRegexp).append("?\\d{0,").append(this.format.getGroupingSize()).append("})?");
+        // everything after the negative sign can be optional, meaning that empty string is ok
+        builder.append("(");
+
+        // if the maximum number of digits allowed is less than a single group:
+        if(this.format.getMaximumIntegerDigits() <= this.format.getGroupingSize())
+            builder.append("\\d{0,").append(this.format.getMaximumIntegerDigits()).append("}");
+        // or, there will be at least one group of digits in the formatted number
+        else {
+            int leftmostGroupMaxSize = this.format.getMaximumIntegerDigits() % this.format.getGroupingSize();
+            if (leftmostGroupMaxSize == 0)
+                leftmostGroupMaxSize = this.format.getGroupingSize();
+            int middleGroupCount = this.format.getMaximumIntegerDigits() / this.format.getGroupingSize() - 1;
+
+            // if there are no middle groups, things are simple
+            if(middleGroupCount == 0) {
+                builder.append("\\d{0,").append(leftmostGroupMaxSize).append("}")
+                        .append(groupSeparatorRegexp).append("?\\d{0,").append(this.format.getGroupingSize()).append("}");
+            }
+            else {
+                builder.append("(");
+                // two cases to check against, if middle groups are present,
+                builder.append("(");
+                // case 1. the leftmost group is present...
+                builder.append("\\d{1,").append(leftmostGroupMaxSize).append("}");
+                //         ...followed by (optionally) separated middle groups
+                builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(this.format.getGroupingSize()).append("}){0,").append(middleGroupCount).append("}");
+                //         ...followed by (optionally) separated last group
+                builder.append("(").append(groupSeparatorRegexp).append("?\\d{0,").append(this.format.getGroupingSize()).append("}").append(")?");
+                builder.append(")|(");
+                // case 2. the number is less than maximum allowed, so it starts with full size or less than full size group...
+                builder.append("\\d{1,").append(this.format.getGroupingSize()).append("}");
+                //         ...followed by (optionally) separated one less middle groups, if any
+                if (middleGroupCount > 1)
+                    builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(this.format.getGroupingSize()).append("}){0,").append(middleGroupCount - 1).append("}");
+                //         ...followed by (optionally) separated last group
+                builder.append("(").append(groupSeparatorRegexp).append("?\\d{0,").append(this.format.getGroupingSize()).append("}").append(")?");
+                builder.append(")");
+                builder.append(")");
+            }
+        }
 
         if(this.format.getMaximumFractionDigits() > 0)
             builder.append("(").append(escapeDot(this.format.getDecimalFormatSymbols().getDecimalSeparator()))
-            .append("?\\d{0,").append(this.format.getMaximumFractionDigits()).append("})?");
+            .append("\\d{0,").append(this.format.getMaximumFractionDigits()).append("})?");
 
         builder.append(")?$");
 
@@ -349,5 +402,48 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
     @Override
     public String getTitle() {
         return this.field.getTitle();
+    }
+
+    /**
+     * Returns the raw value, as currently displayed in the underlying text field.
+     * This may depend on whether or not the component has focus, what locale is used, etc.
+     * @return Raw value currently displayed in the underlying text field.
+     */
+    public String getRawValue() {
+        return this.field.getValue();
+    }
+
+    /**
+     * Allows adding theme variants to the underlying text field.
+     * @param variants Theme variants to add.
+     * @see TextField#addThemeVariants(TextFieldVariant...)
+     */
+    public void addThemeVariants(TextFieldVariant... variants) {
+        this.field.addThemeVariants(variants);
+    }
+
+    /**
+     * Allows removing theme variants from the underlying text field.
+     * @param variants Theme variants to remove.
+     * @see TextField#removeThemeVariants(TextFieldVariant...)
+     */
+    public void removeThemeVariants(TextFieldVariant... variants) {
+        this.field.removeThemeVariants(variants);
+    }
+
+    /**
+     * Explicitly invokes code that would otherwise be called when the component receives focus.
+     * For testing purposes only.
+     */
+    final void simulateFocus() {
+        this.onFieldSelected(new FocusNotifier.FocusEvent<>(this.field, false));
+    }
+
+    /**
+     * Explicitly invokes code that would otherwise be called when the component loses focus.
+     * For testing purposes only.
+     */
+    final void simulateBlur() {
+        this.onFieldBlurred(new BlurNotifier.BlurEvent<>(this.field, false));
     }
 }
