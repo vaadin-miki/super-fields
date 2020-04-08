@@ -7,8 +7,13 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.Route;
+import org.vaadin.miki.superfields.AbstractSuperNumberField;
 import org.vaadin.miki.superfields.SuperDoubleField;
+import org.vaadin.miki.superfields.SuperIntegerField;
+import org.vaadin.miki.superfields.SuperLongField;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -20,46 +25,59 @@ import java.util.Locale;
 public class MainView extends VerticalLayout {
 
     public MainView() {
-        final SuperDoubleField doubleField = new SuperDoubleField("Type a number (8 + 4 digits):");
+
+        final SuperDoubleField doubleField = new SuperDoubleField("Double (8 + 4 digits):");
         doubleField.setMaximumIntegerDigits(8);
         doubleField.setMaximumFractionDigits(4);
-        doubleField.addValueChangeListener(event -> Notification.show("Value changed: "+event.getValue()));
+        doubleField.addValueChangeListener(event -> Notification.show("Double value changed: "+event.getValue()));
+
+        final SuperIntegerField integerField = new SuperIntegerField("Integer (6 digits):");
+        integerField.setMaximumIntegerDigits(6);
+        integerField.addValueChangeListener(event -> Notification.show("Integer value changed: "+event.getValue()));
+
+        final SuperLongField longField = new SuperLongField("Long (11 digits):");
+        longField.setMaximumIntegerDigits(11);
+        longField.addValueChangeListener(event -> Notification.show("Long value changed: "+event.getValue()));
+
+        final List<AbstractSuperNumberField<?>> fields = Arrays.asList(doubleField, integerField, longField);
 
         final Checkbox autoselect = new Checkbox("Select automatically on focus?");
-        autoselect.addValueChangeListener(event -> doubleField.setAutoselect(event.getValue()));
+        autoselect.addValueChangeListener(event -> fields.forEach(f -> f.setAutoselect(event.getValue())));
 
         final Checkbox separatorHidden = new Checkbox("Hide grouping separator on focus?");
-        separatorHidden.addValueChangeListener(event -> doubleField.setGroupingSeparatorHiddenOnFocus(event.getValue()));
+        separatorHidden.addValueChangeListener(event -> fields.forEach(f -> f.setGroupingSeparatorHiddenOnFocus(event.getValue())));
 
         final Checkbox prefix = new Checkbox("Show prefix component?");
-        prefix.addValueChangeListener(event -> doubleField.setPrefixComponent(
+        prefix.addValueChangeListener(event -> fields.forEach(f -> f.setPrefixComponent(
                 event.getValue() ? new Span(">") : null
-        ));
+        )));
 
         final Checkbox suffix = new Checkbox("Show suffix component?");
-        suffix.addValueChangeListener(event -> doubleField.setSuffixComponent(
+        suffix.addValueChangeListener(event -> fields.forEach(f -> f.setSuffixComponent(
                 event.getValue() ? new Span("€") : null
-        ));
+        )));
 
         final Checkbox alignRight = new Checkbox("Align text to the right?");
-        alignRight.addValueChangeListener(event -> {
+        alignRight.addValueChangeListener(event -> fields.forEach(f -> {
             if(event.getValue())
-                            doubleField.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
+                            f.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
             else
-                            doubleField.removeThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
+                            f.removeThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
                 }
-        );
+        ));
 
         final ComboBox<Locale> locales = new ComboBox<>("Select locale:", new Locale("pl", "PL"), Locale.UK, Locale.FRANCE, Locale.GERMANY, Locale.CHINA);
         locales.setItemLabelGenerator(locale -> locale.getDisplayCountry() + " / "+locale.getDisplayLanguage());
         locales.setAllowCustomValue(false);
         locales.addValueChangeListener(event -> {
-            doubleField.setLocale(event.getValue());
+            fields.forEach(f -> f.setLocale(event.getValue()));
             // changing locale resets fraction and integer digits, so they need to be set again
             doubleField.setMaximumFractionDigits(4);
             doubleField.setMaximumIntegerDigits(8);
+            integerField.setMaximumIntegerDigits(6);
+            longField.setMaximumIntegerDigits(11);
         });
 
-        this.add(autoselect, separatorHidden, prefix, suffix, alignRight, locales, doubleField);
+        this.add(autoselect, separatorHidden, prefix, suffix, alignRight, locales, doubleField, integerField, longField);
     }
 }
