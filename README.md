@@ -1,2 +1,14 @@
-# super-fields
-Some extra Vaadin 14+ components that support localisation, plus (hopefully) more.
+# Welcome to SuperFields!
+
+## Overview
+This is a collection of hopefully useful Vaadin 14 components, grouped into several sub-projects:
+* `superfields` are various input components;
+* `demo-v14` contains an app for Vaadin 14 that shows all components.
+
+## Contribution guidelines
+
+You are more than welcome to contribute. Feel free to make PRs, submit issues, etc.
+
+## Small print
+
+All components are provided "as is", with no warranty or liability. See license for details.
