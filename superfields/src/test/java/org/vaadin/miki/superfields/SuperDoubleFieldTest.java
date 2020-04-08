@@ -213,4 +213,13 @@ public class SuperDoubleFieldTest {
         Assert.assertEquals(1.234, this.field.getValue(), 0);
     }
 
+    // bug report: https://github.com/vaadin-miki/super-fields/issues/10
+    @Test
+    public void testIntegerLengthMultiplicationOfGroup() {
+        this.field.setMaximumIntegerDigits(9);
+        String regexp = this.field.getRegexp();
+        for(String s: new String[]{"1234567890", "12345678901", "123456789012", "123 456 789 0", "123 456 789 01", "123 456 789 012"})
+            Assert.assertFalse(String.format("%s must not match %s", regexp, s), s.matches(regexp));
+    }
+
 }
