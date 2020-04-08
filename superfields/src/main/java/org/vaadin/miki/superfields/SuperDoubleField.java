@@ -47,4 +47,14 @@ public class SuperDoubleField extends AbstractSuperNumberField<Double> {
     protected Double parseRawValue(String rawValue, DecimalFormat format) throws ParseException {
         return format.parse(rawValue).doubleValue();
     }
+
+    @Override
+    public void setMinimumFractionDigits(int digits) {
+        super.setMinimumFractionDigits(digits);
+    }
+
+    @Override
+    public void setMaximumFractionDigits(int digits) {
+        super.setMaximumFractionDigits(digits);
+    }
 }

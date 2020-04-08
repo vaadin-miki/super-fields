@@ -5,6 +5,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.Route;
 import org.vaadin.miki.superfields.SuperDoubleField;
 
@@ -19,7 +20,9 @@ import java.util.Locale;
 public class MainView extends VerticalLayout {
 
     public MainView() {
-        final SuperDoubleField doubleField = new SuperDoubleField("Type a number here");
+        final SuperDoubleField doubleField = new SuperDoubleField("Type a number (8 + 4 digits):");
+        doubleField.setMaximumIntegerDigits(8);
+        doubleField.setMaximumFractionDigits(4);
         doubleField.addValueChangeListener(event -> Notification.show("Value changed: "+event.getValue()));
 
         final Checkbox autoselect = new Checkbox("Select automatically on focus?");
@@ -38,11 +41,25 @@ public class MainView extends VerticalLayout {
                 event.getValue() ? new Span("€") : null
         ));
 
+        final Checkbox alignRight = new Checkbox("Align text to the right?");
+        alignRight.addValueChangeListener(event -> {
+            if(event.getValue())
+                            doubleField.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
+            else
+                            doubleField.removeThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
+                }
+        );
+
         final ComboBox<Locale> locales = new ComboBox<>("Select locale:", new Locale("pl", "PL"), Locale.UK, Locale.FRANCE, Locale.GERMANY, Locale.CHINA);
         locales.setItemLabelGenerator(locale -> locale.getDisplayCountry() + " / "+locale.getDisplayLanguage());
         locales.setAllowCustomValue(false);
-        locales.addValueChangeListener(event -> doubleField.setLocale(event.getValue()));
+        locales.addValueChangeListener(event -> {
+            doubleField.setLocale(event.getValue());
+            // changing locale resets fraction and integer digits, so they need to be set again
+            doubleField.setMaximumFractionDigits(4);
+            doubleField.setMaximumIntegerDigits(8);
+        });
 
-        this.add(autoselect, separatorHidden, prefix, suffix, locales, doubleField);
+        this.add(autoselect, separatorHidden, prefix, suffix, alignRight, locales, doubleField);
     }
 }
