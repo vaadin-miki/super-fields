@@ -64,7 +64,7 @@ public class SuperDatePicker extends DatePicker implements HasLocale {
     @Override
     public final void setLocale(Locale locale) {
         super.setLocale(locale);
-        DatePickerI18n i18n = this.getI18n();
+        DatePicker.DatePickerI18n i18n = this.getI18n();
         // new i18n object must be set, because the method that sends data to the client side is private and cannot be called directly
         if(i18n == null || (i18n instanceof SuperDatePickerI18n && !((SuperDatePickerI18n) i18n).getLocale().equals(locale)))
             this.setI18n(new SuperDatePickerI18n(locale));

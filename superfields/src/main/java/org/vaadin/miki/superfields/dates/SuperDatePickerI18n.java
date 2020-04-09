@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Function;
@@ -71,6 +72,11 @@ final class SuperDatePickerI18n extends DatePicker.DatePickerI18n implements Has
 
         try {
             final ResourceBundle bundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, this.locale);
+
+            // in the worst case, language must match - if it does not, ignore
+            if(!Objects.equals(bundle.getLocale().getLanguage(), this.locale.getLanguage()))
+                throw new MissingResourceException(RESOURCE_BUNDLE_NAME, this.getClass().getName(), null);
+
             final Set<String> bundleKeys = bundle.keySet();
 
             // filter out those required keys that are present
@@ -82,6 +88,7 @@ final class SuperDatePickerI18n extends DatePicker.DatePickerI18n implements Has
                     .forEach(entry -> entry.getValue().apply(Arrays.asList(bundle.getString(entry.getKey()).split("\\s*,\\s*"))));
             if(bundleKeys.contains("first-day-of-week"))
                 this.setFirstDayOfWeek(Integer.parseInt(bundle.getString("first-day-of-week")));
+            LOGGER.info("resource overwritten properties: {}", bundleKeys);
         }
         catch(MissingResourceException mre) {
             LOGGER.warn("resource bundle {} for locale {} not found, some texts may display incorrectly or not at all", RESOURCE_BUNDLE_NAME, locale);
