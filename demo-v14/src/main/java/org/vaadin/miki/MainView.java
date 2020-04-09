@@ -9,6 +9,7 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.Route;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.superfields.dates.SuperDatePicker;
+import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
 import org.vaadin.miki.superfields.numbers.AbstractSuperNumberField;
 import org.vaadin.miki.superfields.numbers.SuperBigDecimalField;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
@@ -48,9 +49,13 @@ public class MainView extends VerticalLayout {
         bigDecimalField.addValueChangeListener(event -> Notification.show("Big decimal value changed: "+event.getValue()));
 
         final SuperDatePicker datePicker = new SuperDatePicker("Pick a date:");
+        datePicker.addValueChangeListener(event -> Notification.show("Date changed: "+event.getValue()));
+
+        final SuperDateTimePicker dateTimePicker = new SuperDateTimePicker("Pick time and date:");
+        dateTimePicker.addValueChangeListener(event -> Notification.show("Date time changed: "+event.getValue()));
 
         final List<AbstractSuperNumberField<?>> numberFields = Arrays.asList(doubleField, bigDecimalField, integerField, longField);
-        final List<HasLocale> localeFields = Arrays.asList(doubleField, bigDecimalField, integerField, longField, datePicker);
+        final List<HasLocale> localeFields = Arrays.asList(doubleField, bigDecimalField, integerField, longField, datePicker, dateTimePicker);
 
         final Checkbox autoselect = new Checkbox("Select automatically on focus?");
         autoselect.addValueChangeListener(event -> numberFields.forEach(f -> f.setAutoselect(event.getValue())));
@@ -91,6 +96,6 @@ public class MainView extends VerticalLayout {
             longField.setMaximumIntegerDigits(11);
         });
 
-        this.add(autoselect, separatorHidden, prefix, suffix, alignRight, locales, doubleField, bigDecimalField, integerField, longField, datePicker);
+        this.add(autoselect, separatorHidden, prefix, suffix, alignRight, locales, doubleField, bigDecimalField, integerField, longField, datePicker, dateTimePicker);
     }
 }
