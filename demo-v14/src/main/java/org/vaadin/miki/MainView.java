@@ -7,11 +7,11 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.Route;
-import org.vaadin.miki.superfields.AbstractSuperNumberField;
-import org.vaadin.miki.superfields.SuperBigDecimalField;
-import org.vaadin.miki.superfields.SuperDoubleField;
-import org.vaadin.miki.superfields.SuperIntegerField;
-import org.vaadin.miki.superfields.SuperLongField;
+import org.vaadin.miki.superfields.numbers.AbstractSuperNumberField;
+import org.vaadin.miki.superfields.numbers.SuperBigDecimalField;
+import org.vaadin.miki.superfields.numbers.SuperDoubleField;
+import org.vaadin.miki.superfields.numbers.SuperIntegerField;
+import org.vaadin.miki.superfields.numbers.SuperLongField;
 
 import java.util.Arrays;
 import java.util.List;

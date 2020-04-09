@@ -1,10 +1,11 @@
-package org.vaadin.miki.superfields;
+package org.vaadin.miki.superfields.numbers;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.vaadin.miki.superfields.numbers.AbstractSuperNumberField;
 
 import java.util.Arrays;
 import java.util.HashMap;
