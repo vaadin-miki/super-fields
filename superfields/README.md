@@ -8,9 +8,9 @@ Demo application can be found in `demo-v14` module. Please consult it to see how
 
 None of the number fields support range checking, so if you allow too many digits, overflows will occur.
 
-### `SuperDoubleField`
+### `SuperDoubleField`and `SuperBigDecimalField`
 
-An input field for entering localised `Double` numbers. Supports thousands (grouping) separators for the integer part and optional decimal separator.
+An input field for entering localised `Double` and `BigDecimal` numbers. Supports thousands (grouping) separators for the integer part and optional decimal separator.
 
 ### `SuperIntegerField` and `SuperLongField`
 

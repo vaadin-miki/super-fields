@@ -85,7 +85,7 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
      * @param turnToPositiveOperator Operation to turn number into a positive one.
      * @param label Label of the field.
      * @param locale Locale to use.
-     * @param maxFractionDigits Max number of fraction digits. Overwrites the settings in format obtained based on {@code locale}.
+     * @param maxFractionDigits Max number of fraction digits. Overwrites the settings in format obtained based on {@code locale}. Negative value means leaving whatever is supported by the format.
      */
     protected AbstractSuperNumberField(T defaultValue, SerializablePredicate<T> negativityPredicate, SerializableFunction<T, T> turnToPositiveOperator, String label, Locale locale, int maxFractionDigits) {
         super(defaultValue);
@@ -94,7 +94,8 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
         this.turnToPositiveOperator = turnToPositiveOperator;
 
         this.format = this.getFormat(locale);
-        this.format.setMaximumFractionDigits(maxFractionDigits);
+        if(maxFractionDigits >= 0)
+            this.format.setMaximumFractionDigits(maxFractionDigits);
         this.updateRegularExpression();
 
         this.add(this.field);
