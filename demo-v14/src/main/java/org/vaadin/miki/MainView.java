@@ -8,6 +8,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.Route;
 import org.vaadin.miki.superfields.AbstractSuperNumberField;
+import org.vaadin.miki.superfields.SuperBigDecimalField;
 import org.vaadin.miki.superfields.SuperDoubleField;
 import org.vaadin.miki.superfields.SuperIntegerField;
 import org.vaadin.miki.superfields.SuperLongField;
@@ -39,7 +40,12 @@ public class MainView extends VerticalLayout {
         longField.setMaximumIntegerDigits(11);
         longField.addValueChangeListener(event -> Notification.show("Long value changed: "+event.getValue()));
 
-        final List<AbstractSuperNumberField<?>> fields = Arrays.asList(doubleField, integerField, longField);
+        final SuperBigDecimalField bigDecimalField = new SuperBigDecimalField("Big decimal (12 + 3 digits):");
+        bigDecimalField.setMaximumIntegerDigits(12);
+        bigDecimalField.setMaximumFractionDigits(3);
+        bigDecimalField.addValueChangeListener(event -> Notification.show("Big decimal value changed: "+event.getValue()));
+
+        final List<AbstractSuperNumberField<?>> fields = Arrays.asList(doubleField, bigDecimalField, integerField, longField);
 
         final Checkbox autoselect = new Checkbox("Select automatically on focus?");
         autoselect.addValueChangeListener(event -> fields.forEach(f -> f.setAutoselect(event.getValue())));
@@ -75,9 +81,11 @@ public class MainView extends VerticalLayout {
             doubleField.setMaximumFractionDigits(4);
             doubleField.setMaximumIntegerDigits(8);
             integerField.setMaximumIntegerDigits(6);
+            bigDecimalField.setMaximumIntegerDigits(12);
+            bigDecimalField.setMaximumFractionDigits(3);
             longField.setMaximumIntegerDigits(11);
         });
 
-        this.add(autoselect, separatorHidden, prefix, suffix, alignRight, locales, doubleField, integerField, longField);
+        this.add(autoselect, separatorHidden, prefix, suffix, alignRight, locales, doubleField, bigDecimalField, integerField, longField);
     }
 }

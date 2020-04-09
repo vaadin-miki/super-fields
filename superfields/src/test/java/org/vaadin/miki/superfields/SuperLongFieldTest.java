@@ -1,71 +1,38 @@
 package org.vaadin.miki.superfields;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.Locale;
 
-public class SuperLongFieldTest {
+public class SuperLongFieldTest extends BaseTestsForIntegerNumbers<Long> {
 
     public static final Long TWELVE_DIGITS = 123456789012L;
     public static final String FORMATTED_TWELVE_DIGITS = "123 456 789 012"; // there are NBSPs in this string
     public static final String NO_GROUPS_FORMATTED_TWELVE_DIGITS = "123456789012";
 
-    private SuperLongField field;
+    public SuperLongFieldTest() {
+        super(
+                ()->new SuperLongField(new Locale("pl", "PL")),
+                TWELVE_DIGITS, -TWELVE_DIGITS, FORMATTED_TWELVE_DIGITS, NO_GROUPS_FORMATTED_TWELVE_DIGITS, 0L
+        );
 
-    @Before
-    public void setUp() {
-        MockVaadin.setup();
-        // this locale uses NBSP ( ) as grouping separator, "," as decimal separator and grouping size of 3
-        this.field = new SuperLongField(new Locale("pl", "PL"));
-    }
-
-    @After
-    public void tearDown() {
-        MockVaadin.tearDown();
-    }
-
-    @Test
-    public void testValidRegexp() {
-        String regexp = this.field.getRegexp();
-        // note: the spaces here are actual spaces, because this simulates the input of the user
-        for(String s: new String[]{
+        this.validInputs(
                 "1", "1 ", "1 2", "1 23", "1 234",
                 "1 234 5", "1 234 56", "1 234 567",
                 "-1 ", "-1 2", "-1 23", "-1 234",
                 "-1 234 5", "-1 234 56", "-1 234 567",
                 "0", "1", "12", "123", "1234", "1 234", "12 345", "123 456", "12345", "123456",
                 "-",
-                "-0", "-1", "-12", "-123", "-1234", "-1 234", "-12 345", "-123 456", "-12345", "-123456",
-        })
-            Assert.assertTrue(String.format("<%s> does not match: /%s/", s, regexp), s.matches(regexp));
-    }
-
-    @Test
-    public void testValidRegexpLimitTo5() {
-        this.field.setMaximumIntegerDigits(5);
-        String regexp = this.field.getRegexp();
-        // note: the spaces here are actual spaces, because this simulates the input of the user
-        for(String s: new String[]{
+                "-0", "-1", "-12", "-123", "-1234", "-1 234", "-12 345", "-123 456", "-12345", "-123456"
+        );
+        this.validInputs(5,
                 "1", "1 ", "1 2", "1 23", "1 234",
                 "12 345",
                 "-1 ", "-1 2", "-1 23", "-1 234",
                 "-12 345",
                 "0", "1", "12", "123", "1234", "1 234", "12 345", "12345",
                 "-",
-                "-0", "-1", "-12", "-123", "-1234", "-1 234", "-12 345", "-12345",
-        })
-            Assert.assertTrue(String.format("<%s> does not match: /%s/", s, regexp), s.matches(regexp));
-    }
-
-    @Test
-    public void testInvalidRegexp() {
-        String regexp = this.field.getRegexp();
-        // again, these are regular spaces, because of testing user input
-        for(String s: new String[]{
+                "-0", "-1", "-12", "-123", "-1234", "-1 234", "-12 345", "-12345"
+        );
+        this.invalidInputs(
                 "0,", "0,1", "0,12", "0,123", "0,1234", "0,12345",
                 "12,", "12,3", "12,34", "12,345", "12,3456", "12,34567",
                 "123,", "123,4", "123,45", "123,456", "123,4567", "123,45678",
@@ -86,16 +53,8 @@ public class SuperLongFieldTest {
                 "-123 456,", "-123 456,7", "-123 456,78", "-123 456,789", "-123 456,7890", "-123 456,78901",
                 "a", "1a", "a1", "a 2", "1 2 3", "1 23 4", "1 23 45", "12 34 56", "12 345 67 89",
                 "12345,123456"
-        })
-            Assert.assertFalse(String.format("<%s> should not match: /%s/", s, regexp), s.matches(regexp));
-    }
-
-    @Test
-    public void testInvalidRegexpLimitTo5() {
-        this.field.setMaximumIntegerDigits(5);
-        String regexp = this.field.getRegexp();
-        // again, these are regular spaces, because of testing user input
-        for(String s: new String[]{
+        );
+        this.invalidInputs(5,
                 "1 234 5", "-1 234 5",
                 "1 234 56", "1 234 567", "-1 234 56", "-1 234 567", "123 456", "-123456",
                 "1,", "1 2,", "12,", "123,", "1234,", "12345,",
@@ -103,60 +62,8 @@ public class SuperLongFieldTest {
                 "123 456,", "123 456,7", "123 456,78", "123 456,789", "123 456,7890", "123 456,78901",
                 "-123456,", "-123456,7", "-123456,78", "-123456,789", "-123456,7890", "-123456,78901",
                 "-123 456,", "-123 456,7", "-123 456,78", "-123 456,789", "-123 456,7890", "-123 456,78901",
-                "a", "1a", "a1", "a 2", "1 2 3", "1 23 4", "1 23 45", "12 34 56", "12 345 67 89",
-        })
-            Assert.assertFalse(String.format("<%s> should not match: /%s/", s, regexp), s.matches(regexp));
+                "a", "1a", "a1", "a 2", "1 2 3", "1 23 4", "1 23 45", "12 34 56", "12 345 67 89"
+        );
     }
 
-    @Test
-    public void testInitiallyZero() {
-        Assert.assertEquals(Long.valueOf(0), this.field.getValue());
-        Assert.assertEquals("0", this.field.getRawValue());
-    }
-
-    @Test
-    public void testFormattingInput() {
-        this.field.setValue(TWELVE_DIGITS);
-        Assert.assertEquals(FORMATTED_TWELVE_DIGITS, this.field.getRawValue());
-    }
-
-    @Test
-    public void testRemovingGroupingSeparatorOnFocus() {
-        this.field.setGroupingSeparatorHiddenOnFocus(true);
-        this.field.setValue(TWELVE_DIGITS);
-        this.field.simulateFocus();
-        Assert.assertEquals(NO_GROUPS_FORMATTED_TWELVE_DIGITS, this.field.getRawValue());
-        this.field.simulateBlur();
-        Assert.assertEquals(FORMATTED_TWELVE_DIGITS, this.field.getRawValue());
-        this.field.setGroupingSeparatorHiddenOnFocus(false);
-        this.field.simulateFocus();
-        Assert.assertEquals(FORMATTED_TWELVE_DIGITS, this.field.getRawValue());
-    }
-
-    @Test
-    public void testAllowingNegativeValueAbsValue() {
-        this.field.setValue(-TWELVE_DIGITS);
-        Assert.assertEquals("-"+ FORMATTED_TWELVE_DIGITS, this.field.getRawValue());
-        this.field.setNegativeValueAllowed(false);
-        Assert.assertEquals(TWELVE_DIGITS, this.field.getValue());
-        Assert.assertEquals(FORMATTED_TWELVE_DIGITS, this.field.getRawValue());
-    }
-
-    @Test
-    public void testAllowingNegativeValueNoEffectOnPositive() {
-        this.field.setValue(TWELVE_DIGITS);
-        Assert.assertEquals(FORMATTED_TWELVE_DIGITS, this.field.getRawValue());
-        this.field.setNegativeValueAllowed(false);
-        Assert.assertEquals(TWELVE_DIGITS, this.field.getValue());
-        Assert.assertEquals(FORMATTED_TWELVE_DIGITS, this.field.getRawValue());
-    }
-
-    // bug report: https://github.com/vaadin-miki/super-fields/issues/10
-    @Test
-    public void testIntegerLengthMultiplicationOfGroup() {
-        this.field.setMaximumIntegerDigits(9);
-        String regexp = this.field.getRegexp();
-        for(String s: new String[]{"1234567890", "12345678901", "123456789012", "123 456 789 0", "123 456 789 01", "123 456 789 012"})
-            Assert.assertFalse(String.format("%s must not match %s", regexp, s), s.matches(regexp));
-    }
 }
