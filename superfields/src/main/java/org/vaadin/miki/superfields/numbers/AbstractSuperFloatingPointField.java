@@ -1,4 +1,4 @@
-package org.vaadin.miki.superfields;
+package org.vaadin.miki.superfields.numbers;
 
 import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.function.SerializablePredicate;

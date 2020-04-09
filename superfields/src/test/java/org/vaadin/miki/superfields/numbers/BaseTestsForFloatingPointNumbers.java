@@ -1,4 +1,4 @@
-package org.vaadin.miki.superfields;
+package org.vaadin.miki.superfields.numbers;
 
 import org.junit.Assert;
 import org.junit.Test;
