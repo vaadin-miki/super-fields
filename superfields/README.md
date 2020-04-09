@@ -15,3 +15,9 @@ An input field for entering localised `Double` and `BigDecimal` numbers. Support
 ### `SuperIntegerField` and `SuperLongField`
 
 An input field for entering localised `Integer` and `Long` numbers. Supports thousands (grouping) separators.
+
+## Date fields
+
+### `SuperDatePicker`
+
+Fully localised `DatePicker` that fetches month names and weekday names from Java `Locale`. Those settings can be overwritten by resource bundle named `superdatepickeri18n`. 

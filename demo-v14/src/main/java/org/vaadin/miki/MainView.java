@@ -7,6 +7,8 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.Route;
+import org.vaadin.miki.markers.HasLocale;
+import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.numbers.AbstractSuperNumberField;
 import org.vaadin.miki.superfields.numbers.SuperBigDecimalField;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
@@ -45,26 +47,29 @@ public class MainView extends VerticalLayout {
         bigDecimalField.setMaximumFractionDigits(3);
         bigDecimalField.addValueChangeListener(event -> Notification.show("Big decimal value changed: "+event.getValue()));
 
-        final List<AbstractSuperNumberField<?>> fields = Arrays.asList(doubleField, bigDecimalField, integerField, longField);
+        final SuperDatePicker datePicker = new SuperDatePicker("Pick a date:");
+
+        final List<AbstractSuperNumberField<?>> numberFields = Arrays.asList(doubleField, bigDecimalField, integerField, longField);
+        final List<HasLocale> localeFields = Arrays.asList(doubleField, bigDecimalField, integerField, longField, datePicker);
 
         final Checkbox autoselect = new Checkbox("Select automatically on focus?");
-        autoselect.addValueChangeListener(event -> fields.forEach(f -> f.setAutoselect(event.getValue())));
+        autoselect.addValueChangeListener(event -> numberFields.forEach(f -> f.setAutoselect(event.getValue())));
 
         final Checkbox separatorHidden = new Checkbox("Hide grouping separator on focus?");
-        separatorHidden.addValueChangeListener(event -> fields.forEach(f -> f.setGroupingSeparatorHiddenOnFocus(event.getValue())));
+        separatorHidden.addValueChangeListener(event -> numberFields.forEach(f -> f.setGroupingSeparatorHiddenOnFocus(event.getValue())));
 
         final Checkbox prefix = new Checkbox("Show prefix component?");
-        prefix.addValueChangeListener(event -> fields.forEach(f -> f.setPrefixComponent(
+        prefix.addValueChangeListener(event -> numberFields.forEach(f -> f.setPrefixComponent(
                 event.getValue() ? new Span(">") : null
         )));
 
         final Checkbox suffix = new Checkbox("Show suffix component?");
-        suffix.addValueChangeListener(event -> fields.forEach(f -> f.setSuffixComponent(
+        suffix.addValueChangeListener(event -> numberFields.forEach(f -> f.setSuffixComponent(
                 event.getValue() ? new Span("€") : null
         )));
 
         final Checkbox alignRight = new Checkbox("Align text to the right?");
-        alignRight.addValueChangeListener(event -> fields.forEach(f -> {
+        alignRight.addValueChangeListener(event -> numberFields.forEach(f -> {
             if(event.getValue())
                             f.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
             else
@@ -76,7 +81,7 @@ public class MainView extends VerticalLayout {
         locales.setItemLabelGenerator(locale -> locale.getDisplayCountry() + " / "+locale.getDisplayLanguage());
         locales.setAllowCustomValue(false);
         locales.addValueChangeListener(event -> {
-            fields.forEach(f -> f.setLocale(event.getValue()));
+            localeFields.forEach(f -> f.setLocale(event.getValue()));
             // changing locale resets fraction and integer digits, so they need to be set again
             doubleField.setMaximumFractionDigits(4);
             doubleField.setMaximumIntegerDigits(8);
@@ -86,6 +91,6 @@ public class MainView extends VerticalLayout {
             longField.setMaximumIntegerDigits(11);
         });
 
-        this.add(autoselect, separatorHidden, prefix, suffix, alignRight, locales, doubleField, bigDecimalField, integerField, longField);
+        this.add(autoselect, separatorHidden, prefix, suffix, alignRight, locales, doubleField, bigDecimalField, integerField, longField, datePicker);
     }
 }

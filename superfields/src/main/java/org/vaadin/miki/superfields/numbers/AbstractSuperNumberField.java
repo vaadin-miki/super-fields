@@ -12,6 +12,7 @@ import com.vaadin.flow.function.SerializablePredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.markers.HasLabel;
+import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.markers.HasPlaceholder;
 import org.vaadin.miki.markers.HasTitle;
 
@@ -28,7 +29,7 @@ import java.util.Optional;
  * @author miki
  * @since 2020-04-07
  */
-public abstract class AbstractSuperNumberField<T extends Number> extends CustomField<T> implements HasPrefixAndSuffix, HasLabel, HasPlaceholder, HasTitle {
+public abstract class AbstractSuperNumberField<T extends Number> extends CustomField<T> implements HasPrefixAndSuffix, HasLabel, HasPlaceholder, HasTitle, HasLocale {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -78,6 +79,8 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
 
     private boolean negativeValueAllowed = true;
 
+    private Locale locale;
+
     /**
      * Creates the field.
      * @param defaultValue Default value to use on startup and when there are errors.
@@ -93,6 +96,7 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
         this.negativityPredicate = negativityPredicate;
         this.turnToPositiveOperator = turnToPositiveOperator;
 
+        this.locale = locale;
         this.format = this.getFormat(locale);
         if(maxFractionDigits >= 0)
             this.format.setMaximumFractionDigits(maxFractionDigits);
@@ -122,7 +126,13 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
      * @see #setDecimalFormat(DecimalFormat)
      */
     public void setLocale(Locale locale) {
+        this.locale = locale;
         this.setDecimalFormat(this.getFormat(locale));
+    }
+
+    @Override
+    public Locale getLocale() {
+        return this.locale;
     }
 
     /**
