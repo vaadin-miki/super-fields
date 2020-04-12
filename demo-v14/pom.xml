@@ -15,6 +15,7 @@
 
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
+        <node.version>v12.14.0</node.version>
     </properties>
 
     <dependencies>
@@ -62,6 +63,25 @@
                 </executions>
             </plugin>
 
+            <!-- install node/npm locally -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <nodeVersion>${node.version}</nodeVersion>
+                </configuration>
+            </plugin>
+
             <!-- heroku https://devcenter.heroku.com/articles/deploying-java-applications-with-the-heroku-maven-plugin -->
             <plugin>
                 <groupId>com.heroku.sdk</groupId>
@@ -98,6 +118,7 @@
                         <executions>
                             <execution>
                                 <goals>
+                                    <goal>prepare-frontend</goal>
                                     <goal>build-frontend</goal>
                                 </goals>
                                 <phase>compile</phase>
