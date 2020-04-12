@@ -1,14 +1,19 @@
 package org.vaadin.miki.superfields.tabs;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
+import org.vaadin.miki.markers.HasLabel;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +27,8 @@ import java.util.stream.Collectors;
  * @author miki
  * @since 2020-04-10
  */
-public class SuperTabs<T> extends CustomField<T> {
+@Tag("super-tabs")
+public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
 
     private final Tabs tabs = new Tabs();
 
@@ -32,17 +38,58 @@ public class SuperTabs<T> extends CustomField<T> {
 
     private final List<Map.Entry<T, Tab>> values = new ArrayList<>();
 
-    private TabsHeaderGenerator<T> headerGenerator = v -> new Tab(v == null ? "(null)" : v.toString());
+    private TabHeaderGenerator<T> tabHeaderGenerator;
 
-    private TabsContentGenerator<T> contentGenerator = v -> new Span("Default content for "+v);
+    private TabContentGenerator<T> tabContentGenerator;
 
     private boolean customValueAllowed = false;
 
+    /**
+     * Creates the component with no tabs and default {@link TabHeaderGenerator} and {@link TabContentGenerator}.
+     */
     public SuperTabs() {
-        super(null);
+        this(null);
+    }
+
+    /**
+     * Creates the component with given {@link TabContentGenerator} and tabs, but with default {@link TabHeaderGenerator}.
+     * @param tabContentGenerator {@link TabContentGenerator} to construct content for tabs.
+     * @param values Values to use.
+     */
+    @SafeVarargs
+    public SuperTabs(TabContentGenerator<T> tabContentGenerator, T... values) {
+        this(null, tabContentGenerator, values);
+    }
+
+    /**
+     * Creates the component with given {@link TabHeaderGenerator}, {@link TabContentGenerator} and tabs.
+     * @param tabHeaderGenerator {@link TabHeaderGenerator} to construct tab headers.
+     * @param tabContentGenerator {@link TabContentGenerator} to construct content for tabs.
+     * @param values Values to use.
+     */
+    @SafeVarargs
+    public SuperTabs(TabHeaderGenerator<T> tabHeaderGenerator, TabContentGenerator<T> tabContentGenerator, T... values) {
+        this(null, tabHeaderGenerator, tabContentGenerator, values);
+    }
+
+    /**
+     * Creates the component with given {@link TabHeaderGenerator}, {@link TabContentGenerator} and tabs, overriding the default value from {@code null} to the one provided.
+     * @param defaultValue Default value that corresponds to no tab selected.
+     * @param tabHeaderGenerator {@link TabHeaderGenerator} to construct tab headers.
+     * @param tabContentGenerator {@link TabContentGenerator} to construct content for tabs.
+     * @param values Values to use.
+     */
+    @SafeVarargs
+    public SuperTabs(T defaultValue, TabHeaderGenerator<T> tabHeaderGenerator, TabContentGenerator<T> tabContentGenerator, T... values) {
+        super(defaultValue);
+        this.setTabHeaderGenerator(tabHeaderGenerator);
+        this.setTabContentGenerator(tabContentGenerator);
         this.tabs.setAutoselect(false);
+        this.tabs.setWidthFull();
+        this.contents.setWidthFull();
         this.add(this.tabs, this.contents);
         this.tabs.addSelectedChangeListener(this::onTabChanged);
+        this.addTab(values);
     }
 
     private void onTabChanged(Tabs.SelectedChangeEvent event) {
@@ -57,13 +104,13 @@ public class SuperTabs<T> extends CustomField<T> {
     }
 
     /**
-     * Adds a new tab and content for given value, using {@link #getHeaderGenerator()} and {@link #getContentGenerator()} to produce components.
+     * Adds a new tab and content for given value, using {@link #getTabHeaderGenerator()} and {@link #getTabContentGenerator()} to produce components.
      * @param value A new value, not yet present in the component. Warning: no check are made to make sure this value is not used.
      * @param select Whether or not to select newly added tab.
      */
     protected void addNewTab(T value, boolean select) {
-        Tab tab = this.getHeaderGenerator().generateTab(value);
-        Component content = this.getContentGenerator().generateComponent(value);
+        Tab tab = this.getTabHeaderGenerator().generateTab(value);
+        Component content = this.getTabContentGenerator().generateComponent(value);
         this.addNewTab(value, tab, content, select);
     }
 
@@ -89,16 +136,27 @@ public class SuperTabs<T> extends CustomField<T> {
     }
 
     /**
-     * Adds a tab for a given value. Selects the tab if it was already present, otherwise just adds it.
-     * Will use {@link #getHeaderGenerator()} and {@link #getContentGenerator()} to produce components.
-     * If this is the first tab added, it will be selected.
-     * @param value A value to add tab and content for.
+     * This method adds one or more tabs. It converts the values into a {@link Collection} and calls {@link #addTabs(Collection)}.
+     * @param values Values to add tabs and contents for.
+     * @see #addTabs(Collection)
      */
-    public void addTab(T value) {
-        this.getValueAndTab(value).ifPresentOrElse(
-                e -> this.tabs.setSelectedTab(e.getValue()),
-                () -> this.addNewTab(value, this.values.isEmpty())
-        );
+    @SafeVarargs
+    public final void addTab(T... values) {
+        this.addTabs(Arrays.asList(values));
+    }
+
+    /**
+     * Adds a tab for each of the given values. Selects the tab if it was already present, otherwise just adds it.
+     * Will use {@link #getTabHeaderGenerator()} and {@link #getTabContentGenerator()} to produce components.
+     * If there were no tabs prior to calling this method, the first tab added this way will be selected.
+     * @param values Values to add tabs and contents for.
+     */
+    public void addTabs(Collection<T> values) {
+        values.forEach(value ->
+            this.getValueAndTab(value).ifPresentOrElse(
+                    e -> this.tabs.setSelectedTab(e.getValue()),
+                    () -> this.addNewTab(value, this.values.isEmpty())
+            ));
     }
 
     /**
@@ -127,6 +185,7 @@ public class SuperTabs<T> extends CustomField<T> {
         if(Objects.equals(header, this.tabs.getSelectedTab()))
             this.tabs.setSelectedTab(null);
         this.tabs.remove(header);
+        this.values.removeIf(e -> Objects.equals(value, e.getKey()));
     }
 
     /**
@@ -168,7 +227,7 @@ public class SuperTabs<T> extends CustomField<T> {
 
     @Override
     protected T generateModelValue() {
-        if(this.tabs.getSelectedIndex() < this.values.size())
+        if(this.tabs.getSelectedIndex() < this.values.size() && this.tabs.getSelectedIndex() >= 0)
             return this.values.get(this.tabs.getSelectedIndex()).getKey();
         else return this.getEmptyValue();
     }
@@ -208,35 +267,35 @@ public class SuperTabs<T> extends CustomField<T> {
     /**
      * Sets the generator responsible for providing content for selected tabs.
      * It is called first time a tab is displayed. When the generator is changed, the new one has no effect on previously generated content.
-     * @param contentGenerator {@link TabsContentGenerator}. Must not be {@code null}.
+     * @param tabContentGenerator {@link TabContentGenerator}. If {@code null}, it will be replaced with a default function.
      */
-    public void setContentGenerator(TabsContentGenerator<T> contentGenerator) {
-        this.contentGenerator = contentGenerator;
+    public void setTabContentGenerator(TabContentGenerator<T> tabContentGenerator) {
+        this.tabContentGenerator = Optional.ofNullable(tabContentGenerator).orElse(t -> new Span(String.valueOf(t)));
     }
 
     /**
      * Returns the generator responsible for providing content for selected tabs.
-     * @return {@link TabsContentGenerator}.
+     * @return {@link TabContentGenerator}.
      */
-    public TabsContentGenerator<T> getContentGenerator() {
-        return contentGenerator;
+    public TabContentGenerator<T> getTabContentGenerator() {
+        return this.tabContentGenerator;
     }
 
     /**
      * Sets the generator responsible for providing tabs (headers) for values.
      * It is called first time a tab is created. When the generator is changed, the new one has no effect on previously generated tabs.
-     * @param headerGenerator {@link TabsHeaderGenerator}. Must not be {@code null}.
+     * @param tabHeaderGenerator {@link TabHeaderGenerator}. If {@code null}, it will be replaced with a default function.
      */
-    public void setHeaderGenerator(TabsHeaderGenerator<T> headerGenerator) {
-        this.headerGenerator = headerGenerator;
+    public void setTabHeaderGenerator(TabHeaderGenerator<T> tabHeaderGenerator) {
+        this.tabHeaderGenerator = Optional.ofNullable(tabHeaderGenerator).orElse(t -> new Tab(String.valueOf(t)));
     }
 
     /**
      * Returns the generator responsible for providing tabs (headers) for values.
-     * @return {@link TabsContentGenerator}.
+     * @return {@link TabContentGenerator}.
      */
-    public TabsHeaderGenerator<T> getHeaderGenerator() {
-        return headerGenerator;
+    public TabHeaderGenerator<T> getTabHeaderGenerator() {
+        return this.tabHeaderGenerator;
     }
 
     /**
@@ -244,7 +303,7 @@ public class SuperTabs<T> extends CustomField<T> {
      * @return {@code true} when selecting a value that does not have a corresponding tab results in adding a new tab, {@code false} otherwise (and by default).
      */
     public boolean isCustomValueAllowed() {
-        return customValueAllowed;
+        return this.customValueAllowed;
     }
 
     /**

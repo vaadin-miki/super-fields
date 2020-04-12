@@ -1,10 +1,12 @@
 package org.vaadin.miki;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.Route;
 import org.vaadin.miki.markers.HasLocale;
@@ -15,20 +17,38 @@ import org.vaadin.miki.superfields.numbers.SuperBigDecimalField;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 import org.vaadin.miki.superfields.numbers.SuperIntegerField;
 import org.vaadin.miki.superfields.numbers.SuperLongField;
+import org.vaadin.miki.superfields.tabs.SuperTabs;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
- * Demo app for various SuperFields.
+ * Demo app for various SuperFields and other components.
  * @author miki
  * @since 2020-04-07
  */
 @Route
 public class MainView extends VerticalLayout {
 
+    private final Map<Class<?>, Component> components = new LinkedHashMap<>();
+
+    private Component buildContentsFor(Class<?> type) {
+        return this.components.get(type);
+    }
+
     public MainView() {
+        this.components.put(SuperIntegerField.class, new SuperIntegerField("Integer (6 digits):"));
+
+        final SuperTabs<Class<?>> tabs = new SuperTabs<>(
+                type -> new Tab(type.getSimpleName()),
+                this::buildContentsFor,
+                this.components.keySet().toArray(new Class<?>[0])
+        );
+
+        this.add(tabs);
 
         final SuperDoubleField doubleField = new SuperDoubleField("Double (8 + 4 digits):");
         doubleField.setMaximumIntegerDigits(8);
