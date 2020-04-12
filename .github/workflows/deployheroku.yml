@@ -18,6 +18,6 @@ jobs:
       - name: Install
         run: mvn install --file pom.xml
       - name: Deploy to Heroku
-        run: mvn -B heroku:deploy-war --file demo-v14/pom.xml
+        run: mvn -B heroku:deploy-war -Pproduction --file demo-v14/pom.xml
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
