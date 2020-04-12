@@ -54,7 +54,7 @@ public class MainView extends VerticalLayout {
         final SuperDateTimePicker dateTimePicker = new SuperDateTimePicker("Pick time and date:");
         dateTimePicker.addValueChangeListener(event -> Notification.show("Date time changed: "+event.getValue()));
 
-        final List<AbstractSuperNumberField<?>> numberFields = Arrays.asList(doubleField, bigDecimalField, integerField, longField);
+        final List<AbstractSuperNumberField<?, ?>> numberFields = Arrays.asList(doubleField, bigDecimalField, integerField, longField);
         final List<HasLocale> localeFields = Arrays.asList(doubleField, bigDecimalField, integerField, longField, datePicker, dateTimePicker);
 
         final Checkbox autoselect = new Checkbox("Select automatically on focus?");

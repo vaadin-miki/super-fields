@@ -15,6 +15,10 @@ import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.markers.HasPlaceholder;
 import org.vaadin.miki.markers.HasTitle;
+import org.vaadin.miki.markers.WithLabelMixin;
+import org.vaadin.miki.markers.WithLocaleMixin;
+import org.vaadin.miki.markers.WithPlaceholderMixin;
+import org.vaadin.miki.markers.WithTitleMixin;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -29,7 +33,10 @@ import java.util.Optional;
  * @author miki
  * @since 2020-04-07
  */
-public abstract class AbstractSuperNumberField<T extends Number> extends CustomField<T> implements HasPrefixAndSuffix, HasLabel, HasPlaceholder, HasTitle, HasLocale {
+public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
+        extends CustomField<T>
+        implements HasPrefixAndSuffix, HasLabel, HasPlaceholder, HasTitle, HasLocale,
+                   WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -125,6 +132,7 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
      * @param locale {@link Locale} to use. When {@code null}, {@link Locale#getDefault()} will be used.
      * @see #setDecimalFormat(DecimalFormat)
      */
+    @Override
     public void setLocale(Locale locale) {
         this.locale = locale;
         this.setDecimalFormat(this.getFormat(locale));
@@ -174,6 +182,18 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
     public void setMaximumIntegerDigits(int digits) {
         this.format.setMaximumIntegerDigits(digits);
         this.updateRegularExpression();
+    }
+
+    /**
+     * Chains {@link #setMaximumIntegerDigits(int)} and returns itself.
+     * @param digits Maximum number of integer digits allowed.
+     * @return This.
+     * @see #setMaximumIntegerDigits(int)
+     */
+    @SuppressWarnings("unchecked")
+    public final SELF withMaximumIntegerDigits(int digits) {
+        this.setMaximumIntegerDigits(digits);
+        return (SELF)this;
     }
 
     /**
@@ -330,6 +350,18 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
     }
 
     /**
+     * Chains {@link #setAutoselect(boolean)} and returns itself.
+     * @param autoselect Autoselection value.
+     * @return This.
+     * @see #setAutoselect(boolean)
+     */
+    @SuppressWarnings("unchecked")
+    public final SELF withAutoselect(boolean autoselect) {
+        this.setAutoselect(autoselect);
+        return (SELF)this;
+    }
+
+    /**
      * Whether or not grouping separator (used typically for thousands) should be hidden when the component gets focused.
      * Grouping separators are always shown when the component is not focused.
      * Defaults to {@code false}.
@@ -349,6 +381,18 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
     }
 
     /**
+     * Chains {@link #setGroupingSeparatorHiddenOnFocus(boolean)} and returns itself.
+     * @param groupingSeparatorHiddenOnFocus Whether or not to hide grouping separator on component focus.
+     * @return This.
+     * @see #setGroupingSeparatorHiddenOnFocus(boolean)
+     */
+    @SuppressWarnings("unchecked")
+    public final SELF withGroupingSeparatorHiddenOnFocus(boolean groupingSeparatorHiddenOnFocus) {
+        this.setGroupingSeparatorHiddenOnFocus(groupingSeparatorHiddenOnFocus);
+        return (SELF)this;
+    }
+
+    /**
      * Whether or not negative values are allowed.
      * Defaults to {@code true}.
      * @return {@code true} when negative values are allowed, {@code false} when not.
@@ -365,6 +409,18 @@ public abstract class AbstractSuperNumberField<T extends Number> extends CustomF
     public void setNegativeValueAllowed(boolean negativeValueAllowed) {
         this.negativeValueAllowed = negativeValueAllowed;
         this.updateRegularExpression();
+    }
+
+    /**
+     * Chains {@link #setNegativeValueAllowed(boolean)} and returns itself.
+     * @param negativeValueAllowed Whether or not to allow negative values.
+     * @return This.
+     * @see #setNegativeValueAllowed(boolean)
+     */
+    @SuppressWarnings("unchecked")
+    public final SELF withNegativeValueAllowed(boolean negativeValueAllowed) {
+        this.setNegativeValueAllowed(negativeValueAllowed);
+        return (SELF)this;
     }
 
     @Override

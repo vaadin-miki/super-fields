@@ -12,7 +12,7 @@ import java.util.Locale;
  * @author miki
  * @since 2020-04-08
  */
-public abstract class AbstractSuperFloatingPointField<T extends Number> extends AbstractSuperNumberField<T> {
+public abstract class AbstractSuperFloatingPointField<T extends Number, SELF extends AbstractSuperFloatingPointField<T, SELF>> extends AbstractSuperNumberField<T, SELF> {
 
     /**
      * Creates the field.
@@ -36,5 +36,27 @@ public abstract class AbstractSuperFloatingPointField<T extends Number> extends 
     @Override
     public void setMaximumFractionDigits(int digits) {
         super.setMaximumFractionDigits(digits);
+    }
+
+    /**
+     * Chains {@link #setMinimumFractionDigits(int)} and returns itself.
+     * @param digits Minimum number of digits to set.
+     * @return This.
+     */
+    @SuppressWarnings("unchecked")
+    public final SELF withMinimumFractionDigits(int digits) {
+        this.setMinimumFractionDigits(digits);
+        return (SELF)this;
+    }
+
+    /**
+     * Chains {@link #setMaximumFractionDigits(int)} and returns itself.
+     * @param digits Maximum number of digits to set.
+     * @return This.
+     */
+    @SuppressWarnings("unchecked")
+    public final SELF withMaximumFractionDigits(int digits) {
+        this.setMaximumFractionDigits(digits);
+        return (SELF)this;
     }
 }

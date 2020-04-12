@@ -13,7 +13,7 @@ import java.util.Locale;
  * @since 2020-04-07
  */
 @Tag("super-integer-field")
-public class SuperIntegerField extends AbstractSuperNumberField<Integer> {
+public class SuperIntegerField extends AbstractSuperNumberField<Integer, SuperIntegerField> {
 
     /**
      * Constructs the field with zero as default value, default {@link Locale} and an empty label.

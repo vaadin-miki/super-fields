@@ -5,7 +5,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.vaadin.miki.superfields.numbers.AbstractSuperNumberField;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,7 +19,7 @@ import java.util.function.Supplier;
  */
 class BaseTestsForIntegerNumbers<T extends Number> {
 
-    private final Supplier<AbstractSuperNumberField<T>> fieldSupplier;
+    private final Supplier<AbstractSuperNumberField<T, ?>> fieldSupplier;
     private final T baseTestNumber;
     private final T negativeTestNumber;
     private final String numberWithGroups;
@@ -33,9 +32,9 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     private final Map<Integer, Set<String>> validLimitedInputs = new HashMap<>();
     private final Map<Integer, Set<String>> invalidLimitedInputs = new HashMap<>();
 
-    private AbstractSuperNumberField<T> field;
+    private AbstractSuperNumberField<T, ?> field;
 
-    public BaseTestsForIntegerNumbers(Supplier<AbstractSuperNumberField<T>> fieldSupplier, T baseTestNumber, T negativeTestNumber, String numberWithGroups, String numberWithoutGroups, T zero) {
+    public BaseTestsForIntegerNumbers(Supplier<AbstractSuperNumberField<T, ?>> fieldSupplier, T baseTestNumber, T negativeTestNumber, String numberWithGroups, String numberWithoutGroups, T zero) {
         this.fieldSupplier = fieldSupplier;
         this.baseTestNumber = baseTestNumber;
         this.negativeTestNumber = negativeTestNumber;
@@ -64,7 +63,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
         this.invalidInputs(3, "1 ", "1 2", "1 23", "12 3", "1234");
     }
 
-    protected final AbstractSuperNumberField<T> getField() {
+    protected final AbstractSuperNumberField<T, ?> getField() {
         return this.field;
     }
 
@@ -127,7 +126,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     public void testInvalidLimitedInputs() {
         Assert.assertTrue("no testable limited length inputs that are invalid, cannot continue!", this.invalidLimitedInputs.size() > 0);
         this.invalidLimitedInputs.forEach((limit, inputs) -> {
-            this.field.setMaximumIntegerDigits(limit);
+            this.field.withMaximumIntegerDigits(limit);
             String regexp = this.field.getRegexp();
             inputs.forEach(s -> Assert.assertFalse(String.format("input %s must not match %s for %s with integer limit %d", s, regexp, this.field.getClass().getSimpleName(), limit), s.matches(regexp)));
         });
