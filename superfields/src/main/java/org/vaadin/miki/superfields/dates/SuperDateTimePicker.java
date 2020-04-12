@@ -1,6 +1,5 @@
 package org.vaadin.miki.superfields.dates;
 
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
@@ -67,10 +66,7 @@ public class SuperDateTimePicker extends DateTimePicker implements HasLocale, Ha
 
     @Override
     public void setLocale(Locale locale) {
+        SuperDatePickerI18nHelper.updateI18N(locale, this::getDatePickerI18n, this::setDatePickerI18n);
         super.setLocale(locale);
-        DatePicker.DatePickerI18n i18n = this.getDatePickerI18n();
-        // new i18n object must be set, because the method that sends data to the client side is private and cannot be called directly
-        if(i18n == null || (i18n instanceof SuperDatePickerI18n && !((SuperDatePickerI18n) i18n).getLocale().equals(locale)))
-            this.setDatePickerI18n(new SuperDatePickerI18n(locale));
     }
 }
