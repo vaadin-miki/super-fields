@@ -9,7 +9,7 @@ import com.vaadin.flow.component.Component;
  * @since 2020-04-10
  */
 @FunctionalInterface
-public interface TabsContentGenerator<V> {
+public interface TabContentGenerator<V> {
 
     /**
      * Creates a new instance of a component that corresponds to the given object.

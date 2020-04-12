@@ -9,7 +9,7 @@ import com.vaadin.flow.component.tabs.Tab;
  * @since 2020-04-10
  */
 @FunctionalInterface
-public interface TabsHeaderGenerator<V> {
+public interface TabHeaderGenerator<V> {
 
     /**
      * Creates a new instance of a tab that corresponds to the given object.
