@@ -14,7 +14,7 @@ import java.util.Locale;
  * @since 2020-04-08
  */
 @Tag("super-big-decimal-field")
-public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDecimal> {
+public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDecimal, SuperBigDecimalField> {
 
     /**
      * Constructs the field with an empty label, {@link BigDecimal#ZERO} as default value and with default {@link Locale}.

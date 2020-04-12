@@ -1,7 +1,12 @@
 package org.vaadin.miki.superfields.dates;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
+import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
+import org.vaadin.miki.markers.HasPlaceholder;
+import org.vaadin.miki.markers.WithLabelMixin;
+import org.vaadin.miki.markers.WithLocaleMixin;
+import org.vaadin.miki.markers.WithPlaceholderMixin;
 
 import java.time.LocalDate;
 import java.util.Locale;
@@ -11,7 +16,9 @@ import java.util.Locale;
  * @author miki
  * @since 2020-04-09
  */
-public class SuperDatePicker extends DatePicker implements HasLocale {
+public class SuperDatePicker extends DatePicker
+        implements HasLocale, HasLabel, HasPlaceholder,
+                   WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>, WithPlaceholderMixin<SuperDatePicker> {
 
     public SuperDatePicker() {
         this(Locale.getDefault());

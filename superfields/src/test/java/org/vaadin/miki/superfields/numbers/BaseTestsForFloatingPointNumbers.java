@@ -19,7 +19,7 @@ class BaseTestsForFloatingPointNumbers<T extends Number> extends BaseTestsForInt
     private final Map<Integer[], Set<String>> validLimitedInputs = new HashMap<>();
     private final Map<Integer[], Set<String>> invalidLimitedInputs = new HashMap<>();
 
-    public BaseTestsForFloatingPointNumbers(Supplier<AbstractSuperNumberField<T>> abstractSuperNumberFieldSupplier, T baseTestNumber, T negativeTestNumber, String numberWithGroups, String numberWithoutGroups, T zero) {
+    public BaseTestsForFloatingPointNumbers(Supplier<AbstractSuperNumberField<T, ?>> abstractSuperNumberFieldSupplier, T baseTestNumber, T negativeTestNumber, String numberWithGroups, String numberWithoutGroups, T zero) {
         super(abstractSuperNumberFieldSupplier, baseTestNumber, negativeTestNumber, numberWithGroups, numberWithoutGroups, zero);
         this.validInputs(
                 "1", "1 ", "1 2", "1 23", "1 234",

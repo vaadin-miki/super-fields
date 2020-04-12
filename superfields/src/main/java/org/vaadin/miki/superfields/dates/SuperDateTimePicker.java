@@ -2,7 +2,10 @@ package org.vaadin.miki.superfields.dates;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
+import org.vaadin.miki.markers.WithLabelMixin;
+import org.vaadin.miki.markers.WithLocaleMixin;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
@@ -12,7 +15,7 @@ import java.util.Locale;
  * @author miki
  * @since 2020-04-09
  */
-public class SuperDateTimePicker extends DateTimePicker implements HasLocale {
+public class SuperDateTimePicker extends DateTimePicker implements HasLocale, HasLabel, WithLocaleMixin<SuperDateTimePicker>, WithLabelMixin<SuperDateTimePicker> {
 
     public SuperDateTimePicker() {
         this(Locale.getDefault());

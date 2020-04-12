@@ -13,7 +13,7 @@ import java.util.Locale;
  * @since 2020-04-07
  */
 @Tag("super-double-field")
-public class SuperDoubleField extends AbstractSuperFloatingPointField<Double> {
+public class SuperDoubleField extends AbstractSuperFloatingPointField<Double, SuperDoubleField> {
 
     /**
      * Constructs the field with an empty label, zero as default value and with default {@link Locale}.
