@@ -1,8 +1,8 @@
 name: Deploy demo to Heroku
 
 on:
-  push:
-    branches: [37-demo-publish-to-heroku]
+  release:
+    types: [created]
 
 jobs:
   deploy:
