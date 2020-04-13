@@ -5,14 +5,14 @@
     <parent>
         <artifactId>superfields-parent</artifactId>
         <groupId>org.vaadin.miki</groupId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.3.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>superfields</artifactId>
     <name>SuperFields - Fields and components</name>
     <description>Code for various V14+ components.</description>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3.0</version>
 
     <dependencies>
         <dependency>
