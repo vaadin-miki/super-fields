@@ -83,38 +83,14 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.2</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>copy</goal></goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.heroku</groupId>
-                                    <artifactId>webapp-runner</artifactId>
-                                    <version>9.0.30.0</version>
-                                    <destFileName>webapp-runner.jar</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- heroku https://devcenter.heroku.com/articles/deploying-java-applications-with-the-heroku-maven-plugin -->
             <plugin>
                 <groupId>com.heroku.sdk</groupId>
                 <artifactId>heroku-maven-plugin</artifactId>
                 <version>3.0.2</version>
                 <configuration>
+                    <jdkVersion>11</jdkVersion>
                     <appName>superfields</appName>
-                    <processTypes>
-                        <web>java $JAVA_OPTS -jar target/dependency/webapp-runner.jar --port $PORT target/${project.build.finalName}.war </web>
-                    </processTypes>
                 </configuration>
             </plugin>
         </plugins>
