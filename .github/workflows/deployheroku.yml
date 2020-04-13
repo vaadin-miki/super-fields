@@ -1,0 +1,23 @@
+name: Deploy demo to Heroku
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 10
+        uses: actions/setup-java@v1
+        with:
+          java-version: 10
+      - name: Install
+        run: mvn install --file pom.xml
+      - name: Deploy to Heroku
+        run: mvn -B heroku:deploy-war -Pproduction --file demo-v14/pom.xml
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}

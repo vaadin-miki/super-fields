@@ -15,6 +15,8 @@
 
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
+        <node.version>v12.14.0</node.version>
+        <jetty.plugin.version>9.4.15.v20190215</jetty.plugin.version>
     </properties>
 
     <dependencies>
@@ -38,7 +40,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.4.15.v20190215</version>
+                <version>${jetty.plugin.version}</version>
                 <configuration>
                     <scanIntervalSeconds>1</scanIntervalSeconds>
                 </configuration>
@@ -60,6 +62,36 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- install node/npm locally -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <nodeVersion>${node.version}</nodeVersion>
+                </configuration>
+            </plugin>
+
+            <!-- heroku https://devcenter.heroku.com/articles/deploying-java-applications-with-the-heroku-maven-plugin -->
+            <plugin>
+                <groupId>com.heroku.sdk</groupId>
+                <artifactId>heroku-maven-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <jdkVersion>11</jdkVersion>
+                    <appName>superfields</appName>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -88,6 +120,7 @@
                         <executions>
                             <execution>
                                 <goals>
+                                    <goal>prepare-frontend</goal>
                                     <goal>build-frontend</goal>
                                 </goals>
                                 <phase>compile</phase>
