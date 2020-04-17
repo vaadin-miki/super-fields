@@ -9,24 +9,30 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.data.binder.HasItems;
 import org.vaadin.miki.markers.HasLabel;
+import org.vaadin.miki.markers.WithLabelMixin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * Grid of items, with defined number of columns.
+ * Each cell in the grid corresponds to a single element from the underlying collection of data.
+ *
+ * Note: currently this is not lazy-loading the data and not reacting to changes in the underlying data set.
+ *
  * @param <T> Type of item stored in the grid.
+ *
  * @author miki
  * @since 2020-04-14
  */
 @Tag("item-grid")
-public class ItemGrid<T> extends CustomField<T> implements HasItems<T>, HasStyle, HasLabel {
+public class ItemGrid<T> extends CustomField<T> implements HasItems<T>, HasStyle, HasLabel, WithLabelMixin<ItemGrid<T>> {
 
     /**
      * Default number of columns.
@@ -52,6 +58,16 @@ public class ItemGrid<T> extends CustomField<T> implements HasItems<T>, HasStyle
     }
 
     /**
+     * Default supplier for the main layout of the grid.
+     * @return A {@link Div}.
+     */
+    public static Div defaultMainContainerSupplier() {
+        Div result = new Div();
+        result.addClassName("item-grid-contents");
+        return result;
+    }
+
+    /**
      * Default {@link CellGenerator}. It produces a {@link Span} with {@link String#valueOf(Object)} called on {@code item}.
      * @param item Item to generate component for.
      * @param row Row in the grid.
@@ -60,10 +76,35 @@ public class ItemGrid<T> extends CustomField<T> implements HasItems<T>, HasStyle
      * @return A {@link Span}: {@code <span>item</span>}.
      */
     public static <V> Component defaultCellGenerator(V item, int row, int col) {
-        return new Span(String.valueOf(item));
+        Span result = new Span(String.valueOf(item));
+        result.addClassNames("item-grid-cell", "item-grid-cell-column-"+evenOrOdd(col), "item-grid-cell-row-"+evenOrOdd(row));
+        return result;
     }
 
-    private final Div contents = new Div();
+    /**
+     * Default {@link RowComponentGenerator}. It produces a {@link Div}.
+     * @param rowNumber Number of the row to create.
+     * @return A {@link Div}.
+     */
+    public static Div defaultRowComponentGenerator(int rowNumber) {
+        Div row = new Div();
+        row.addClassNames("item-grid-row", "item-grid-row-"+evenOrOdd(rowNumber));
+        return row;
+    }
+
+    /**
+     * Defines whether a number is even or odd. Used to vary class names of various elements.
+     * Internal use only.
+     * @param number Number to check.
+     * @return {@code "even"} when the {@code number} is even, otherwise {@code "odd"}.
+     * @see #defaultRowComponentGenerator(int)
+     * @see #defaultCellGenerator(Object, int, int)
+     */
+    private static String evenOrOdd(int number) {
+        return number%2 == 0 ? "even" : "odd";
+    }
+
+    private final HasComponents contents;
 
     private final List<CellInformation<T>> cells = new ArrayList<>();
 
@@ -72,6 +113,8 @@ public class ItemGrid<T> extends CustomField<T> implements HasItems<T>, HasStyle
     private CellGenerator<T> cellGenerator;
 
     private CellSelectionHandler<T> cellSelectionHandler;
+
+    private RowComponentGenerator<?> rowComponentGenerator = ItemGrid::defaultRowComponentGenerator;
 
     private int columnCount = DEFAULT_COLUMN_COUNT;
 
@@ -114,41 +157,26 @@ public class ItemGrid<T> extends CustomField<T> implements HasItems<T>, HasStyle
      */
     @SafeVarargs
     public ItemGrid(T defaultValue, CellGenerator<T> generator, CellSelectionHandler<T> handler, T... items) {
+        this(defaultValue, ItemGrid::defaultMainContainerSupplier, generator, handler, items);
+    }
+
+    /**
+     * Creates the component with given {@link CellGenerator}, {@link CellSelectionHandler} and items, overriding default (empty) value.
+     * @param defaultValue Default (empty) value.
+     * @param mainContainerSupplier Method to generate main container component.
+     * @param generator {@link CellGenerator} to use.
+     * @param handler {@link CellSelectionHandler} to use.
+     * @param items Items to add to the component.
+     * @param <C> Type parameter to ensure {@code mainContainerSupplier} provides a {@link Component} that also {@link HasComponents}.
+     */
+    @SafeVarargs
+    public <C extends Component & HasComponents> ItemGrid(T defaultValue, Supplier<C> mainContainerSupplier, CellGenerator<T> generator, CellSelectionHandler<T> handler, T... items) {
         super(defaultValue);
-        this.contents.addClassName("item-grid-contents");
-        this.add(this.contents);
+        this.contents = mainContainerSupplier.get();
+        this.add((Component)this.contents);
         this.setCellGenerator(generator);
         this.setCellSelectionHandler(handler);
         this.setItems(items);
-    }
-
-    /**
-     * Defines whether a number is even or odd. Used in classes the elements receive.
-     * @param number Number to check.
-     * @return {@code "even"} when the {@code number} is even, otherwise {@code "odd"}.
-     */
-    private static String evenOrOdd(int number) {
-        return number%2 == 0 ? "even" : "odd";
-    }
-
-    /**
-     * Constructs a container for each row in the grid.
-     * @param number Number of the row. 0-based.
-     * @return An empty component to add grid items to.
-     */
-    protected HasComponents createRow(int number) {
-        Div row = new Div();
-        row.addClassNames("item-grid-row", "item-grid-row-"+evenOrOdd(number));
-        return row;
-    }
-
-    /**
-     * Decorates cell component by adding styles and a click listener to it.
-     * @param information Information about the cell.
-     */
-    protected void decorateComponent(CellInformation<T> information) {
-        information.getComponent().getElement().getClassList().addAll(Arrays.asList("item-grid-cell", "item-grid-cell-column-"+evenOrOdd(information.getColumn()), "item-grid-cell-row-"+evenOrOdd(information.getRow())));
-        information.getComponent().getElement().addEventListener("click", event -> this.clickCellAndUpdateValue(information));
     }
 
     /**
@@ -169,7 +197,7 @@ public class ItemGrid<T> extends CustomField<T> implements HasItems<T>, HasStyle
         this.cells.clear();
 
         // do all items again
-        HasComponents rowContainer = this.createRow(0);
+        HasComponents rowContainer = this.getRowComponentGenerator().generateRowComponent(0);
 
         int row = 0;
         int column = 0;
@@ -179,23 +207,35 @@ public class ItemGrid<T> extends CustomField<T> implements HasItems<T>, HasStyle
             final Component itemComponent = this.getCellGenerator().generateComponent(item, row, column);
             CellInformation<T> cellInformation = new CellInformation<>(row, column, item, itemComponent);
             this.getCellSelectionHandler().cellSelectionChanged(new CellSelectionEvent<>(cellInformation, selected));
+            this.registerClickEvents(cellInformation);
+
             if(selected)
                 this.markedAsSelected = cellInformation;
             this.cells.add(cellInformation);
-            this.decorateComponent(cellInformation);
+
             rowContainer.add(itemComponent);
             column+=1;
             if(column == this.getColumnCount()) {
                 column = 0;
                 row+=1;
                 this.contents.add((Component)rowContainer);
-                rowContainer = this.createRow(row);
+                rowContainer = this.getRowComponentGenerator().generateRowComponent(row);
             }
         }
         // add last row, unless it was full
         if(column != 0)
             this.contents.add((Component)rowContainer);
+    }
 
+    /**
+     * Adds a click listener to the dom element of the {@link Component} inside given {@link CellInformation}.
+     * This click listener will select or deselect a cell and update the value of this grid.
+     *
+     * Note: when overriding this method, please remember to call {@code super}.
+     * @param information Information. Never {@code null}.
+     */
+    protected void registerClickEvents(CellInformation<T> information) {
+        information.getComponent().getElement().addEventListener("click", event -> this.clickCellAndUpdateValue(information));
     }
 
     private void clickCellAndUpdateValue(CellInformation<T> information) {
@@ -304,7 +344,7 @@ public class ItemGrid<T> extends CustomField<T> implements HasItems<T>, HasStyle
      * @see #setColumnCount(int)
      */
     public long getRowCount() {
-        return this.contents.getChildren().count();
+        return ((Component)this.contents).getChildren().count();
     }
 
     /**
@@ -396,6 +436,36 @@ public class ItemGrid<T> extends CustomField<T> implements HasItems<T>, HasStyle
      */
     public Stream<Component> getCellComponents() {
         return this.cells.stream().map(CellInformation::getComponent);
+    }
+
+    /**
+     * Sets new {@link RowComponentGenerator} invoked every time a new row for grid cells is needed.
+     * @param rowComponentGenerator {@link RowComponentGenerator} to use. If {@code null} is passed, then {@link #defaultRowComponentGenerator(int)} will be used.
+     */
+    public void setRowComponentGenerator(RowComponentGenerator<?> rowComponentGenerator) {
+        if(rowComponentGenerator == null)
+            this.rowComponentGenerator = ItemGrid::defaultRowComponentGenerator;
+        else this.rowComponentGenerator = rowComponentGenerator;
+        this.repaintAllItems();
+    }
+
+    /**
+     * Returns current {@link RowComponentGenerator}.
+     * @return A {@link RowComponentGenerator}. Never {@code null}.
+     */
+    public RowComponentGenerator<?> getRowComponentGenerator() {
+        return rowComponentGenerator;
+    }
+
+    /**
+     * Chains {@link #setRowComponentGenerator(RowComponentGenerator)} and returns itself.
+     * @param generator A {@link RowComponentGenerator} to use.
+     * @return This.
+     * @see #setRowComponentGenerator(RowComponentGenerator)
+     */
+    public ItemGrid<T> withRowComponentGenerator(RowComponentGenerator<?> generator) {
+        this.setRowComponentGenerator(generator);
+        return this;
     }
 
     /**

@@ -1,0 +1,36 @@
+p {
+    width: 250px;
+    line-height: 80px;
+    text-align: center;
+    border: 1px solid gray;
+}
+
+p.selected {
+    font-weight: bold;
+    letter-spacing: 2px;
+    border: 1px solid silver;
+    background: cadetblue;
+}
+
+div.item-grid-cell {
+    width: 350px;
+    height: 200px;
+}
+
+div.item-grid-cell>span {
+    display: block;
+    line-height: 100px;
+    border-bottom: 1px dotted gray;
+    text-align: center;
+}
+
+div.item-grid-cell.selected {
+    background: lightgreen;
+}
+
+span.highlighted {
+    font-weight: bold;
+    font-style: italic;
+    letter-spacing: 1px;
+    color: #004444;
+}
