@@ -1,8 +1,12 @@
+# Demo app
+
+Demo application of the latest release can be found at https://superfields.herokuapp.com/.
+
+Source code for the app and for the components can be found at https://github.com/vaadin-miki/super-fields/.
+
 # SuperFields
 
-## Demo app
-
-Demo application can be found in `demo-v14` module. Please consult it to see how to use the components (until this documentation is updated).
+All SuperFields are Java-friendly. There is as little client-side code as possible ;)
 
 ## Number fields
 
@@ -29,3 +33,7 @@ Both components behave funky when changing locale at runtime if their calendars 
 ### `ItemGrid`
 
 A highly configurable grid that allows single selection. Each cell in the grid corresponds to one item (in contrast to Vaadin `Grid`, which displays one item per row).
+
+### `SuperTabs`
+
+A customisable tabbed pane (something like `TabSheet` in the Vaadin 8 era) that also serves as a value component (current value corresponds to the selected tab).
