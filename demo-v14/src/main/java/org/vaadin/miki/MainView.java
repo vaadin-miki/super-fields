@@ -16,6 +16,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.Route;
 import org.vaadin.miki.markers.HasLocale;
@@ -58,12 +59,14 @@ public class MainView extends VerticalLayout {
     }
 
     private static Component generateDiv(Class<? extends Component> type, int row, int column) {
-        Div result = new Div();
+        final Div result = new Div();
         result.addClassNames("item-grid-cell");
         result.add(new Span(String.format("Row: %d. Column: %d.", row, column)));
-        Span span = new Span("Class name: "+type.getSimpleName());
-        span.addClassName("highlighted");
-        result.add(span);
+        final TextField text = new TextField("Class name: ", type.getSimpleName());
+        text.setValue(type.getSimpleName());
+        text.addClassName("highlighted");
+        text.addBlurListener(event -> text.setValue(type.getSimpleName()));
+        result.add(text);
         return result;
     }
 
@@ -187,7 +190,6 @@ public class MainView extends VerticalLayout {
                     result.setPadding(true);
                     return result;
                 })
-            .withLabel("Pick your favourite SuperField:")
         );
 
         this.contentBuilders.put(AbstractSuperNumberField.class, this::buildAbstractSuperNumberField);

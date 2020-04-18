@@ -15,6 +15,7 @@ p.selected {
 div.item-grid-cell {
     width: 350px;
     height: 200px;
+    text-align: center;
 }
 
 div.item-grid-cell>span {
