@@ -23,6 +23,7 @@ import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
+import org.vaadin.miki.superfields.lazyload.LazyLoad;
 import org.vaadin.miki.superfields.numbers.AbstractSuperNumberField;
 import org.vaadin.miki.superfields.numbers.SuperBigDecimalField;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
@@ -59,15 +60,17 @@ public class MainView extends VerticalLayout {
     }
 
     private static Component generateDiv(Class<? extends Component> type, int row, int column) {
-        final Div result = new Div();
-        result.addClassNames("item-grid-cell");
-        result.add(new Span(String.format("Row: %d. Column: %d.", row, column)));
-        final TextField text = new TextField("Class name: ", type.getSimpleName());
-        text.setValue(type.getSimpleName());
-        text.addClassName("highlighted");
-        text.addBlurListener(event -> text.setValue(type.getSimpleName()));
-        result.add(text);
-        return result;
+        return new LazyLoad<Div>(() -> {
+            final Div result = new Div();
+            result.addClassNames("item-grid-cell");
+            result.add(new Span(String.format("Row: %d. Column: %d.", row, column)));
+            final TextField text = new TextField("Class name: ", type.getSimpleName());
+            text.setValue(type.getSimpleName());
+            text.addClassName("highlighted");
+            text.addBlurListener(event -> text.setValue(type.getSimpleName()));
+            result.add(text);
+            return result;
+        }).withId(type.getSimpleName()+"-"+row+"-"+column);
     }
 
     private void buildAbstractSuperNumberField(Component component, Consumer<Component[]> callback) {
