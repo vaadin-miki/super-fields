@@ -27,43 +27,78 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
     @Tag("lazy-load")
     public static final class LazyLoadElement extends Div {}
 
+    /**
+     * Style name when this component is empty (not showing anything).
+     */
     public static final String EMPTY_CLASS_NAME = "lazy-load-empty";
 
+    /**
+     * Style name when this component has content.
+     */
     public static final String LOADED_CLASS_NAME = "lazy-loaded";
 
-    private final Supplier<C> contentProvider;
+    private final Supplier<C> componentProvider;
+
+    private final boolean removingOnHide;
 
     private C content = null;
 
     /**
-     * Creates lazy load wrapper for given contents.
+     * Creates lazy load wrapper for given contents. It will be displayed the first time this component becomes shown on screen.
      * @param contents Contents to wrap for lazy loading.
      */
     public LazyLoad(C contents) {
-        this(() -> contents);
+        this(contents, false);
+    }
+
+    /**
+     * Creates lazy load wrapper for given component supplier. It will be called exactly once, the first time this component becomes shown on screen.
+     * @param supplier {@link Supplier} that will be called when the component gets into view.
+     */
+    public LazyLoad(Supplier<C> supplier) {
+        this(supplier, false);
+    }
+
+    /**
+     * Creates lazy load wrapper for given contents.
+     * @param contents Contents to wrap for lazy loading.
+     * @param removeOnHide Whether or not to remove the component when this object gets hidden.
+     */
+    public LazyLoad(C contents, boolean removeOnHide) {
+        this(() -> contents, removeOnHide);
     }
 
     /**
      * Creates lazy load wrapper for given component supplier.
      * @param supplier {@link Supplier} that will be called when the component gets into view.
+     * @param removeOnHide Whether or not to remove the component when this object gets hidden.
      */
-    public LazyLoad(Supplier<C> supplier) {
+    public LazyLoad(Supplier<C> supplier, boolean removeOnHide) {
         super();
         this.getContent().addClassNames("lazy-load-container", EMPTY_CLASS_NAME);
-
+        this.removingOnHide = removeOnHide;
+        this.componentProvider = supplier;
         // more details: https://webdesign.tutsplus.com/tutorials/how-to-intersection-observer--cms-30250
-        this.getElement().executeJs(
-                "new IntersectionObserver(" +
-                        " (entries, observer) => {" +
-                        "if(entries[0].intersectionRatio == 1) {" +
-                        " this.$server.onNowVisible(); " +
-                        " observer.unobserve(this);" +
-                        "}" +
-                        "}," +
-                        " {root: null, rootMargin: '0px', threshold: [0.0, 1.0]}" +
-                        ").observe(this)"
-        );
-        this.contentProvider = supplier;
+        StringBuilder observerJs = new StringBuilder();
+        observerJs.append("new IntersectionObserver((entries, observer) => {if(entries[0].intersectionRatio == 1) {this.$server.onNowVisible(); ");
+        if(!removeOnHide)
+            observerJs.append(" observer.unobserve(this);");
+        else
+            observerJs.append("} else if(entries[0].intersectionRatio == 0) {this.$server.onNowHidden(); ");
+        observerJs.append("}},{root: null, rootMargin: '0px', threshold: ");
+        observerJs.append(removeOnHide ? "[0.0, 1.0]" : "1.0");
+        observerJs.append("}).observe(this)");
+        this.getElement().executeJs(observerJs.toString());
+    }
+
+    @ClientCallable
+    private void onNowHidden() {
+        if(this.content != null) {
+            this.getContent().removeClassName(LOADED_CLASS_NAME);
+            this.getContent().addClassName(EMPTY_CLASS_NAME);
+            this.getContent().remove(this.content);
+            this.content = null;
+        }
     }
 
     @ClientCallable
@@ -71,26 +106,36 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
         if(this.content == null) {
             this.getContent().removeClassName(EMPTY_CLASS_NAME);
             this.getContent().addClassName(LOADED_CLASS_NAME);
-            this.content = this.contentProvider.get();
+            this.content = this.componentProvider.get();
             this.getContent().add(this.content);
         }
     }
 
     /**
-     * Gets the content that has been already loaded.
+     * Gets the content if it was already loaded ({@link #isRemovingOnHide()} is {@code true}) or if it is currently showing.
      * @return A component that was lazy-loaded. If the component was not yet shown on-screen, returns {@link Optional#empty()}.
      * @see #isLoaded()
+     * @see #isRemovingOnHide()
      */
     public Optional<C> getLoadedContent() {
         return Optional.ofNullable(this.content);
     }
 
     /**
-     * Checks if the content has been already loaded.
+     * Checks if the content has been already loaded ({@link #isRemovingOnHide()} is {@code true}) or is currently loaded.
      * @return Whether or not the content has been loaded.
      * @see #getLoadedContent()
+     * @see #isRemovingOnHide()
      */
     public boolean isLoaded() {
         return this.content == null;
+    }
+
+    /**
+     * Checks the mode of operation for lazy loading.
+     * @return When {@code true}, each time this component gets out of view, its contents are removed and then recreated again on showing. When {@code false}, the lazy-loading will happen only once, first time this component gets shown.
+     */
+    public boolean isRemovingOnHide() {
+        return this.removingOnHide;
     }
 }
