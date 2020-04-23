@@ -125,7 +125,7 @@ public class MainView extends VerticalLayout {
         buttons.setValue(ItemGrid.DEFAULT_COLUMN_COUNT);
         buttons.addValueChangeListener(event -> ((ItemGrid<?>)component).setColumnCount(event.getValue()));
 
-        final Checkbox alternate = new Checkbox("Generate alternate cells?", event ->
+        final Checkbox alternate = new Checkbox("Display lazy loading cells?", event ->
                 ((ItemGrid<Class<? extends Component>>)component).setCellGenerator(
                         event.getValue() ? MainView::generateDiv : MainView::generateParagraph
                 )
