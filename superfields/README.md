@@ -37,3 +37,11 @@ A highly configurable grid that allows single selection. Each cell in the grid c
 ### `SuperTabs`
 
 A customisable tabbed pane (something like `TabSheet` in the Vaadin 8 era) that also serves as a value component (current value corresponds to the selected tab).
+
+## Other components
+
+### `LazyLoad`
+
+A simple wrapper of the [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) to lazy load components. 
+
+**Warning!** The underlying API is *experimental*. It means its support in browsers may vary. For example, it is **not** supported by Internet Explorer and mobile browsers. Please [check browser support](https://caniuse.com/#feat=mdn-api_intersectionobserver) before using this component.
