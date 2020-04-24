@@ -14,7 +14,11 @@ import java.util.Locale;
  * @author miki
  * @since 2020-04-09
  */
-public class SuperDateTimePicker extends DateTimePicker implements HasLocale, HasLabel, WithLocaleMixin<SuperDateTimePicker>, WithLabelMixin<SuperDateTimePicker> {
+public class SuperDateTimePicker extends DateTimePicker
+        implements HasLocale, HasLabel, HasDatePattern,
+                   WithLocaleMixin<SuperDateTimePicker>, WithLabelMixin<SuperDateTimePicker>, WithDatePatternMixin<SuperDateTimePicker> {
+
+    private DatePattern datePattern;
 
     public SuperDateTimePicker() {
         this(Locale.getDefault());
@@ -68,5 +72,24 @@ public class SuperDateTimePicker extends DateTimePicker implements HasLocale, Ha
     public void setLocale(Locale locale) {
         SuperDatePickerI18nHelper.updateI18N(locale, this::getDatePickerI18n, this::setDatePickerI18n);
         super.setLocale(locale);
+    }
+
+    @Override
+    public void setDatePattern(DatePattern pattern) {
+        this.datePattern = pattern;
+        if(pattern == null)
+            this.setLocale(this.getLocale());
+        else
+            this.getElement().executeJs("this.querySelector('vaadin-date-time-picker-date-picker').set('i18n.formatDate', date => {" +
+                    DatePatternJsGenerator.buildFormatDateFunction(this.datePattern) +
+                    "}); this.querySelector('vaadin-date-time-picker-date-picker').set('i18n.parseDate', text => {" +
+                    DatePatternJsGenerator.buildParseDateFunction(this.datePattern) +
+                    "});"
+            );
+    }
+
+    @Override
+    public DatePattern getDatePattern() {
+        return this.datePattern;
     }
 }

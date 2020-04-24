@@ -17,8 +17,11 @@ import java.util.Locale;
  * @since 2020-04-09
  */
 public class SuperDatePicker extends DatePicker
-        implements HasLocale, HasLabel, HasPlaceholder,
-                   WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>, WithPlaceholderMixin<SuperDatePicker> {
+        implements HasLocale, HasLabel, HasPlaceholder, HasDatePattern,
+                   WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>,
+                   WithPlaceholderMixin<SuperDatePicker>, WithDatePatternMixin<SuperDatePicker> {
+
+    private DatePattern datePattern;
 
     public SuperDatePicker() {
         this(Locale.getDefault());
@@ -72,5 +75,24 @@ public class SuperDatePicker extends DatePicker
     public final void setLocale(Locale locale) {
         SuperDatePickerI18nHelper.updateI18N(locale, this::getI18n, this::setI18n);
         super.setLocale(locale);
+    }
+
+    @Override
+    public void setDatePattern(DatePattern datePattern) {
+        this.datePattern = datePattern;
+        if(datePattern != null)
+            this.getElement().executeJs("this.set('i18n.formatDate', date => {" +
+                    DatePatternJsGenerator.buildFormatDateFunction(this.datePattern) +
+                    "}); this.set('i18n.parseDate', text => {" +
+                    DatePatternJsGenerator.buildParseDateFunction(this.datePattern) +
+                    "});"
+            );
+        // this should in theory reset the pattern on the client side
+        else this.setLocale(this.getLocale());
+    }
+
+    @Override
+    public DatePattern getDatePattern() {
+        return this.datePattern;
     }
 }
