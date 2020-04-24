@@ -152,11 +152,12 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
      * @param values Values to add tabs and contents for.
      */
     public void addTabs(Collection<T> values) {
-        values.forEach(value ->
-            this.getValueAndTab(value).ifPresentOrElse(
-                    e -> this.tabs.setSelectedTab(e.getValue()),
-                    () -> this.addNewTab(value, this.values.isEmpty())
-            ));
+        values.forEach(value -> {
+            final Optional<Map.Entry<T, Tab>> perhapsValueAndTab = this.getValueAndTab(value);
+            if(perhapsValueAndTab.isPresent())
+                this.tabs.setSelectedTab(perhapsValueAndTab.get().getValue());
+            else this.addNewTab(value, this.values.isEmpty());
+        });
     }
 
     /**
@@ -168,10 +169,10 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
      * @param tabContents Contents.
      */
     public void addTab(T value, Tab tabHeader, Component tabContents) {
-        this.getValueAndTab(value).ifPresentOrElse(
-                e -> this.tabs.setSelectedTab(e.getValue()),
-                () -> this.addNewTab(value, tabHeader, tabContents, this.values.isEmpty())
-        );
+        final Optional<Map.Entry<T, Tab>> perhapsValueAndTab = this.getValueAndTab(value);
+        if(perhapsValueAndTab.isPresent())
+            this.tabs.setSelectedTab(perhapsValueAndTab.get().getValue());
+        else this.addNewTab(value, tabHeader, tabContents, this.values.isEmpty());
     }
 
     /**
@@ -234,14 +235,12 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
 
     @Override
     protected void setPresentationValue(T t) {
-        this.values.stream().filter(e -> Objects.equals(t, e.getKey())).findFirst().ifPresentOrElse(
-                e -> this.tabs.setSelectedTab(e.getValue()),
-                () -> {
-                    if(this.isCustomValueAllowed())
-                        addNewTab(t, true);
-                    else this.updateValue();
-                }
-        );
+        final Optional<Map.Entry<T, Tab>> perhapsValue = this.values.stream().filter(e -> Objects.equals(t, e.getKey())).findFirst();
+        if(perhapsValue.isPresent())
+            this.tabs.setSelectedTab(perhapsValue.get().getValue());
+        else if(this.isCustomValueAllowed())
+            addNewTab(t, true);
+        else this.updateValue();
     }
 
     /**

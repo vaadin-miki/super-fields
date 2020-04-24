@@ -71,7 +71,7 @@ final class SuperDatePickerI18n extends DatePicker.DatePickerI18n implements Has
         this.setWeekdaysShort(Arrays.stream(symbols.getShortWeekdays()).filter(s -> !s.isEmpty()).collect(Collectors.toList()));
 
         try {
-            final ResourceBundle bundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, this.locale);
+            final ResourceBundle bundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, this.locale, new Utf8Control());
 
             // in the worst case, language must match - if it does not, ignore
             if(!Objects.equals(bundle.getLocale().getLanguage(), this.locale.getLanguage()))
