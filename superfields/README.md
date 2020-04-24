@@ -26,6 +26,8 @@ An input field for entering localised `Integer` and `Long` numbers. Supports tho
 
 Fully localised `DatePicker` and `DateTimePicker` that fetch month names and weekday names from Java `Locale`. Those settings can be overwritten by resource bundle named `superdatepickeri18n`.
 
+In addition to the above, both components allow setting custom date display pattern. This pattern is overwritten by setting locale or i18n object, so keep that in mind.
+
 Both components behave funky when changing locale at runtime if their calendars were already shown. That is mostly due to some weird caching on the client side and is also a Vaadin bug. 
 
 ## Select fields
