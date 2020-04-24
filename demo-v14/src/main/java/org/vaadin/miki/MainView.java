@@ -20,6 +20,9 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.Route;
 import org.vaadin.miki.markers.HasLocale;
+import org.vaadin.miki.superfields.dates.DatePattern;
+import org.vaadin.miki.superfields.dates.DatePatterns;
+import org.vaadin.miki.superfields.dates.HasDatePattern;
 import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
@@ -134,6 +137,15 @@ public class MainView extends VerticalLayout {
         callback.accept(new Component[]{buttons, alternate});
     }
 
+    private void buildHasDatePattern(Component component, Consumer<Component[]> callback) {
+        final ComboBox<DatePattern> patterns = new ComboBox<>("Select date display pattern:", DatePatterns.YYYY_MM_DD, DatePatterns.M_D_YYYY_SLASH, DatePatterns.DD_MM_YYYY_DOTTED, DatePatterns.D_M_YY_DOTTED);
+        patterns.addValueChangeListener(event -> {
+            if(event.getValue() != null)
+                ((HasDatePattern)component).setDatePattern(event.getValue());
+        });
+        callback.accept(new Component[]{patterns});
+    }
+
     private Component buildContentsFor(Class<?> type) {
         VerticalLayout result = new VerticalLayout();
         Component component = this.components.get(type);
@@ -199,6 +211,7 @@ public class MainView extends VerticalLayout {
         this.contentBuilders.put(HasLocale.class, this::buildHasLocale);
         this.contentBuilders.put(HasValue.class, this::buildHasValue);
         this.contentBuilders.put(ItemGrid.class, this::buildItemGrid);
+        this.contentBuilders.put(HasDatePattern.class, this::buildHasDatePattern);
 
         this.afterLocaleChange.put(SuperIntegerField.class, o -> ((SuperIntegerField)o).setMaximumIntegerDigits(6));
         this.afterLocaleChange.put(SuperLongField.class, o -> ((SuperLongField)o).setMaximumIntegerDigits(11));
