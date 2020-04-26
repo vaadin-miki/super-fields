@@ -27,6 +27,7 @@ import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
 import org.vaadin.miki.superfields.lazyload.LazyLoad;
+import org.vaadin.miki.superfields.lazyload.ObservedField;
 import org.vaadin.miki.superfields.numbers.AbstractSuperNumberField;
 import org.vaadin.miki.superfields.numbers.SuperBigDecimalField;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
@@ -146,6 +147,19 @@ public class MainView extends VerticalLayout {
         callback.accept(new Component[]{patterns});
     }
 
+    private void buildObservedField(Component component, Consumer<Component[]> callback) {
+        final Span description = new Span("An instance of ObservedField is added below these texts. It has a value change listener that updates the counter whenever the field is shown on screen, for example as a result of resizing window or scrolling. The value does not change when the field gets hidden due to styling (display: none). The field itself in an empty HTML and it cannot be normally seen, but it still is rendered by the browser.");
+        final Span counterText = new Span("The field has become visible this many times so far: ");
+        final Span counterLabel = new Span("0");
+        final Span instruction = new Span("The field is rendered below this text. Resize the window a few times to hide this line to see the value change events being triggered.");
+        counterLabel.addClassName("counter-label");
+        ((ObservedField)component).addValueChangeListener(event -> {
+            if(event.getValue())
+                counterLabel.setText(String.valueOf(Integer.parseInt(counterLabel.getText()) + 1));
+        });
+        callback.accept(new Component[]{description, new HorizontalLayout(counterText, counterLabel), instruction});
+    }
+
     private Component buildContentsFor(Class<?> type) {
         VerticalLayout result = new VerticalLayout();
         Component component = this.components.get(type);
@@ -179,6 +193,7 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1));
         this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:"));
         this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:"));
+        this.components.put(ObservedField.class, new ObservedField());
         this.components.put(ItemGrid.class, new ItemGrid<Class<? extends Component>>(
                 null,
                 () -> {
@@ -197,7 +212,9 @@ public class MainView extends VerticalLayout {
                 },
                 SuperIntegerField.class, SuperLongField.class, SuperDoubleField.class,
                 SuperBigDecimalField.class, SuperDatePicker.class, SuperDateTimePicker.class,
-                SuperTabs.class, ItemGrid.class)
+                SuperTabs.class, LazyLoad.class, ObservedField.class,
+                ItemGrid.class
+                )
             .withRowComponentGenerator(rowNumber -> {
                     HorizontalLayout result = new HorizontalLayout();
                     result.setSpacing(true);
@@ -212,6 +229,7 @@ public class MainView extends VerticalLayout {
         this.contentBuilders.put(HasValue.class, this::buildHasValue);
         this.contentBuilders.put(ItemGrid.class, this::buildItemGrid);
         this.contentBuilders.put(HasDatePattern.class, this::buildHasDatePattern);
+        this.contentBuilders.put(ObservedField.class, this::buildObservedField);
 
         this.afterLocaleChange.put(SuperIntegerField.class, o -> ((SuperIntegerField)o).setMaximumIntegerDigits(6));
         this.afterLocaleChange.put(SuperLongField.class, o -> ((SuperLongField)o).setMaximumIntegerDigits(11));

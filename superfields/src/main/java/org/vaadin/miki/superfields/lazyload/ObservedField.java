@@ -41,11 +41,32 @@ public class ObservedField extends IntersectionObserverComponent<ObservedField.O
     }
 
     /**
+     * Creates a field that will set its value to whether or not it is currently shown on screen.
+     * It will also register given listener using {@link #addValueChangeListener(ValueChangeListener)}.
+     * @param listener Listener to add.
+     */
+    public ObservedField(ValueChangeListener<HasValue.ValueChangeEvent<Boolean>> listener) {
+        this();
+        this.addValueChangeListener(listener);
+    }
+
+    /**
      * Creates a field that will optionally only toggle value once, on first showing.
      * @param onlyToggleOnce Whether or not to trigger value change only once.
      */
     public ObservedField(boolean onlyToggleOnce) {
         super(onlyToggleOnce);
+    }
+
+    /**
+     * Creates a field that will optionally only toggle value once, on first showing.
+     * It will also register given listener using {@link #addValueChangeListener(ValueChangeListener)}.
+     * @param onlyToggleOnce Whether or not to trigger value change only once.
+     * @param listener Listener to add.
+     */
+    public ObservedField(boolean onlyToggleOnce, ValueChangeListener<HasValue.ValueChangeEvent<Boolean>> listener) {
+        this(onlyToggleOnce);
+        this.addValueChangeListener(listener);
     }
 
     /**
