@@ -1,8 +1,6 @@
 package org.vaadin.miki.superfields.lazyload;
 
-import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.html.Div;
 import org.vaadin.miki.markers.WithIdMixin;
@@ -19,7 +17,7 @@ import java.util.function.Supplier;
  * @author miki
  * @since 2020-04-22
  */
-public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadElement> implements WithIdMixin<LazyLoad<C>> {
+public class LazyLoad<C extends Component> extends IntersectionObserverComponent<LazyLoad.LazyLoadElement> implements WithIdMixin<LazyLoad<C>> {
 
     /**
      * This class exists so that {@link LazyLoad} can have a custom tag name.
@@ -38,8 +36,6 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
     public static final String LOADED_CLASS_NAME = "lazy-loaded";
 
     private final Supplier<C> componentProvider;
-
-    private final boolean removingOnHide;
 
     private C content = null;
 
@@ -74,25 +70,13 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
      * @param removeOnHide Whether or not to remove the component when this object gets hidden.
      */
     public LazyLoad(Supplier<C> supplier, boolean removeOnHide) {
-        super();
+        super(!removeOnHide);
         this.getContent().addClassNames("lazy-load-container", EMPTY_CLASS_NAME);
-        this.removingOnHide = removeOnHide;
         this.componentProvider = supplier;
-        // more details: https://webdesign.tutsplus.com/tutorials/how-to-intersection-observer--cms-30250
-        StringBuilder observerJs = new StringBuilder();
-        observerJs.append("new IntersectionObserver((entries, observer) => {if(entries[0].intersectionRatio == 1) {this.$server.onNowVisible(); ");
-        if(!removeOnHide)
-            observerJs.append(" observer.unobserve(this);");
-        else
-            observerJs.append("} else if(entries[0].intersectionRatio == 0) {this.$server.onNowHidden(); ");
-        observerJs.append("}},{root: null, rootMargin: '0px', threshold: ");
-        observerJs.append(removeOnHide ? "[0.0, 1.0]" : "1.0");
-        observerJs.append("}).observe(this)");
-        this.getElement().executeJs(observerJs.toString());
     }
 
-    @ClientCallable
-    private void onNowHidden() {
+    @Override
+    protected void onNowHidden() {
         if(this.content != null) {
             this.getContent().removeClassName(LOADED_CLASS_NAME);
             this.getContent().addClassName(EMPTY_CLASS_NAME);
@@ -101,8 +85,8 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
         }
     }
 
-    @ClientCallable
-    private void onNowVisible() {
+    @Override
+    protected void onNowVisible() {
         if(this.content == null) {
             this.getContent().removeClassName(EMPTY_CLASS_NAME);
             this.getContent().addClassName(LOADED_CLASS_NAME);
@@ -112,30 +96,23 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
     }
 
     /**
-     * Gets the content if it was already loaded ({@link #isRemovingOnHide()} is {@code true}) or if it is currently showing.
+     * Gets the content if it was already loaded ({@link #isOnlyLoadOnce()} ()} is {@code true}) or if it is currently showing.
      * @return A component that was lazy-loaded. If the component was not yet shown on-screen, returns {@link Optional#empty()}.
      * @see #isLoaded()
-     * @see #isRemovingOnHide()
+     * @see #isOnlyLoadOnce()
      */
     public Optional<C> getLoadedContent() {
         return Optional.ofNullable(this.content);
     }
 
     /**
-     * Checks if the content has been already loaded ({@link #isRemovingOnHide()} is {@code true}) or is currently loaded.
+     * Checks if the content has been already loaded ({@link #isOnlyLoadOnce()} ()} is {@code true}) or is currently loaded.
      * @return Whether or not the content has been loaded.
      * @see #getLoadedContent()
-     * @see #isRemovingOnHide()
+     * @see #isOnlyLoadOnce()
      */
     public boolean isLoaded() {
         return this.content == null;
     }
 
-    /**
-     * Checks the mode of operation for lazy loading.
-     * @return When {@code true}, each time this component gets out of view, its contents are removed and then recreated again on showing. When {@code false}, the lazy-loading will happen only once, first time this component gets shown.
-     */
-    public boolean isRemovingOnHide() {
-        return this.removingOnHide;
-    }
 }
