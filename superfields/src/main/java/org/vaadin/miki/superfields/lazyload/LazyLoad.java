@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * @author miki
  * @since 2020-04-22
  */
-public class LazyLoad<C extends Component> extends IntersectionObserverComponent<LazyLoad.LazyLoadElement> implements WithIdMixin<LazyLoad<C>> {
+public class LazyLoad<C extends Component> extends AbstractIntersectionObserverComponent<LazyLoad.LazyLoadElement> implements WithIdMixin<LazyLoad<C>> {
 
     /**
      * This class exists so that {@link LazyLoad} can have a custom tag name.

@@ -9,11 +9,11 @@ import com.vaadin.flow.component.Composite;
  * @author miki
  * @since 2020-04-24
  */
-public abstract class IntersectionObserverComponent<C extends Component> extends Composite<C> {
+public abstract class AbstractIntersectionObserverComponent<C extends Component> extends Composite<C> {
 
     private final boolean onlyLoadOnce;
 
-    public IntersectionObserverComponent(boolean onlyLoadOnce) {
+    public AbstractIntersectionObserverComponent(boolean onlyLoadOnce) {
         this.onlyLoadOnce = onlyLoadOnce;
         // more details: https://webdesign.tutsplus.com/tutorials/how-to-intersection-observer--cms-30250
         StringBuilder observerJs = new StringBuilder();

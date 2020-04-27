@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * @author miki
  * @since 2020-04-24
  */
-public class ObservedField extends IntersectionObserverComponent<ObservedField.ObservedFieldElement> implements HasValue<HasValue.ValueChangeEvent<Boolean>, Boolean>, HasStyle {
+public class ObservedField extends AbstractIntersectionObserverComponent<ObservedField.ObservedFieldElement> implements HasValue<HasValue.ValueChangeEvent<Boolean>, Boolean>, HasStyle {
 
     /**
      * This class exists only so that there is a nice custom name to the field.
