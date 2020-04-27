@@ -12,7 +12,7 @@ All SuperFields are Java-friendly. There is as little client-side code as possib
 
 None of the number fields support range checking, so if you allow too many digits, overflows will occur.
 
-### `SuperDoubleField`and `SuperBigDecimalField`
+### `SuperDoubleField` and `SuperBigDecimalField`
 
 An input field for entering localised `Double` and `BigDecimal` numbers. Supports thousands (grouping) separators for the integer part and optional decimal separator.
 
@@ -40,10 +40,16 @@ A highly configurable grid that allows single selection. Each cell in the grid c
 
 A customisable tabbed pane (something like `TabSheet` in the Vaadin 8 era) that also serves as a value component (current value corresponds to the selected tab).
 
-## Other components
+## Components that rely on [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
+
+**Please note:** the underlying API is *experimental*. It means its support in browsers may vary. For example, it is **not** supported by Internet Explorer and mobile browsers. Please [check browser support](https://caniuse.com/#feat=mdn-api_intersectionobserver) before using these component.
+
+**Please also note:** apparently the API does not handle style-controlled visibility (at least in Firefox), so if the component gets hidden through CSS `display: none`, related events may not trigger. For resizing browser windows, scrolling and adding components into DOM things seem to work pretty ok.
 
 ### `LazyLoad`
 
-A simple wrapper of the [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) to lazy load components. 
+A simple wrapper to lazy load components when the component gets into view.
 
-**Warning!** The underlying API is *experimental*. It means its support in browsers may vary. For example, it is **not** supported by Internet Explorer and mobile browsers. Please [check browser support](https://caniuse.com/#feat=mdn-api_intersectionobserver) before using this component.
+### `ObservedField`
+
+A boolean field that changes its value (`true` or `false`) depending on whether it is currently shown on the screen or not. 
