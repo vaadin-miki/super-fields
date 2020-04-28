@@ -18,6 +18,7 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.superfields.dates.DatePattern;
@@ -50,6 +51,7 @@ import java.util.function.Consumer;
  */
 @CssImport("./styles/demo-styles.css")
 @Route
+@PageTitle("SuperFields Demo")
 public class MainView extends VerticalLayout {
 
     private final Map<Class<?>, Component> components = new LinkedHashMap<>();
