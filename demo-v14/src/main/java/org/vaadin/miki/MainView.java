@@ -26,6 +26,7 @@ import org.vaadin.miki.superfields.dates.HasDatePattern;
 import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
+import org.vaadin.miki.superfields.lazyload.ComponentObserver;
 import org.vaadin.miki.superfields.lazyload.LazyLoad;
 import org.vaadin.miki.superfields.lazyload.ObservedField;
 import org.vaadin.miki.superfields.numbers.AbstractSuperNumberField;
@@ -160,6 +161,26 @@ public class MainView extends VerticalLayout {
         callback.accept(new Component[]{description, new HorizontalLayout(counterText, counterLabel), instruction});
     }
 
+    private void buildIntersectionObserver(Component component, Consumer<Component[]> callback) {
+        for(String s: new String[]{"span-one", "span-two", "span-three"}) {
+            Span span = new Span("This text is observed by the intersection observer. Resize the window to make it disappear and see what happens. It has id of "+s+". ");
+            span.setId(s);
+            ((ComponentObserver)component).observe(span);
+            callback.accept(new Component[]{span});
+        }
+        ((ComponentObserver) component).addComponentObservationListener(event -> {
+            if(event.isFullyVisible()) {
+                Notification.show("Component with id " + event.getObservedComponent().getId().orElse("(no id)") + " is now fully visible.");
+                if(event.getObservedComponent().getId().orElse("").equals("span-two")) {
+                    event.getSource().unobserve(event.getObservedComponent());
+                    Notification.show("Component with id span-two has been unobserved.");
+                }
+            }
+            else if(event.isNotVisible())
+                Notification.show("Component with id "+event.getObservedComponent().getId().orElse("(no id)")+" is now not visible.");
+        });
+    }
+
     private Component buildContentsFor(Class<?> type) {
         VerticalLayout result = new VerticalLayout();
         Component component = this.components.get(type);
@@ -194,6 +215,7 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:"));
         this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:"));
         this.components.put(ObservedField.class, new ObservedField());
+        this.components.put(ComponentObserver.class, new ComponentObserver());
         this.components.put(ItemGrid.class, new ItemGrid<Class<? extends Component>>(
                 null,
                 () -> {
@@ -213,7 +235,7 @@ public class MainView extends VerticalLayout {
                 SuperIntegerField.class, SuperLongField.class, SuperDoubleField.class,
                 SuperBigDecimalField.class, SuperDatePicker.class, SuperDateTimePicker.class,
                 SuperTabs.class, LazyLoad.class, ObservedField.class,
-                ItemGrid.class
+                ComponentObserver.class, ItemGrid.class
                 )
             .withRowComponentGenerator(rowNumber -> {
                     HorizontalLayout result = new HorizontalLayout();
@@ -230,6 +252,7 @@ public class MainView extends VerticalLayout {
         this.contentBuilders.put(ItemGrid.class, this::buildItemGrid);
         this.contentBuilders.put(HasDatePattern.class, this::buildHasDatePattern);
         this.contentBuilders.put(ObservedField.class, this::buildObservedField);
+        this.contentBuilders.put(ComponentObserver.class, this::buildIntersectionObserver);
 
         this.afterLocaleChange.put(SuperIntegerField.class, o -> ((SuperIntegerField)o).setMaximumIntegerDigits(6));
         this.afterLocaleChange.put(SuperLongField.class, o -> ((SuperLongField)o).setMaximumIntegerDigits(11));

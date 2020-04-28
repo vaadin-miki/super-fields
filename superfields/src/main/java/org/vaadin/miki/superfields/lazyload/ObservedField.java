@@ -1,10 +1,11 @@
 package org.vaadin.miki.superfields.lazyload;
 
 import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.shared.Registration;
 
 import java.util.ArrayList;
@@ -14,13 +15,15 @@ import java.util.ArrayList;
  * @author miki
  * @since 2020-04-24
  */
-public class ObservedField extends IntersectionObserverComponent<ObservedField.ObservedFieldElement> implements HasValue<HasValue.ValueChangeEvent<Boolean>, Boolean>, HasStyle {
+public class ObservedField extends Composite<ObservedField.ObservedFieldElement> implements HasValue<HasValue.ValueChangeEvent<Boolean>, Boolean>, HasStyle {
 
     /**
-     * This class exists only so that there is a nice custom name to the field.
+     * This class gives a nice tag name to {@link ObservedField} in the browser.
+     * The corresponding client-side module also extends {@link ComponentObserver}.
      */
     @Tag("observed-field")
-    public static final class ObservedFieldElement extends Div {}
+    @JsModule("./observed-field.js")
+    public static final class ObservedFieldElement extends ComponentObserver {}
 
     /**
      * Class name used when {@link #setRequiredIndicatorVisible(boolean)} is set to {@code true}.
@@ -28,6 +31,8 @@ public class ObservedField extends IntersectionObserverComponent<ObservedField.O
     public static final String REQUIRED_INDICATOR_VISIBLE = "required-indicator-visible";
 
     private final ArrayList<ValueChangeListener<? super ValueChangeEvent<Boolean>>> listeners = new ArrayList<>();
+
+    private final boolean onlyToggleOnce;
 
     private boolean value = false;
 
@@ -55,7 +60,17 @@ public class ObservedField extends IntersectionObserverComponent<ObservedField.O
      * @param onlyToggleOnce Whether or not to trigger value change only once.
      */
     public ObservedField(boolean onlyToggleOnce) {
-        super(onlyToggleOnce);
+        super();
+        this.onlyToggleOnce = onlyToggleOnce;
+        this.addClassName(this.getClass().getSimpleName().toLowerCase());
+        this.getContent().addComponentObservationListener(this::onComponentObserved);
+        this.getContent().observe(this);
+    }
+
+    private void onComponentObserved(ComponentObservationEvent event) {
+        this.setValue(event.isFullyVisible());
+        if(event.isFullyVisible() && this.onlyToggleOnce)
+            event.getSource().unobserve(this);
     }
 
     /**
@@ -118,16 +133,6 @@ public class ObservedField extends IntersectionObserverComponent<ObservedField.O
     @Override
     public boolean isRequiredIndicatorVisible() {
         return this.getClassNames().contains(REQUIRED_INDICATOR_VISIBLE);
-    }
-
-    @Override
-    protected void onNowHidden() {
-        this.setValue(false);
-    }
-
-    @Override
-    protected void onNowVisible() {
-        this.setValue(true);
     }
 
 }
