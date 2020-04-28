@@ -46,6 +46,10 @@ A customisable tabbed pane (something like `TabSheet` in the Vaadin 8 era) that 
 
 **Please also note:** apparently the API does not handle style-controlled visibility (at least in Firefox), so if the component gets hidden through CSS `display: none`, related events may not trigger. For resizing browser windows, scrolling and adding components into DOM things seem to work pretty ok.
 
+### `ComponentObserver`
+
+A wrapper for one instance of client-side `IntersectionObserver`. It allows observing changes that happen to other components.
+
 ### `LazyLoad`
 
 A simple wrapper to lazy load components when the component gets into view.

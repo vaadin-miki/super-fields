@@ -163,11 +163,22 @@ public class MainView extends VerticalLayout {
 
     private void buildIntersectionObserver(Component component, Consumer<Component[]> callback) {
         for(String s: new String[]{"span-one", "span-two", "span-three"}) {
-            Span span = new Span("This text is observed by the intersection observer. Resize the window to make it disappear and see what happens. It has id of "+s);
+            Span span = new Span("This text is observed by the intersection observer. Resize the window to make it disappear and see what happens. It has id of "+s+". ");
             span.setId(s);
             ((ComponentObserver)component).observe(span);
             callback.accept(new Component[]{span});
         }
+        ((ComponentObserver) component).addComponentObservationListener(event -> {
+            if(event.isFullyVisible()) {
+                Notification.show("Component with id " + event.getObservedComponent().getId().orElse("(no id)") + " is now fully visible.");
+                if(event.getObservedComponent().getId().orElse("").equals("span-two")) {
+                    event.getSource().unobserve(event.getObservedComponent());
+                    Notification.show("Component with id span-two has been unobserved.");
+                }
+            }
+            else if(event.isNotVisible())
+                Notification.show("Component with id "+event.getObservedComponent().getId().orElse("(no id)")+" is now not visible.");
+        });
     }
 
     private Component buildContentsFor(Class<?> type) {
