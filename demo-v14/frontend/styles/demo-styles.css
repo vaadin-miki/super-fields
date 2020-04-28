@@ -25,7 +25,7 @@ div.item-grid-cell>span {
     text-align: center;
 }
 
-div.selected {
+lazy-load.selected {
     background: lightgreen;
 }
 

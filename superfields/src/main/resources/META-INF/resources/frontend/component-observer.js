@@ -45,7 +45,7 @@ export class ComponentObserver extends PolymerElement {
      * @param what What to stop observing (element).
      */
     unobserve(what) {
-        what.dataset.observerIndex = undefined; // clears data-* attribute
+        delete what.dataset.observerIndex; // clears data-* attribute
         this.observer.unobserve(what);
     }
 
