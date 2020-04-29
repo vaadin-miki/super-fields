@@ -57,3 +57,11 @@ A simple wrapper to lazy load components when the component gets into view.
 ### `ObservedField`
 
 A boolean field that changes its value (`true` or `false`) depending on whether it is currently shown on the screen or not. 
+
+## Other components
+
+### `UnloadObserver`
+
+A component that listens and reacts to browser's `beforeunload` events that happen for example when browser window/tab is closed. The support [varies between browsers](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event), but in general is good.
+
+The code is based on solution [posted by Kaspar Scherrer and Stuart Robinson](https://vaadin.com/forum/thread/17523194/unsaved-changes-detect-page-exit-or-reload). It does not work with `<a href>` or `Anchor` as download links, so please use [FileDownloadWrapper](https://vaadin.com/directory/component/file-download-wrapper/discussions) for that. 
