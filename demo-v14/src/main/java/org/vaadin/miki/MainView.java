@@ -36,6 +36,7 @@ import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 import org.vaadin.miki.superfields.numbers.SuperIntegerField;
 import org.vaadin.miki.superfields.numbers.SuperLongField;
 import org.vaadin.miki.superfields.tabs.SuperTabs;
+import org.vaadin.miki.superfields.unload.UnloadObserver;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -183,6 +184,16 @@ public class MainView extends VerticalLayout {
         });
     }
 
+    private void buildUnloadObserver(Component component, Consumer<Component[]> callback) {
+        final Checkbox query = new Checkbox("Query on window unload?", event -> ((UnloadObserver)component).setQueryingOnUnload(event.getValue()));
+        final Span description = new Span("This component optionally displays a browser-native window when leaving this app. Select the checkbox above and try to close the window or tab to see it in action.");
+        final Span counterText = new Span("There were this many attempts to leave this app so far: ");
+        final Span counter = new Span("0");
+        ((UnloadObserver)component).addUnloadListener(event -> counter.setText(String.valueOf(Integer.parseInt(counter.getText())+1)));
+
+        callback.accept(new Component[]{query, description, new HorizontalLayout(counterText, counter)});
+    }
+
     private Component buildContentsFor(Class<?> type) {
         VerticalLayout result = new VerticalLayout();
         Component component = this.components.get(type);
@@ -218,6 +229,7 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:"));
         this.components.put(ObservedField.class, new ObservedField());
         this.components.put(ComponentObserver.class, new ComponentObserver());
+        this.components.put(UnloadObserver.class, new UnloadObserver(false));
         this.components.put(ItemGrid.class, new ItemGrid<Class<? extends Component>>(
                 null,
                 () -> {
@@ -237,7 +249,7 @@ public class MainView extends VerticalLayout {
                 SuperIntegerField.class, SuperLongField.class, SuperDoubleField.class,
                 SuperBigDecimalField.class, SuperDatePicker.class, SuperDateTimePicker.class,
                 SuperTabs.class, LazyLoad.class, ObservedField.class,
-                ComponentObserver.class, ItemGrid.class
+                ComponentObserver.class, UnloadObserver.class, ItemGrid.class
                 )
             .withRowComponentGenerator(rowNumber -> {
                     HorizontalLayout result = new HorizontalLayout();
@@ -255,6 +267,7 @@ public class MainView extends VerticalLayout {
         this.contentBuilders.put(HasDatePattern.class, this::buildHasDatePattern);
         this.contentBuilders.put(ObservedField.class, this::buildObservedField);
         this.contentBuilders.put(ComponentObserver.class, this::buildIntersectionObserver);
+        this.contentBuilders.put(UnloadObserver.class, this::buildUnloadObserver);
 
         this.afterLocaleChange.put(SuperIntegerField.class, o -> ((SuperIntegerField)o).setMaximumIntegerDigits(6));
         this.afterLocaleChange.put(SuperLongField.class, o -> ((SuperLongField)o).setMaximumIntegerDigits(11));
