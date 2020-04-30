@@ -11,6 +11,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import org.vaadin.miki.markers.HasLabel;
+import org.vaadin.miki.markers.WithItemsMixin;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
  * @since 2020-04-10
  */
 @Tag("super-tabs")
-public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
+public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle, WithItemsMixin<T, SuperTabs<T>> {
 
     /**
      * Default container for tab contents.
@@ -67,8 +68,9 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
      * @param mainContentSupplier A callback to construct an instance of a component into which tab contents is put.
      * @param <C> Generic type to ensure the supplier gives a valid {@link Component} that implements {@link HasComponents}.
      */
-    public <C extends Component & HasComponents> SuperTabs(Supplier<C> mainContentSupplier) {
-        this(null, mainContentSupplier, null, null, null);
+    @SafeVarargs
+    public <C extends Component & HasComponents> SuperTabs(Supplier<C> mainContentSupplier, T... values) {
+        this(null, mainContentSupplier, null, null, null, values);
     }
 
     /**
@@ -450,5 +452,10 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
     public SuperTabs<T> withTabHandler(TabHandler tabHandler) {
         this.setTabHandler(tabHandler);
         return this;
+    }
+
+    @Override
+    public void setItems(Collection<T> collection) {
+        this.addTabs(collection);
     }
 }

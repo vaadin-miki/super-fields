@@ -10,6 +10,11 @@ import com.vaadin.flow.component.HasElement;
  */
 public interface WithIdMixin<SELF extends HasElement> extends HasElement {
 
+    /**
+     * Chains setting id.
+     * @param id Id to set.
+     * @return This.
+     */
     @SuppressWarnings("unchecked")
     default SELF withId(String id) {
         this.getElement().setAttribute("id", id);

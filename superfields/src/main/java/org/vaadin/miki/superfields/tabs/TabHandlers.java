@@ -13,12 +13,15 @@ public class TabHandlers {
      * A {@link TabHandler} that toggles visibility. All tab contents is loaded to the dom structure.
      */
     public static final TabHandler VISIBILITY_HANDLER = new LambdaTabHandler(
+            "Visibility-based",
             (tab, component, div) -> {
                 component.setVisible(false);
                 div.add(component);
             },
-            (tab, component, div) ->
-                div.remove(component),
+            (tab, component, div) -> {
+                div.remove(component);
+                component.setVisible(true);
+            },
             (tab, component, div) ->
                 component.setVisible(true),
             (tab, component, div) ->
@@ -29,6 +32,7 @@ public class TabHandlers {
      * A {{@link TabHandler} that adds and removes tab content.
      */
     public static final TabHandler REMOVING_HANDLER = new LambdaTabHandler(
+            "Removing handler",
             (tab, component, div) -> {},
             (tab, component, div) ->
                 component.getParent().filter(parent -> parent.equals(div)).map(HasComponents.class::cast).ifPresent(parent -> parent.remove(component)),
@@ -43,7 +47,7 @@ public class TabHandlers {
      * @return A {@link TabHandler}.
      */
     public static TabHandler selectedContentHasClassName(final String selectedClassName) {
-        return new LambdaTabHandler(
+        return new LambdaTabHandler("Adding class name <"+selectedClassName+">",
                 (tab, component, div) -> div.add(component),
                 (tab, component, div) -> div.remove(component),
                 (tab, component, div) -> component.getElement().getClassList().add(selectedClassName),

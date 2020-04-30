@@ -15,15 +15,18 @@ public final class LambdaTabHandler implements TabHandler {
     private final SerializableTriConsumer<Tab, Component, HasComponents> onRemove;
     private final SerializableTriConsumer<Tab, Component, HasComponents> onSelect;
     private final SerializableTriConsumer<Tab, Component, HasComponents> onDeselect;
+    private final String description;
 
     /**
      * Creates this object with given delegates.
+     * @param description Description of this handler, used in {@link #toString()}.
      * @param onAdd Implementation of {@link #tabAdded(Tab, Component, HasComponents)}.
      * @param onRemove Implementation of {@link #tabRemoved(Tab, Component, HasComponents)}.
      * @param onSelect Implementation of {@link #tabSelected(Tab, Component, HasComponents)}.
      * @param onDeselect Implementation of {@link #tabDeselected(Tab, Component, HasComponents)}.
      */
-    public LambdaTabHandler(SerializableTriConsumer<Tab, Component, HasComponents> onAdd, SerializableTriConsumer<Tab, Component, HasComponents> onRemove, SerializableTriConsumer<Tab, Component, HasComponents> onSelect, SerializableTriConsumer<Tab, Component, HasComponents> onDeselect) {
+    public LambdaTabHandler(String description, SerializableTriConsumer<Tab, Component, HasComponents> onAdd, SerializableTriConsumer<Tab, Component, HasComponents> onRemove, SerializableTriConsumer<Tab, Component, HasComponents> onSelect, SerializableTriConsumer<Tab, Component, HasComponents> onDeselect) {
+        this.description = description;
         this.onAdd = onAdd;
         this.onRemove = onRemove;
         this.onSelect = onSelect;
@@ -48,5 +51,12 @@ public final class LambdaTabHandler implements TabHandler {
     @Override
     public void tabDeselected(Tab tabHeader, Component tabContents, HasComponents contentsContainer) {
         this.onDeselect.accept(tabHeader, tabContents, contentsContainer);
+    }
+
+    @Override
+    public String toString() {
+        return "LambdaTabHandler{" +
+                "description='" + description + '\'' +
+                '}';
     }
 }
