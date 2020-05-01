@@ -36,6 +36,8 @@ import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 import org.vaadin.miki.superfields.numbers.SuperIntegerField;
 import org.vaadin.miki.superfields.numbers.SuperLongField;
 import org.vaadin.miki.superfields.tabs.SuperTabs;
+import org.vaadin.miki.superfields.tabs.TabHandler;
+import org.vaadin.miki.superfields.tabs.TabHandlers;
 import org.vaadin.miki.superfields.unload.UnloadObserver;
 
 import java.util.HashMap;
@@ -44,6 +46,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Demo app for various SuperFields and other components.
@@ -194,6 +197,17 @@ public class MainView extends VerticalLayout {
         callback.accept(new Component[]{query, description, new HorizontalLayout(counterText, counter)});
     }
 
+    private void buildSuperTabs(Component component, Consumer<Component[]> callback) {
+        final ComboBox<TabHandler> tabHandlers = new ComboBox<>("Select a tab handler: ",
+                TabHandlers.VISIBILITY_HANDLER, TabHandlers.REMOVING_HANDLER, TabHandlers.selectedContentHasClassName("selected-tab"));
+        tabHandlers.addValueChangeListener(event -> {
+            if(event.getValue() != null)
+                ((SuperTabs<?>)component).setTabHandler(event.getValue());
+        });
+
+        callback.accept(new Component[]{tabHandlers});
+    }
+
     private Component buildContentsFor(Class<?> type) {
         VerticalLayout result = new VerticalLayout();
         Component component = this.components.get(type);
@@ -227,6 +241,10 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1));
         this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:"));
         this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:"));
+        this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
+                .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
+                .withItems("Java friendly", "Super-configurable", "Open source")
+        );
         this.components.put(ObservedField.class, new ObservedField());
         this.components.put(ComponentObserver.class, new ComponentObserver());
         this.components.put(UnloadObserver.class, new UnloadObserver(false));
@@ -265,6 +283,7 @@ public class MainView extends VerticalLayout {
         this.contentBuilders.put(HasValue.class, this::buildHasValue);
         this.contentBuilders.put(ItemGrid.class, this::buildItemGrid);
         this.contentBuilders.put(HasDatePattern.class, this::buildHasDatePattern);
+        this.contentBuilders.put(SuperTabs.class, this::buildSuperTabs);
         this.contentBuilders.put(ObservedField.class, this::buildObservedField);
         this.contentBuilders.put(ComponentObserver.class, this::buildIntersectionObserver);
         this.contentBuilders.put(UnloadObserver.class, this::buildUnloadObserver);

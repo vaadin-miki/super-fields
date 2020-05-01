@@ -1,6 +1,7 @@
 package org.vaadin.miki.superfields.tabs;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.tabs.Tab;
 import org.junit.After;
@@ -10,6 +11,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SuperTabsTest {
 
@@ -143,7 +146,7 @@ public class SuperTabsTest {
     }
 
     @Test
-    public void testVisibilityOfTabContentsAndSelectedTabHeaders() {
+    public void testVisibilityOfTabContentsAndSelectedTabHeadersWithDefaultTabHandler() {
         final String tab1 = "tab1", tab2 = "tab2", tab3 = "tab3";
         this.tabs.addTab(tab1, tab2, tab3);
         Assert.assertTrue(this.tabs.getTabContents(tab1).isPresent());
@@ -172,6 +175,71 @@ public class SuperTabsTest {
         Assert.assertFalse(this.tabs.getTabHeader(tab2).get().isSelected());
         Assert.assertTrue(this.tabs.getTabHeader(tab3).isPresent());
         Assert.assertTrue(this.tabs.getTabHeader(tab3).get().isSelected());
+    }
+
+    @Test
+    public void testVisibilityOfTabContentsAndSelectedTabHeadersWithRemovingTabHandler() {
+        this.tabs.setTabHandler(TabHandlers.REMOVING_HANDLER);
+        final String tab1 = "tab1", tab2 = "tab2", tab3 = "tab3";
+        this.tabs.addTab(tab1, tab2, tab3);
+        Assert.assertTrue(this.tabs.getTabContents(tab1).isPresent());
+        Assert.assertTrue(this.tabs.getTabContents(tab1).get().getParent().isPresent());
+        Assert.assertTrue(this.tabs.getTabContents(tab2).isPresent());
+        Assert.assertFalse(this.tabs.getTabContents(tab2).get().getParent().isPresent());
+        Assert.assertTrue(this.tabs.getTabContents(tab3).isPresent());
+        Assert.assertFalse(this.tabs.getTabContents(tab3).get().getParent().isPresent());
+        Assert.assertTrue(this.tabs.getTabHeader(tab1).isPresent());
+        Assert.assertTrue(this.tabs.getTabHeader(tab1).get().isSelected());
+        Assert.assertTrue(this.tabs.getTabHeader(tab2).isPresent());
+        Assert.assertFalse(this.tabs.getTabHeader(tab2).get().isSelected());
+        Assert.assertTrue(this.tabs.getTabHeader(tab3).isPresent());
+        Assert.assertFalse(this.tabs.getTabHeader(tab3).get().isSelected());
+
+        this.tabs.setValue(tab3);
+        Assert.assertTrue(this.tabs.getTabContents(tab1).isPresent());
+        Assert.assertFalse(this.tabs.getTabContents(tab1).get().getParent().isPresent());
+        Assert.assertTrue(this.tabs.getTabContents(tab2).isPresent());
+        Assert.assertFalse(this.tabs.getTabContents(tab2).get().getParent().isPresent());
+        Assert.assertTrue(this.tabs.getTabContents(tab3).isPresent());
+        Assert.assertTrue(this.tabs.getTabContents(tab3).get().getParent().isPresent());
+        Assert.assertTrue(this.tabs.getTabHeader(tab1).isPresent());
+        Assert.assertFalse(this.tabs.getTabHeader(tab1).get().isSelected());
+        Assert.assertTrue(this.tabs.getTabHeader(tab2).isPresent());
+        Assert.assertFalse(this.tabs.getTabHeader(tab2).get().isSelected());
+        Assert.assertTrue(this.tabs.getTabHeader(tab3).isPresent());
+        Assert.assertTrue(this.tabs.getTabHeader(tab3).get().isSelected());
+    }
+
+    @Test
+    public void testChangingTabHandler() {
+        this.tabs.setTabHandler(TabHandlers.selectedContentHasClassName("selected-tab"));
+        final String tab1 = "tab1", tab2 = "tab2", tab3 = "tab3";
+        this.tabs.addTab(tab1, tab2, tab3);
+        this.eventCount = 0;
+
+        final Map<String, Component> contents = new HashMap<>();
+        // now, selected tab is tab1 and all components are attached to the container
+        // in addition, selected tab (tab1) contents have a style name
+        for(String value: new String[]{tab1, tab2, tab3}) {
+            Assert.assertTrue(this.tabs.getTabContents(value).isPresent());
+            Assert.assertTrue(this.tabs.getTabContents(value).get().getParent().isPresent());
+            contents.put(value, this.tabs.getTabContents(value).get());
+            Assert.assertEquals("contents for tab1 should have a selected-tab class name", value.equals(tab1), this.tabs.getTabContents(value).get().getElement().getClassList().contains("selected-tab"));
+        }
+
+        this.tabs.setTabHandler(TabHandlers.REMOVING_HANDLER);
+        // no value change should happen
+        Assert.assertEquals(0, this.eventCount);
+
+        // all components should still be the same
+        // but, only the selected one should have a parent (others should not)
+        // also, none of them should have a selected class name
+        for(String value: new String[]{tab1, tab2, tab3}) {
+            Assert.assertTrue(this.tabs.getTabContents(value).isPresent());
+            Assert.assertSame(contents.get(value), this.tabs.getTabContents(value).get());
+            Assert.assertEquals("only tab1 should have a parent", value.equals(tab1), this.tabs.getTabContents(value).get().getParent().isPresent());
+            Assert.assertFalse(this.tabs.getTabContents(value).get().getElement().getClassList().contains("selected-tab"));
+        }
     }
 
 }
