@@ -5,6 +5,8 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.function.SerializableTriConsumer;
 
+import java.util.Optional;
+
 /**
  * Implementation of {@link TabHandler} that relies on lambdas.
  * @author miki
@@ -55,8 +57,6 @@ public final class LambdaTabHandler implements TabHandler {
 
     @Override
     public String toString() {
-        return "LambdaTabHandler{" +
-                "description='" + description + '\'' +
-                '}';
+        return Optional.ofNullable(this.description).orElse("Unnamed "+this.getClass().getSimpleName());
     }
 }

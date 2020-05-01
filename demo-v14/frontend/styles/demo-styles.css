@@ -3,6 +3,7 @@ p {
     line-height: 80px;
     text-align: center;
     border: 1px solid gray;
+    padding: 2px;
 }
 
 p.selected {
@@ -10,6 +11,13 @@ p.selected {
     letter-spacing: 2px;
     border: 1px solid silver;
     background: cadetblue;
+}
+
+p.selected-tab {
+    background: #2b908f;
+    font-weight: bold;
+    border: 3px solid darkblue;
+    padding: 0px;
 }
 
 div.item-grid-cell {
