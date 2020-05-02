@@ -1,6 +1,7 @@
 package org.vaadin.miki.superfields.dates;
 
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.dependency.JsModule;
 import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.markers.WithLabelMixin;
@@ -14,6 +15,7 @@ import java.util.Locale;
  * @author miki
  * @since 2020-04-09
  */
+@JsModule("./super-date-picker-workaround.js")
 public class SuperDateTimePicker extends DateTimePicker
         implements HasLocale, HasLabel, HasDatePattern,
                    WithLocaleMixin<SuperDateTimePicker>, WithLabelMixin<SuperDateTimePicker>, WithDatePatternMixin<SuperDateTimePicker> {
@@ -77,15 +79,7 @@ public class SuperDateTimePicker extends DateTimePicker
     @Override
     public void setDatePattern(DatePattern pattern) {
         this.datePattern = pattern;
-        if(pattern == null)
-            this.setLocale(this.getLocale());
-        else
-            this.getElement().executeJs("this.querySelector('vaadin-date-time-picker-date-picker').set('i18n.formatDate', date => {" +
-                    DatePatternJsGenerator.buildFormatDateFunction(this.datePattern) +
-                    "}); this.querySelector('vaadin-date-time-picker-date-picker').set('i18n.parseDate', text => {" +
-                    DatePatternJsGenerator.buildParseDateFunction(this.datePattern) +
-                    "});"
-            );
+        DatePatternHelper.setClientSidePattern("querySelector('vaadin-date-time-picker-date-picker').", this, pattern, this.getLocale(), this::setLocale);
     }
 
     @Override

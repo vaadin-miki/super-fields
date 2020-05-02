@@ -2,6 +2,7 @@ package org.vaadin.miki;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -40,6 +41,7 @@ import org.vaadin.miki.superfields.tabs.TabHandler;
 import org.vaadin.miki.superfields.tabs.TabHandlers;
 import org.vaadin.miki.superfields.unload.UnloadObserver;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -151,7 +153,13 @@ public class MainView extends VerticalLayout {
             if(event.getValue() != null)
                 ((HasDatePattern)component).setDatePattern(event.getValue());
         });
-        callback.accept(new Component[]{patterns});
+        final Button clear = new Button("Clear pattern", event -> ((HasDatePattern)component).setDatePattern(null));
+        final Icon icon = new Icon(VaadinIcon.QUESTION_CIRCLE_O);
+        icon.setColor("green");
+        icon.getElement().setAttribute("title", "Please note: clearing the pattern yyyy-MM-dd will NOT result in coming back to locale-specific pattern, because it just happens to be a format used internally by <vaadin-date-picker>. The pattern will be changed on value change, though.");
+        final HorizontalLayout layout = new HorizontalLayout(clear, icon);
+        layout.setAlignItems(Alignment.CENTER);
+        callback.accept(new Component[]{patterns, layout});
     }
 
     private void buildObservedField(Component component, Consumer<Component[]> callback) {
@@ -239,8 +247,8 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperLongField.class, new SuperLongField("Long (11 digits):").withMaximumIntegerDigits(11));
         this.components.put(SuperDoubleField.class, new SuperDoubleField("Double (8 + 4 digits):").withMaximumIntegerDigits(8).withMaximumFractionDigits(4));
         this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1));
-        this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:"));
-        this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:"));
+        this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
+        this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH));
         this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
                 .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
                 .withItems("Java friendly", "Super-configurable", "Open source")
