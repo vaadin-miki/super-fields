@@ -2,9 +2,6 @@ package org.vaadin.miki.superfields.dates;
 
 import com.vaadin.flow.component.Component;
 
-import java.util.Locale;
-import java.util.function.Consumer;
-
 /**
  * Helper class that calls a method on a client side.
  * Internal use only.
@@ -58,18 +55,13 @@ final class DatePatternHelper {
     /**
      * Does magic and sets the display pattern on the client side.
      * Requires the client-side connector to have a {@code setDisplayPattern} method.
-     * @param methodPrefix Whether the method call should be prefixed with something. Used if the date picker to target is hidden somewhere.
      * @param source Source component.
      * @param pattern Pattern to set.
-     * @param backupLocale Locale to use when there is no pattern.
-     * @param backupLocaleCallback Callback to set locale.
      */
-    static void setClientSidePattern(String methodPrefix, Component source, DatePattern pattern, Locale backupLocale, Consumer<Locale> backupLocaleCallback) {
+    static void setClientSidePattern(Component source, DatePattern pattern) {
         source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(source, context ->
-                source.getElement().callJsFunction(methodPrefix+"$connector.setDisplayPattern", convertDatePatternToClientPattern(pattern))
+                source.getElement().callJsFunction("setDisplayPattern", source.getElement(), convertDatePatternToClientPattern(pattern))
         ));
-        if(pattern == null)
-            backupLocaleCallback.accept(backupLocale);
     }
 
     private DatePatternHelper() {
