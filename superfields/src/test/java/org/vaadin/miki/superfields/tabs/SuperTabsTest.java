@@ -25,6 +25,7 @@ public class SuperTabsTest {
     public void setUp() {
         MockVaadin.setup();
         this.tabs = new SuperTabs<>();
+        this.tabs.setTabHandler(TabHandlers.VISIBILITY_HANDLER);
         this.tabs.addValueChangeListener(e -> eventCount++);
         this.eventCount = 0;
         this.headerGeneratorCount = 0;

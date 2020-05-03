@@ -1,12 +1,16 @@
 package org.vaadin.miki.superfields.dates;
 
+import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dependency.JsModule;
 import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.markers.HasPlaceholder;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
+import org.vaadin.miki.markers.WithValueMixin;
 
 import java.time.LocalDate;
 import java.util.Locale;
@@ -16,10 +20,13 @@ import java.util.Locale;
  * @author miki
  * @since 2020-04-09
  */
+@JsModule("./super-date-picker.js")
+@Tag("super-date-picker")
 public class SuperDatePicker extends DatePicker
         implements HasLocale, HasLabel, HasPlaceholder, HasDatePattern,
                    WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>,
-                   WithPlaceholderMixin<SuperDatePicker>, WithDatePatternMixin<SuperDatePicker> {
+                   WithPlaceholderMixin<SuperDatePicker>, WithDatePatternMixin<SuperDatePicker>,
+                   WithValueMixin<AbstractField.ComponentValueChangeEvent<DatePicker, LocalDate>, LocalDate, SuperDatePicker> {
 
     private DatePattern datePattern;
 
@@ -73,6 +80,9 @@ public class SuperDatePicker extends DatePicker
 
     @Override
     public final void setLocale(Locale locale) {
+        this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
+                this.getElement().callJsFunction("initPatternSetting", this.getElement())
+        ));
         SuperDatePickerI18nHelper.updateI18N(locale, this::getI18n, this::setI18n);
         super.setLocale(locale);
     }
@@ -80,15 +90,7 @@ public class SuperDatePicker extends DatePicker
     @Override
     public void setDatePattern(DatePattern datePattern) {
         this.datePattern = datePattern;
-        if(datePattern != null)
-            this.getElement().executeJs("this.set('i18n.formatDate', date => {" +
-                    DatePatternJsGenerator.buildFormatDateFunction(this.datePattern) +
-                    "}); this.set('i18n.parseDate', text => {" +
-                    DatePatternJsGenerator.buildParseDateFunction(this.datePattern) +
-                    "});"
-            );
-        // this should in theory reset the pattern on the client side
-        else this.setLocale(this.getLocale());
+        DatePatternHelper.setClientSidePattern(this, datePattern);
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.vaadin.miki;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -40,6 +41,7 @@ import org.vaadin.miki.superfields.tabs.TabHandler;
 import org.vaadin.miki.superfields.tabs.TabHandlers;
 import org.vaadin.miki.superfields.unload.UnloadObserver;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -147,11 +149,25 @@ public class MainView extends VerticalLayout {
 
     private void buildHasDatePattern(Component component, Consumer<Component[]> callback) {
         final ComboBox<DatePattern> patterns = new ComboBox<>("Select date display pattern:", DatePatterns.YYYY_MM_DD, DatePatterns.M_D_YYYY_SLASH, DatePatterns.DD_MM_YYYY_DOTTED, DatePatterns.D_M_YY_DOTTED);
+        final Button clearPattern = new Button("Clear pattern", event -> ((HasDatePattern)component).setDatePattern(null));
+        clearPattern.setDisableOnClick(true);
+        final Component clearPatternOrContainer;
+        // this is affected by issue #87 (and the way #81 was fixed)
+        if(component instanceof SuperDatePicker)
+            clearPatternOrContainer = clearPattern;
+        else {
+            clearPattern.setEnabled(false);
+            Icon icon = new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
+            icon.setColor("red");
+            icon.getElement().setAttribute("title", "Setting pattern does not work out of the box for SuperDateTimePicker. See issue #87, https://github.com/vaadin-miki/super-fields/issues/87.");
+            clearPatternOrContainer = new HorizontalLayout(clearPattern, icon);
+            ((HorizontalLayout)clearPatternOrContainer).setAlignItems(Alignment.CENTER);
+        }
         patterns.addValueChangeListener(event -> {
-            if(event.getValue() != null)
-                ((HasDatePattern)component).setDatePattern(event.getValue());
+            ((HasDatePattern) component).setDatePattern(event.getValue());
+            clearPattern.setEnabled(true);
         });
-        callback.accept(new Component[]{patterns});
+        callback.accept(new Component[]{patterns, clearPatternOrContainer});
     }
 
     private void buildObservedField(Component component, Consumer<Component[]> callback) {
@@ -239,8 +255,9 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperLongField.class, new SuperLongField("Long (11 digits):").withMaximumIntegerDigits(11));
         this.components.put(SuperDoubleField.class, new SuperDoubleField("Double (8 + 4 digits):").withMaximumIntegerDigits(8).withMaximumFractionDigits(4));
         this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1));
-        this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:"));
-        this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:"));
+        this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
+        // note: issue #87 prevents setting date pattern before the page is fully rendered
+        this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH));
         this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
                 .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
                 .withItems("Java friendly", "Super-configurable", "Open source")
