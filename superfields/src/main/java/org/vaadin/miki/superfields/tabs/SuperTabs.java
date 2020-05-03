@@ -1,5 +1,6 @@
 package org.vaadin.miki.superfields.tabs;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasSize;
@@ -12,6 +13,7 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.WithItemsMixin;
+import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -33,7 +35,10 @@ import java.util.stream.Collectors;
  * @since 2020-04-10
  */
 @Tag("super-tabs")
-public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle, WithItemsMixin<T, SuperTabs<T>> {
+public class SuperTabs<T>
+        extends CustomField<T>
+        implements HasLabel, HasStyle, WithItemsMixin<T, SuperTabs<T>>,
+                   WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SuperTabs<T>> {
 
     /**
      * Default container for tab contents.

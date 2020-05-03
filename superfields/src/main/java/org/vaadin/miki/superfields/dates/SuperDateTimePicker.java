@@ -1,5 +1,6 @@
 package org.vaadin.miki.superfields.dates;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
@@ -9,6 +10,7 @@ import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
+import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.util.ReflectTools;
 
 import java.time.LocalDateTime;
@@ -24,7 +26,9 @@ import java.util.Optional;
 @Tag("super-date-time-picker")
 public class SuperDateTimePicker extends DateTimePicker
         implements HasLocale, HasLabel, HasDatePattern,
-                   WithLocaleMixin<SuperDateTimePicker>, WithLabelMixin<SuperDateTimePicker>, WithDatePatternMixin<SuperDateTimePicker> {
+                   WithLocaleMixin<SuperDateTimePicker>, WithLabelMixin<SuperDateTimePicker>,
+                   WithDatePatternMixin<SuperDateTimePicker>,
+                   WithValueMixin<AbstractField.ComponentValueChangeEvent<DateTimePicker, LocalDateTime>, LocalDateTime, SuperDateTimePicker> {
 
     // so, this component is a composition of DatePicker and TimePicker
     // yet, these are private fields and it is impossible to access them :|
