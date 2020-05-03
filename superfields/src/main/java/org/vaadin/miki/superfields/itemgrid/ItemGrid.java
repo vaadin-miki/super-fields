@@ -8,6 +8,7 @@ import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.data.binder.HasItems;
+import org.vaadin.miki.markers.WithItemsMixin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +31,7 @@ import java.util.stream.Stream;
  * @since 2020-04-14
  */
 @Tag("item-grid")
-public class ItemGrid<T> extends CustomField<T> implements HasItems<T>, HasStyle {
+public class ItemGrid<T> extends CustomField<T> implements HasItems<T>, HasStyle, WithItemsMixin<T, ItemGrid<T>> {
 
     /**
      * Default number of columns.
