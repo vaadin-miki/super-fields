@@ -7,6 +7,7 @@ import com.vaadin.flow.component.dependency.JsModule;
 import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.markers.HasPlaceholder;
+import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
@@ -26,7 +27,8 @@ public class SuperDatePicker extends DatePicker
         implements HasLocale, HasLabel, HasPlaceholder, HasDatePattern,
                    WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>,
                    WithPlaceholderMixin<SuperDatePicker>, WithDatePatternMixin<SuperDatePicker>,
-                   WithValueMixin<AbstractField.ComponentValueChangeEvent<DatePicker, LocalDate>, LocalDate, SuperDatePicker> {
+                   WithValueMixin<AbstractField.ComponentValueChangeEvent<DatePicker, LocalDate>, LocalDate, SuperDatePicker>,
+                   WithIdMixin<SuperDatePicker> {
 
     private DatePattern datePattern;
 

@@ -8,6 +8,7 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.templatemodel.TemplateModel;
+import org.vaadin.miki.markers.WithIdMixin;
 
 /**
  * Server-side component that listens to {@code beforeunload} events.
@@ -18,7 +19,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
  */
 @JsModule("./unload-observer.js")
 @Tag("unload-observer")
-public class UnloadObserver extends PolymerTemplate<TemplateModel> {
+public class UnloadObserver extends PolymerTemplate<TemplateModel> implements WithIdMixin<UnloadObserver> {
 
     private boolean queryingOnUnload;
 

@@ -7,6 +7,8 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.shared.Registration;
+import org.vaadin.miki.markers.WithIdMixin;
+import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.ArrayList;
 
@@ -15,7 +17,10 @@ import java.util.ArrayList;
  * @author miki
  * @since 2020-04-24
  */
-public class ObservedField extends Composite<ObservedField.ObservedFieldElement> implements HasValue<HasValue.ValueChangeEvent<Boolean>, Boolean>, HasStyle {
+public class ObservedField extends Composite<ObservedField.ObservedFieldElement>
+        implements HasValue<AbstractField.ComponentValueChangeEvent<ObservedField, Boolean>, Boolean>, HasStyle,
+                   WithValueMixin<AbstractField.ComponentValueChangeEvent<ObservedField, Boolean>, Boolean, ObservedField>,
+                   WithIdMixin<ObservedField> {
 
     /**
      * This class gives a nice tag name to {@link ObservedField} in the browser.
@@ -30,7 +35,7 @@ public class ObservedField extends Composite<ObservedField.ObservedFieldElement>
      */
     public static final String REQUIRED_INDICATOR_VISIBLE = "required-indicator-visible";
 
-    private final ArrayList<ValueChangeListener<? super ValueChangeEvent<Boolean>>> listeners = new ArrayList<>();
+    private final ArrayList<ValueChangeListener<? super AbstractField.ComponentValueChangeEvent<ObservedField, Boolean>>> listeners = new ArrayList<>();
 
     private final boolean onlyToggleOnce;
 
@@ -107,7 +112,7 @@ public class ObservedField extends Composite<ObservedField.ObservedFieldElement>
     }
 
     @Override
-    public Registration addValueChangeListener(ValueChangeListener<? super ValueChangeEvent<Boolean>> valueChangeListener) {
+    public Registration addValueChangeListener(ValueChangeListener<? super AbstractField.ComponentValueChangeEvent<ObservedField, Boolean>> valueChangeListener) {
         this.listeners.add(valueChangeListener);
         return () -> this.listeners.remove(valueChangeListener);
     }
