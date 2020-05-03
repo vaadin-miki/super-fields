@@ -407,10 +407,10 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle, 
      * Sets the new {@link TabHandler} to use.
      * Causes all current tab contents to be removed with the current {@link TabHandler}, then added and (de)selected with the new one.
      * Does not trigger value change events nor generating tab headers/contents, as only the handling of tabs is changed.
-     * @param tabHandler A {@link TabHandler}. If {@code null} is passed, {@link TabHandlers#VISIBILITY_HANDLER} will be used.
+     * @param tabHandler A {@link TabHandler}. If {@code null} is passed, {@link TabHandlers#REMOVING_HANDLER} will be used.
      */
     public void setTabHandler(TabHandler tabHandler) {
-        tabHandler = Optional.ofNullable(tabHandler).orElse(TabHandlers.VISIBILITY_HANDLER);
+        tabHandler = Optional.ofNullable(tabHandler).orElse(TabHandlers.REMOVING_HANDLER);
         // do this only if the handlers are different
         if(!Objects.equals(this.tabHandler, tabHandler)) {
 
@@ -445,7 +445,7 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle, 
 
     /**
      * Chains {@link #setTabHandler(TabHandler)} and returns itself.
-     * @param tabHandler A {@link TabHandler}. If {@code null} is passed, {@link TabHandlers#VISIBILITY_HANDLER} will be used.
+     * @param tabHandler A {@link TabHandler}. If {@code null} is passed, {@link TabHandlers#REMOVING_HANDLER} will be used.
      * @return This.
      * @see #setTabHandler(TabHandler)
      */
