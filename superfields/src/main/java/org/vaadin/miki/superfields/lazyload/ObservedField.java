@@ -7,6 +7,7 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.shared.Registration;
+import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.ArrayList;
@@ -18,7 +19,8 @@ import java.util.ArrayList;
  */
 public class ObservedField extends Composite<ObservedField.ObservedFieldElement>
         implements HasValue<AbstractField.ComponentValueChangeEvent<ObservedField, Boolean>, Boolean>, HasStyle,
-                   WithValueMixin<AbstractField.ComponentValueChangeEvent<ObservedField, Boolean>, Boolean, ObservedField> {
+                   WithValueMixin<AbstractField.ComponentValueChangeEvent<ObservedField, Boolean>, Boolean, ObservedField>,
+                   WithIdMixin<ObservedField> {
 
     /**
      * This class gives a nice tag name to {@link ObservedField} in the browser.

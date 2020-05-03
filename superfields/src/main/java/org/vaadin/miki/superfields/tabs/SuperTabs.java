@@ -12,6 +12,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import org.vaadin.miki.markers.HasLabel;
+import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithItemsMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 @Tag("super-tabs")
 public class SuperTabs<T>
         extends CustomField<T>
-        implements HasLabel, HasStyle, WithItemsMixin<T, SuperTabs<T>>,
+        implements HasLabel, HasStyle, WithItemsMixin<T, SuperTabs<T>>, WithIdMixin<SuperTabs<T>>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SuperTabs<T>> {
 
     /**

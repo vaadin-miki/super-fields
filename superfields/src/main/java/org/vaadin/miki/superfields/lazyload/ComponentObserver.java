@@ -11,6 +11,7 @@ import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.miki.markers.WithIdMixin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ import java.util.Optional;
  */
 @JsModule("./component-observer.js")
 @Tag("component-observer")
-public class ComponentObserver extends PolymerTemplate<ComponentObserver.ComponentObserverModel> {
+public class ComponentObserver extends PolymerTemplate<ComponentObserver.ComponentObserverModel> implements WithIdMixin<ComponentObserver> {
 
     /**
      * Template model. Not really used.
