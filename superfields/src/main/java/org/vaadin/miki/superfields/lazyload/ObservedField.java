@@ -1,7 +1,9 @@
 package org.vaadin.miki.superfields.lazyload;
 
 import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
@@ -69,13 +71,9 @@ public class ObservedField extends Composite<ObservedField.ObservedFieldElement>
         this.onlyToggleOnce = onlyToggleOnce;
         this.addClassName(this.getClass().getSimpleName().toLowerCase());
         this.getContent().addComponentObservationListener(this::onComponentObserved);
+        this.getContent().addDetachListener(this::onObserverDetached);
+        this.getContent().addAttachListener(this::onObserverAttached);
         this.getContent().observe(this);
-    }
-
-    private void onComponentObserved(ComponentObservationEvent event) {
-        this.setValue(event.isFullyVisible());
-        if(event.isFullyVisible() && this.onlyToggleOnce)
-            event.getSource().unobserve(this);
     }
 
     /**
@@ -87,6 +85,24 @@ public class ObservedField extends Composite<ObservedField.ObservedFieldElement>
     public ObservedField(boolean onlyToggleOnce, ValueChangeListener<HasValue.ValueChangeEvent<Boolean>> listener) {
         this(onlyToggleOnce);
         this.addValueChangeListener(listener);
+    }
+
+    private void onComponentObserved(ComponentObservationEvent event) {
+        this.setValue(event.isFullyVisible());
+        if(event.isFullyVisible() && this.onlyToggleOnce)
+            event.getSource().unobserve(this);
+    }
+
+    private void onObserverAttached(AttachEvent attachEvent) {
+        // make sure the observer is observing
+        if(!this.getContent().isObserving(this))
+            this.getContent().observe(this);
+    }
+
+    private void onObserverDetached(DetachEvent event) {
+        // when observer has been detached, it means this component has been also detached
+        // so it is now invisible
+        this.setValue(false);
     }
 
     /**
@@ -113,6 +129,7 @@ public class ObservedField extends Composite<ObservedField.ObservedFieldElement>
 
     @Override
     public Registration addValueChangeListener(ValueChangeListener<? super AbstractField.ComponentValueChangeEvent<ObservedField, Boolean>> valueChangeListener) {
+        // why not eventBus? well, good luck in figuring out the generics
         this.listeners.add(valueChangeListener);
         return () -> this.listeners.remove(valueChangeListener);
     }
