@@ -1,7 +1,9 @@
 package org.vaadin.miki.superfields.lazyload;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
@@ -26,12 +28,7 @@ import java.util.Optional;
  */
 @JsModule("./component-observer.js")
 @Tag("component-observer")
-public class ComponentObserver extends PolymerTemplate<ComponentObserver.ComponentObserverModel> implements WithIdMixin<ComponentObserver> {
-
-    /**
-     * Template model. Not really used.
-     */
-    public interface ComponentObserverModel extends TemplateModel {}
+public class ComponentObserver extends PolymerTemplate<TemplateModel> implements WithIdMixin<ComponentObserver> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ComponentObserver.class);
 
@@ -40,7 +37,15 @@ public class ComponentObserver extends PolymerTemplate<ComponentObserver.Compone
     private final Map<String, Component> observedComponents = new HashMap<>();
     private final Map<Component, Registration> observedDetachedListeners = new HashMap<>();
 
+    private final Element rootElement;
+    private final String rootMargin;
+
     private int sequence = 0;
+
+    /**
+     * This component may be removed from DOM, client needs to be reinitialised each time.
+     */
+    private boolean clientInitialised = false;
 
     /**
      * Creates the observer using entire document as viewport.
@@ -60,13 +65,35 @@ public class ComponentObserver extends PolymerTemplate<ComponentObserver.Compone
         this.ranges = (visibilityRanges == null || visibilityRanges.length == 0) ?
                 new double[]{0.0d, 1.0d} :
                 visibilityRanges;
-        final Element rootElement = viewportRoot == null ? null : viewportRoot.getElement();
+        this.rootElement = viewportRoot == null ? null : viewportRoot.getElement();
+        this.rootMargin = rootMargin;
+        this.initClient();
+    }
 
-        this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-                this.getElement().callJsFunction(
-                        "initObserver",
-                        rootElement, rootMargin, JsonSerializer.toJson(ranges)
-                )));
+    protected void initClient() {
+        if(!this.clientInitialised) {
+            this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
+                    this.getElement().callJsFunction(
+                            "initObserver",
+                            rootElement, rootMargin, JsonSerializer.toJson(ranges)
+                    )));
+            this.observedComponents.forEach(this::observe);
+            this.clientInitialised = true;
+        }
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        // indicate the client code needs to be redone
+        this.clientInitialised = false;
+        super.onDetach(detachEvent);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        // make sure the client is properly set up
+        this.initClient();
+        super.onAttach(attachEvent);
     }
 
     @ClientCallable
@@ -84,6 +111,20 @@ public class ComponentObserver extends PolymerTemplate<ComponentObserver.Compone
     }
 
     /**
+     * Observes the given component with given index. Will override the component currently associated with given index, if the was any.
+     * @param indexString Index string to register the component with.
+     * @param component Component to observe.
+     */
+    protected void observe(String indexString, Component component) {
+        this.observedComponents.put(indexString, component);
+        this.observedDetachedListeners.put(component, component.addDetachListener(event -> this.unobserve(event.getSource())));
+
+        this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, executionContext ->
+                this.getElement().callJsFunction("observe", component.getElement(), indexString)
+        ));
+    }
+
+    /**
      * Starts observation of given components.
      * If a given component is already being observed, it will not be observed an additional time.
      * Given component will stop being observed when it gets detached or when {@link #unobserve(Component...)} method is called.
@@ -93,12 +134,7 @@ public class ComponentObserver extends PolymerTemplate<ComponentObserver.Compone
         for (Component component : components)
             if(!this.observedComponents.containsValue(component)) {
                 final String indexString = "component-observer-"+(this.sequence++);
-                this.observedComponents.put(indexString, component);
-                this.observedDetachedListeners.put(component, component.addDetachListener(event -> this.unobserve(event.getSource())));
-
-                this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, executionContext ->
-                        this.getElement().callJsFunction("observe", component.getElement(), indexString)
-                ));
+                this.observe(indexString, component);
             }
     }
 

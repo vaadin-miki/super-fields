@@ -46,13 +46,13 @@ export class ComponentObserver extends PolymerElement {
      */
     unobserve(what) {
         delete what.dataset.observerIndex; // clears data-* attribute
-        this.observer.unobserve(what);
+        // on detach it seems that observer gets undefined
+        // since components get unobserved on detach as well, this is a safeguard
+        if (this.observer) {
+            this.observer.unobserve(what);
+        }
     }
 
-    static get properties() {
-        return {
-        };
-    }
 }
 
 customElements.define(ComponentObserver.is, ComponentObserver);
