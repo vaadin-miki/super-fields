@@ -9,6 +9,8 @@ This is a collection of hopefully useful Vaadin 14 components, grouped into seve
 
 [SuperFields are also available in Vaadin Directory](https://vaadin.com/directory/component/superfields). If you find this library useful, consider rating it there or leaving a review. Thanks :)
 
+SuperFields require Java 10 or newer and work with the latest Vaadin 14 LTS version.
+
 ### Maven setup
 
 This is the relevant dependency:
@@ -16,7 +18,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>org.vaadin.miki</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.4.0</version>
+   <version>0.6.0</version>
 </dependency>
 ```
 
@@ -33,6 +35,10 @@ Note that not every version will be released in the Vaadin Directory, as it has 
 All releases are available:
 * as binaries under [project's releases](https://github.com/vaadin-miki/super-fields/releases)
 * as Maven packages from [GitHub packages](https://github.com/vaadin-miki/super-fields/packages/177670)
+
+### Java 8
+
+Some versions compatible with Java 8 may be released only to the Vaadin Directory. The repository has a branch `java-8`. The most recent version that supports Java 8 is `0.6.0.java8`.
 
 ## Contribution guidelines
 

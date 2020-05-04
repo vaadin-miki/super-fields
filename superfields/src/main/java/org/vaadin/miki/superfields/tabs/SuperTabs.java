@@ -1,6 +1,9 @@
 package org.vaadin.miki.superfields.tabs;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
@@ -9,6 +12,9 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import org.vaadin.miki.markers.HasLabel;
+import org.vaadin.miki.markers.WithIdMixin;
+import org.vaadin.miki.markers.WithItemsMixin;
+import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -19,24 +25,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * Tab sheet component that also is a field.
+ * Configurable tab sheet component that also is a field.
+ *
  * @param <T> Type of value.
  * @author miki
  * @since 2020-04-10
  */
 @Tag("super-tabs")
-public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
+public class SuperTabs<T>
+        extends CustomField<T>
+        implements HasLabel, HasStyle, WithItemsMixin<T, SuperTabs<T>>, WithIdMixin<SuperTabs<T>>,
+                   WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SuperTabs<T>> {
+
+    /**
+     * Default container for tab contents.
+     */
+    public static final Supplier<Div> DEFAULT_TAB_CONTENTS_CONTAINER = Div::new;
 
     private final Tabs tabs = new Tabs();
 
-    private final Div contents = new Div();
+    private final HasComponents contents;
 
     private final Map<Tab, Component> tabsToContents = new HashMap<>();
 
     private final List<Map.Entry<T, Tab>> values = new ArrayList<>();
+
+    private TabHandler tabHandler;
 
     private TabHeaderGenerator<T> tabHeaderGenerator;
 
@@ -45,14 +63,24 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
     private boolean customValueAllowed = false;
 
     /**
-     * Creates the component with no tabs and default {@link TabHeaderGenerator} and {@link TabContentGenerator}.
+     * Creates the component with no tabs and default {@link TabHandler}, {@link TabHeaderGenerator} and {@link TabContentGenerator}.
      */
     public SuperTabs() {
-        this(null);
+        this(DEFAULT_TAB_CONTENTS_CONTAINER);
     }
 
     /**
-     * Creates the component with given {@link TabContentGenerator} and tabs, but with default {@link TabHeaderGenerator}.
+     * Creates the component with no tabs and default {@link TabHandler}, {@link TabHeaderGenerator} and {@link TabContentGenerator}, overriding default main layout component for the tab contents.
+     * @param mainContentSupplier A callback to construct an instance of a component into which tab contents is put.
+     * @param <C> Generic type to ensure the supplier gives a valid {@link Component} that implements {@link HasComponents}.
+     */
+    @SafeVarargs
+    public <C extends Component & HasComponents> SuperTabs(Supplier<C> mainContentSupplier, T... values) {
+        this(null, mainContentSupplier, null, null, null, values);
+    }
+
+    /**
+     * Creates the component with given {@link TabContentGenerator} and tabs, but with default {@link TabHeaderGenerator} and {@link TabHandler}.
      * @param tabContentGenerator {@link TabContentGenerator} to construct content for tabs.
      * @param values Values to use.
      */
@@ -62,7 +90,7 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
     }
 
     /**
-     * Creates the component with given {@link TabHeaderGenerator}, {@link TabContentGenerator} and tabs.
+     * Creates the component with given {@link TabHeaderGenerator}, {@link TabContentGenerator} and tabs, but default {@link TabHandler}.
      * @param tabHeaderGenerator {@link TabHeaderGenerator} to construct tab headers.
      * @param tabContentGenerator {@link TabContentGenerator} to construct content for tabs.
      * @param values Values to use.
@@ -73,7 +101,7 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
     }
 
     /**
-     * Creates the component with given {@link TabHeaderGenerator}, {@link TabContentGenerator} and tabs, overriding the default value from {@code null} to the one provided.
+     * Creates the component with default {@link TabHandler}, given {@link TabHeaderGenerator}, {@link TabContentGenerator} and tabs, overriding the default value from {@code null} to the one provided.
      * @param defaultValue Default value that corresponds to no tab selected.
      * @param tabHeaderGenerator {@link TabHeaderGenerator} to construct tab headers.
      * @param tabContentGenerator {@link TabContentGenerator} to construct content for tabs.
@@ -81,13 +109,48 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
      */
     @SafeVarargs
     public SuperTabs(T defaultValue, TabHeaderGenerator<T> tabHeaderGenerator, TabContentGenerator<T> tabContentGenerator, T... values) {
+        this(defaultValue, null, tabHeaderGenerator, tabContentGenerator, values);
+    }
+
+    /**
+     * Creates the component with given {@link TabHandler}, {@link TabHeaderGenerator}, {@link TabContentGenerator} and tabs, overriding the default value from {@code null} to the one provided.
+     * @param defaultValue Default value that corresponds to no tab selected.
+     * @param tabHandler {@link TabHandler} to use.
+     * @param tabHeaderGenerator {@link TabHeaderGenerator} to construct tab headers.
+     * @param tabContentGenerator {@link TabContentGenerator} to construct content for tabs.
+     * @param values Values to use.
+     * @see TabHandlers
+     */
+    @SafeVarargs
+    public SuperTabs(T defaultValue, TabHandler tabHandler, TabHeaderGenerator<T> tabHeaderGenerator, TabContentGenerator<T> tabContentGenerator, T... values) {
+        this(defaultValue, DEFAULT_TAB_CONTENTS_CONTAINER, tabHandler, tabHeaderGenerator, tabContentGenerator, values);
+    }
+
+    /**
+     * Creates the component with given {@link TabHandler}, {@link TabHeaderGenerator}, {@link TabContentGenerator} and tabs, overriding the default value from {@code null} to the one provided and overriding default layout component for tab contents.
+     * @param defaultValue Default value that corresponds to no tab selected.
+     * @param mainContentSupplier A callback to construct an instance of a component into which tab contents is put.
+     * @param tabHandler {@link TabHandler} to use.
+     * @param tabHeaderGenerator {@link TabHeaderGenerator} to construct tab headers.
+     * @param tabContentGenerator {@link TabContentGenerator} to construct content for tabs.
+     * @param values Values to use.
+     * @param <C> Generic type to ensure the supplier gives a valid {@link Component} that implements {@link HasComponents}.
+     * @see TabHandlers
+     */
+    @SafeVarargs
+    public <C extends Component & HasComponents> SuperTabs(T defaultValue, Supplier<C> mainContentSupplier, TabHandler tabHandler, TabHeaderGenerator<T> tabHeaderGenerator, TabContentGenerator<T> tabContentGenerator, T... values) {
         super(defaultValue);
+        this.setTabHandler(tabHandler);
         this.setTabHeaderGenerator(tabHeaderGenerator);
         this.setTabContentGenerator(tabContentGenerator);
         this.tabs.setAutoselect(false);
         this.tabs.setWidthFull();
-        this.contents.setWidthFull();
-        this.add(this.tabs, this.contents);
+        final C mainContents = mainContentSupplier.get();
+        if(mainContents instanceof HasSize)
+            ((HasSize) mainContents).setWidthFull();
+        this.add(this.tabs, mainContents);
+        this.contents = mainContents;
+
         this.tabs.addSelectedChangeListener(this::onTabChanged);
         this.addTab(values);
     }
@@ -95,10 +158,10 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
     private void onTabChanged(Tabs.SelectedChangeEvent event) {
         // hide previous contents
         if(event.getPreviousTab() != null && this.tabsToContents.containsKey(event.getPreviousTab()))
-            this.tabsToContents.get(event.getPreviousTab()).setVisible(false);
+            this.tabHandler.tabDeselected(event.getPreviousTab(), this.tabsToContents.get(event.getPreviousTab()), this.contents);
         // show new contents
         if(event.getSelectedTab() != null && this.tabsToContents.containsKey(event.getSelectedTab()))
-            this.tabsToContents.get(event.getSelectedTab()).setVisible(true);
+            this.tabHandler.tabSelected(event.getSelectedTab(), this.tabsToContents.get(event.getSelectedTab()), this.contents);
         // trigger value change
         this.updateValue();
     }
@@ -125,8 +188,7 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
         this.tabsToContents.put(tab, content);
         this.values.add(new AbstractMap.SimpleImmutableEntry<>(value, tab));
         this.tabs.add(tab);
-        content.setVisible(false);
-        this.contents.add(content);
+        this.tabHandler.tabAdded(tab, content, this.contents);
         if(select) {
             if (!Objects.equals(this.tabs.getSelectedTab(), tab))
                 this.tabs.setSelectedTab(tab);
@@ -181,11 +243,11 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
      * @param header Header being removed.
      */
     protected void removeExistingTab(T value, Tab header) {
-        Component component = this.tabsToContents.get(header);
-        this.contents.remove(component);
         if(Objects.equals(header, this.tabs.getSelectedTab()))
             this.tabs.setSelectedTab(null);
         this.tabs.remove(header);
+        Component component = this.tabsToContents.get(header);
+        this.tabHandler.tabRemoved(header, component, this.contents);
         this.values.removeIf(e -> Objects.equals(value, e.getKey()));
     }
 
@@ -281,6 +343,17 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
     }
 
     /**
+     * Chains {@link #setTabContentGenerator(TabContentGenerator)} and returns itself.
+     * @param tabContentGenerator A {@link TabContentGenerator}.
+     * @return This.
+     * @see #setTabContentGenerator(TabContentGenerator)
+     */
+    public SuperTabs<T> withTabContentGenerator(TabContentGenerator<T> tabContentGenerator) {
+        this.setTabContentGenerator(tabContentGenerator);
+        return this;
+    }
+
+    /**
      * Sets the generator responsible for providing tabs (headers) for values.
      * It is called first time a tab is created. When the generator is changed, the new one has no effect on previously generated tabs.
      * @param tabHeaderGenerator {@link TabHeaderGenerator}. If {@code null}, it will be replaced with a default function.
@@ -298,6 +371,17 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
     }
 
     /**
+     * Chains {@link #setTabHeaderGenerator(TabHeaderGenerator)} and returns itself.
+     * @param tabHeaderGenerator A {@link TabHeaderGenerator}.
+     * @return This.
+     * @see #setTabHeaderGenerator(TabHeaderGenerator)
+     */
+    public SuperTabs<T> withTabHeaderGenerator(TabHeaderGenerator<T> tabHeaderGenerator) {
+        this.setTabHeaderGenerator(tabHeaderGenerator);
+        return this;
+    }
+
+    /**
      * Whether or not custom values may be set through {@link #setValue(Object)}.
      * @return {@code true} when selecting a value that does not have a corresponding tab results in adding a new tab, {@code false} otherwise (and by default).
      */
@@ -311,5 +395,72 @@ public class SuperTabs<T> extends CustomField<T> implements HasLabel, HasStyle {
      */
     public void setCustomValueAllowed(boolean customValueAllowed) {
         this.customValueAllowed = customValueAllowed;
+    }
+
+    /**
+     * Chains {@link #setCustomValueAllowed(boolean)} and returns itself.
+     * @param customValueAllowed Whether or not to allow setting custom value.
+     * @return This.
+     * @see #setCustomValueAllowed(boolean)
+     */
+    public SuperTabs<T> withCustomValueAllowed(boolean customValueAllowed) {
+        this.setCustomValueAllowed(customValueAllowed);
+        return this;
+    }
+
+    /**
+     * Sets the new {@link TabHandler} to use.
+     * Causes all current tab contents to be removed with the current {@link TabHandler}, then added and (de)selected with the new one.
+     * Does not trigger value change events nor generating tab headers/contents, as only the handling of tabs is changed.
+     * @param tabHandler A {@link TabHandler}. If {@code null} is passed, {@link TabHandlers#REMOVING_HANDLER} will be used.
+     */
+    public void setTabHandler(TabHandler tabHandler) {
+        tabHandler = Optional.ofNullable(tabHandler).orElse(TabHandlers.REMOVING_HANDLER);
+        // do this only if the handlers are different
+        if(!Objects.equals(this.tabHandler, tabHandler)) {
+
+            // remove all tabs using current tab handler
+            this.values.stream().map(Map.Entry::getValue).forEach(tab -> {
+                // perform cleanup if needed: deselect the tab first
+                if(tab.isSelected())
+                    this.tabHandler.tabDeselected(tab, this.tabsToContents.get(tab), this.contents);
+                this.tabHandler.tabRemoved(tab, this.tabsToContents.get(tab), this.contents);
+            });
+
+            // add tabs using new tab handler
+            this.tabHandler = tabHandler;
+            this.values.stream().map(Map.Entry::getValue).forEach(tabHeader -> {
+                Component tabContents = this.tabsToContents.get(tabHeader);
+                this.tabHandler.tabAdded(tabHeader, tabContents, this.contents);
+                // select or deselect tabs
+                if(tabHeader.isSelected())
+                    this.tabHandler.tabSelected(tabHeader, tabContents, this.contents);
+                else this.tabHandler.tabDeselected(tabHeader, tabContents, this.contents);
+            });
+        }
+    }
+
+    /**
+     * Returns the current {@link TabHandler}.
+     * @return A {@link TabHandler}. Never {@code null}.
+     */
+    public TabHandler getTabHandler() {
+        return this.tabHandler;
+    }
+
+    /**
+     * Chains {@link #setTabHandler(TabHandler)} and returns itself.
+     * @param tabHandler A {@link TabHandler}. If {@code null} is passed, {@link TabHandlers#REMOVING_HANDLER} will be used.
+     * @return This.
+     * @see #setTabHandler(TabHandler)
+     */
+    public SuperTabs<T> withTabHandler(TabHandler tabHandler) {
+        this.setTabHandler(tabHandler);
+        return this;
+    }
+
+    @Override
+    public void setItems(Collection<T> collection) {
+        this.addTabs(collection);
     }
 }

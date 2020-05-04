@@ -8,7 +8,7 @@
     <artifactId>superfields</artifactId>
     <name>SuperFields</name>
     <description>Code for various V14+ fields and other components.</description>
-    <version>0.5.1.java8</version>
+    <version>0.6.0.java8</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -86,6 +86,7 @@
             <!-- Replace artifactId with vaadin-core to use only free components -->
             <artifactId>vaadin</artifactId>
             <version>${vaadin.version}</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>com.vaadin</groupId>

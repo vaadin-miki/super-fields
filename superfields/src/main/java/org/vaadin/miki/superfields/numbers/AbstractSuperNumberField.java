@@ -1,5 +1,6 @@
 package org.vaadin.miki.superfields.numbers;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.FocusNotifier;
@@ -19,6 +20,7 @@ import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
+import org.vaadin.miki.markers.WithValueMixin;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -36,7 +38,8 @@ import java.util.Optional;
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
         implements HasPrefixAndSuffix, HasLabel, HasPlaceholder, HasTitle, HasLocale,
-                   WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF> {
+                   WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
+                   WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 

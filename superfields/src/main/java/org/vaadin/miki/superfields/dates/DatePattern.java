@@ -1,5 +1,6 @@
 package org.vaadin.miki.superfields.dates;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -7,7 +8,9 @@ import java.util.Objects;
  * @author miki
  * @since 2020-04-23
  */
-public class DatePattern {
+public class DatePattern implements Serializable {
+
+    private static final long serialVersionUID = 20200423L;
 
     /**
      * Defines available display order of dates.

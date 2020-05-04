@@ -2,6 +2,7 @@ package org.vaadin.miki;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -18,6 +19,7 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.superfields.dates.DatePattern;
@@ -26,20 +28,27 @@ import org.vaadin.miki.superfields.dates.HasDatePattern;
 import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
+import org.vaadin.miki.superfields.lazyload.ComponentObserver;
 import org.vaadin.miki.superfields.lazyload.LazyLoad;
+import org.vaadin.miki.superfields.lazyload.ObservedField;
 import org.vaadin.miki.superfields.numbers.AbstractSuperNumberField;
 import org.vaadin.miki.superfields.numbers.SuperBigDecimalField;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 import org.vaadin.miki.superfields.numbers.SuperIntegerField;
 import org.vaadin.miki.superfields.numbers.SuperLongField;
 import org.vaadin.miki.superfields.tabs.SuperTabs;
+import org.vaadin.miki.superfields.tabs.TabHandler;
+import org.vaadin.miki.superfields.tabs.TabHandlers;
+import org.vaadin.miki.superfields.unload.UnloadObserver;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Demo app for various SuperFields and other components.
@@ -48,6 +57,7 @@ import java.util.function.Consumer;
  */
 @CssImport("./styles/demo-styles.css")
 @Route
+@PageTitle("SuperFields Demo")
 public class MainView extends VerticalLayout {
 
     private final Map<Class<?>, Component> components = new LinkedHashMap<>();
@@ -139,11 +149,79 @@ public class MainView extends VerticalLayout {
 
     private void buildHasDatePattern(Component component, Consumer<Component[]> callback) {
         final ComboBox<DatePattern> patterns = new ComboBox<>("Select date display pattern:", DatePatterns.YYYY_MM_DD, DatePatterns.M_D_YYYY_SLASH, DatePatterns.DD_MM_YYYY_DOTTED, DatePatterns.D_M_YY_DOTTED);
+        final Button clearPattern = new Button("Clear pattern", event -> ((HasDatePattern)component).setDatePattern(null));
+        clearPattern.setDisableOnClick(true);
+        final Component clearPatternOrContainer;
+        // this is affected by issue #87 (and the way #81 was fixed)
+        if(component instanceof SuperDatePicker)
+            clearPatternOrContainer = clearPattern;
+        else {
+            clearPattern.setEnabled(false);
+            Icon icon = new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
+            icon.setColor("red");
+            icon.getElement().setAttribute("title", "Setting pattern does not work out of the box for SuperDateTimePicker. See issue #87, https://github.com/vaadin-miki/super-fields/issues/87.");
+            clearPatternOrContainer = new HorizontalLayout(clearPattern, icon);
+            ((HorizontalLayout)clearPatternOrContainer).setAlignItems(Alignment.CENTER);
+        }
         patterns.addValueChangeListener(event -> {
-            if(event.getValue() != null)
-                ((HasDatePattern)component).setDatePattern(event.getValue());
+            ((HasDatePattern) component).setDatePattern(event.getValue());
+            clearPattern.setEnabled(true);
         });
-        callback.accept(new Component[]{patterns});
+        callback.accept(new Component[]{patterns, clearPatternOrContainer});
+    }
+
+    private void buildObservedField(Component component, Consumer<Component[]> callback) {
+        final Span description = new Span("An instance of ObservedField is added below these texts. It has a value change listener that updates the counter whenever the field is shown on screen, for example as a result of resizing window or scrolling. The value does not change when the field gets hidden due to styling (display: none). The field itself in an empty HTML and it cannot be normally seen, but it still is rendered by the browser.");
+        final Span counterText = new Span("The field has become visible this many times so far: ");
+        final Span counterLabel = new Span("0");
+        final Span instruction = new Span("The field is rendered below this text. Resize the window a few times to hide this line to see the value change events being triggered.");
+        counterLabel.addClassName("counter-label");
+        ((ObservedField)component).addValueChangeListener(event -> {
+            if(event.getValue())
+                counterLabel.setText(String.valueOf(Integer.parseInt(counterLabel.getText()) + 1));
+        });
+        callback.accept(new Component[]{description, new HorizontalLayout(counterText, counterLabel), instruction});
+    }
+
+    private void buildIntersectionObserver(Component component, Consumer<Component[]> callback) {
+        for(String s: new String[]{"span-one", "span-two", "span-three"}) {
+            Span span = new Span("This text is observed by the intersection observer. Resize the window to make it disappear and see what happens. It has id of "+s+". ");
+            span.setId(s);
+            ((ComponentObserver)component).observe(span);
+            callback.accept(new Component[]{span});
+        }
+        ((ComponentObserver) component).addComponentObservationListener(event -> {
+            if(event.isFullyVisible()) {
+                Notification.show("Component with id " + event.getObservedComponent().getId().orElse("(no id)") + " is now fully visible.");
+                if(event.getObservedComponent().getId().orElse("").equals("span-two")) {
+                    event.getSource().unobserve(event.getObservedComponent());
+                    Notification.show("Component with id span-two has been unobserved.");
+                }
+            }
+            else if(event.isNotVisible())
+                Notification.show("Component with id "+event.getObservedComponent().getId().orElse("(no id)")+" is now not visible.");
+        });
+    }
+
+    private void buildUnloadObserver(Component component, Consumer<Component[]> callback) {
+        final Checkbox query = new Checkbox("Query on window unload?", event -> ((UnloadObserver)component).setQueryingOnUnload(event.getValue()));
+        final Span description = new Span("This component optionally displays a browser-native window when leaving this app. Select the checkbox above and try to close the window or tab to see it in action.");
+        final Span counterText = new Span("There were this many attempts to leave this app so far: ");
+        final Span counter = new Span("0");
+        ((UnloadObserver)component).addUnloadListener(event -> counter.setText(String.valueOf(Integer.parseInt(counter.getText())+1)));
+
+        callback.accept(new Component[]{query, description, new HorizontalLayout(counterText, counter)});
+    }
+
+    private void buildSuperTabs(Component component, Consumer<Component[]> callback) {
+        final ComboBox<TabHandler> tabHandlers = new ComboBox<>("Select a tab handler: ",
+                TabHandlers.VISIBILITY_HANDLER, TabHandlers.REMOVING_HANDLER, TabHandlers.selectedContentHasClassName("selected-tab"));
+        tabHandlers.addValueChangeListener(event -> {
+            if(event.getValue() != null)
+                ((SuperTabs<?>)component).setTabHandler(event.getValue());
+        });
+
+        callback.accept(new Component[]{tabHandlers});
     }
 
     private Component buildContentsFor(Class<?> type) {
@@ -177,8 +255,16 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperLongField.class, new SuperLongField("Long (11 digits):").withMaximumIntegerDigits(11));
         this.components.put(SuperDoubleField.class, new SuperDoubleField("Double (8 + 4 digits):").withMaximumIntegerDigits(8).withMaximumFractionDigits(4));
         this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1));
-        this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:"));
-        this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:"));
+        this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
+        // note: issue #87 prevents setting date pattern before the page is fully rendered
+        this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH));
+        this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
+                .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
+                .withItems("Java friendly", "Super-configurable", "Open source")
+        );
+        this.components.put(ObservedField.class, new ObservedField());
+        this.components.put(ComponentObserver.class, new ComponentObserver());
+        this.components.put(UnloadObserver.class, new UnloadObserver(false));
         this.components.put(ItemGrid.class, new ItemGrid<Class<? extends Component>>(
                 null,
                 () -> {
@@ -197,7 +283,9 @@ public class MainView extends VerticalLayout {
                 },
                 SuperIntegerField.class, SuperLongField.class, SuperDoubleField.class,
                 SuperBigDecimalField.class, SuperDatePicker.class, SuperDateTimePicker.class,
-                SuperTabs.class, ItemGrid.class)
+                SuperTabs.class, LazyLoad.class, ObservedField.class,
+                ComponentObserver.class, UnloadObserver.class, ItemGrid.class
+                )
             .withRowComponentGenerator(rowNumber -> {
                     HorizontalLayout result = new HorizontalLayout();
                     result.setSpacing(true);
@@ -212,6 +300,10 @@ public class MainView extends VerticalLayout {
         this.contentBuilders.put(HasValue.class, this::buildHasValue);
         this.contentBuilders.put(ItemGrid.class, this::buildItemGrid);
         this.contentBuilders.put(HasDatePattern.class, this::buildHasDatePattern);
+        this.contentBuilders.put(SuperTabs.class, this::buildSuperTabs);
+        this.contentBuilders.put(ObservedField.class, this::buildObservedField);
+        this.contentBuilders.put(ComponentObserver.class, this::buildIntersectionObserver);
+        this.contentBuilders.put(UnloadObserver.class, this::buildUnloadObserver);
 
         this.afterLocaleChange.put(SuperIntegerField.class, o -> ((SuperIntegerField)o).setMaximumIntegerDigits(6));
         this.afterLocaleChange.put(SuperLongField.class, o -> ((SuperLongField)o).setMaximumIntegerDigits(11));

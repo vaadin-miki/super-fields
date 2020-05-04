@@ -8,6 +8,10 @@ import java.util.function.Supplier;
 
 /**
  * A helper class for setting locale and I18N.
+ * Internal use only.
+ *
+ * @author miki
+ * @since 2020-04-10
  */
 final class SuperDatePickerI18nHelper {
 
