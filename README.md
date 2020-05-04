@@ -18,7 +18,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>org.vaadin.miki</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.5.0</version>
+   <version>0.6.0</version>
 </dependency>
 ```
 
@@ -38,7 +38,7 @@ All releases are available:
 
 ### Java 8
 
-Some versions compatible with Java 8 may be released only to the Vaadin Directory. The repository has a branch `java-8`. The most recent version that supports Java 8 is `0.5.0.java8`.
+Some versions compatible with Java 8 may be released only to the Vaadin Directory. The repository has a branch `java-8`. The most recent version that supports Java 8 is `0.6.0.java8`.
 
 ## Contribution guidelines
 
