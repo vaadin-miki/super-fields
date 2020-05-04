@@ -11,7 +11,7 @@ import java.util.Optional;
 public final class ReflectTools {
 
     /**
-     * Attempts to get the value of a {@link Field} of a given name that is declared in given class. {@link Field#trySetAccessible()} will be used.
+     * Attempts to get the value of a {@link Field} of a given name that is declared in given class. {@link Field#setAccessible(boolean)} will be used.
      * This method will attempt to find a field in the class of the given object and then it will go up the hierarchy until the field of given name and compatible type is found.
      * When a field is found, an attempt to {@code trySetAccessible} will be made, followed by casting it to the provided value type.
      * When all of the above is successful, an optional with the value of the field for the given object will be returned.
@@ -37,8 +37,9 @@ public final class ReflectTools {
             if(field != null && valueType.isAssignableFrom(field.getType()))
                 typeToCheck = null;
         }
-        if(field != null && field.trySetAccessible()) {
+        if(field != null) {
             try {
+                field.setAccessible(true);
                 return Optional.ofNullable(valueType.cast(field.get(instance)));
             } catch (IllegalAccessException | ClassCastException e) {
                 // ignored
