@@ -42,6 +42,7 @@ import org.vaadin.miki.superfields.tabs.TabHandlers;
 import org.vaadin.miki.superfields.unload.UnloadObserver;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -152,14 +153,13 @@ public class MainView extends VerticalLayout {
         final Button clearPattern = new Button("Clear pattern", event -> ((HasDatePattern)component).setDatePattern(null));
         clearPattern.setDisableOnClick(true);
         final Component clearPatternOrContainer;
-        // this is affected by issue #87 (and the way #81 was fixed)
+        // issue #87 requires a note
         if(component instanceof SuperDatePicker)
             clearPatternOrContainer = clearPattern;
         else {
-            clearPattern.setEnabled(false);
-            Icon icon = new Icon(VaadinIcon.EXCLAMATION_CIRCLE_O);
-            icon.setColor("red");
-            icon.getElement().setAttribute("title", "Setting pattern does not work out of the box for SuperDateTimePicker. See issue #87, https://github.com/vaadin-miki/super-fields/issues/87.");
+            Icon icon = new Icon(VaadinIcon.INFO);
+            icon.setColor("green");
+            icon.getElement().setAttribute("title", "Setting pattern does not work out of the box for SuperDateTimePicker if it is in an invisible layout. See issue #87, https://github.com/vaadin-miki/super-fields/issues/87.");
             clearPatternOrContainer = new HorizontalLayout(clearPattern, icon);
             ((HorizontalLayout)clearPatternOrContainer).setAlignItems(Alignment.CENTER);
         }
@@ -256,8 +256,7 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperDoubleField.class, new SuperDoubleField("Double (8 + 4 digits):").withMaximumIntegerDigits(8).withMaximumFractionDigits(4));
         this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1));
         this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
-        // note: issue #87 prevents setting date pattern before the page is fully rendered
-        this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH));
+        this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH).withValue(LocalDateTime.now()));
         this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
                 .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
                 .withItems("Java friendly", "Super-configurable", "Open source")
