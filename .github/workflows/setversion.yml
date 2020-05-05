@@ -15,12 +15,14 @@ jobs:
           java-version: 10
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
-      - name: Set versions
+      - name: Set version
         run: |
-          mvn versions:set -DnewVersion=`echo ${{ github.event.ref }} | sed -e s/release-//g` --file pom.xml
-          mvn versions:set -DnewVersion=`echo ${{ github.event.ref }} | sed -e s/release-//g` --file superfields/pom.xml
-      - name: Push version
+          export VERSION = `echo ${{ github.event.ref }} | sed -e s/release-//g`
+          mvn versions:set -DnewVersion=$VERSION --file pom.xml
+          mvn versions:set -DnewVersion=$VERSION --file superfields/pom.xml
+          sed -i -e s/{VERSION}/$VERSION/g ./README.md
+      - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
         with:
-          commit_message: "(bot) set version for branch ${{ github.event.ref }}"
+          commit_message: "(bot) setting version for branch ${{ github.event.ref }}"
           branch: ${{ github.event.ref }}
