@@ -6,7 +6,7 @@ on:
 jobs:
   set_version:
     if: ${{ (github.event.reftype == 'branch') && startsWith(github.event.ref, 'release-') }}
-    runs_on: ubuntu_latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
