@@ -3,6 +3,12 @@ name: Set Version
 on: create
 
 jobs:
+  echo_details:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show details
+        run: echo "${{ github.event.reftype }} - ${{ github.event.ref }} - ${{ github.ref }}"
+
   set_version:
     if: ${{ (github.event.reftype == 'branch') && startsWith(github.event.ref, 'release-') }}
     runs-on: ubuntu-latest
