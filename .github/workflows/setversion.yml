@@ -1,7 +1,6 @@
 name: Set Version
 
-on:
-  create:
+on: create
 
 jobs:
   set_version:
