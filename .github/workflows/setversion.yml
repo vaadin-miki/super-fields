@@ -17,7 +17,7 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
       - name: Set version
         run: |
-          export VERSION = `echo ${{ github.event.ref }} | sed -e s/release-//g`
+          export VERSION="`echo ${{ github.event.ref }} | sed -e s/release-//g`"
           mvn versions:set -DnewVersion=$VERSION --file pom.xml
           mvn versions:set -DnewVersion=$VERSION --file superfields/pom.xml
           sed -i -e s/{VERSION}/$VERSION/g ./README.md
