@@ -1,5 +1,6 @@
 package org.vaadin.miki.superfields.dates;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 
 /**
@@ -9,7 +10,7 @@ import com.vaadin.flow.component.Component;
  * @author miki
  * @since 2020-05-02
  */
-final class DatePatternHelper {
+final class DatePatternHelper<C extends Component & HasDatePattern> {
 
     /**
      * Returns the pattern descriptor string expected by the client-side code.
@@ -52,20 +53,48 @@ final class DatePatternHelper {
         }
     }
 
+    private final C source;
+
     /**
-     * Does magic and sets the display pattern on the client side.
-     * Requires the client-side connector to have a {@code setDisplayPattern} method.
-     * @param source Source component.
-     * @param pattern Pattern to set.
+     * Creates a helper for a given source object.
+     * The client-side representation should have mixed in methods from {@code date-pattern-mixin.js}.
+     * @param source Source to use.
      */
-    static void setClientSidePattern(Component source, DatePattern pattern) {
-        source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(source, context ->
-                source.getElement().callJsFunction("setDisplayPattern", source.getElement(), convertDatePatternToClientPattern(pattern))
+    DatePatternHelper(C source) {
+        this.source = source;
+        this.source.addAttachListener(this::onAttached);
+    }
+
+    /**
+     * Class client-side method {@code initPatternSetting()} that, well, inits pattern setting.
+     * In general, client-side code overrides a few methods to make sure pattern displaying and parsing works properly with custom patterns.
+     */
+    protected void initPatternSetting() {
+        this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
+                this.source.getElement().callJsFunction("initPatternSetting", this.source)
         ));
     }
 
-    private DatePatternHelper() {
-        // instances not allowed
+    /**
+     * Callback when onAttach() is called.
+     * @param event An {@link AttachEvent}.
+     */
+    protected void onAttached(AttachEvent event) {
+        this.initPatternSetting();
+        this.updateClientSidePattern();
+    }
+
+    /**
+     * Does magic and sets the display pattern on the client side.
+     * Requires the client-side connector to have a {@code setDisplayPattern} method.
+     */
+    protected void updateClientSidePattern() {
+        this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
+                this.source.getElement().callJsFunction(
+                        "setDisplayPattern",
+                        this.source.getElement(), convertDatePatternToClientPattern(this.source.getDatePattern())
+                )
+        ));
     }
 
 }

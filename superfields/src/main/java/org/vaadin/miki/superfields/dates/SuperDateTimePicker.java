@@ -36,6 +36,8 @@ public class SuperDateTimePicker extends DateTimePicker
     private static final String INTERNAL_DATE_PICKER_FIELD_NAME = "datePicker";
     private static final String INTERNAL_TIME_PICKER_FIELD_NAME = "timePicker";
 
+    private final DatePatternHelper<SuperDateTimePicker> delegate = new DatePatternHelper<>(this);
+
     private DatePattern datePattern;
 
     public SuperDateTimePicker() {
@@ -89,11 +91,12 @@ public class SuperDateTimePicker extends DateTimePicker
 
     @Override
     public void setLocale(Locale locale) {
-            this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-                this.getElement().callJsFunction("initPatternSetting", this)
-            ))
-        ;
-        SuperDatePickerI18nHelper.updateI18N(locale, this::getDatePickerI18n, this::setDatePickerI18n);
+        // this method is called from the constructor of the superclass
+        // which means that first time it gets called, the delegate is not yet initialised
+        if(this.delegate != null) {
+            this.delegate.initPatternSetting();
+            SuperDatePickerI18nHelper.updateI18N(locale, this::getDatePickerI18n, this::setDatePickerI18n);
+        }
         super.setLocale(locale);
     }
 
@@ -101,7 +104,7 @@ public class SuperDateTimePicker extends DateTimePicker
      * Exposes an internal {@link DatePicker}, if it was successfully obtained through reflection.
      * @return A {@link DatePicker} used by this component, if possible.
      */
-    public Optional<DatePicker> getDatePicker() {
+    public Optional<DatePicker> getInternalDatePicker() {
         return ReflectTools.getValueOfField(this, DatePicker.class, INTERNAL_DATE_PICKER_FIELD_NAME);
     }
 
@@ -116,7 +119,7 @@ public class SuperDateTimePicker extends DateTimePicker
     @Override
     public void setDatePattern(DatePattern pattern) {
         this.datePattern = pattern;
-        DatePatternHelper.setClientSidePattern(this, pattern);
+        this.delegate.updateClientSidePattern();
     }
 
     @Override

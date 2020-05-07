@@ -30,6 +30,8 @@ public class SuperDatePicker extends DatePicker
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<DatePicker, LocalDate>, LocalDate, SuperDatePicker>,
                    WithIdMixin<SuperDatePicker> {
 
+    private final DatePatternHelper<SuperDatePicker> delegate = new DatePatternHelper<>(this);
+
     private DatePattern datePattern;
 
     public SuperDatePicker() {
@@ -77,22 +79,25 @@ public class SuperDatePicker extends DatePicker
     }
 
     public SuperDatePicker(LocalDate initialDate, Locale locale) {
-        super(initialDate, locale);
+        super(initialDate);
+        this.setLocale(locale);
     }
 
     @Override
     public final void setLocale(Locale locale) {
-        this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-                this.getElement().callJsFunction("initPatternSetting", this.getElement())
-        ));
-        SuperDatePickerI18nHelper.updateI18N(locale, this::getI18n, this::setI18n);
+        // there is a call for setting locale from the superclass' constructor
+        // and when that happens, the field is not yet initialised
+        if(this.delegate != null) {
+            this.delegate.initPatternSetting();
+            SuperDatePickerI18nHelper.updateI18N(locale, this::getI18n, this::setI18n);
+        }
         super.setLocale(locale);
     }
 
     @Override
     public void setDatePattern(DatePattern datePattern) {
         this.datePattern = datePattern;
-        DatePatternHelper.setClientSidePattern(this, datePattern);
+        this.delegate.updateClientSidePattern();
     }
 
     @Override
