@@ -3,6 +3,8 @@ name: Code Quality
 on:
   pull_request:
     branches: [master, development]
+  push:
+    branches: [master, development, java-8]
 
 jobs:
   code_scan:
