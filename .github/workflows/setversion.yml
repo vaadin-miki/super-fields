@@ -31,7 +31,7 @@ jobs:
       - name: Create milestone notes
         uses: UnforgivenPL/milestone-notes@v1
         with:
-          match-milestone: ^${{ steps.what-version.outputs.version }}
+          match-milestone: "^${{ steps.what-version.outputs.version }} "
           repository: ${{ github.repository }}
           labels: "enhancement, api, bug"
       - name: Format milestone notes
