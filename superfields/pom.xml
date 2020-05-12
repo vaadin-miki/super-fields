@@ -204,6 +204,7 @@
     </build>
 
     <profiles>
+        <!-- for automated sonarcloud checks with default settings -->
         <profile>
             <id>sonar</id>
             <properties>
@@ -223,6 +224,7 @@
                 </pluginManagement>
             </build>
         </profile>
+        <!-- for preparing a zip to Vaadin Directory (has to be done manually, currently) -->
         <profile>
             <id>directory</id>
             <build>
