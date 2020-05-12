@@ -49,5 +49,5 @@ jobs:
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
         with:
-          commit_message: "(bot) release notes for version ${{ needs.prepare.output.version }}"
+          commit_message: "(bot) version and release notes updated to ${{ steps.what-version.outputs.version }}"
           branch: ${{ github.event.ref }}
