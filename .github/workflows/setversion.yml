@@ -29,7 +29,7 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
       - name: Set version and update readme
         run: |
-          export VERSION="$ {{ needs.prepare.outputs.version }}"
+          export VERSION="${{ needs.prepare.outputs.version }}"
           mvn versions:set -DnewVersion=$VERSION --file pom.xml
           mvn versions:set -DnewVersion=$VERSION --file superfields/pom.xml
           sed -i -e s/{VERSION}/$VERSION/g ./README.md
