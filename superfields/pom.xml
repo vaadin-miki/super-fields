@@ -204,6 +204,27 @@
     </build>
 
     <profiles>
+        <!-- for automated sonarcloud checks with default settings -->
+        <profile>
+            <id>sonar</id>
+            <properties>
+                <sonar.projectKey>vaadin-miki_super-fields</sonar.projectKey>
+                <sonar.organization>vaadin-miki</sonar.organization>
+                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.sonarsource.scanner.maven</groupId>
+                            <artifactId>sonar-maven-plugin</artifactId>
+                            <version>3.7.0.1746</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <!-- for preparing a zip to Vaadin Directory (has to be done manually, currently) -->
         <profile>
             <id>directory</id>
             <build>
