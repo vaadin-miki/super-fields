@@ -3,22 +3,9 @@ name: Version and Release Notes
 on: create
 
 jobs:
-  prepare:
-    if: ${{ (github.event.ref_type == 'branch') && startsWith(github.event.ref, 'release-') }}
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.what-version.version }}
-    steps:
-      - id: what-version
-        run: |
-          set -x
-          export VERSION="`echo ${{ github.event.ref }} | sed -e s/release-//g`"
-          echo "::set-output name=version::$VERSION"
-
   set-version:
     if: ${{ (github.event.ref_type == 'branch') && startsWith(github.event.ref, 'release-') }}
     runs-on: ubuntu-latest
-    needs: prepare
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v2
@@ -28,19 +15,23 @@ jobs:
           java-version: 10
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
+      - id: what-version
+        name: Determine version
+        run: |
+          set -x
+          export VERSION="`echo ${{ github.event.ref }} | sed -e s/release-//g`"
+          echo "::set-output name=version::$VERSION"
       - name: Set version and update readme
         run: |
           set -x
-          echo ${{ needs.prepare.outputs.version }}
-          echo ${{ needs.prepare.steps.what-version.outputs.version }}
-          export VERSION="${{ needs.prepare.outputs.version }}"
+          export VERSION="${{ steps.what-version.outputs.version }}"
           mvn versions:set -DnewVersion=$VERSION --file pom.xml
           mvn versions:set -DnewVersion=$VERSION --file superfields/pom.xml
           sed -i -e s/{VERSION}/$VERSION/g ./README.md
       - name: Create milestone notes
         uses: UnforgivenPL/milestone-notes@v1
         with:
-          match-milestone: ^${{ needs.prepare.outputs.version }}
+          match-milestone: ^${{ steps.what-version.outputs.version }}
           repository: ${{ github.repository }}
           labels: "enhancement, api, bug"
       - name: Format milestone notes
