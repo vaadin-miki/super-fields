@@ -1,13 +1,12 @@
-name: Set Version
+name: Version and Release Notes
 
 on: create
 
 jobs:
-  set_version:
+  set-version:
     if: ${{ (github.event.ref_type == 'branch') && startsWith(github.event.ref, 'release-') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 10
@@ -16,14 +15,39 @@ jobs:
           java-version: 10
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
-      - name: Set version
+      - id: what-version
+        name: Determine version
         run: |
+          set -x
           export VERSION="`echo ${{ github.event.ref }} | sed -e s/release-//g`"
+          echo "::set-output name=version::$VERSION"
+      - name: Set version and update readme
+        run: |
+          set -x
+          export VERSION="${{ steps.what-version.outputs.version }}"
           mvn versions:set -DnewVersion=$VERSION --file pom.xml
           mvn versions:set -DnewVersion=$VERSION --file superfields/pom.xml
           sed -i -e s/{VERSION}/$VERSION/g ./README.md
+      - name: Create milestone notes
+        uses: UnforgivenPL/milestone-notes@v1
+        with:
+          match-milestone: "^${{ steps.what-version.outputs.version }} "
+          repository: ${{ github.repository }}
+          labels: "enhancement, api, bug"
+      - name: Format milestone notes
+        run: |
+          sed -i -e "s/## enhancement/## New features and enhancements/g" milestone-notes.md
+          sed -i -e "s/## api/## Changes to API/g" milestone-notes.md
+          sed -i -e "s/## bug/## Bug fixes/g" milestone-notes.md
+          sed -i -e "s/^$/(nothing reported)/g" milestone-notes.md
+      - name: Update release notes
+        run: |
+          echo -e "\n" | cat milestone-notes.md - superfields/release-notes.md > superfields/release-notes.md.new
+          mv superfields/release-notes.md.new superfields/release-notes.md
+      - name: Remove milestone notes
+        run: rm milestone-notes.md
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
         with:
-          commit_message: "(bot) setting version for branch ${{ github.event.ref }}"
+          commit_message: "(bot) version and release notes updated to ${{ steps.what-version.outputs.version }}"
           branch: ${{ github.event.ref }}
