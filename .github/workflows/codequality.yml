@@ -21,3 +21,4 @@ jobs:
         run: mvn verify sonar:sonar -Psonar --file superfields/pom.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_IO_LOGIN_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
