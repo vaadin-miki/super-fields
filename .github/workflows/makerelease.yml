@@ -16,7 +16,11 @@ jobs:
           set -x
           echo "::set-output name=version::`head -1 superfields/release-notes.md | cut -d' ' -f2`"
           echo "::set-output name=title::`head -1 superfields/release-notes.md | sed -n -e 's/^.* - //p'`"
-          echo "::set-output name=notes::`cat superfields/release-notes.md | sed -e '0,/^# /d;/^# /,$d'`"
+          export NOTES=`cat superfields/release-notes.md | sed -e '0,/^# /d;/^# /,$d'`
+          export NOTES="${NOTES//'%'/'%25'}"
+          export NOTES="${NOTES//$'\n'/'%0A'}"
+          export NOTES="${NOTES//$'\r'/'%0D'}""
+          echo "::set-output name=notes::$NOTES"
       - id: test
         run: |
           echo "${{ steps.variables.outputs.version }}"
