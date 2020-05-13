@@ -25,7 +25,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "v${{ steps.variables.outputs.version }}.test"
+          tag_name: "v${{ steps.variables.outputs.version }}"
           commitish: "master"
           release_name: "${{ steps.variables.outputs.version }} - ${{ steps.variables.outputs.title }}"
           body: |
