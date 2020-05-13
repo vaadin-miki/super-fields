@@ -1,0 +1,34 @@
+name: Make Release
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v2
+      - id: variables
+        run: |
+          echo "::set-output name=version::`head -1 superfields/release-notes.md | cut -d' ' -f2`"
+          echo "::set-output name=title::`head -1 superfields/release-notes.md | sed -n -e 's/^.* - //p'`"
+          export NOTES=`cat superfields/release-notes.md | sed -e '0,/^# /d;/^# /,$d'`
+          export NOTES="${NOTES//'%'/'%25'}"
+          export NOTES="${NOTES//$'\n'/'%0A'}"
+          export NOTES="${NOTES//$'\r'/'%0D'}"
+          echo "::set-output name=notes::$NOTES"
+      - name: Create Release
+        uses: fleskesvor/create-release@feature/support-target-commitish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ steps.variables.outputs.version }}"
+          commitish: "master"
+          release_name: "${{ steps.variables.outputs.version }} - ${{ steps.variables.outputs.title }}"
+          body: |
+            ${{ steps.variables.outputs.notes }}
+          draft: false
+          prerelease: false
