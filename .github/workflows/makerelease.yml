@@ -19,7 +19,7 @@ jobs:
           export NOTES=`cat superfields/release-notes.md | sed -e '0,/^# /d;/^# /,$d'`
           export NOTES="${NOTES//'%'/'%25'}"
           export NOTES="${NOTES//$'\n'/'%0A'}"
-          export NOTES="${NOTES//$'\r'/'%0D'}""
+          export NOTES="${NOTES//$'\r'/'%0D'}"
           echo "::set-output name=notes::$NOTES"
       - id: test
         run: |
