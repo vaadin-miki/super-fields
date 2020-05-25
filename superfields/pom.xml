@@ -8,7 +8,7 @@
     <artifactId>superfields</artifactId>
     <name>SuperFields</name>
     <description>Code for various V14+ fields and other components.</description>
-    <version>0.6.66-SNAPSHOT</version>
+    <version>0.6.1</version>
 
     <properties>
         <maven.compiler.source>10</maven.compiler.source>

@@ -1,3 +1,11 @@
+# 0.6.1 - Release process improvement
+## New features and enhancements
+* \#107 - [Generate release notes from a milestone](https://api.github.com/repos/vaadin-miki/super-fields/issues/107)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#105 - [Removing date (time) picker and adding it back in the dom resets the display pattern](https://api.github.com/repos/vaadin-miki/super-fields/issues/105)
+
 # 0.6 - ComponentObserver and UnloadObserver
 ## New features and enhancements
 * \#66 - [A field that changes value on becoming shown and hidden](https://api.github.com/repos/vaadin-miki/super-fields/issues/66)
