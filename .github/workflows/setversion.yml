@@ -54,7 +54,7 @@ jobs:
       - name: Create PR
         uses: UnforgivenPL/pull-request@v1
         with:
-          source: release-${{ steps.what-version.outputs.version }}
+          source: ${{ github.event.ref }}
           target: master
           repository: ${{ github.repository }}
           token: ${{ secrets.ACTIONS_PAT }}
