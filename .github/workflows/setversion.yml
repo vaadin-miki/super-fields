@@ -51,3 +51,13 @@ jobs:
         with:
           commit_message: "(bot) version and release notes updated to ${{ steps.what-version.outputs.version }}"
           branch: ${{ github.event.ref }}
+      - name: Create PR
+        uses: UnforgivenPL/pull-request@v1
+        with:
+          source: ${{ github.event.ref }}
+          target: master
+          repository: ${{ github.repository }}
+          token: ${{ secrets.ACTIONS_PAT }}
+          pr-title: Release ${{ steps.what-version.outputs.version }} ready
+          pr-body: Automatically created release ${{ steps.what-version.outputs.version }}.
+          pr-assignees: ${{ github.actor }}
