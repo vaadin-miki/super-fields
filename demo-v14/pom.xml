@@ -38,10 +38,6 @@
             <artifactId>vaadin</artifactId>
             <version>${vaadin.version}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>vaadin-date-time-picker-flow</artifactId>
-                </exclusion>
                 <!-- Webjars are only needed when running in Vaadin 13 compatibility mode -->
                 <exclusion>
                     <groupId>com.vaadin.webjar</groupId>
