@@ -1,0 +1,22 @@
+name: Release branch on milestone close
+
+on:
+  milestone:
+    types: [closed]
+
+jobs:
+  make-branch:
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.milestone.title, '0.') || startsWith(github.event.milestone.title, '1.') || startsWith(github.event.milestone.title, '2.') || startsWith(github.event.milestone.title, '3.') || startsWith(github.event.milestone.title, '4.') || startsWith(github.event.milestone.title, '5.') || startsWith(github.event.milestone.title, '6.') || startsWith(github.event.milestone.title, '7.') || startsWith(github.event.milestone.title, '8.') || startsWith(github.event.milestone.title, '9.') }}
+    steps:
+      - id: version
+        run: |
+          set -x
+          echo "::set-output name=version::`echo '${{ github.event.milestone.title }}' | cut -d' ' -f1`"
+      - name: Push release branch
+        uses: UnforgivenPL/push-branch@v2
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.ACTIONS_PAT }}
+          source: development
+          target: release-${{ steps.version.outputs.version }}

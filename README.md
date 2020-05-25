@@ -1,6 +1,7 @@
 # Welcome to SuperFields!
 
 ## Overview
+
 This is a collection of hopefully useful Vaadin 14 components, grouped into several sub-projects:
 * `superfields` are various input components;
 * `demo-v14` contains an app for Vaadin 14 that shows all components - [see the demo online](https://superfields.herokuapp.com/) on Heroku
@@ -18,7 +19,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>org.vaadin.miki</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.6.0</version>
+   <version>0.6.1</version>
 </dependency>
 ```
 
@@ -38,11 +39,13 @@ All releases are available:
 
 ### Java 8
 
-Some versions compatible with Java 8 may be released only to the Vaadin Directory. The repository has a branch `java-8`. The most recent version that supports Java 8 is `0.6.0.java8`.
+Some versions compatible with Java 8 are available in the Vaadin Directory. They are marked with `.java8` suffix in the version, e.g. `0.6.0.java8`. Their functionality is identical to the official release.
+
+This repository has a branch `java-8` which contains the most recent release compatible with Java 8. 
 
 ## Contribution guidelines
 
-You are more than welcome to contribute. Feel free to make PRs, submit issues, etc.
+You are more than welcome to contribute. Feel free to make PRs, submit issues, ideas etc.
 
 ## Small print
 
