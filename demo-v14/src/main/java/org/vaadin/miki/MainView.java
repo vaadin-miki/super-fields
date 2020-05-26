@@ -23,7 +23,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.superfields.dates.DatePattern;
-import org.vaadin.miki.superfields.dates.DatePatterns;
+import org.vaadin.miki.superfields.dates.patterns.CustomDatePattern;
+import org.vaadin.miki.superfields.dates.patterns.DatePatterns;
 import org.vaadin.miki.superfields.dates.HasDatePattern;
 import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
@@ -149,7 +150,14 @@ public class MainView extends VerticalLayout {
     }
 
     private void buildHasDatePattern(Component component, Consumer<Component[]> callback) {
-        final ComboBox<DatePattern> patterns = new ComboBox<>("Select date display pattern:", DatePatterns.YYYY_MM_DD, DatePatterns.M_D_YYYY_SLASH, DatePatterns.DD_MM_YYYY_DOTTED, DatePatterns.D_M_YY_DOTTED);
+        final ComboBox<DatePattern> patterns = new ComboBox<>("Select date display pattern:",
+                DatePatterns.YYYY_MM_DD, DatePatterns.M_D_YYYY_SLASH,
+                DatePatterns.DD_MM_YYYY_DOTTED, DatePatterns.D_M_YY_DOTTED,
+                new CustomDatePattern("YYYYMMDD",
+                        string -> LocalDate.of(Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)), Integer.parseInt(string.substring(6, 8))),
+                        date -> String.format("%04d%02d%02d", date.getYear(), date.getMonthValue(), date.getDayOfMonth())
+                )
+        );
         final Button clearPattern = new Button("Clear pattern", event -> ((HasDatePattern)component).setDatePattern(null));
         clearPattern.setDisableOnClick(true);
         final Component clearPatternOrContainer;

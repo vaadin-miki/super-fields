@@ -10,7 +10,7 @@ class SuperDateTimePicker extends DatePatternMixin.to(DateTimePicker) {
     }
 
     setDisplayPattern(datepicker, displayPattern) {
-        return super.setDisplayPattern(datepicker.querySelector('vaadin-date-time-picker-date-picker'), displayPattern);
+        return super.setDisplayPattern(datepicker.querySelector('vaadin-date-time-picker-date-picker'), displayPattern, datepicker);
     }
 
 }

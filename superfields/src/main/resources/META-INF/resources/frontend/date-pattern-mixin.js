@@ -26,10 +26,13 @@ export class DatePatternMixin {
             }
         }
 
-        setDisplayPattern(datepicker, displayPattern) {
+        setDisplayPattern(datepicker, displayPattern, hasServer) {
             if (datepicker.$connector === undefined) {
                 console.error("SDP: Connector not available. Cannot continue.");
                 return
+            }
+            if (hasServer === undefined) {
+                hasServer = datepicker;
             }
             console.log('SDP: MAIN - set display pattern');
             // pattern is a string, first character is a separator
@@ -57,57 +60,86 @@ export class DatePatternMixin {
                 }
                 datepicker.set('i18n.formatDate', date => {
                     const ddp = datepicker.i18n.dateDisplayPattern;
-                    console.log('SDP: custom formatting for ' + ddp);
-                    return [ddp.substr(1, 2), ddp.substr(3, 2), ddp.substr(5, 2)].map(part => {
-                        if (part === '0d') {
-                            return String(date.day).padStart(2, '0')
-                        } else if (part === '_d') {
-                            return String(date.day)
-                        } else if (part === '0M') {
-                            return String(date.month + 1).padStart(2, '0')
-                        } else if (part === '_M') {
-                            return String(date.month + 1)
-                        } else if (part === '0y') {
-                            return date.year < 10 ? '0' + String(date.year) : String(date.year).substr(-2)
-                        } else if (part === '_y') {
-                            return String(date.year)
-                        }
-                    }).join(ddp[0]);
+                    if (ddp === '$server') {
+                        console.log('SDP: server-side formatting requested');
+                        hasServer.$server.formatDate(date.year, date.month + 1, date.day).then(fromServer => {
+                            console.log('SDP: server-side formatting returned '+fromServer);
+                            datepicker.shadowRoot.querySelector('#input').value = fromServer;
+                            datepicker.$server.parseDate(fromServer).then(value => {
+                               datepicker.value = value;
+                            });
+                        });
+                    }
+                    else {
+                        console.log('SDP: custom formatting for ' + ddp);
+                        return [ddp.substr(1, 2), ddp.substr(3, 2), ddp.substr(5, 2)].map(part => {
+                            if (part === '0d') {
+                                return String(date.day).padStart(2, '0')
+                            } else if (part === '_d') {
+                                return String(date.day)
+                            } else if (part === '0M') {
+                                return String(date.month + 1).padStart(2, '0')
+                            } else if (part === '_M') {
+                                return String(date.month + 1)
+                            } else if (part === '0y') {
+                                return date.year < 10 ? '0' + String(date.year) : String(date.year).substr(-2)
+                            } else if (part === '_y') {
+                                return String(date.year)
+                            }
+                        }).join(ddp[0]);
+                    }
                 });
                 datepicker.set('i18n.parseDate', text => {
                     const ddp = datepicker.i18n.dateDisplayPattern;
-                    console.log('SDP: custom parsing for ' + ddp);
-                    const today = new Date();
-                    let date, month = today.getMonth(), year = today.getFullYear();
-                    const parts = text.split(ddp[0]);
-                    if (parts.length === 3) {
-                        // d, M, y can be at index 2, 4 or 6 in the pattern
-                        year = parseInt(parts[(ddp.indexOf('y') / 2) - 1]);
-                        month = parseInt(parts[(ddp.indexOf('M') / 2) - 1]) - 1;
-                        date = parseInt(parts[(ddp.indexOf('d') / 2) - 1]);
-                        // now, if short year is used
-                        if (ddp.indexOf('0y') !== -1) {
-                            const boundaryYear = parseInt(ddp.substr(-2));
-                            const defaultCentury = parseInt(ddp.substr(-4, 2));
-                            if (year < boundaryYear) {
-                                year += (ddp[7] === '+' ? defaultCentury - 2 : defaultCentury - 1) * 100;
-                            } else if (year < 100) {
-                                year += (ddp[7] === '+' ? defaultCentury - 2 : defaultCentury - 1) * 100;
+                    if (ddp === '$server') {
+                        if (text !== undefined && text !== null) {
+                            console.log('SDP: server-side parsing required for <' + text + '>');
+                            if (text.length > 0) {
+                                hasServer.$server.parseDate(text).then(fromServer => {
+                                    console.log('SDP: server-side returned ' + fromServer);
+                                    datepicker.value = fromServer;
+                                });
+                            }
+                            else {
+                                console.log('SDP: NOTHING to parse');
+                                datepicker.value = null;
                             }
                         }
-                    } else if (parts.length === 2) {
-                        if (ddp.indexOf('d') < ddp.indexOf('M')) {
-                            date = parseInt(parts[0]);
-                            month = parseInt(parts[1]) - 1;
-                        } else {
-                            date = parseInt(parts[1]);
-                            month = parseInt(parts[0]) - 1;
-                        }
-                    } else if (parts.length === 1) {
-                        date = parseInt(parts[0]);
                     }
-                    if (date !== undefined) {
-                        return {day: date, month, year};
+                    else {
+                        console.log('SDP: custom parsing for ' + ddp);
+                        const today = new Date();
+                        let date, month = today.getMonth(), year = today.getFullYear();
+                        const parts = text.split(ddp[0]);
+                        if (parts.length === 3) {
+                            // d, M, y can be at index 2, 4 or 6 in the pattern
+                            year = parseInt(parts[(ddp.indexOf('y') / 2) - 1]);
+                            month = parseInt(parts[(ddp.indexOf('M') / 2) - 1]) - 1;
+                            date = parseInt(parts[(ddp.indexOf('d') / 2) - 1]);
+                            // now, if short year is used
+                            if (ddp.indexOf('0y') !== -1) {
+                                const boundaryYear = parseInt(ddp.substr(-2));
+                                const defaultCentury = parseInt(ddp.substr(-4, 2));
+                                if (year < boundaryYear) {
+                                    year += (ddp[7] === '+' ? defaultCentury - 2 : defaultCentury - 1) * 100;
+                                } else if (year < 100) {
+                                    year += (ddp[7] === '+' ? defaultCentury - 2 : defaultCentury - 1) * 100;
+                                }
+                            }
+                        } else if (parts.length === 2) {
+                            if (ddp.indexOf('d') < ddp.indexOf('M')) {
+                                date = parseInt(parts[0]);
+                                month = parseInt(parts[1]) - 1;
+                            } else {
+                                date = parseInt(parts[1]);
+                                month = parseInt(parts[0]) - 1;
+                            }
+                        } else if (parts.length === 1) {
+                            date = parseInt(parts[0]);
+                        }
+                        if (date !== undefined) {
+                            return {day: date, month, year};
+                        }
                     }
                 });
             }
