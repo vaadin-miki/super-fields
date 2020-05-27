@@ -10,18 +10,18 @@ export class DatePatternMixin {
                     console.error("SDP: no connector set, things will not work until it is set");
                     return;
                 }
-                    datepicker.set('oldSetLocale', datepicker.$connector.setLocale);
-                    datepicker.$connector.setLocale = locale => {
-                        console.log('SDP: setting locale ' + locale);
-                        datepicker.oldSetLocale(locale);
-                        datepicker.noPatternParseAndFormat = [datepicker.i18n.parseDate, datepicker.i18n.formatDate];
+                datepicker.set('oldSetLocale', datepicker.$connector.setLocale);
+                datepicker.$connector.setLocale = locale => {
+                    console.log('SDP: setting locale ' + locale);
+                    datepicker.oldSetLocale(locale);
+                    datepicker.noPatternParseAndFormat = [datepicker.i18n.parseDate, datepicker.i18n.formatDate];
 
-                        if (datepicker.i18n.dateDisplayPattern && datepicker.i18n.dateDisplayPattern.length > 0) {
-                            console.log("SDP: date pattern existing, setting it again");
-                            datepicker.noPatternParseAndFormat = [datepicker.i18n.parseDate, datepicker.i18n.formatDate];
-                            this.setDisplayPattern(datepicker, datepicker.i18n.dateDisplayPattern);
-                        }
-                    }
+                    if (datepicker.i18n.dateDisplayPattern && datepicker.i18n.dateDisplayPattern.length > 0) {
+                        console.log("SDP: date pattern existing, setting it again");
+                        datepicker.noPatternParseAndFormat = [datepicker.i18n.parseDate, datepicker.i18n.formatDate];
+                        this.setDisplayPattern(datepicker, datepicker.i18n.dateDisplayPattern);
+                }
+            }
 
             }
         }
@@ -59,19 +59,26 @@ export class DatePatternMixin {
                     datepicker.noPatternParseAndFormat = [datepicker.i18n.parseDate, datepicker.i18n.formatDate];
                 }
                 datepicker.set('i18n.formatDate', date => {
+                    // debugger;
                     const ddp = datepicker.i18n.dateDisplayPattern;
                     if (ddp === '$server') {
-                        console.log('SDP: server-side formatting requested');
-                        hasServer.$server.formatDate(date.year, date.month + 1, date.day).then(fromServer => {
-                            console.log('SDP: server-side formatting returned '+fromServer);
-                            datepicker.shadowRoot.querySelector('#input').value = fromServer;
-                            datepicker.$server.parseDate(fromServer).then(value => {
-                               datepicker.value = value;
+                        console.log('SDP: server-side formatting requested for ['+JSON.stringify(date)+']');
+                        if (datepicker.serverFormattingDate === undefined) {
+                            datepicker.serverFormattingDate = date;
+                            return hasServer.$server.formatDate(date.year, date.month + 1, date.day).then(fromServer => {
+                                console.log('SDP: server-side formatting returned ' + fromServer + ' with date ' + JSON.stringify(date));
+                                datepicker.shadowRoot.querySelector('#input').value = fromServer;
+                                datepicker.serverParsingDate = fromServer;
+                                datepicker.value = date;
+                                delete datepicker.serverFormattingDate;
                             });
-                        });
+                        }
+                        else {
+                            return datepicker.noPatternParseAndFormat[1](date);
+                        }
                     }
                     else {
-                        console.log('SDP: custom formatting for ' + ddp);
+                        console.log('SDP: custom formatting for ' + ddp + ' and date <'+ JSON.stringify(date) + '>');
                         return [ddp.substr(1, 2), ddp.substr(3, 2), ddp.substr(5, 2)].map(part => {
                             if (part === '0d') {
                                 return String(date.day).padStart(2, '0')
@@ -90,24 +97,25 @@ export class DatePatternMixin {
                     }
                 });
                 datepicker.set('i18n.parseDate', text => {
+                    // debugger;
                     const ddp = datepicker.i18n.dateDisplayPattern;
                     if (ddp === '$server') {
-                        if (text !== undefined && text !== null) {
-                            console.log('SDP: server-side parsing required for <' + text + '>');
-                            if (text.length > 0) {
+                        // store text to prevent loops
+                        if (datepicker.serverParsingDate === undefined) {
+                            datepicker.serverParsingDate = text;
+                            if (text !== undefined && text !== null && text.length > 0) {
+                                console.log('SDP: server-side parsing required for <' + text + '>');
                                 hasServer.$server.parseDate(text).then(fromServer => {
                                     console.log('SDP: server-side returned ' + fromServer);
+                                    delete datepicker.serverParsingDate;
                                     datepicker.value = fromServer;
                                 });
                             }
-                            else {
-                                console.log('SDP: NOTHING to parse');
-                                datepicker.value = null;
-                            }
                         }
+                        return datepicker.noPatternParseAndFormat[0](text);
                     }
                     else {
-                        console.log('SDP: custom parsing for ' + ddp);
+                        console.log('SDP: custom parsing for ' + ddp + ' and text <' + text + '>');
                         const today = new Date();
                         let date, month = today.getMonth(), year = today.getFullYear();
                         const parts = text.split(ddp[0]);
