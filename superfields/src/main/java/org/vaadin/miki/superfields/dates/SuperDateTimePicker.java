@@ -1,6 +1,7 @@
 package org.vaadin.miki.superfields.dates;
 
 import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
@@ -98,6 +99,32 @@ public class SuperDateTimePicker extends DateTimePicker
             SuperDatePickerI18nHelper.updateI18N(locale, this::getDatePickerI18n, this::setDatePickerI18n);
         }
         super.setLocale(locale);
+    }
+
+    /**
+     * Called from the browser when date needs to be formatted on the server.
+     * Delegates to {@link DatePatternHelper#formatDate(int, int, int)}.
+     * @param year Year.
+     * @param month Month.
+     * @param day Day.
+     * @return Formatted date.
+     * @see DatePatternHelper#formatDate(int, int, int)
+     */
+    @ClientCallable
+    protected String formatDate(int year, int month, int day) {
+        return this.delegate.formatDate(year, month, day);
+    }
+
+    /**
+     * Called from the browser when text needs to be parsed into date.
+     * Delegates to {@link DatePatternHelper#parseDate(String)}.
+     * @param formattedDate The date in whatever format was output by {@link #formatDate(int, int, int)} or entered by the user.
+     * @return String formatted as {@code YYYY-MM-DD}, using exactly four digits for year, exactly two digits for month ({@code 1} for January, {@code 12} for December) and exactly two digits for day; or an empty string if parsing resulted in an error.
+     * @see DatePatternHelper#parseDate(String)
+     */
+    @ClientCallable
+    protected String parseDate(String formattedDate) {
+        return this.delegate.parseDate(formattedDate);
     }
 
     /**

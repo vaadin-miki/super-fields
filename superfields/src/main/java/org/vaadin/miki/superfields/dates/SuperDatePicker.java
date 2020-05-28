@@ -96,34 +96,29 @@ public class SuperDatePicker extends DatePicker
     }
 
     /**
-     * Formats the date.
-     * @param year Year of the date.
-     * @param month Month number, with {@code 1} being January and {@code 12} being December.
-     * @param day Day number.
-     * @return A string with the date formatted.
-     * @throws IllegalStateException when {@link #getDatePattern()} is {@code null}.
+     * Called from the browser when date needs to be formatted on the server.
+     * Delegates to {@link DatePatternHelper#formatDate(int, int, int)}.
+     * @param year Year.
+     * @param month Month.
+     * @param day Day.
+     * @return Formatted date.
+     * @see DatePatternHelper#formatDate(int, int, int)
      */
     @ClientCallable
     protected String formatDate(int year, int month, int day) {
-        if(this.getDatePattern() == null)
-            throw new IllegalStateException("formatDate() called when there is no date pattern set");
-        return this.getDatePattern().formatDate(LocalDate.of(year, month, day));
+        return this.delegate.formatDate(year, month, day);
     }
 
     /**
-     * Parses the date.
+     * Called from the browser when text needs to be parsed into date.
+     * Delegates to {@link DatePatternHelper#parseDate(String)}.
      * @param formattedDate The date in whatever format was output by {@link #formatDate(int, int, int)} or entered by the user.
      * @return String formatted as {@code YYYY-MM-DD}, using exactly four digits for year, exactly two digits for month ({@code 1} for January, {@code 12} for December) and exactly two digits for day; or an empty string if parsing resulted in an error.
-     * @throws IllegalStateException when {@link #getDatePattern()} is {@code null}.
+     * @see DatePatternHelper#parseDate(String)
      */
     @ClientCallable
     protected String parseDate(String formattedDate) {
-        if(this.getDatePattern() == null)
-            throw new IllegalStateException("parseDate() called when there is no date pattern set");
-        final LocalDate result = this.getDatePattern().parseDate(formattedDate);
-        if(result == null)
-            return "";
-        else return String.format("%04d-%02d-%02d", result.getYear(), result.getMonthValue(), result.getDayOfMonth());
+        return this.delegate.parseDate(formattedDate);
     }
 
     @Override

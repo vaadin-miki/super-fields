@@ -59,11 +59,12 @@ export class DatePatternMixin {
                 let formatOnServer;
                 formatOnServer = function(date) {
                     datepicker.set('i18n.parseDate', d => date);
-                    console.log('SDP: querying server for formatting date');
+                    datepicker.lastFormatted = date;
+                    console.log('SDP: querying server for formatting date <'+JSON.stringify(date)+'>');
                     hasServer.$server.formatDate(date.year, date.month+1, date.day).then(formatted => {
                         console.log('SDP: value formatted as '+formatted);
-                        datepicker.shadowRoot.querySelector('#input').value = formatted;
                         datepicker.value = date;
+                        datepicker.shadowRoot.querySelector('#input').value = formatted;
                         datepicker.set('i18n.parseDate', parseOnServer);
                     });
                     return datepicker._formatISO(date);
@@ -74,11 +75,21 @@ export class DatePatternMixin {
                     if (text !== undefined && text !== null && text.length > 0) {
                         datepicker.set('i18n.formatDate', t => text);
                         hasServer.$server.parseDate(text).then(parsed => {
+                            console.log('SDP: value parsed as '+parsed);
                             datepicker.value = parsed;
                             datepicker.set('i18n.formatDate', formatOnServer);
                         });
                     }
-                    return null;
+                    else if (datepicker.lastFormatted) {
+                        let value = datepicker.lastFormatted;
+                        delete datepicker.lastFormatted;
+                        console.log('SDP: no text to parse, but last formatted value was <'+JSON.stringify(value)+'>');
+                        return value;
+                    }
+                    else {
+                        console.log('SDP: no text to parse and no last formatted value, so returning null');
+                        return null;
+                    }
                 }
 
                 datepicker.set('i18n.formatDate', formatOnServer);
