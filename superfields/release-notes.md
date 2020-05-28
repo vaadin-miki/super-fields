@@ -1,3 +1,12 @@
+# 0.6.2 - Vaadin 14.2 compatibility
+## New features and enhancements
+* \#124 - [Update Vaadin dependencies to 14.2](https://api.github.com/repos/vaadin-miki/super-fields/issues/124)
+## Changes to API
+* \#127 - [WithIdMixin is missing from number fields](https://api.github.com/repos/vaadin-miki/super-fields/issues/127)
+## Bug fixes
+* \#126 - [Number fields cannot be easily styled](https://api.github.com/repos/vaadin-miki/super-fields/issues/126)
+* \#127 - [WithIdMixin is missing from number fields](https://api.github.com/repos/vaadin-miki/super-fields/issues/127)
+
 # 0.6 - ComponentObserver and UnloadObserver
 ## New features and enhancements
 * \#66 - [A field that changes value on becoming shown and hidden](https://api.github.com/repos/vaadin-miki/super-fields/issues/66)
