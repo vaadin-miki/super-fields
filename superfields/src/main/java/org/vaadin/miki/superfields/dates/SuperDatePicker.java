@@ -5,7 +5,6 @@ import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.JsModule;
-import org.slf4j.LoggerFactory;
 import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.markers.HasPlaceholder;
@@ -108,25 +107,20 @@ public class SuperDatePicker extends DatePicker
     protected String formatDate(int year, int month, int day) {
         if(this.getDatePattern() == null)
             throw new IllegalStateException("formatDate() called when there is no date pattern set");
-        LoggerFactory.getLogger(this.getClass()).warn("formatting date {}-{}-{}", year, month, day);
-        String result = this.getDatePattern().formatDate(LocalDate.of(year, month, day));
-        LoggerFactory.getLogger(this.getClass()).warn("formatted date  {}", result);
-        return result;
+        return this.getDatePattern().formatDate(LocalDate.of(year, month, day));
     }
 
     /**
      * Parses the date.
      * @param formattedDate The date in whatever format was output by {@link #formatDate(int, int, int)} or entered by the user.
-     * @return String formatted as {@code YYYY-MM-DD}, using exactly four digits for year, exactly two digits for month ({@code 1} for January, {@code 12} for December) and exactly two digits for day.
+     * @return String formatted as {@code YYYY-MM-DD}, using exactly four digits for year, exactly two digits for month ({@code 1} for January, {@code 12} for December) and exactly two digits for day; or an empty string if parsing resulted in an error.
      * @throws IllegalStateException when {@link #getDatePattern()} is {@code null}.
      */
     @ClientCallable
     protected String parseDate(String formattedDate) {
         if(this.getDatePattern() == null)
             throw new IllegalStateException("parseDate() called when there is no date pattern set");
-        LoggerFactory.getLogger(this.getClass()).warn("parsing date {}", formattedDate);
         final LocalDate result = this.getDatePattern().parseDate(formattedDate);
-        LoggerFactory.getLogger(this.getClass()).warn("parsed as    {}", result);
         if(result == null)
             return "";
         else return String.format("%04d-%02d-%02d", result.getYear(), result.getMonthValue(), result.getDayOfMonth());
