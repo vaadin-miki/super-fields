@@ -57,6 +57,7 @@ import java.util.function.Supplier;
  * @since 2020-04-07
  */
 @CssImport("./styles/demo-styles.css")
+@CssImport(value = "./styles/super-number-fields-styles.css", themeFor = "vaadin-text-field")
 @Route
 @PageTitle("SuperFields Demo")
 public class MainView extends VerticalLayout {
@@ -252,9 +253,9 @@ public class MainView extends VerticalLayout {
 
     public MainView() {
         this.components.put(SuperIntegerField.class, new SuperIntegerField("Integer (6 digits):").withMaximumIntegerDigits(6));
-        this.components.put(SuperLongField.class, new SuperLongField("Long (11 digits):").withMaximumIntegerDigits(11));
+        this.components.put(SuperLongField.class, new SuperLongField("Long (11 digits):").withMaximumIntegerDigits(11).withId("long"));
         this.components.put(SuperDoubleField.class, new SuperDoubleField("Double (8 + 4 digits):").withMaximumIntegerDigits(8).withMaximumFractionDigits(4));
-        this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1));
+        this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1).withId("big-decimal"));
         this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
         this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH).withValue(LocalDateTime.now()));
         this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
