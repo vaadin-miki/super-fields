@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.vaadin.miki</groupId>
     <artifactId>superfields-parent</artifactId>
-    <version>0.6.0.java8</version>
+    <version>0.6.2.java8</version>
     <modules>
         <module>superfields</module>
         <module>demo-v14</module>
@@ -16,7 +16,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>14.1.25</vaadin.version>
+        <vaadin.version>14.2.0</vaadin.version>
     </properties>
 
 </project>

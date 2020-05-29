@@ -16,6 +16,7 @@ import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.markers.HasPlaceholder;
 import org.vaadin.miki.markers.HasTitle;
+import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
@@ -39,9 +40,15 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         extends CustomField<T>
         implements HasPrefixAndSuffix, HasLabel, HasPlaceholder, HasTitle, HasLocale,
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
-                   WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF> {
+                   WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
+                   WithIdMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
+
+    /**
+     * Predefined class/id prefix for the inner text field.
+     */
+    private static final String TEXT_FIELD_STYLE_PREFIX = "belongs-to-";
 
     /**
      * Some grouping separators are non-breaking spaces - impossible to type.
@@ -112,6 +119,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
             this.format.setMaximumFractionDigits(maxFractionDigits);
         this.updateRegularExpression();
 
+        this.field.addClassName(TEXT_FIELD_STYLE_PREFIX +this.getClass().getSimpleName().toLowerCase());
         this.add(this.field);
 
         this.field.setLabel(label);
@@ -475,6 +483,19 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public String getTitle() {
         return this.field.getTitle();
+    }
+
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+        this.field.setId(id == null ? null : TEXT_FIELD_STYLE_PREFIX +id);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public SELF withId(String id) {
+        this.setId(id);
+        return (SELF)this;
     }
 
     /**

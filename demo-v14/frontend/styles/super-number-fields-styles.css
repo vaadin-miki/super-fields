@@ -1,0 +1,15 @@
+:host(#belongs-to-big-decimal) [part="value"] {
+    border-bottom: 2px solid orange;
+}
+
+:host(.belongs-to-superintegerfield) [part="value"] {
+    border-bottom: 2px solid cyan;
+}
+
+:host(.belongs-to-superdoublefield) [part="value"] {
+    border-bottom: 2px solid green;
+}
+
+:host(#belongs-to-long) [part="value"] {
+    border-bottom: 2px solid purple;
+}
