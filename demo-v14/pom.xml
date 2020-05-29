@@ -4,11 +4,11 @@
     <parent>
         <artifactId>superfields-parent</artifactId>
         <groupId>org.vaadin.miki</groupId>
-        <version>0.6.1</version>
+        <version>0.6.2</version>
     </parent>
 
     <artifactId>superfields-demo-v14</artifactId>
-    <version>0.6.1</version>
+    <version>0.6.2</version>
     <name>V14 demo app for SuperFields</name>
     <description>Showcase application for V14 and SuperFields.</description>
     <packaging>war</packaging>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.vaadin.miki</groupId>
             <artifactId>superfields</artifactId>
-            <version>0.6.1</version>
+            <version>0.6.2</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -38,10 +38,6 @@
             <artifactId>vaadin</artifactId>
             <version>${vaadin.version}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>vaadin-date-time-picker-flow</artifactId>
-                </exclusion>
                 <!-- Webjars are only needed when running in Vaadin 13 compatibility mode -->
                 <exclusion>
                     <groupId>com.vaadin.webjar</groupId>
