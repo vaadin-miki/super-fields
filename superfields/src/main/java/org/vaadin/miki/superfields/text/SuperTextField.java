@@ -22,6 +22,7 @@ import org.vaadin.miki.markers.WithValueMixin;
  */
 @Tag("super-text-field")
 @JsModule("./super-text-field.js")
+@SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextField extends TextField implements CanSelectText, TextSelectionNotifier<SuperTextField>,
         HasLabel, HasPlaceholder,
         WithIdMixin<SuperTextField>,  WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,

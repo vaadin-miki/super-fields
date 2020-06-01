@@ -20,6 +20,7 @@ import org.vaadin.miki.markers.WithValueMixin;
  */
 @Tag("super-text-area")
 @JsModule("./super-text-area.js")
+@SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextArea extends TextArea implements CanSelectText, TextSelectionNotifier<SuperTextArea>,
         HasLabel, HasPlaceholder, WithIdMixin<SuperTextArea>, WithLabelMixin<SuperTextArea>, WithPlaceholderMixin<SuperTextArea>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextArea>,

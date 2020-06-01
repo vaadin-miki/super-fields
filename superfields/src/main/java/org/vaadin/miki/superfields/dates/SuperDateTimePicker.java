@@ -25,6 +25,7 @@ import java.util.Optional;
  */
 @JsModule("./super-date-time-picker.js")
 @Tag("super-date-time-picker")
+@SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperDateTimePicker extends DateTimePicker
         implements HasLocale, HasLabel, HasDatePattern,
                    WithLocaleMixin<SuperDateTimePicker>, WithLabelMixin<SuperDateTimePicker>,

@@ -23,6 +23,10 @@ class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSele
 
     private final C source;
 
+    /**
+     * Creates the delegate for a given component.
+     * @param source Source of all events, data, etc.
+     */
     TextSelectionDelegate(C source) {
         this.source = source;
     }
@@ -54,6 +58,11 @@ class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSele
         this.fireTextSelectionEvent(eventBus, event);
     }
 
+    /**
+     * Selects all text.
+     * @param valueSupplier Way of getting current value. Needed if no client notifications.
+     * @param eventBusSupplier Way of getting event bus. Needed if no client notifications.
+     */
     void selectAll(Supplier<String> valueSupplier, Supplier<ComponentEventBus> eventBusSupplier) {
         this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
                 this.source.getElement().callJsFunction("selectAll", this.source.getElement())
@@ -66,6 +75,10 @@ class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSele
         }
     }
 
+    /**
+     * Selects no text.
+     * @param eventBusSupplier Way of getting event bus. Needed if no client notifications.
+     */
     void selectNone(Supplier<ComponentEventBus> eventBusSupplier) {
         this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
                 this.source.getElement().callJsFunction("selectNone", this.source.getElement())
@@ -77,6 +90,13 @@ class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSele
         }
     }
 
+    /**
+     * Selects some text.
+     * @param valueSupplier Way of getting current value. Needed if no client notifications.
+     * @param eventBusSupplier Way of getting event bus. Needed if no client notifications.
+     * @param from Selection starting index, inclusive.
+     * @param to Selection end index, exclusive.
+     */
     void select(Supplier<String> valueSupplier, Supplier<ComponentEventBus> eventBusSupplier, int from, int to) {
         if(from <= to)
             this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
@@ -90,6 +110,11 @@ class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSele
         }
     }
 
+    /**
+     * Handles selection change on value change if there are no client notifications.
+     * Does nothing if the component is receiving client-side notifications.
+     * @param eventBusSupplier Way of getting event bus.
+     */
     void updateAttributeOnValueChange(Supplier<ComponentEventBus> eventBusSupplier) {
         // special case here: if there was selection, no client-side events are caught and value is set, event must be fired
         if(!this.source.isReceivingSelectionEventsFromClient()) {
