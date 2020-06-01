@@ -40,6 +40,7 @@ import org.vaadin.miki.superfields.tabs.SuperTabs;
 import org.vaadin.miki.superfields.tabs.TabHandler;
 import org.vaadin.miki.superfields.tabs.TabHandlers;
 import org.vaadin.miki.superfields.text.CanSelectText;
+import org.vaadin.miki.superfields.text.SuperTextArea;
 import org.vaadin.miki.superfields.text.SuperTextField;
 import org.vaadin.miki.superfields.text.TextSelectionNotifier;
 import org.vaadin.miki.superfields.unload.UnloadObserver;
@@ -279,6 +280,7 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
         this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH).withValue(LocalDateTime.now()));
         this.components.put(SuperTextField.class, new SuperTextField("Type something:").withPlaceholder("(nothing typed)").withId("super-text-field").withReceivingSelectionEventsFromClient(true));
+        this.components.put(SuperTextArea.class, new SuperTextArea("Type a lot of something:").withPlaceholder("(nothing typed)").withId("super-text-area").withReceivingSelectionEventsFromClient(true));
         this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
                 .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
                 .withItems("Java friendly", "Super-configurable", "Open source")

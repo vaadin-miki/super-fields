@@ -16,6 +16,4 @@ public interface CanSelectText extends HasElement {
 
     void select(int from, int to);
 
-    String getSelectedText();
-
 }

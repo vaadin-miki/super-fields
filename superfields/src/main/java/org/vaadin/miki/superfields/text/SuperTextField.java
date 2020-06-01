@@ -15,9 +15,6 @@ import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
-import java.util.Objects;
-import java.util.Optional;
-
 /**
  * An extension of {@link TextField} with some useful (hopefully) features.
  * @author miki
@@ -31,12 +28,9 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextField> {
 
-    /**
-     * Defines the name of the HTML attribute that contains the selected text.
-     */
-    public static final String SELECTED_TEXT_ATTRIBUTE_NAME = "data-selected-text";
-
     private boolean receivingSelectionEventsFromClient = false;
+
+    private final TextSelectionDelegate<SuperTextField> delegate = new TextSelectionDelegate<>(this);
 
     public SuperTextField() {
         super();
@@ -66,22 +60,9 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
         super(label, initialValue, listener);
     }
 
-    /**
-     * Sends information to the client side about whether or not it should forward text selection change events.
-     * @param value When {@code true}, client-side will notify server about changes in text selection.
-     */
-    protected void informClientAboutSendingEvents(boolean value) {
-        this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-                this.getElement().callJsFunction(
-                        "setCallingServer",
-                        value
-                        )
-        ));
-    }
-
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        this.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
+        this.delegate.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
         super.onAttach(attachEvent);
     }
 
@@ -89,7 +70,7 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     protected void onDetach(DetachEvent detachEvent) {
         // detaching means server should not be informed
         if(this.isReceivingSelectionEventsFromClient())
-            this.informClientAboutSendingEvents(false);
+            this.delegate.informClientAboutSendingEvents(false);
         super.onDetach(detachEvent);
     }
 
@@ -101,58 +82,23 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
 
     @Override
     public void selectAll() {
-        this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-                this.getElement().callJsFunction("selectAll", this.getElement())
-        ));
-        // send event if the client is not doing it
-        if(!this.isReceivingSelectionEventsFromClient()) {
-            this.getElement().setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, this.getValue());
-            this.selectionChanged(0, this.getValue().length(), this.getValue());
-        }
+        this.delegate.selectAll(this::getValue, this::getEventBus);
     }
 
     @Override
     public void selectNone() {
-        this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-                this.getElement().callJsFunction("selectNone", this.getElement())
-        ));
-        // send event if the client is not doing it
-        if(!this.isReceivingSelectionEventsFromClient()) {
-            this.getElement().setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, "");
-            this.selectionChanged(-1, -1, "");
-        }
+        this.delegate.selectNone(this::getEventBus);
     }
 
     @Override
     public void select(int from, int to) {
-        if(from <= to)
-            this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-                this.getElement().callJsFunction("select", this.getElement(), from, to)
-            ));
-        // send event if the client is not doing it
-        if(!this.isReceivingSelectionEventsFromClient()) {
-            this.getElement().setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, this.getValue().substring(from, to));
-            this.selectionChanged(from, to, this.getSelectedText());
-        }
+        this.delegate.select(this::getValue, this::getEventBus, from, to);
     }
 
     @ClientCallable
     private void selectionChanged(int start, int end, String selection) {
         TextSelectionEvent<SuperTextField> event = new TextSelectionEvent<>(this, true, start, end, selection);
-        this.fireTextSelectionEvent(event);
-    }
-
-    /**
-     * Fires text selection event.
-     * @param event Event with information about text selection.
-     */
-    protected void fireTextSelectionEvent(TextSelectionEvent<SuperTextField> event) {
-        this.getEventBus().fireEvent(event);
-    }
-
-    @Override
-    public String getSelectedText() {
-        return this.getElement().getAttribute(SELECTED_TEXT_ATTRIBUTE_NAME);
+        this.delegate.fireTextSelectionEvent(this.getEventBus(), event);
     }
 
     @Override
@@ -163,18 +109,12 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     @Override
     public void setReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
         this.receivingSelectionEventsFromClient = receivingSelectionEventsFromClient;
-        this.informClientAboutSendingEvents(receivingSelectionEventsFromClient);
+        this.delegate.informClientAboutSendingEvents(receivingSelectionEventsFromClient);
     }
 
     @Override
     public void setValue(String value) {
-        // special case here: if there was selection, no client-side events are caught and value is set, event must be fired
-        if(!this.isReceivingSelectionEventsFromClient()) {
-            final String lastSelected = Optional.ofNullable(this.getElement().getAttribute(SELECTED_TEXT_ATTRIBUTE_NAME)).orElse("");
-            this.getElement().setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, "");
-            if(!Objects.equals(lastSelected, ""))
-                this.fireTextSelectionEvent(new TextSelectionEvent<>(this, false, -1, -1, ""));
-        }
+        this.delegate.updateAttributeOnValueChange(this::getEventBus);
         super.setValue(value);
     }
 }
