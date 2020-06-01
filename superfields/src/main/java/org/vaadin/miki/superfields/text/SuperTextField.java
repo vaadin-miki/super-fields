@@ -15,6 +15,9 @@ import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
+import java.util.Objects;
+import java.util.Optional;
+
 /**
  * An extension of {@link TextField} with some useful (hopefully) features.
  * @author miki
@@ -25,9 +28,15 @@ import org.vaadin.miki.markers.WithValueMixin;
 public class SuperTextField extends TextField implements CanSelectText, TextSelectionNotifier<SuperTextField>,
         HasLabel, HasPlaceholder,
         WithIdMixin<SuperTextField>,  WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,
-        WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField> {
+        WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
+        WithReceivingSelectionEventsFromClientMixin<SuperTextField> {
 
-    private boolean clientCallingServerOnSelectionChange = false;
+    /**
+     * Defines the name of the HTML attribute that contains the selected text.
+     */
+    public static final String SELECTED_TEXT_ATTRIBUTE_NAME = "data-selected-text";
+
+    private boolean receivingSelectionEventsFromClient = false;
 
     public SuperTextField() {
         super();
@@ -58,7 +67,7 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     }
 
     /**
-     * Sends information to the client side about whether or not it should text selection change events.
+     * Sends information to the client side about whether or not it should forward text selection change events.
      * @param value When {@code true}, client-side will notify server about changes in text selection.
      */
     protected void informClientAboutSendingEvents(boolean value) {
@@ -72,14 +81,14 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        this.informClientAboutSendingEvents(this.isClientCallingServerOnSelectionChange());
+        this.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
         super.onAttach(attachEvent);
     }
 
     @Override
     protected void onDetach(DetachEvent detachEvent) {
         // detaching means server should not be informed
-        if(this.isClientCallingServerOnSelectionChange())
+        if(this.isReceivingSelectionEventsFromClient())
             this.informClientAboutSendingEvents(false);
         super.onDetach(detachEvent);
     }
@@ -96,8 +105,10 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
                 this.getElement().callJsFunction("selectAll", this.getElement())
         ));
         // send event if the client is not doing it
-        if(!this.isClientCallingServerOnSelectionChange())
+        if(!this.isReceivingSelectionEventsFromClient()) {
+            this.getElement().setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, this.getValue());
             this.selectionChanged(0, this.getValue().length(), this.getValue());
+        }
     }
 
     @Override
@@ -106,8 +117,10 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
                 this.getElement().callJsFunction("selectNone", this.getElement())
         ));
         // send event if the client is not doing it
-        if(!this.isClientCallingServerOnSelectionChange())
+        if(!this.isReceivingSelectionEventsFromClient()) {
+            this.getElement().setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, "");
             this.selectionChanged(-1, -1, "");
+        }
     }
 
     @Override
@@ -117,8 +130,10 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
                 this.getElement().callJsFunction("select", this.getElement(), from, to)
             ));
         // send event if the client is not doing it
-        if(!this.isClientCallingServerOnSelectionChange())
+        if(!this.isReceivingSelectionEventsFromClient()) {
+            this.getElement().setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, this.getValue().substring(from, to));
             this.selectionChanged(from, to, this.getSelectedText());
+        }
     }
 
     @ClientCallable
@@ -137,37 +152,29 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
 
     @Override
     public String getSelectedText() {
-        return this.getElement().getAttribute("data-selected-text");
+        return this.getElement().getAttribute(SELECTED_TEXT_ATTRIBUTE_NAME);
     }
 
-    /**
-     * Check if client will inform server on selection change.
-     * Note: this feature is by default turned off.
-     * @return When {@code true}, each selection change in the client-side component will result in this component broadcasting a {@link TextSelectionEvent}.
-     */
-    public boolean isClientCallingServerOnSelectionChange() {
-        return this.clientCallingServerOnSelectionChange;
+    @Override
+    public boolean isReceivingSelectionEventsFromClient() {
+        return this.receivingSelectionEventsFromClient;
     }
 
-    /**
-     * Configures sending events by the client-side component.
-     * Note: this feature is by default turned off.
-     * @param clientCallingServerOnSelectionChange When {@code false}, selecting text in client-side component will not send an event to server-side component. When {@code true}, it will.
-     */
-    public void setClientCallingServerOnSelectionChange(boolean clientCallingServerOnSelectionChange) {
-        this.clientCallingServerOnSelectionChange = clientCallingServerOnSelectionChange;
-        this.informClientAboutSendingEvents(clientCallingServerOnSelectionChange);
+    @Override
+    public void setReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
+        this.receivingSelectionEventsFromClient = receivingSelectionEventsFromClient;
+        this.informClientAboutSendingEvents(receivingSelectionEventsFromClient);
     }
 
-    /**
-     * Chains {@link #setClientCallingServerOnSelectionChange(boolean)} and returns itself.
-     * Note: this feature is by default turned off.
-     * @param clientCallingServerOnSelectionChange Whether or not the client should send events about text selection changes.
-     * @return This.
-     * @see #setClientCallingServerOnSelectionChange(boolean)
-     */
-    public SuperTextField withClientCallingServerOnSelectionChange(boolean clientCallingServerOnSelectionChange) {
-        this.setClientCallingServerOnSelectionChange(clientCallingServerOnSelectionChange);
-        return this;
+    @Override
+    public void setValue(String value) {
+        // special case here: if there was selection, no client-side events are caught and value is set, event must be fired
+        if(!this.isReceivingSelectionEventsFromClient()) {
+            final String lastSelected = Optional.ofNullable(this.getElement().getAttribute(SELECTED_TEXT_ATTRIBUTE_NAME)).orElse("");
+            this.getElement().setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, "");
+            if(!Objects.equals(lastSelected, ""))
+                this.fireTextSelectionEvent(new TextSelectionEvent<>(this, false, -1, -1, ""));
+        }
+        super.setValue(value);
     }
 }

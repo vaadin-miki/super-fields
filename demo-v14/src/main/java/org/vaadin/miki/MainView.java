@@ -278,7 +278,7 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1).withId("big-decimal"));
         this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
         this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH).withValue(LocalDateTime.now()));
-        this.components.put(SuperTextField.class, new SuperTextField("Type something:").withPlaceholder("(nothing typed)").withId("super-text-field").withClientCallingServerOnSelectionChange(true));
+        this.components.put(SuperTextField.class, new SuperTextField("Type something:").withPlaceholder("(nothing typed)").withId("super-text-field").withReceivingSelectionEventsFromClient(true));
         this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
                 .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
                 .withItems("Java friendly", "Super-configurable", "Open source")
