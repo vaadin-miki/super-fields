@@ -6,7 +6,7 @@ export class TextSelectionMixin {
                 const currentStart = data.startsAt;
                 const currentEnd = data.endsAt;
                 // there is some selection
-                if (data.input.selectionStart !== undefined) {
+                if (data.input.selectionStart !== undefined && data.input.selectionStart !== data.input.selectionEnd) {
                     data.startsAt = data.input.selectionStart;
                     data.endsAt = data.input.selectionEnd;
                     data.selection = data.input.value.substring(data.startsAt, data.endsAt);
@@ -16,7 +16,6 @@ export class TextSelectionMixin {
                     data.endsAt = -1;
                     data.selection = '';
                 }
-                console.log('TSM: text selection occurred - '+JSON.stringify(data));
                 src.dataset.selectedText = data.selection;
                 if(data.callServer && (currentStart !== data.startsAt || currentEnd !== data.endsAt)) {
                     console.log('TSM: calling server');
@@ -56,7 +55,7 @@ export class TextSelectionMixin {
                         selection: ''
                     }
 
-                    const listener = () => webComponent.updateData(webComponent.selectionMixin);
+                    const listener = () => webComponent.updateData(webComponent.selectionMixin, webComponent);
                     inputComponent.addEventListener('mouseup', listener);
                     inputComponent.addEventListener('keyup', listener);
                     inputComponent.addEventListener('mouseleave', listener);

@@ -138,14 +138,16 @@ public class MainView extends VerticalLayout {
     private void buildCanSelectText(Component component, Consumer<Component[]> callback) {
         final Button selectAll = new Button("Select all", event -> ((CanSelectText)component).selectAll());
         final Button selectNone = new Button("Select none", event -> ((CanSelectText)component).selectNone());
+        final HorizontalLayout layout = new HorizontalLayout(new Span("Type something in the field, then click one of the buttons:"), selectAll, selectNone);
+        layout.setAlignItems(Alignment.CENTER);
         callback.accept(new Component[]{
-                new HorizontalLayout(new Span("Type something in the field, then click the buttons:"), selectAll, selectNone),
+                layout
         });
         if(component instanceof TextSelectionNotifier<?>) {
             final Span selection = new Span();
             ((TextSelectionNotifier<?>) component).addTextSelectionListener(event -> selection.setText(event.getSelectedText()));
             callback.accept(new Component[]{
-                    new HorizontalLayout(new Span("You can also select text yourself. Here is current selection: "), selection)
+                    new HorizontalLayout(new Span("You can also select text yourself with keyboard our mouse. Here is the current selection: <"), selection, new Span(">"))
             });
         }
     }
@@ -276,7 +278,7 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1).withId("big-decimal"));
         this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
         this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH).withValue(LocalDateTime.now()));
-        this.components.put(SuperTextField.class, new SuperTextField("Type something:").withPlaceholder("(nothing typed)").withId("super-text-field"));
+        this.components.put(SuperTextField.class, new SuperTextField("Type something:").withPlaceholder("(nothing typed)").withId("super-text-field").withClientCallingServerOnSelectionChange(true));
         this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
                 .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
                 .withItems("Java friendly", "Super-configurable", "Open source")
