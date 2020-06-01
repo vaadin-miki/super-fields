@@ -39,6 +39,10 @@ import org.vaadin.miki.superfields.numbers.SuperLongField;
 import org.vaadin.miki.superfields.tabs.SuperTabs;
 import org.vaadin.miki.superfields.tabs.TabHandler;
 import org.vaadin.miki.superfields.tabs.TabHandlers;
+import org.vaadin.miki.superfields.text.CanSelectText;
+import org.vaadin.miki.superfields.text.SuperTextArea;
+import org.vaadin.miki.superfields.text.SuperTextField;
+import org.vaadin.miki.superfields.text.TextSelectionNotifier;
 import org.vaadin.miki.superfields.unload.UnloadObserver;
 
 import java.time.LocalDate;
@@ -130,6 +134,23 @@ public class MainView extends VerticalLayout {
 
     private void buildHasValue(Component component, Consumer<Component[]> callback) {
         ((HasValue<?, ?>) component).addValueChangeListener(this::onAnyValueChanged);
+    }
+
+    private void buildCanSelectText(Component component, Consumer<Component[]> callback) {
+        final Button selectAll = new Button("Select all", event -> ((CanSelectText)component).selectAll());
+        final Button selectNone = new Button("Select none", event -> ((CanSelectText)component).selectNone());
+        final HorizontalLayout layout = new HorizontalLayout(new Span("Type something in the field, then click one of the buttons:"), selectAll, selectNone);
+        layout.setAlignItems(Alignment.CENTER);
+        callback.accept(new Component[]{
+                layout
+        });
+        if(component instanceof TextSelectionNotifier<?>) {
+            final Span selection = new Span();
+            ((TextSelectionNotifier<?>) component).addTextSelectionListener(event -> selection.setText(event.getSelectedText()));
+            callback.accept(new Component[]{
+                    new HorizontalLayout(new Span("You can also select text yourself with keyboard our mouse. Here is the current selection: <"), selection, new Span(">"))
+            });
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -258,6 +279,8 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1).withId("big-decimal"));
         this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
         this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH).withValue(LocalDateTime.now()));
+        this.components.put(SuperTextField.class, new SuperTextField("Type something:").withPlaceholder("(nothing typed)").withId("super-text-field").withReceivingSelectionEventsFromClient(true));
+        this.components.put(SuperTextArea.class, new SuperTextArea("Type a lot of something:").withPlaceholder("(nothing typed)").withId("super-text-area").withReceivingSelectionEventsFromClient(true));
         this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
                 .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
                 .withItems("Java friendly", "Super-configurable", "Open source")
@@ -298,6 +321,7 @@ public class MainView extends VerticalLayout {
         this.contentBuilders.put(AbstractSuperNumberField.class, this::buildAbstractSuperNumberField);
         this.contentBuilders.put(HasLocale.class, this::buildHasLocale);
         this.contentBuilders.put(HasValue.class, this::buildHasValue);
+        this.contentBuilders.put(CanSelectText.class, this::buildCanSelectText);
         this.contentBuilders.put(ItemGrid.class, this::buildItemGrid);
         this.contentBuilders.put(HasDatePattern.class, this::buildHasDatePattern);
         this.contentBuilders.put(SuperTabs.class, this::buildSuperTabs);
