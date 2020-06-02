@@ -19,6 +19,8 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.function.SerializableBiConsumer;
+import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.vaadin.miki.markers.HasLocale;
@@ -51,7 +53,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -68,9 +69,9 @@ public class MainView extends VerticalLayout {
 
     private final Map<Class<?>, Component> components = new LinkedHashMap<>();
 
-    private final Map<Class<?>, Consumer<Object>> afterLocaleChange = new HashMap<>();
+    private final Map<Class<?>, SerializableConsumer<Object>> afterLocaleChange = new HashMap<>();
 
-    private final Map<Class<?>, BiConsumer<Component, Consumer<Component[]>>> contentBuilders = new LinkedHashMap<>();
+    private final Map<Class<?>, SerializableBiConsumer<Component, Consumer<Component[]>>> contentBuilders = new LinkedHashMap<>();
 
     private static Component generateParagraph(Class<? extends Component> type, int row, int column) {
         Paragraph result = new Paragraph(type.getSimpleName());
@@ -289,7 +290,7 @@ public class MainView extends VerticalLayout {
         );
         this.components.put(ObservedField.class, new ObservedField());
         this.components.put(ComponentObserver.class, new ComponentObserver());
-        this.components.put(UnloadObserver.class, new UnloadObserver(false));
+        this.components.put(UnloadObserver.class, UnloadObserver.get(false));
         this.components.put(ItemGrid.class, new ItemGrid<Class<? extends Component>>(
                 null,
                 () -> {

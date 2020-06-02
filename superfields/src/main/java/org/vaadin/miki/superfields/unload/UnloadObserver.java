@@ -13,13 +13,38 @@ import org.vaadin.miki.markers.WithIdMixin;
 /**
  * Server-side component that listens to {@code beforeunload} events.
  * Based on <a href="https://vaadin.com/forum/thread/17523194/unsaved-changes-detect-page-exit-or-reload">the code by Kaspar Scherrer and Stuart Robinson</a>.
+ * Warning: this class is a Singleton; the class is final, the constructors are private and there is at most one global instance.
  *
  * @author Kaspar Scherrer, Stuart Robinson; adapted to web-component by miki
  * @since 2020-04-29
  */
 @JsModule("./unload-observer.js")
 @Tag("unload-observer")
-public class UnloadObserver extends PolymerTemplate<TemplateModel> implements WithIdMixin<UnloadObserver> {
+public final class UnloadObserver extends PolymerTemplate<TemplateModel> implements WithIdMixin<UnloadObserver> {
+
+    private static UnloadObserver instance = null;
+
+    /**
+     * Returns the current instance. Will create one using default no-arg constructor if none is present yet.
+     * @return An instance of {@link UnloadObserver}.
+     */
+    public static UnloadObserver get() {
+        if(instance == null)
+            instance = new UnloadObserver();
+        return instance;
+    }
+
+    /**
+     * Returns the current instance. Will create one if needed and set its {@link #setQueryingOnUnload(boolean)}.
+     * @param queryingOnUnload Whether or not query at page close.
+     * @return An instance of {@link UnloadObserver}.
+     */
+    public static UnloadObserver get(boolean queryingOnUnload) {
+        if(instance == null)
+            instance = new UnloadObserver(queryingOnUnload);
+        else instance.setQueryingOnUnload(queryingOnUnload);
+        return instance;
+    }
 
     private boolean queryingOnUnload;
 
@@ -28,7 +53,7 @@ public class UnloadObserver extends PolymerTemplate<TemplateModel> implements Wi
     /**
      * Creates the unload observer and by default queries the user on unloading the page.
      */
-    public UnloadObserver() {
+    private UnloadObserver() {
         this(true);
     }
 
@@ -36,7 +61,7 @@ public class UnloadObserver extends PolymerTemplate<TemplateModel> implements Wi
      * Creates the unload observer.
      * @param queryOnUnload Whether or not to query the user on unloading the page.
      */
-    public UnloadObserver(boolean queryOnUnload) {
+    private UnloadObserver(boolean queryOnUnload) {
         super();
         this.setQueryingOnUnload(queryOnUnload);
     }
@@ -102,10 +127,7 @@ public class UnloadObserver extends PolymerTemplate<TemplateModel> implements Wi
 
     @Override
     protected void onDetach(DetachEvent detachEvent) {
-        if(this.clientInitialised) {
-            this.getElement().callJsFunction("stopObserver");
-            this.clientInitialised = false;
-        }
+        this.clientInitialised = false;
         super.onDetach(detachEvent);
     }
 
