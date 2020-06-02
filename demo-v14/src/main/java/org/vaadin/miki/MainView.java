@@ -133,7 +133,9 @@ public class MainView extends VerticalLayout {
     }
 
     private void buildHasValue(Component component, Consumer<Component[]> callback) {
+        final Checkbox toggle = new Checkbox("Mark component as read only?", event -> ((HasValue<?, ?>)component).setReadOnly(event.getValue()));
         ((HasValue<?, ?>) component).addValueChangeListener(this::onAnyValueChanged);
+        callback.accept(new Component[]{toggle});
     }
 
     private void buildCanSelectText(Component component, Consumer<Component[]> callback) {
