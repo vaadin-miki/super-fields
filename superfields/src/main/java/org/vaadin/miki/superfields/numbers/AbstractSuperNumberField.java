@@ -525,6 +525,46 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.field.removeThemeVariants(variants);
     }
 
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        this.field.setReadOnly(readOnly);
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return this.field.isReadOnly();
+    }
+
+    @Override
+    public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
+        this.field.setRequiredIndicatorVisible(requiredIndicatorVisible);
+    }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return this.field.isRequiredIndicatorVisible();
+    }
+
+    @Override
+    public void setErrorMessage(String errorMessage) {
+        this.field.setErrorMessage(errorMessage);
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return this.field.getErrorMessage();
+    }
+
+    @Override
+    public void setInvalid(boolean invalid) {
+        this.field.setInvalid(invalid);
+    }
+
+    @Override
+    public boolean isInvalid() {
+        return this.field.isInvalid();
+    }
+
     /**
      * Explicitly invokes code that would otherwise be called when the component receives focus.
      * For testing purposes only.
