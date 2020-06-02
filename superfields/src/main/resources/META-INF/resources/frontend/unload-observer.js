@@ -20,8 +20,17 @@ export class UnloadObserver extends PolymerElement {
      * Initialises the observer and registers a beforeunload listener.
      */
     initObserver() {
-        console.log("registering unload listener")
-        window.addEventListener('beforeunload', event => this.unloadHappened(this, event));
+        const src = this;
+        if (window.Vaadin.unloadObserver === undefined) {
+            window.Vaadin.unloadObserver = {
+                handler: undefined
+            }
+        }
+        if (window.Vaadin.unloadObserver.handler !== undefined) {
+            window.removeEventListener('beforeunload', window.Vaadin.unloadObserver.handler);
+        }
+        window.Vaadin.unloadObserver.handler = event => src.unloadHappened(src, event);
+        window.addEventListener('beforeunload', window.Vaadin.unloadObserver.handler);
     }
 
     /**
@@ -30,10 +39,12 @@ export class UnloadObserver extends PolymerElement {
      * @param event Event that happened.
      */
     unloadHappened(source, event) {
-        if (source.dataset.queryOnUnload) {
+        if (window.Vaadin.unloadObserver.query) {
             event.preventDefault();
             event.returnValue = '';
-            source.$server.unloadAttempted();
+            if (source.$server) {
+                source.$server.unloadAttempted();
+            }
         }
     }
 
@@ -43,19 +54,11 @@ export class UnloadObserver extends PolymerElement {
      */
     queryOnUnload(value) {
         if (value) {
-            this.dataset.queryOnUnload = 'true';
+            window.Vaadin.unloadObserver.query = 'true';
         }
         else {
-            delete this.dataset.queryOnUnload;
+            delete window.Vaadin.unloadObserver.query;
         }
-    }
-
-    /**
-     * Unregisters itself from listening to unload events.
-     */
-    stopObserver() {
-        console.log("removing unload listener")
-        window.removeEventListener('beforeunload', event => this.unloadHappened(this, event));
     }
 
     static get properties() {
