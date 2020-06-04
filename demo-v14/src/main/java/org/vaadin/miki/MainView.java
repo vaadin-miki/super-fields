@@ -159,7 +159,7 @@ public class MainView extends VerticalLayout {
             icon.setColor("green");
             icon.getElement().setAttribute("title", "When the component does not receive events from the browser, selection events will only be called for server-side initiated actions.");
             callback.accept(new Component[]{
-                    new HorizontalLayout(new Span("Current selection: <"), selection, new Span(">"), icon)
+                    new HorizontalLayout(new Span("Most recently selected text: <"), selection, new Span(">"), icon)
             });
         }
     }

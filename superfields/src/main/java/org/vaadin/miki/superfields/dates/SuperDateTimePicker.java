@@ -37,7 +37,7 @@ public class SuperDateTimePicker extends DateTimePicker
     private static final String INTERNAL_DATE_PICKER_FIELD_NAME = "datePicker";
     private static final String INTERNAL_TIME_PICKER_FIELD_NAME = "timePicker";
 
-    private final DatePatternHelper<SuperDateTimePicker> delegate = new DatePatternHelper<>(this);
+    private final DatePatternDelegate<SuperDateTimePicker> delegate = new DatePatternDelegate<>(this);
 
     private DatePattern datePattern;
 
