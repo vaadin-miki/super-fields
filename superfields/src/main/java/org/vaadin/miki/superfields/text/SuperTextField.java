@@ -8,12 +8,18 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.shared.Registration;
+import org.vaadin.miki.events.text.TextSelectionEvent;
+import org.vaadin.miki.events.text.TextSelectionListener;
+import org.vaadin.miki.events.text.TextSelectionNotifier;
+import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasPlaceholder;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
+import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.shared.text.TextSelectionDelegate;
 
 /**
  * An extension of {@link TextField} with some useful (hopefully) features.

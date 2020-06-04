@@ -1,7 +1,8 @@
-package org.vaadin.miki.superfields.text;
+package org.vaadin.miki.events.text;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
+import org.vaadin.miki.markers.CanSelectText;
 
 import java.util.Optional;
 

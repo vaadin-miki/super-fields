@@ -1,4 +1,4 @@
-package org.vaadin.miki.superfields.text;
+package org.vaadin.miki.markers;
 
 /**
  * Marker interface for chaining {@link #setReceivingSelectionEventsFromClient(boolean)}.

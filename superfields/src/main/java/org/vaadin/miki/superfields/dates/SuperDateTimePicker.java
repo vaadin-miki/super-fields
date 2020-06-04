@@ -6,8 +6,10 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.timepicker.TimePicker;
+import org.vaadin.miki.markers.HasDatePattern;
 import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
+import org.vaadin.miki.markers.WithDatePatternMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
@@ -29,7 +31,7 @@ import java.util.Optional;
 public class SuperDateTimePicker extends DateTimePicker
         implements HasLocale, HasLabel, HasDatePattern,
                    WithLocaleMixin<SuperDateTimePicker>, WithLabelMixin<SuperDateTimePicker>,
-                   WithDatePatternMixin<SuperDateTimePicker>, WithIdMixin<SuperDateTimePicker>,
+        WithDatePatternMixin<SuperDateTimePicker>, WithIdMixin<SuperDateTimePicker>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<DateTimePicker, LocalDateTime>, LocalDateTime, SuperDateTimePicker> {
 
     // so, this component is a composition of DatePicker and TimePicker
@@ -37,7 +39,7 @@ public class SuperDateTimePicker extends DateTimePicker
     private static final String INTERNAL_DATE_PICKER_FIELD_NAME = "datePicker";
     private static final String INTERNAL_TIME_PICKER_FIELD_NAME = "timePicker";
 
-    private final DatePatternHelper<SuperDateTimePicker> delegate = new DatePatternHelper<>(this);
+    private final DatePatternDelegate<SuperDateTimePicker> delegate = new DatePatternDelegate<>(this);
 
     private DatePattern datePattern;
 

@@ -2,15 +2,21 @@ package org.vaadin.miki.superfields.dates;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import org.vaadin.miki.markers.HasDatePattern;
+
+import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
- * Helper class that calls a method on a client side.
+ * Helper class that contains code related handling date patterns.
  * Internal use only.
  *
  * @author miki
  * @since 2020-05-02
  */
-final class DatePatternHelper<C extends Component & HasDatePattern> {
+final class DatePatternDelegate<C extends Component & HasDatePattern> implements Serializable {
+
+    private static final long serialVersionUID = 20200506L;
 
     /**
      * Returns the pattern descriptor string expected by the client-side code.
@@ -60,7 +66,7 @@ final class DatePatternHelper<C extends Component & HasDatePattern> {
      * The client-side representation should have mixed in methods from {@code date-pattern-mixin.js}.
      * @param source Source to use.
      */
-    DatePatternHelper(C source) {
+    DatePatternDelegate(C source) {
         this.source = source;
         this.source.addAttachListener(this::onAttached);
     }
@@ -95,6 +101,29 @@ final class DatePatternHelper<C extends Component & HasDatePattern> {
                         this.source.getElement(), convertDatePatternToClientPattern(this.source.getDatePattern())
                 )
         ));
+    }
+
+    private int[] getDayMonthYearPositions(DatePattern.Order order) {
+        if(order == DatePattern.Order.DAY_MONTH_YEAR)
+            return new int[]{0, 1, 2};
+        else if(order == DatePattern.Order.MONTH_DAY_YEAR)
+            return new int[]{1, 0, 2};
+        else return new int[]{2, 1, 0};
+    }
+
+    /**
+     * Formats the date according to the pattern present in the source.
+     * @param date Date to format. Must not be {@code null}.
+     * @return Formatted date.
+     */
+    String formatDate(LocalDate date) {
+        final DatePattern pattern = this.source.getDatePattern();
+        final String[] parts = new String[3];
+        final int[] indices = this.getDayMonthYearPositions(pattern.getDisplayOrder());
+        parts[indices[0]] = pattern.isZeroPrefixedDay() ? String.format("%02d", date.getDayOfMonth()) : String.valueOf(date.getDayOfMonth());
+        parts[indices[1]] = pattern.isZeroPrefixedMonth() ? String.format("%02d", date.getMonthValue()) : String.valueOf(date.getMonthValue());
+        parts[indices[2]] = pattern.isShortYear() ? String.format("%02d", date.getYear() % 100) : String.valueOf(date.getYear());
+        return String.join(String.valueOf(pattern.getSeparator()), parts);
     }
 
 }

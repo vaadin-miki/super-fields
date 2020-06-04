@@ -1,7 +1,10 @@
-package org.vaadin.miki.superfields.text;
+package org.vaadin.miki.shared.text;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventBus;
+import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
+import org.vaadin.miki.markers.CanSelectText;
+import org.vaadin.miki.events.text.TextSelectionEvent;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,12 +12,12 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Internal class that handles common behaviour related to text selection.
- * Note: this is for internal use only.
+ * A class that handles common behaviour related to text selection.
+ * This assumes that the client-side component mixes in {@code text-selection-mikin.js}.
  * @author miki
  * @since 2020-06-01
  */
-class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSelectionEventsFromClient> implements Serializable {
+public class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSelectionEventsFromClient> implements Serializable {
 
     /**
      * Defines the name of the HTML attribute that contains the selected text.
@@ -27,7 +30,7 @@ class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSele
      * Creates the delegate for a given component.
      * @param source Source of all events, data, etc.
      */
-    TextSelectionDelegate(C source) {
+    public TextSelectionDelegate(C source) {
         this.source = source;
     }
 
@@ -35,7 +38,7 @@ class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSele
      * Sends information to the client side about whether or not it should forward text selection change events.
      * @param value When {@code true}, client-side will notify server about changes in text selection.
      */
-    protected void informClientAboutSendingEvents(boolean value) {
+    public void informClientAboutSendingEvents(boolean value) {
         this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
                 this.source.getElement().callJsFunction(
                         "setCallingServer",
@@ -49,7 +52,7 @@ class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSele
      * @param eventBus Event bus.
      * @param event Event with information about text selection.
      */
-    protected void fireTextSelectionEvent(ComponentEventBus eventBus, TextSelectionEvent<C> event) {
+    public void fireTextSelectionEvent(ComponentEventBus eventBus, TextSelectionEvent<C> event) {
         eventBus.fireEvent(event);
     }
 
@@ -63,7 +66,7 @@ class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSele
      * @param valueSupplier Way of getting current value. Needed if no client notifications.
      * @param eventBusSupplier Way of getting event bus. Needed if no client notifications.
      */
-    void selectAll(Supplier<String> valueSupplier, Supplier<ComponentEventBus> eventBusSupplier) {
+    public void selectAll(Supplier<String> valueSupplier, Supplier<ComponentEventBus> eventBusSupplier) {
         this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
                 this.source.getElement().callJsFunction("selectAll", this.source.getElement())
         ));
@@ -79,7 +82,7 @@ class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSele
      * Selects no text.
      * @param eventBusSupplier Way of getting event bus. Needed if no client notifications.
      */
-    void selectNone(Supplier<ComponentEventBus> eventBusSupplier) {
+    public void selectNone(Supplier<ComponentEventBus> eventBusSupplier) {
         this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
                 this.source.getElement().callJsFunction("selectNone", this.source.getElement())
         ));
@@ -97,7 +100,7 @@ class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSele
      * @param from Selection starting index, inclusive.
      * @param to Selection end index, exclusive.
      */
-    void select(Supplier<String> valueSupplier, Supplier<ComponentEventBus> eventBusSupplier, int from, int to) {
+    public void select(Supplier<String> valueSupplier, Supplier<ComponentEventBus> eventBusSupplier, int from, int to) {
         if(from <= to)
             this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
                     this.source.getElement().callJsFunction("select", this.source.getElement(), from, to)
@@ -115,7 +118,7 @@ class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSele
      * Does nothing if the component is receiving client-side notifications.
      * @param eventBusSupplier Way of getting event bus.
      */
-    void updateAttributeOnValueChange(Supplier<ComponentEventBus> eventBusSupplier) {
+    public void updateAttributeOnValueChange(Supplier<ComponentEventBus> eventBusSupplier) {
         // special case here: if there was selection, no client-side events are caught and value is set, event must be fired
         if(!this.source.isReceivingSelectionEventsFromClient()) {
             final String lastSelected = Optional.ofNullable(this.source.getElement().getAttribute(SELECTED_TEXT_ATTRIBUTE_NAME)).orElse("");

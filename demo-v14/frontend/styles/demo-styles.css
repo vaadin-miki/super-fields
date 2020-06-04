@@ -43,3 +43,26 @@ span.highlighted {
     letter-spacing: 1px;
     color: #004444;
 }
+
+.section-layout {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin-top: 1em;
+}
+
+.section-header {
+    font-size: larger;
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.component-header {
+    text-align: left;
+}
+
+.component-section {
+    padding: 1em;
+    margin: 1em;
+}
+

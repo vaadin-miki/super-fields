@@ -1,17 +1,25 @@
 package org.vaadin.miki.superfields.text;
 
 import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.shared.Registration;
+import org.vaadin.miki.events.text.TextSelectionEvent;
+import org.vaadin.miki.events.text.TextSelectionListener;
+import org.vaadin.miki.events.text.TextSelectionNotifier;
+import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasPlaceholder;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
+import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.shared.text.TextSelectionDelegate;
 
 /**
  * An extension of {@link TextArea} with some useful features.
@@ -55,6 +63,21 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
 
     public SuperTextArea(String label, String initialValue, ValueChangeListener<? super ComponentValueChangeEvent<TextArea, String>> listener) {
         super(label, initialValue, listener);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        // sadly there are no mixin classes in java for protected methods
+        this.delegate.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
+        super.onAttach(attachEvent);
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        // detaching means server should not be informed
+        if(this.isReceivingSelectionEventsFromClient())
+            this.delegate.informClientAboutSendingEvents(false);
+        super.onDetach(detachEvent);
     }
 
     @Override

@@ -1,5 +1,12 @@
-package org.vaadin.miki.superfields.text;
+package org.vaadin.miki.markers;
 
+import org.vaadin.miki.events.text.TextSelectionEvent;
+
+/**
+ * Marker interface for objects capable of receiving text selection events from client-side code.
+ * @author miki
+ * @since 2020-06-04
+ */
 public interface CanReceiveSelectionEventsFromClient {
     /**
      * Check if client will inform server on selection change.

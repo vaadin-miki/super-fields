@@ -10,6 +10,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.function.SerializablePredicate;
+import com.vaadin.flow.shared.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.markers.HasLabel;
@@ -22,6 +23,13 @@ import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
+import org.vaadin.miki.markers.CanSelectText;
+import org.vaadin.miki.superfields.text.SuperTextField;
+import org.vaadin.miki.events.text.TextSelectionEvent;
+import org.vaadin.miki.events.text.TextSelectionListener;
+import org.vaadin.miki.events.text.TextSelectionNotifier;
+import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -38,7 +46,9 @@ import java.util.Optional;
  */
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
-        implements HasPrefixAndSuffix, HasLabel, HasPlaceholder, HasTitle, HasLocale,
+        implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SELF>,
+                   TextSelectionNotifier<SELF>,
+                   HasPrefixAndSuffix, HasLabel, HasPlaceholder, HasTitle, HasLocale,
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF> {
@@ -68,7 +78,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Underlying text field.
      */
-    private final TextField field = new TextField();
+    private final SuperTextField field = new SuperTextField();
 
     /**
      * A predicate for negativity of numbers.
@@ -128,6 +138,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
         this.field.addFocusListener(this::onFieldSelected);
         this.field.addBlurListener(this::onFieldBlurred);
+        this.field.addTextSelectionListener(this::onTextSelected);
     }
 
     private static String escapeDot(char character) {
@@ -563,6 +574,50 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public boolean isInvalid() {
         return this.field.isInvalid();
+    }
+
+    @Override
+    public void select(int from, int to) {
+        this.field.select(from, to);
+    }
+
+    @Override
+    public void selectAll() {
+        this.field.selectAll();
+    }
+
+    @Override
+    public void selectNone() {
+        this.field.selectNone();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void onTextSelected(TextSelectionEvent<SuperTextField> event) {
+        final TextSelectionEvent<SELF> selfEvent = new TextSelectionEvent<>((SELF)this, event.isFromClient(), event.getSelectionStart(), event.getSelectionEnd(), event.getSelectedText());
+        this.getEventBus().fireEvent(selfEvent);
+    }
+
+    @Override
+    public void setReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
+        this.field.setReceivingSelectionEventsFromClient(receivingSelectionEventsFromClient);
+    }
+
+    @Override
+    public boolean isReceivingSelectionEventsFromClient() {
+        return this.field.isReceivingSelectionEventsFromClient();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Registration addTextSelectionListener(TextSelectionListener<SELF> listener) {
+        return this.getEventBus().addListener((Class<TextSelectionEvent<SELF>>)(Class<?>)TextSelectionEvent.class, listener);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public SELF withReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
+        this.setReceivingSelectionEventsFromClient(receivingSelectionEventsFromClient);
+        return (SELF)this;
     }
 
     /**
