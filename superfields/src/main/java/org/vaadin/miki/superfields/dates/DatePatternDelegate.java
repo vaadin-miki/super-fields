@@ -2,6 +2,7 @@ package org.vaadin.miki.superfields.dates;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import org.vaadin.miki.markers.HasDatePattern;
 
 import java.io.Serializable;
 import java.time.LocalDate;

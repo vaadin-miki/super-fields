@@ -1,4 +1,6 @@
-package org.vaadin.miki.superfields.text;
+package org.vaadin.miki.markers;
+
+import org.vaadin.miki.events.text.TextSelectionEvent;
 
 /**
  * Marker interface for objects capable of receiving text selection events from client-side code.

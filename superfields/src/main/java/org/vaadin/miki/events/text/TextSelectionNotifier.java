@@ -1,7 +1,8 @@
-package org.vaadin.miki.superfields.text;
+package org.vaadin.miki.events.text;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.shared.Registration;
+import org.vaadin.miki.markers.CanSelectText;
 
 /**
  * Marker interface for objects that broadcast {@link TextSelectionEvent}.

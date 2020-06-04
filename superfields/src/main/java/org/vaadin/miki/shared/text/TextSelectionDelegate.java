@@ -1,7 +1,10 @@
-package org.vaadin.miki.superfields.text;
+package org.vaadin.miki.shared.text;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventBus;
+import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
+import org.vaadin.miki.markers.CanSelectText;
+import org.vaadin.miki.events.text.TextSelectionEvent;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package org.vaadin.miki.superfields.text;
+package org.vaadin.miki.markers;
 
 import com.vaadin.flow.component.HasElement;
 

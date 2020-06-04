@@ -7,6 +7,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.vaadin.miki.events.text.TextSelectionNotifier;
+import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
+import org.vaadin.miki.markers.CanSelectText;
+import org.vaadin.miki.shared.text.TextSelectionDelegate;
 
 abstract class AbstractTestForTextSelection<C extends Component & CanSelectText & HasValue<?, String> & CanReceiveSelectionEventsFromClient & TextSelectionNotifier<C>> {
 
