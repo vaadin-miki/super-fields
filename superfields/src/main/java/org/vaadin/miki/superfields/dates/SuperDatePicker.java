@@ -8,6 +8,10 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.shared.Registration;
+import org.vaadin.miki.events.text.TextSelectionListener;
+import org.vaadin.miki.events.text.TextSelectionNotifier;
+import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
+import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.markers.HasDatePattern;
 import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
@@ -17,14 +21,9 @@ import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
-import org.vaadin.miki.markers.WithValueMixin;
-import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
-import org.vaadin.miki.markers.CanSelectText;
-import org.vaadin.miki.shared.text.TextSelectionDelegate;
-import org.vaadin.miki.events.text.TextSelectionEvent;
-import org.vaadin.miki.events.text.TextSelectionListener;
-import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
+import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.shared.text.TextSelectionDelegate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -50,9 +49,7 @@ public class SuperDatePicker extends DatePicker
 
     private final DatePatternDelegate<SuperDatePicker> datePatternDelegate = new DatePatternDelegate<>(this);
 
-    private final TextSelectionDelegate<SuperDatePicker> textSelectionDelegate = new TextSelectionDelegate<>(this);
-
-    private boolean receivingClientSideSelectionEvent = false;
+    private final TextSelectionDelegate<SuperDatePicker> textSelectionDelegate = new TextSelectionDelegate<>(this, this.getEventBus(), this::getFormattedValue);
 
     private DatePattern datePattern;
 
@@ -128,40 +125,28 @@ public class SuperDatePicker extends DatePicker
     }
 
     @Override
-    public void setValue(LocalDate value) {
-        this.textSelectionDelegate.updateAttributeOnValueChange(this::getEventBus);
-        super.setValue(value);
-    }
-
-    @Override
     protected void onAttach(AttachEvent attachEvent) {
-        this.textSelectionDelegate.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
-        super.onAttach(attachEvent);
+        this.textSelectionDelegate.onAttach(attachEvent, super::onAttach);
     }
 
     @Override
     protected void onDetach(DetachEvent detachEvent) {
-        // detaching means server should not be informed
-        if(this.isReceivingSelectionEventsFromClient())
-            this.textSelectionDelegate.informClientAboutSendingEvents(false);
-        super.onDetach(detachEvent);
+        this.textSelectionDelegate.onDetach(detachEvent, super::onDetach);
     }
 
     @ClientCallable
     private void selectionChanged(int start, int end, String selection) {
-        TextSelectionEvent<SuperDatePicker> event = new TextSelectionEvent<>(this, true, start, end, selection);
-        this.textSelectionDelegate.fireTextSelectionEvent(this.getEventBus(), event);
+        this.textSelectionDelegate.fireTextSelectionEvent(true, start, end, selection);
     }
 
     @Override
     public boolean isReceivingSelectionEventsFromClient() {
-        return this.receivingClientSideSelectionEvent;
+        return this.textSelectionDelegate.isReceivingSelectionEventsFromClient();
     }
 
     @Override
     public void setReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
-        this.receivingClientSideSelectionEvent = receivingSelectionEventsFromClient;
-        this.textSelectionDelegate.informClientAboutSendingEvents(receivingSelectionEventsFromClient);
+        this.textSelectionDelegate.setReceivingSelectionEventsFromClient(receivingSelectionEventsFromClient);
     }
 
     /**
@@ -180,22 +165,21 @@ public class SuperDatePicker extends DatePicker
 
     @Override
     public void selectAll() {
-        this.textSelectionDelegate.selectAll(this::getFormattedValue, this::getEventBus);
+        this.textSelectionDelegate.selectAll();
     }
 
     @Override
     public void selectNone() {
-        this.textSelectionDelegate.selectNone(this::getEventBus);
+        this.textSelectionDelegate.selectNone();
     }
 
     @Override
     public void select(int from, int to) {
-        this.textSelectionDelegate.select(this::getFormattedValue, this::getEventBus, from, to);
+        this.textSelectionDelegate.select(from, to);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Registration addTextSelectionListener(TextSelectionListener<SuperDatePicker> listener) {
-        return this.getEventBus().addListener((Class<TextSelectionEvent<SuperDatePicker>>)(Class<?>)TextSelectionEvent.class, listener);
+        return this.textSelectionDelegate.addTextSelectionListener(listener);
     }
 }

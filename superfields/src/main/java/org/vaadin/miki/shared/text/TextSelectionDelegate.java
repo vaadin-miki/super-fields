@@ -1,23 +1,39 @@
 package org.vaadin.miki.shared.text;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventBus;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.dom.Element;
+import com.vaadin.flow.function.SerializableSupplier;
+import com.vaadin.flow.shared.Registration;
+import org.vaadin.miki.events.text.TextSelectionEvent;
+import org.vaadin.miki.events.text.TextSelectionListener;
+import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
-import org.vaadin.miki.events.text.TextSelectionEvent;
 
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 /**
- * A class that handles common behaviour related to text selection.
- * This assumes that the client-side component mixes in {@code text-selection-mikin.js}.
+ * A class that handles common behaviour related to text selection. This is mostly for internal use.
+ *
+ * There are a lot of steps that need to be taken care of to integrate this with any component. Please check project's wiki.
+ * The methods {@code onAttach onDetach} must be overwritten in the delegating class and delegated here.
+ * The source component must implement {@link CanSelectText} and {@link CanReceiveSelectionEventsFromClient} and delegate them
+ * to this object.
+ * The client-side component must mix in {@code text-selection-mixin.js} or otherwise react to needed JS method calls.
+ * Finally, the delegating class must implement a method {@code @ClientCallable void selectionChanged(int, int, String)}.
+ *
  * @author miki
  * @since 2020-06-01
  */
-public class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSelectionEventsFromClient> implements Serializable {
+public class TextSelectionDelegate<C extends Component & CanSelectText & CanReceiveSelectionEventsFromClient>
+       implements Serializable, CanSelectText, CanReceiveSelectionEventsFromClient, TextSelectionNotifier<C> {
 
     /**
      * Defines the name of the HTML attribute that contains the selected text.
@@ -25,13 +41,28 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
     public static final String SELECTED_TEXT_ATTRIBUTE_NAME = "data-selected-text";
 
     private final C source;
+    
+    private final Element sourceElement;
+
+    private final ComponentEventBus eventBus;
+
+    private final SerializableSupplier<String> stringValueSupplier;
+    
+    private boolean receivingSelectionEventsFromClient = false;
 
     /**
      * Creates the delegate for a given component.
      * @param source Source of all events, data, etc.
+     * @param eventBus Event bus to use for firing events. Typically, {@code source.getEventBus()}.
+     * @param stringValueSupplier Method to obtain current value of the component as a {@link String}.
      */
-    public TextSelectionDelegate(C source) {
+    public TextSelectionDelegate(C source, ComponentEventBus eventBus, SerializableSupplier<String> stringValueSupplier) {
         this.source = source;
+        this.sourceElement = source.getElement();
+        this.eventBus = eventBus;
+        this.stringValueSupplier = stringValueSupplier;
+        if(source instanceof HasValue<?, ?>)
+            ((HasValue<?, ?>) source).addValueChangeListener(event -> this.clearSelectionOnValueChange());
     }
 
     /**
@@ -39,8 +70,8 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
      * @param value When {@code true}, client-side will notify server about changes in text selection.
      */
     public void informClientAboutSendingEvents(boolean value) {
-        this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
-                this.source.getElement().callJsFunction(
+        this.sourceElement.getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
+                this.sourceElement.callJsFunction(
                         "setCallingServer",
                         value
                 )
@@ -49,83 +80,106 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
 
     /**
      * Fires text selection event.
-     * @param eventBus Event bus.
-     * @param event Event with information about text selection.
+     * @param fromClient Whether or not the event originates from the client.
+     * @param start Selection start.
+     * @param end Selection end.
+     * @param text Selection text.
      */
-    public void fireTextSelectionEvent(ComponentEventBus eventBus, TextSelectionEvent<C> event) {
-        eventBus.fireEvent(event);
+    public void fireTextSelectionEvent(boolean fromClient, int start, int end, String text) {
+        TextSelectionEvent<C> event = new TextSelectionEvent<>(this.source, fromClient, start, end, text);
+        this.eventBus.fireEvent(event);
     }
 
-    private void selectionChanged(ComponentEventBus eventBus, int start, int end, String selection) {
-        TextSelectionEvent<C> event = new TextSelectionEvent<>(this.source, true, start, end, selection);
-        this.fireTextSelectionEvent(eventBus, event);
-    }
-
-    /**
-     * Selects all text.
-     * @param valueSupplier Way of getting current value. Needed if no client notifications.
-     * @param eventBusSupplier Way of getting event bus. Needed if no client notifications.
-     */
-    public void selectAll(Supplier<String> valueSupplier, Supplier<ComponentEventBus> eventBusSupplier) {
-        this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
-                this.source.getElement().callJsFunction("selectAll", this.source.getElement())
+    @Override
+    public void selectAll() {
+        this.sourceElement.getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
+                this.sourceElement.callJsFunction("selectAll", this.source.getElement())
         ));
         // send event if the client is not doing it
-        if(!this.source.isReceivingSelectionEventsFromClient()) {
-            final String value = valueSupplier.get();
-            this.source.getElement().setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, value);
-            this.selectionChanged(eventBusSupplier.get(), 0, value.length(), value);
+        if(!this.isReceivingSelectionEventsFromClient()) {
+            final String value = this.stringValueSupplier.get();
+            this.sourceElement.setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, value);
+            this.fireTextSelectionEvent(false, 0, value.length(), value);
         }
     }
 
-    /**
-     * Selects no text.
-     * @param eventBusSupplier Way of getting event bus. Needed if no client notifications.
-     */
-    public void selectNone(Supplier<ComponentEventBus> eventBusSupplier) {
-        this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
-                this.source.getElement().callJsFunction("selectNone", this.source.getElement())
+    @Override
+    public void selectNone() {
+        this.sourceElement.getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
+                this.sourceElement.callJsFunction("selectNone", this.source.getElement())
         ));
         // send event if the client is not doing it
-        if(!this.source.isReceivingSelectionEventsFromClient()) {
-            this.source.getElement().setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, "");
-            this.selectionChanged(eventBusSupplier.get(), -1, -1, "");
+        if(!this.isReceivingSelectionEventsFromClient()) {
+            this.sourceElement.setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, "");
+            this.fireTextSelectionEvent(false, -1, -1, "");
         }
     }
 
-    /**
-     * Selects some text.
-     * @param valueSupplier Way of getting current value. Needed if no client notifications.
-     * @param eventBusSupplier Way of getting event bus. Needed if no client notifications.
-     * @param from Selection starting index, inclusive.
-     * @param to Selection end index, exclusive.
-     */
-    public void select(Supplier<String> valueSupplier, Supplier<ComponentEventBus> eventBusSupplier, int from, int to) {
+
+    @Override
+    public void select(int from, int to) {
         if(from <= to)
-            this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
-                    this.source.getElement().callJsFunction("select", this.source.getElement(), from, to)
+            this.sourceElement.getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
+                    this.sourceElement.callJsFunction("select", this.source.getElement(), from, to)
             ));
         // send event if the client is not doing it
-        if(!this.source.isReceivingSelectionEventsFromClient()) {
-            final String value = valueSupplier.get().substring(from, to);
-            this.source.getElement().setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, value);
-            this.selectionChanged(eventBusSupplier.get(), from, to, value);
+        if(!this.isReceivingSelectionEventsFromClient()) {
+            final String value = this.stringValueSupplier.get().substring(from, to);
+            this.sourceElement.setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, value);
+            this.fireTextSelectionEvent(false, from, to, value);
         }
     }
 
     /**
      * Handles selection change on value change if there are no client notifications.
      * Does nothing if the component is receiving client-side notifications.
-     * @param eventBusSupplier Way of getting event bus.
      */
-    public void updateAttributeOnValueChange(Supplier<ComponentEventBus> eventBusSupplier) {
+    public void clearSelectionOnValueChange() {
         // special case here: if there was selection, no client-side events are caught and value is set, event must be fired
-        if(!this.source.isReceivingSelectionEventsFromClient()) {
-            final String lastSelected = Optional.ofNullable(this.source.getElement().getAttribute(SELECTED_TEXT_ATTRIBUTE_NAME)).orElse("");
-            this.source.getElement().setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, "");
+        if(!this.isReceivingSelectionEventsFromClient()) {
+            final String lastSelected = Optional.ofNullable(this.sourceElement.getAttribute(SELECTED_TEXT_ATTRIBUTE_NAME)).orElse("");
+            this.sourceElement.setAttribute(SELECTED_TEXT_ATTRIBUTE_NAME, "");
             if(!Objects.equals(lastSelected, ""))
-                this.fireTextSelectionEvent(eventBusSupplier.get(), new TextSelectionEvent<>(this.source, false, -1, -1, ""));
+                this.fireTextSelectionEvent(false, -1, -1, "");
         }
     }
 
+    /**
+     * Informs client about sending events and calls the original method.
+     * @param event Event.
+     * @param originalMethod Method to call. Must not be {@code null}.
+     */
+    public void onAttach(AttachEvent event, Consumer<AttachEvent> originalMethod) {
+        this.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
+        originalMethod.accept(event);
+    }
+
+    /**
+     * Informs client to not send events (if needed) and calls the original method.
+     * @param event Event.
+     * @param originalMethod Method to call. Must not be {@code null}.
+     */
+    public void onDetach(DetachEvent event, Consumer<DetachEvent> originalMethod) {
+        // detaching means server should not be informed
+        if(this.isReceivingSelectionEventsFromClient())
+            this.informClientAboutSendingEvents(false);
+        originalMethod.accept(event);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Registration addTextSelectionListener(TextSelectionListener<C> listener) {
+        return this.eventBus.addListener((Class<TextSelectionEvent<C>>)(Class<?>)TextSelectionEvent.class, listener);
+    }
+    
+    @Override
+    public boolean isReceivingSelectionEventsFromClient() {
+        return this.receivingSelectionEventsFromClient;
+    }
+
+    @Override
+    public void setReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
+        this.receivingSelectionEventsFromClient = receivingSelectionEventsFromClient;
+        this.informClientAboutSendingEvents(receivingSelectionEventsFromClient);
+    }
 }
