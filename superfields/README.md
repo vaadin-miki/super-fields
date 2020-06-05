@@ -6,7 +6,9 @@ Source code for the app and for the components can be found at https://github.co
 
 # SuperFields
 
-All SuperFields are Java-friendly. There is as little client-side code as possible ;)
+All SuperFields are Java-friendly. There is as little client-side code as possible ;) In addition to that, any client-side code is considered **implementation detail** and may change at any time.
+
+#### Fluid API
 
 All SuperFields feature fluid API (or method chaining), at least to some extent. For example, instead of doing:
 
@@ -18,9 +20,17 @@ All SuperFields feature fluid API (or method chaining), at least to some extent.
 
 you can do a magic one-liner: `new SuperDatePicker().withId("super-date-picker").withValue(LocalDate.today())`.
 
+#### Text selection
+
+Some components contain server-side methods to control text selection in their web component part. In addition, they can optionally listen to text-selection events happening in the browser and broadcast them to the server.
+
+The web components listen to each key press and mouse click. If text selection changes as a result of that action, they send an event to the server-side component. This may happen quite often and increase server load, so the feature is turned off by default. To turn it on simply call `setReceivingSelectionEventsFromClient(true)` (or `withReceivingSelectionEventsFromClient(true)`).  
+
 ## Number fields
 
 None of the number fields support range checking, so if you allow too many digits, overflows will occur.
+
+All number fields support text selection API.
 
 ### `SuperDoubleField` and `SuperBigDecimalField`
 
@@ -30,6 +40,12 @@ An input field for entering localised `Double` and `BigDecimal` numbers. Support
 
 An input field for entering localised `Integer` and `Long` numbers. Supports thousands (grouping) separators.
 
+## Text fields
+
+### `SuperTextField` and `SuperTextArea`
+
+These are the same components as their Vaadin counterparts, except they fully support text selection API. This means that the text contained in the components can be selected from server-side code and that changes to selection in the browser are sent to the server as events.
+
 ## Date fields
 
 ### `SuperDatePicker` and `SuperDateTimePicker`
@@ -38,7 +54,9 @@ Fully localised `DatePicker` and `DateTimePicker` that fetch month names and wee
 
 In addition to the above, both components allow setting custom date display pattern. This pattern should survive setting locale or i18n object, so keep that in mind.
 
-Both components behave funky when changing locale at runtime if their calendars were already shown. That is mostly due to some weird caching on the client side and is also a Vaadin bug. 
+Both components behave funky when changing locale at runtime if their calendars were already shown. That is mostly due to some weird caching on the client side and is also a Vaadin bug.
+
+**Please note:** only `SuperDatePicker` has support for text selection API. 
 
 ## Select fields
 
@@ -75,5 +93,7 @@ A boolean field that changes its value (`true` or `false`) depending on whether 
 ### `UnloadObserver`
 
 A component that listens and reacts to browser's `beforeunload` events that happen for example when browser window/tab is closed. The support [varies between browsers](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event), but in general is quite good. This should work with at least the major browsers.
+
+**Please note**: This component is a singleton - there can be only one instance of it. As such, please refrain from adding the same instance into multiple layouts.
 
 The code is based on solution [posted by Kaspar Scherrer and Stuart Robinson](https://vaadin.com/forum/thread/17523194/unsaved-changes-detect-page-exit-or-reload). It does not work with `<a href>` or `Anchor` as download links, so please use [FileDownloadWrapper](https://vaadin.com/directory/component/file-download-wrapper/discussions) for that. 
