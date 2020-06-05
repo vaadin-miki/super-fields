@@ -59,7 +59,7 @@ public class SuperTabs<T>
 
     private final Map<Tab, Component> tabsToContents = new HashMap<>();
 
-    private transient final List<Map.Entry<T, Tab>> values = new ArrayList<>();
+    private final transient List<Map.Entry<T, Tab>> values = new ArrayList<>();
 
     private TabHandler tabHandler;
 

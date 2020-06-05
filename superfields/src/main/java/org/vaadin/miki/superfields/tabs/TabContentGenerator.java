@@ -2,6 +2,8 @@ package org.vaadin.miki.superfields.tabs;
 
 import com.vaadin.flow.component.Component;
 
+import java.io.Serializable;
+
 /**
  * Marker interface for objects that produce components for tabs.
  * @param <V> Type of object to generate content for.
@@ -9,7 +11,7 @@ import com.vaadin.flow.component.Component;
  * @since 2020-04-10
  */
 @FunctionalInterface
-public interface TabContentGenerator<V> {
+public interface TabContentGenerator<V> extends Serializable {
 
     /**
      * Creates a new instance of a component that corresponds to the given object.

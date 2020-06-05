@@ -4,13 +4,15 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.tabs.Tab;
 
+import java.io.Serializable;
+
 /**
  * Interface for objects handling the tab adding, displaying and hiding.
  *
  * @author miki
  * @since 2020-04-30
  */
-public interface TabHandler {
+public interface TabHandler extends Serializable {
 
     /**
      * Called when a tab has been added, but its contents have not.
