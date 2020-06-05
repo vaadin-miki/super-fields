@@ -11,8 +11,6 @@ import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanSelectText;
-import org.vaadin.miki.markers.HasLabel;
-import org.vaadin.miki.markers.HasPlaceholder;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
@@ -29,7 +27,6 @@ import org.vaadin.miki.shared.text.TextSelectionDelegate;
 @JsModule("./super-text-field.js")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextField extends TextField implements CanSelectText, TextSelectionNotifier<SuperTextField>,
-        HasLabel, HasPlaceholder,
         WithIdMixin<SuperTextField>,  WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextField> {

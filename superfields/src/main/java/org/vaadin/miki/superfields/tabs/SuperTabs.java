@@ -511,9 +511,4 @@ public class SuperTabs<T>
         super.setId(id);
     }
 
-    @Override
-    public SuperTabs<T> withId(String id) {
-        this.setId(id);
-        return this;
-    }
 }

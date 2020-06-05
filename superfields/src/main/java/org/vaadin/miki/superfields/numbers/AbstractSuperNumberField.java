@@ -13,23 +13,19 @@ import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.shared.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.miki.markers.HasLabel;
-import org.vaadin.miki.markers.HasLocale;
-import org.vaadin.miki.markers.HasPlaceholder;
-import org.vaadin.miki.markers.HasTitle;
+import org.vaadin.miki.events.text.TextSelectionEvent;
+import org.vaadin.miki.events.text.TextSelectionListener;
+import org.vaadin.miki.events.text.TextSelectionNotifier;
+import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
+import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
+import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
-import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
-import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.superfields.text.SuperTextField;
-import org.vaadin.miki.events.text.TextSelectionEvent;
-import org.vaadin.miki.events.text.TextSelectionListener;
-import org.vaadin.miki.events.text.TextSelectionNotifier;
-import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -47,8 +43,7 @@ import java.util.Optional;
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SELF>,
-                   TextSelectionNotifier<SELF>,
-                   HasPrefixAndSuffix, HasLabel, HasPlaceholder, HasTitle, HasLocale,
+                   TextSelectionNotifier<SELF>, HasPrefixAndSuffix,
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF> {
@@ -500,13 +495,6 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     public void setId(String id) {
         super.setId(id);
         this.field.setId(id == null ? null : TEXT_FIELD_STYLE_PREFIX +id);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public SELF withId(String id) {
-        this.setId(id);
-        return (SELF)this;
     }
 
     /**
