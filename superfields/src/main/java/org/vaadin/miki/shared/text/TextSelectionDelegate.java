@@ -6,18 +6,18 @@ import com.vaadin.flow.component.ComponentEventBus;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.dom.Element;
+import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
+import org.vaadin.miki.events.text.TextSelectionEvent;
 import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
-import org.vaadin.miki.events.text.TextSelectionEvent;
 
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * A class that handles common behaviour related to text selection. This is mostly for internal use.
@@ -46,7 +46,7 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
 
     private final ComponentEventBus eventBus;
 
-    private final Supplier<String> stringValueSupplier;
+    private final SerializableSupplier<String> stringValueSupplier;
     
     private boolean receivingSelectionEventsFromClient = false;
 
@@ -56,7 +56,7 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
      * @param eventBus Event bus to use for firing events. Typically, {@code source.getEventBus()}.
      * @param stringValueSupplier Method to obtain current value of the component as a {@link String}.
      */
-    public TextSelectionDelegate(C source, ComponentEventBus eventBus, Supplier<String> stringValueSupplier) {
+    public TextSelectionDelegate(C source, ComponentEventBus eventBus, SerializableSupplier<String> stringValueSupplier) {
         this.source = source;
         this.sourceElement = source.getElement();
         this.eventBus = eventBus;
