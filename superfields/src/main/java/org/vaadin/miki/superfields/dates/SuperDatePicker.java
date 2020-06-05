@@ -12,10 +12,6 @@ import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
-import org.vaadin.miki.markers.HasDatePattern;
-import org.vaadin.miki.markers.HasLabel;
-import org.vaadin.miki.markers.HasLocale;
-import org.vaadin.miki.markers.HasPlaceholder;
 import org.vaadin.miki.markers.WithDatePatternMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
@@ -39,8 +35,7 @@ import java.util.Locale;
 @Tag("super-date-picker")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperDatePicker extends DatePicker
-        implements HasLocale, HasLabel, HasPlaceholder, HasDatePattern,
-                   CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SuperDatePicker>,
+        implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SuperDatePicker>,
                    TextSelectionNotifier<SuperDatePicker>,
                    WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>,
                    WithPlaceholderMixin<SuperDatePicker>, WithDatePatternMixin<SuperDatePicker>,

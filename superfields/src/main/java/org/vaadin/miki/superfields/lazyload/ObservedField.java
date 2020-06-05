@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * @since 2020-04-24
  */
 public class ObservedField extends Composite<ObservedField.ObservedFieldElement>
-        implements HasValue<AbstractField.ComponentValueChangeEvent<ObservedField, Boolean>, Boolean>, HasStyle,
+        implements HasStyle,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<ObservedField, Boolean>, Boolean, ObservedField>,
                    WithIdMixin<ObservedField> {
 

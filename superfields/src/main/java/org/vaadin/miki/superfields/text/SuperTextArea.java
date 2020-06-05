@@ -11,8 +11,6 @@ import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanSelectText;
-import org.vaadin.miki.markers.HasLabel;
-import org.vaadin.miki.markers.HasPlaceholder;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
@@ -29,7 +27,7 @@ import org.vaadin.miki.shared.text.TextSelectionDelegate;
 @JsModule("./super-text-area.js")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextArea extends TextArea implements CanSelectText, TextSelectionNotifier<SuperTextArea>,
-        HasLabel, HasPlaceholder, WithIdMixin<SuperTextArea>, WithLabelMixin<SuperTextArea>, WithPlaceholderMixin<SuperTextArea>,
+        WithIdMixin<SuperTextArea>, WithLabelMixin<SuperTextArea>, WithPlaceholderMixin<SuperTextArea>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextArea>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextArea, String>, String, SuperTextArea> {
 
