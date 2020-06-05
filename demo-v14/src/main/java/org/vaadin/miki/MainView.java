@@ -63,6 +63,7 @@ import java.util.function.Supplier;
  */
 @CssImport("./styles/demo-styles.css")
 @CssImport(value = "./styles/super-number-fields-styles.css", themeFor = "vaadin-text-field")
+@CssImport(value = "./styles/super-tabs-styles.css", themeFor = "vaadin-tabs")
 @Route
 @PageTitle("SuperFields Demo")
 public class MainView extends VerticalLayout {
@@ -247,6 +248,8 @@ public class MainView extends VerticalLayout {
     }
 
     private void buildSuperTabs(Component component, Consumer<Component[]> callback) {
+        final Checkbox multilineTabs = new Checkbox("Multiline tabs?", event -> ((SuperTabs<?>)component).setMultiline(event.getValue()));
+
         final ComboBox<TabHandler> tabHandlers = new ComboBox<>("Select a tab handler: ",
                 TabHandlers.VISIBILITY_HANDLER, TabHandlers.REMOVING_HANDLER, TabHandlers.selectedContentHasClassName("selected-tab"));
         tabHandlers.addValueChangeListener(event -> {
@@ -254,7 +257,7 @@ public class MainView extends VerticalLayout {
                 ((SuperTabs<?>)component).setTabHandler(event.getValue());
         });
 
-        callback.accept(new Component[]{tabHandlers});
+        callback.accept(new Component[]{multilineTabs, tabHandlers});
     }
 
     private Component buildContentsFor(Class<?> type) {
@@ -302,7 +305,10 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperTextArea.class, new SuperTextArea("Type a lot of something:").withPlaceholder("(nothing typed)").withId("super-text-area"));
         this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
                 .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
-                .withItems("Java friendly", "Super-configurable", "Open source")
+                .withItems(
+                        "Java friendly", "Super-configurable", "Open source",
+                        "Fun to use", "Reasonably well documented"
+                ).withId("super-tabs")
         );
         this.components.put(ObservedField.class, new ObservedField());
         this.components.put(ComponentObserver.class, new ComponentObserver());
