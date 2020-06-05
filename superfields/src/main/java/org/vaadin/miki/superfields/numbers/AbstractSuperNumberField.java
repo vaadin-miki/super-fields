@@ -310,7 +310,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         }
         // workaround for https://github.com/vaadin/vaadin-text-field-flow/issues/65
         if(this.isAutoselect())
-            this.field.getElement().executeJs("this.inputElement.select()");
+            this.field.selectAll();
     }
 
     /**

@@ -1,14 +1,12 @@
 package org.vaadin.miki.markers;
 
-import com.vaadin.flow.component.HasElement;
-
 /**
  * Marker interface for components that can select text.
  * What selecting text means and how it is done is left to the implementations.
  * @author miki
  * @since 2020-05-29
  */
-public interface CanSelectText extends HasElement {
+public interface CanSelectText {
 
     /**
      * Selects entire text in the component.

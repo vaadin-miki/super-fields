@@ -8,7 +8,6 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.shared.Registration;
-import org.vaadin.miki.events.text.TextSelectionEvent;
 import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanSelectText;
@@ -35,9 +34,7 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextField> {
 
-    private boolean receivingSelectionEventsFromClient = false;
-
-    private final TextSelectionDelegate<SuperTextField> delegate = new TextSelectionDelegate<>(this);
+    private final TextSelectionDelegate<SuperTextField> delegate = new TextSelectionDelegate<>(this, this.getEventBus(), this::getValue);
 
     public SuperTextField() {
         super();
@@ -69,59 +66,47 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        this.delegate.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
-        super.onAttach(attachEvent);
+        this.delegate.onAttach(attachEvent, super::onAttach);
     }
 
     @Override
     protected void onDetach(DetachEvent detachEvent) {
-        // detaching means server should not be informed
-        if(this.isReceivingSelectionEventsFromClient())
-            this.delegate.informClientAboutSendingEvents(false);
-        super.onDetach(detachEvent);
+        this.delegate.onDetach(detachEvent, super::onDetach);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Registration addTextSelectionListener(TextSelectionListener<SuperTextField> listener) {
-        return this.getEventBus().addListener((Class<TextSelectionEvent<SuperTextField>>)(Class<?>)TextSelectionEvent.class, listener);
+        return this.delegate.addTextSelectionListener(listener);
     }
 
     @Override
     public void selectAll() {
-        this.delegate.selectAll(this::getValue, this::getEventBus);
+        this.delegate.selectAll();
     }
 
     @Override
     public void selectNone() {
-        this.delegate.selectNone(this::getEventBus);
+        this.delegate.selectNone();
     }
 
     @Override
     public void select(int from, int to) {
-        this.delegate.select(this::getValue, this::getEventBus, from, to);
+        this.delegate.select(from, to);
     }
 
     @ClientCallable
     private void selectionChanged(int start, int end, String selection) {
-        TextSelectionEvent<SuperTextField> event = new TextSelectionEvent<>(this, true, start, end, selection);
-        this.delegate.fireTextSelectionEvent(this.getEventBus(), event);
+        this.delegate.fireTextSelectionEvent(true, start, end, selection);
     }
 
     @Override
     public boolean isReceivingSelectionEventsFromClient() {
-        return this.receivingSelectionEventsFromClient;
+        return this.delegate.isReceivingSelectionEventsFromClient();
     }
 
     @Override
     public void setReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
-        this.receivingSelectionEventsFromClient = receivingSelectionEventsFromClient;
-        this.delegate.informClientAboutSendingEvents(receivingSelectionEventsFromClient);
+        this.delegate.setReceivingSelectionEventsFromClient(receivingSelectionEventsFromClient);
     }
 
-    @Override
-    public void setValue(String value) {
-        this.delegate.updateAttributeOnValueChange(this::getEventBus);
-        super.setValue(value);
-    }
 }

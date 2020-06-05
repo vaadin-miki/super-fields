@@ -8,7 +8,6 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.shared.Registration;
-import org.vaadin.miki.events.text.TextSelectionEvent;
 import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanSelectText;
@@ -34,9 +33,7 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
         WithReceivingSelectionEventsFromClientMixin<SuperTextArea>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextArea, String>, String, SuperTextArea> {
 
-    private final TextSelectionDelegate<SuperTextArea> delegate = new TextSelectionDelegate<>(this);
-
-    private boolean receivingSelectionEventsFromClient = false;
+    private final TextSelectionDelegate<SuperTextArea> delegate = new TextSelectionDelegate<>(this, this.getEventBus(), this::getValue);
 
     public SuperTextArea() {
     }
@@ -67,60 +64,47 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        // sadly there are no mixin classes in java for protected methods
-        this.delegate.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
-        super.onAttach(attachEvent);
+        this.delegate.onAttach(attachEvent, super::onAttach);
     }
 
     @Override
     protected void onDetach(DetachEvent detachEvent) {
-        // detaching means server should not be informed
-        if(this.isReceivingSelectionEventsFromClient())
-            this.delegate.informClientAboutSendingEvents(false);
-        super.onDetach(detachEvent);
+        this.delegate.onDetach(detachEvent, super::onDetach);
     }
 
     @Override
     public boolean isReceivingSelectionEventsFromClient() {
-        return this.receivingSelectionEventsFromClient;
+        return this.delegate.isReceivingSelectionEventsFromClient();
     }
 
     @Override
     public void setReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
-        this.receivingSelectionEventsFromClient = receivingSelectionEventsFromClient;
-        this.delegate.informClientAboutSendingEvents(receivingSelectionEventsFromClient);
+        this.delegate.setReceivingSelectionEventsFromClient(receivingSelectionEventsFromClient);
     }
 
     @Override
     public void selectAll() {
-        this.delegate.selectAll(this::getValue, this::getEventBus);
+        this.delegate.selectAll();
     }
 
     @Override
     public void selectNone() {
-        this.delegate.selectNone(this::getEventBus);
+        this.delegate.selectNone();
     }
 
     @Override
     public void select(int from, int to) {
-        this.delegate.select(this::getValue, this::getEventBus, from, to);
+        this.delegate.select(from, to);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Registration addTextSelectionListener(TextSelectionListener<SuperTextArea> listener) {
-        return this.getEventBus().addListener((Class<TextSelectionEvent<SuperTextArea>>)(Class<?>)TextSelectionEvent.class, listener);
+        return this.delegate.addTextSelectionListener(listener);
     }
 
     @ClientCallable
     private void selectionChanged(int start, int end, String selection) {
-        TextSelectionEvent<SuperTextArea> event = new TextSelectionEvent<>(this, true, start, end, selection);
-        this.delegate.fireTextSelectionEvent(this.getEventBus(), event);
+        this.delegate.fireTextSelectionEvent(true, start, end, selection);
     }
 
-    @Override
-    public void setValue(String value) {
-        this.delegate.updateAttributeOnValueChange(this::getEventBus);
-        super.setValue(value);
-    }
 }
