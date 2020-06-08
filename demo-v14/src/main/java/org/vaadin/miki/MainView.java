@@ -23,6 +23,7 @@ import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.vaadin.miki.markers.HasLocale;
+import org.vaadin.miki.markers.WithNullValueOptionallyAllowed;
 import org.vaadin.miki.superfields.dates.DatePattern;
 import org.vaadin.miki.superfields.dates.DatePatterns;
 import org.vaadin.miki.markers.HasDatePattern;
@@ -132,6 +133,11 @@ public class MainView extends VerticalLayout {
                 this.afterLocaleChange.get(component.getClass()).accept(component);
         });
         callback.accept(new Component[]{locales});
+    }
+
+    private void buildNullValueOptionallyAllowed(Component component, Consumer<Component[]> callback) {
+        final Checkbox allow = new Checkbox("Allow empty string as null value?", event -> ((WithNullValueOptionallyAllowed<?, ?, ?>)component).setNullValueAllowed(event.getValue()));
+        callback.accept(new Component[]{allow});
     }
 
     private void buildHasValue(Component component, Consumer<Component[]> callback) {
@@ -346,6 +352,7 @@ public class MainView extends VerticalLayout {
         this.contentBuilders.put(CanSelectText.class, this::buildCanSelectText);
         this.contentBuilders.put(HasValue.class, this::buildHasValue);
         this.contentBuilders.put(AbstractSuperNumberField.class, this::buildAbstractSuperNumberField);
+        this.contentBuilders.put(WithNullValueOptionallyAllowed.class, this::buildNullValueOptionallyAllowed);
         this.contentBuilders.put(HasLocale.class, this::buildHasLocale);
         this.contentBuilders.put(ItemGrid.class, this::buildItemGrid);
         this.contentBuilders.put(HasDatePattern.class, this::buildHasDatePattern);
