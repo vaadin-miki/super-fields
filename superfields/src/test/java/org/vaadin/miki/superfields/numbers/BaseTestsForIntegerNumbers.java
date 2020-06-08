@@ -184,4 +184,19 @@ class BaseTestsForIntegerNumbers<T extends Number> {
             Assert.assertFalse(String.format("%s must not match %s (regression on bug #10)", regexp, s), s.matches(regexp));
     }
 
+    @Test
+    public void testNullWithNullAllowed() {
+        this.getField().setNullValueAllowed(true);
+        this.getField().setValue(null);
+        T value = this.getField().getValue();
+        Assert.assertNull("value was set to null and it must be null", value);
+        Assert.assertTrue("null representation must be an empty string", this.getField().getRawValue().isEmpty());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullWithNoNullAllowedThrowsException() {
+        // by default, there should be no allowance for null values
+        this.getField().setValue(null);
+    }
+
 }

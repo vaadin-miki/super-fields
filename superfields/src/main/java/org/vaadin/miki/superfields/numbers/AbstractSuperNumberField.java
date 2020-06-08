@@ -21,6 +21,7 @@ import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
+import org.vaadin.miki.markers.WithNullValueOptionallyAllowed;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
@@ -46,7 +47,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                    TextSelectionNotifier<SELF>, HasPrefixAndSuffix,
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
-                   WithIdMixin<SELF> {
+                   WithIdMixin<SELF>, WithNullValueOptionallyAllowed<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -100,6 +101,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     private boolean groupingSeparatorHiddenOnFocus;
 
     private boolean negativeValueAllowed = true;
+
+    private boolean nullValueAllowed = false;
 
     private Locale locale;
 
@@ -317,9 +320,11 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     @Override
-    protected void setPresentationValue(T aDouble) {
-        String formatted = this.format.format(aDouble);
-        LOGGER.debug("value {} to be presented as {} with {} decimal digits", aDouble, formatted, this.format.getMaximumFractionDigits());
+    protected void setPresentationValue(T number) {
+        if(number == null && !this.isNullValueAllowed())
+            throw new IllegalArgumentException("null value is not allowed");
+        String formatted = number == null ? "" : this.format.format(number);
+        LOGGER.debug("value {} to be presented as {} with {} decimal digits", number, formatted, this.format.getMaximumFractionDigits());
         this.field.setValue(formatted);
     }
 
@@ -339,6 +344,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
             String fromEvent = this.field.getValue();
             if (fromEvent == null)
                 fromEvent = "";
+            if (fromEvent.isEmpty() && this.isNullValueAllowed())
+                return null;
             if (this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE)
                 fromEvent = fromEvent.replace(SPACE, NON_BREAKING_SPACE);
             T value = this.parseRawValue(fromEvent, this.format);
@@ -606,6 +613,18 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     public SELF withReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
         this.setReceivingSelectionEventsFromClient(receivingSelectionEventsFromClient);
         return (SELF)this;
+    }
+
+    @Override
+    public void setNullValueAllowed(boolean allowingNullValue) {
+        this.nullValueAllowed = allowingNullValue;
+        if(!allowingNullValue && this.getRawValue().isEmpty())
+            this.setValue(this.getEmptyValue());
+    }
+
+    @Override
+    public boolean isNullValueAllowed() {
+        return this.nullValueAllowed;
     }
 
     /**
