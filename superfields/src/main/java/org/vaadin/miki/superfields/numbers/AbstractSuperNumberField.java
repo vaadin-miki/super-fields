@@ -298,6 +298,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     private void onFieldBlurred(BlurNotifier.BlurEvent<TextField> event) {
         this.setPresentationValue(this.getValue());
+        // fire event
+        this.getEventBus().fireEvent(new BlurEvent<>(this, event.isFromClient()));
     }
 
     private void onFieldSelected(FocusNotifier.FocusEvent<TextField> event) {
@@ -309,6 +311,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         // workaround for https://github.com/vaadin/vaadin-text-field-flow/issues/65
         if(this.isAutoselect())
             this.field.selectAll();
+        // fire event
+        this.getEventBus().fireEvent(new FocusEvent<>(this, event.isFromClient()));
     }
 
     /**
