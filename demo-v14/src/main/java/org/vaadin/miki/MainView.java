@@ -1,6 +1,8 @@
 package org.vaadin.miki;
 
+import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -22,11 +24,14 @@ import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.vaadin.miki.events.text.TextSelectionNotifier;
+import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
+import org.vaadin.miki.markers.CanSelectText;
+import org.vaadin.miki.markers.HasDatePattern;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.markers.WithNullValueOptionallyAllowed;
 import org.vaadin.miki.superfields.dates.DatePattern;
 import org.vaadin.miki.superfields.dates.DatePatterns;
-import org.vaadin.miki.markers.HasDatePattern;
 import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
@@ -41,11 +46,8 @@ import org.vaadin.miki.superfields.numbers.SuperLongField;
 import org.vaadin.miki.superfields.tabs.SuperTabs;
 import org.vaadin.miki.superfields.tabs.TabHandler;
 import org.vaadin.miki.superfields.tabs.TabHandlers;
-import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
-import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.superfields.text.SuperTextArea;
 import org.vaadin.miki.superfields.text.SuperTextField;
-import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.superfields.unload.UnloadObserver;
 
 import java.time.LocalDate;
@@ -68,6 +70,8 @@ import java.util.function.Supplier;
 @Route
 @PageTitle("SuperFields Demo")
 public class MainView extends VerticalLayout {
+
+    private static final int NOTIFICATION_TIME = 1500;
 
     private final Map<Class<?>, Component> components = new LinkedHashMap<>();
 
@@ -121,6 +125,20 @@ public class MainView extends VerticalLayout {
                 }
         );
         callback.accept(new Component[]{autoselect, separatorHidden, prefix, suffix, alignRight});
+    }
+
+    private void buildFocusNotifier(Component component, Consumer<Component[]> callback) {
+        ((FocusNotifier<?>)component).addFocusListener(event ->
+           Notification.show("Component "+component.getClass().getSimpleName()+" received focus.", NOTIFICATION_TIME, Notification.Position.BOTTOM_END)
+        );
+        callback.accept(new Component[]{new Span("Focus the demo component to see a notification.")});
+    }
+
+    private void buildBlurNotifier(Component component, Consumer<Component[]> callback) {
+        ((BlurNotifier<?>)component).addBlurListener(event ->
+                Notification.show("Component "+component.getClass().getSimpleName()+" lost focus.", NOTIFICATION_TIME, Notification.Position.BOTTOM_END)
+        );
+        callback.accept(new Component[]{new Span("Leave the demo component to see a notification.")});
     }
 
     private void buildHasLocale(Component component, Consumer<Component[]> callback) {
@@ -360,6 +378,8 @@ public class MainView extends VerticalLayout {
         this.contentBuilders.put(ObservedField.class, this::buildObservedField);
         this.contentBuilders.put(ComponentObserver.class, this::buildIntersectionObserver);
         this.contentBuilders.put(UnloadObserver.class, this::buildUnloadObserver);
+        this.contentBuilders.put(FocusNotifier.class, this::buildFocusNotifier);
+        this.contentBuilders.put(BlurNotifier.class, this::buildBlurNotifier);
 
         this.afterLocaleChange.put(SuperIntegerField.class, o -> ((SuperIntegerField)o).setMaximumIntegerDigits(6));
         this.afterLocaleChange.put(SuperLongField.class, o -> ((SuperLongField)o).setMaximumIntegerDigits(11));
