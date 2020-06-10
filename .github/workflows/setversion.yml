@@ -52,7 +52,9 @@ jobs:
           commit_message: "(bot) version and release notes updated to ${{ steps.what-version.outputs.version }}"
           branch: ${{ github.event.ref }}
       - name: Resolve conflicts (keep ours)
-        run: git merge master --strategy=ours
+        run: |
+          git fetch origin/master
+          git merge origin/master --strategy=ours
       - name: Push resolved conflicts
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
         with:
