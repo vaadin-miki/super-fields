@@ -53,7 +53,7 @@ jobs:
           branch: ${{ github.event.ref }}
       - name: Resolve conflicts (keep ours)
         run: |
-          git remove -v
+          git remote -v
           git fetch origin/master
           git merge origin/master --strategy=ours
       - name: Push resolved conflicts
