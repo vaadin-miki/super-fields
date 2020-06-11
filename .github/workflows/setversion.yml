@@ -54,8 +54,8 @@ jobs:
       - name: Resolve conflicts (keep ours)
         run: |
           git remote -v
-          git fetch origin/master
-          git merge origin/master --strategy=ours
+          git fetch origin master
+          git merge origin master --strategy=ours
       - name: Push resolved conflicts
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
         with:
