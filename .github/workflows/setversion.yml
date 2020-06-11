@@ -55,7 +55,7 @@ jobs:
         run: |
           git remote -v
           git fetch origin master
-          git merge origin master --strategy=ours
+          git merge master --strategy=ours
       - name: Push resolved conflicts
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
         with:
