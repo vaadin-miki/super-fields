@@ -60,6 +60,8 @@ jobs:
           git checkout master
           git checkout ${{ github.event.ref }}
           git branch
+          git config user.email "${{ secrets.EMAIL }}"
+          git config user.name "Miki (bot)"
           git merge master --strategy=ours
       - name: Push resolved conflicts
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
