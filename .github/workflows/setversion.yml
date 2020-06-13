@@ -61,9 +61,9 @@ jobs:
           git checkout ${{ github.event.ref }}
           git config user.email "${{ secrets.EMAIL }}"
           git config user.name "Miki (bot)"
-          git diff release-${{ github.event.ref }} master
+          git diff ${{ github.event.ref }} master
           git merge master --strategy=ours --no-ff --no-commit -v --progress
-          git diff release-${{ github.event.ref }} master
+          git diff ${{ github.event.ref }} master
       - name: Push resolved conflicts
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
         with:
