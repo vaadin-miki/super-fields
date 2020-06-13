@@ -61,21 +61,19 @@ jobs:
           git checkout ${{ github.event.ref }}
           git config user.email "${{ secrets.EMAIL }}"
           git config user.name "Miki (bot)"
-          git diff ${{ github.event.ref }} master
-          git merge master --strategy=ours --no-ff --no-commit -v --progress
-          git diff ${{ github.event.ref }} master
-      - name: Push resolved conflicts
-        uses: stefanzweifel/git-auto-commit-action@v4.1.6
-        with:
-          commit_message: "(bot) resolved conflicts from master (kept development-$${ steps.what-version.outputs.version }})"
-          branch: ${{ github.event.ref }}
-      - name: Create PR
-        uses: UnforgivenPL/pull-request@v1
-        with:
-          source: ${{ github.event.ref }}
-          target: master
-          repository: ${{ github.repository }}
-          token: ${{ secrets.ACTIONS_PAT }}
-          pr-title: Release ${{ steps.what-version.outputs.version }} ready
-          pr-body: Automatically created release ${{ steps.what-version.outputs.version }}.
-          pr-assignees: ${{ github.actor }}
+          git merge master --no-commit
+#      - name: Push resolved conflicts
+#        uses: stefanzweifel/git-auto-commit-action@v4.1.6
+#        with:
+#          commit_message: "(bot) resolved conflicts from master (kept development-$${ steps.what-version.outputs.version }})"
+#          branch: ${{ github.event.ref }}
+#      - name: Create PR
+#        uses: UnforgivenPL/pull-request@v1
+#        with:
+#          source: ${{ github.event.ref }}
+#          target: master
+#          repository: ${{ github.repository }}
+#          token: ${{ secrets.ACTIONS_PAT }}
+#          pr-title: Release ${{ steps.what-version.outputs.version }} ready
+#          pr-body: Automatically created release ${{ steps.what-version.outputs.version }}.
+#          pr-assignees: ${{ github.actor }}
