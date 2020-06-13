@@ -62,7 +62,7 @@ jobs:
           git branch
           git config user.email "${{ secrets.EMAIL }}"
           git config user.name "Miki (bot)"
-          git merge master --strategy=ours
+          git merge master --strategy=ours --no-ff --no-commit -v --progress
       - name: Push resolved conflicts
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
         with:
@@ -71,8 +71,10 @@ jobs:
       - name: Create PR
         uses: UnforgivenPL/pull-request@v1
         with:
-          source: ${{ github.event.ref }}
-          target: master
+          # source: ${{ github.event.ref }}
+          # target: master
+          target: ${{ github.event.ref }}
+          source: master
           repository: ${{ github.repository }}
           token: ${{ secrets.ACTIONS_PAT }}
           pr-title: Release ${{ steps.what-version.outputs.version }} ready
