@@ -9,11 +9,6 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: master
-      - uses: actions/checkout@v2
-        with:
-          clean: false
       - name: Set up JDK 10
         uses: actions/setup-java@v1
         with:
@@ -58,6 +53,9 @@ jobs:
           branch: ${{ github.event.ref }}
       - name: Resolve conflicts (keep ours)
         run: |
+          set -x
+          git fetch
+          git checkout master
           git checkout ${{ github.event.ref }}
           git branch
           git merge master --strategy=ours
