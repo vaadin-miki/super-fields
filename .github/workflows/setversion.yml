@@ -61,12 +61,8 @@ jobs:
           git checkout ${{ github.event.ref }}
           git config user.email "${{ secrets.EMAIL }}"
           git config user.name "Miki (bot)"
-          git merge master --no-commit
-#      - name: Push resolved conflicts
-#        uses: stefanzweifel/git-auto-commit-action@v4.1.6
-#        with:
-#          commit_message: "(bot) resolved conflicts from master (kept development-$${ steps.what-version.outputs.version }})"
-#          branch: ${{ github.event.ref }}
+          git merge master --strategy=ours
+          git push origin
 #      - name: Create PR
 #        uses: UnforgivenPL/pull-request@v1
 #        with:
