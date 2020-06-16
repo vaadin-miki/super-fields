@@ -1,24 +1,23 @@
-name: Release branch on milestone close
+name: TEST Release branch on milestone close
 
 on:
-  milestone:
-    types: [closed]
+  push:
+    branches: [131-conflict-resolving]
 
 jobs:
   make-branch:
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.milestone.title, '0.') || startsWith(github.event.milestone.title, '1.') || startsWith(github.event.milestone.title, '2.') || startsWith(github.event.milestone.title, '3.') || startsWith(github.event.milestone.title, '4.') || startsWith(github.event.milestone.title, '5.') || startsWith(github.event.milestone.title, '6.') || startsWith(github.event.milestone.title, '7.') || startsWith(github.event.milestone.title, '8.') || startsWith(github.event.milestone.title, '9.') }}
     steps:
       - id: version
         run: |
           set -x
-          echo "::set-output name=version::`echo '${{ github.event.milestone.title }}' | cut -d' ' -f1`"
+          echo "::set-output name=version::0.7.0"
       - name: Push milestone notes branch
         uses: UnforgivenPL/push-branch@v2
         with:
           repository: ${{ github.repository }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          source: development
+          source: 131-conflict-resolving
           target: notes-${{ steps.version.outputs.version }}
       - uses: actions/checkout@v2
         with:
@@ -51,16 +50,9 @@ jobs:
           set -x
           git fetch
           git checkout notes-${{ steps.version.outputs.version }}
-          git checkout development
+          git checkout 131-conflict-resolving
           git config user.email "${{ secrets.EMAIL }}"
           git config user.name "Miki (bot)"
           git merge notes-${{ steps.version.outputs.version }}
           git push origin
           git push -d origin notes-${{ steps.version.outputs.version }}
-      - name: Create release branch
-        uses: UnforgivenPL/push-branch@v2
-        with:
-          repository: ${{ github.repository }}
-          token: ${{ secrets.ACTIONS_PAT }}
-          source: development
-          target: release-${{ steps.version.outputs.version }}
