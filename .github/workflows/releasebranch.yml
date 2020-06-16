@@ -26,7 +26,7 @@ jobs:
       - name: Create milestone notes
         uses: UnforgivenPL/milestone-notes@v1
         with:
-          match-milestone: "^${{ steps.what-version.outputs.version }} "
+          match-milestone: "^${{ steps.version.outputs.version }} "
           repository: ${{ github.repository }}
           labels: "enhancement, api, bug"
       - name: Format milestone notes
@@ -44,7 +44,7 @@ jobs:
       - name: Push changes to notes branch
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
         with:
-          commit_message: "(bot) release notes updated for ${{ steps.what-version.outputs.version }}"
+          commit_message: "(bot) release notes updated for ${{ steps.version.outputs.version }}"
           branch: notes-${{ steps.version.outputs.version }}
       - name: Prepare merge and push it to development
         run: |
