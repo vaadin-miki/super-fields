@@ -1,4 +1,4 @@
-name: Release branch on milestone close
+name: Prepare release branch on milestone close
 
 on:
   milestone:
@@ -38,6 +38,7 @@ jobs:
       - name: Update release notes
         run: |
           echo -e "\n" | cat milestone-notes.md - superfields/release-notes.md > superfields/release-notes.md.new
+          awk 'NF' superfields/release-notes.md.new
           mv superfields/release-notes.md.new superfields/release-notes.md
       - name: Remove milestone notes
         run: rm milestone-notes.md

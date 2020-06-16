@@ -45,13 +45,13 @@ jobs:
           git config user.name "Miki (bot)"
           git merge master --strategy=ours
           git push origin
-#      - name: Create PR
-#        uses: UnforgivenPL/pull-request@v1
-#        with:
-#          source: ${{ github.event.ref }}
-#          target: master
-#          repository: ${{ github.repository }}
-#          token: ${{ secrets.ACTIONS_PAT }}
-#          pr-title: Release ${{ steps.what-version.outputs.version }} ready
-#          pr-body: Automatically created release ${{ steps.what-version.outputs.version }}.
-#          pr-assignees: ${{ github.actor }}
+      - name: Create PR
+        uses: UnforgivenPL/pull-request@v1
+        with:
+          source: ${{ github.event.ref }}
+          target: master
+          repository: ${{ github.repository }}
+          token: ${{ secrets.ACTIONS_PAT }}
+          pr-title: Release ${{ steps.what-version.outputs.version }} ready
+          pr-body: Automatically created release ${{ steps.what-version.outputs.version }}.
+          pr-assignees: ${{ github.actor }}
