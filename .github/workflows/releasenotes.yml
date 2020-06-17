@@ -1,0 +1,60 @@
+name: Prepare release notes when milestone closes
+
+on:
+  milestone:
+    types: [closed]
+
+jobs:
+  update-release-notes:
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.milestone.title, '0.') || startsWith(github.event.milestone.title, '1.') || startsWith(github.event.milestone.title, '2.') || startsWith(github.event.milestone.title, '3.') || startsWith(github.event.milestone.title, '4.') || startsWith(github.event.milestone.title, '5.') || startsWith(github.event.milestone.title, '6.') || startsWith(github.event.milestone.title, '7.') || startsWith(github.event.milestone.title, '8.') || startsWith(github.event.milestone.title, '9.') }}
+    steps:
+      - id: version
+        run: |
+          set -x
+          echo "::set-output name=version::`echo '${{ github.event.milestone.title }}' | cut -d' ' -f1`"
+      - name: Push milestone notes branch
+        uses: UnforgivenPL/push-branch@v2
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          source: development
+          target: notes-${{ steps.version.outputs.version }}
+      - uses: actions/checkout@v2
+        with:
+          ref: notes-${{ steps.version.outputs.version }}
+      - name: Create milestone notes
+        uses: UnforgivenPL/milestone-notes@v1
+        with:
+          match-milestone: "^${{ steps.version.outputs.version }} "
+          repository: ${{ github.repository }}
+          labels: "enhancement, api, bug"
+      - name: Format milestone notes
+        run: |
+          sed -i -e "s/## enhancement/## New features and enhancements/g" milestone-notes.md
+          sed -i -e "s/## api/## Changes to API/g" milestone-notes.md
+          sed -i -e "s/## bug/## Bug fixes/g" milestone-notes.md
+          sed -i -e "s/^$/(nothing reported)/g" milestone-notes.md
+      - name: Update release notes
+        run: |
+          echo -e "\n" | cat milestone-notes.md - superfields/release-notes.md > superfields/release-notes.md.new
+          awk 'NF' superfields/release-notes.md.new
+          mv superfields/release-notes.md.new superfields/release-notes.md
+      - name: Remove milestone notes
+        run: rm milestone-notes.md
+      - name: Push changes to notes branch
+        uses: stefanzweifel/git-auto-commit-action@v4.1.6
+        with:
+          commit_message: "(bot) release notes updated for ${{ steps.version.outputs.version }}"
+          branch: notes-${{ steps.version.outputs.version }}
+      - name: Create PR
+        uses: UnforgivenPL/pull-request@v1
+        with:
+          source: notes-${{ steps.version.outputs.version }}
+          target: development
+          repository: ${{ github.repository }}
+          token: ${{ secrets.ACTIONS_PAT }}
+          pr-title: Release notes for version ${{ steps.what-version.outputs.version }}
+          pr-body: Automatically updated notes ${{ steps.what-version.outputs.version }}.
+          pr-assignees: ${{ github.actor }}
+          pr-labels: release
