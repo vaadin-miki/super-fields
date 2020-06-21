@@ -1,20 +1,26 @@
 name: Merge release notes, create release branch
 
 on:
-  check_suite:
-    types: [completed]
+  pull_request:
+    types: [opened]
 
 jobs:
   make-release-branch:
     runs-on: ubuntu-latest
-    if: ${{ github.event.check_suite[conclusion] == 'success' && startsWith(github.event.check_suite[head_branch], 'notes-') }}
+    if: ${{ startsWith(github.event.pull_request.title, 'Release notes for version') && startsWith(github.event.pull_request.head.ref, 'notes-') }}
+    timeout-minutes: 30
     steps:
+      - id: version
+        run: |
+          set -x
+          echo "::set-output name=version::`echo '${{ github.event.pull_request.head.ref }}' | cut -d'-' -f2`"
       - name: Merge PR
-        uses: UnforgivenPL/merge-pr@v1
+        uses: UnforgivenPL/merge-pr@v2
         with:
           repository: ${{ github.repository }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          pr: ${{ github.event.check_suite[pull_requests][0].number }}
+          pr: ${{ github.event.number }}
+          delay: 300
           must-have-labels: release
       - name: Create release branch
         uses: UnforgivenPL/push-branch@v2
