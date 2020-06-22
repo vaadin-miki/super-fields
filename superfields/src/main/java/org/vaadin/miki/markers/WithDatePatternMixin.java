@@ -1,4 +1,6 @@
-package org.vaadin.miki.superfields.dates;
+package org.vaadin.miki.markers;
+
+import org.vaadin.miki.shared.dates.DatePattern;
 
 /**
  * Mixin interface to allow chaining {@link #setDatePattern(DatePattern)}.

@@ -10,18 +10,23 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.function.SerializablePredicate;
+import com.vaadin.flow.shared.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.miki.markers.HasLabel;
-import org.vaadin.miki.markers.HasLocale;
-import org.vaadin.miki.markers.HasPlaceholder;
-import org.vaadin.miki.markers.HasTitle;
+import org.vaadin.miki.events.text.TextSelectionEvent;
+import org.vaadin.miki.events.text.TextSelectionListener;
+import org.vaadin.miki.events.text.TextSelectionNotifier;
+import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
+import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
+import org.vaadin.miki.markers.WithNullValueOptionallyAllowed;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
+import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.superfields.text.SuperTextField;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -38,10 +43,11 @@ import java.util.Optional;
  */
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
-        implements HasPrefixAndSuffix, HasLabel, HasPlaceholder, HasTitle, HasLocale,
+        implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SELF>,
+                   TextSelectionNotifier<SELF>, HasPrefixAndSuffix,
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
-                   WithIdMixin<SELF> {
+                   WithIdMixin<SELF>, WithNullValueOptionallyAllowed<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -68,7 +74,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Underlying text field.
      */
-    private final TextField field = new TextField();
+    private final SuperTextField field = new SuperTextField();
 
     /**
      * A predicate for negativity of numbers.
@@ -95,6 +101,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     private boolean groupingSeparatorHiddenOnFocus;
 
     private boolean negativeValueAllowed = true;
+
+    private boolean nullValueAllowed = false;
 
     private Locale locale;
 
@@ -128,6 +136,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
         this.field.addFocusListener(this::onFieldSelected);
         this.field.addBlurListener(this::onFieldBlurred);
+        this.field.addTextSelectionListener(this::onTextSelected);
     }
 
     private static String escapeDot(char character) {
@@ -289,6 +298,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     private void onFieldBlurred(BlurNotifier.BlurEvent<TextField> event) {
         this.setPresentationValue(this.getValue());
+        // fire event
+        this.getEventBus().fireEvent(new BlurEvent<>(this, event.isFromClient()));
     }
 
     private void onFieldSelected(FocusNotifier.FocusEvent<TextField> event) {
@@ -299,7 +310,9 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         }
         // workaround for https://github.com/vaadin/vaadin-text-field-flow/issues/65
         if(this.isAutoselect())
-            this.field.getElement().executeJs("this.inputElement.select()");
+            this.field.selectAll();
+        // fire event
+        this.getEventBus().fireEvent(new FocusEvent<>(this, event.isFromClient()));
     }
 
     /**
@@ -311,9 +324,11 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     @Override
-    protected void setPresentationValue(T aDouble) {
-        String formatted = this.format.format(aDouble);
-        LOGGER.debug("value {} to be presented as {} with {} decimal digits", aDouble, formatted, this.format.getMaximumFractionDigits());
+    protected void setPresentationValue(T number) {
+        if(number == null && !this.isNullValueAllowed())
+            throw new IllegalArgumentException("null value is not allowed");
+        String formatted = number == null ? "" : this.format.format(number);
+        LOGGER.debug("value {} to be presented as {} with {} decimal digits", number, formatted, this.format.getMaximumFractionDigits());
         this.field.setValue(formatted);
     }
 
@@ -333,6 +348,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
             String fromEvent = this.field.getValue();
             if (fromEvent == null)
                 fromEvent = "";
+            if (fromEvent.isEmpty() && this.isNullValueAllowed())
+                return null;
             if (this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE)
                 fromEvent = fromEvent.replace(SPACE, NON_BREAKING_SPACE);
             T value = this.parseRawValue(fromEvent, this.format);
@@ -491,13 +508,6 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.field.setId(id == null ? null : TEXT_FIELD_STYLE_PREFIX +id);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public SELF withId(String id) {
-        this.setId(id);
-        return (SELF)this;
-    }
-
     /**
      * Returns the raw value, as currently displayed in the underlying text field.
      * This may depend on whether or not the component has focus, what locale is used, etc.
@@ -523,6 +533,102 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      */
     public void removeThemeVariants(TextFieldVariant... variants) {
         this.field.removeThemeVariants(variants);
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        this.field.setReadOnly(readOnly);
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return this.field.isReadOnly();
+    }
+
+    @Override
+    public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
+        this.field.setRequiredIndicatorVisible(requiredIndicatorVisible);
+    }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return this.field.isRequiredIndicatorVisible();
+    }
+
+    @Override
+    public void setErrorMessage(String errorMessage) {
+        this.field.setErrorMessage(errorMessage);
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return this.field.getErrorMessage();
+    }
+
+    @Override
+    public void setInvalid(boolean invalid) {
+        this.field.setInvalid(invalid);
+    }
+
+    @Override
+    public boolean isInvalid() {
+        return this.field.isInvalid();
+    }
+
+    @Override
+    public void select(int from, int to) {
+        this.field.select(from, to);
+    }
+
+    @Override
+    public void selectAll() {
+        this.field.selectAll();
+    }
+
+    @Override
+    public void selectNone() {
+        this.field.selectNone();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void onTextSelected(TextSelectionEvent<SuperTextField> event) {
+        final TextSelectionEvent<SELF> selfEvent = new TextSelectionEvent<>((SELF)this, event.isFromClient(), event.getSelectionStart(), event.getSelectionEnd(), event.getSelectedText());
+        this.getEventBus().fireEvent(selfEvent);
+    }
+
+    @Override
+    public void setReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
+        this.field.setReceivingSelectionEventsFromClient(receivingSelectionEventsFromClient);
+    }
+
+    @Override
+    public boolean isReceivingSelectionEventsFromClient() {
+        return this.field.isReceivingSelectionEventsFromClient();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Registration addTextSelectionListener(TextSelectionListener<SELF> listener) {
+        return this.getEventBus().addListener((Class<TextSelectionEvent<SELF>>)(Class<?>)TextSelectionEvent.class, listener);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public SELF withReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
+        this.setReceivingSelectionEventsFromClient(receivingSelectionEventsFromClient);
+        return (SELF)this;
+    }
+
+    @Override
+    public void setNullValueAllowed(boolean allowingNullValue) {
+        this.nullValueAllowed = allowingNullValue;
+        if(!allowingNullValue && this.getRawValue().isEmpty())
+            this.setValue(this.getEmptyValue());
+    }
+
+    @Override
+    public boolean isNullValueAllowed() {
+        return this.nullValueAllowed;
     }
 
     /**

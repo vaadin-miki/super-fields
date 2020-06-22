@@ -1,19 +1,28 @@
-name: Release branch on milestone close
+name: Merge release notes, create release branch
 
 on:
-  milestone:
-    types: [closed]
+  pull_request:
+    types: [opened]
 
 jobs:
-  make-branch:
+  make-release-branch:
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.milestone.title, '0.') || startsWith(github.event.milestone.title, '1.') || startsWith(github.event.milestone.title, '2.') || startsWith(github.event.milestone.title, '3.') || startsWith(github.event.milestone.title, '4.') || startsWith(github.event.milestone.title, '5.') || startsWith(github.event.milestone.title, '6.') || startsWith(github.event.milestone.title, '7.') || startsWith(github.event.milestone.title, '8.') || startsWith(github.event.milestone.title, '9.') }}
+    if: ${{ startsWith(github.event.pull_request.title, 'Release notes for version') && startsWith(github.event.pull_request.head.ref, 'notes-') }}
+    timeout-minutes: 30
     steps:
       - id: version
         run: |
           set -x
-          echo "::set-output name=version::`echo '${{ github.event.milestone.title }}' | cut -d' ' -f1`"
-      - name: Push release branch
+          echo "::set-output name=version::`echo '${{ github.event.pull_request.head.ref }}' | cut -d'-' -f2`"
+      - name: Merge PR
+        uses: UnforgivenPL/merge-pr@v2
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pr: ${{ github.event.number }}
+          delay: 300
+          must-have-labels: release
+      - name: Create release branch
         uses: UnforgivenPL/push-branch@v2
         with:
           repository: ${{ github.repository }}

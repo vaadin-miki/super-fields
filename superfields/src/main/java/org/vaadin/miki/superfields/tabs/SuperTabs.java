@@ -7,6 +7,7 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.tabs.Tab;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
  * @since 2020-04-10
  */
 @Tag("super-tabs")
+@CssImport(value = "./styles/super-tabs-multiline.css", themeFor = "vaadin-tabs")
 public class SuperTabs<T>
         extends CustomField<T>
         implements HasLabel, HasStyle, WithItemsMixin<T, SuperTabs<T>>, WithIdMixin<SuperTabs<T>>,
@@ -46,13 +48,18 @@ public class SuperTabs<T>
      */
     public static final Supplier<Div> DEFAULT_TAB_CONTENTS_CONTAINER = Div::new;
 
+    /**
+     * Name of the theme for multiline tabs.
+     */
+    public static final String MULTILINE_THEME_NAME = "multi-line-tabs";
+
     private final Tabs tabs = new Tabs();
 
     private final HasComponents contents;
 
     private final Map<Tab, Component> tabsToContents = new HashMap<>();
 
-    private final List<Map.Entry<T, Tab>> values = new ArrayList<>();
+    private final transient List<Map.Entry<T, Tab>> values = new ArrayList<>();
 
     private TabHandler tabHandler;
 
@@ -61,6 +68,8 @@ public class SuperTabs<T>
     private TabContentGenerator<T> tabContentGenerator;
 
     private boolean customValueAllowed = false;
+
+    private boolean multiline = false;
 
     /**
      * Creates the component with no tabs and default {@link TabHandler}, {@link TabHeaderGenerator} and {@link TabContentGenerator}.
@@ -145,6 +154,7 @@ public class SuperTabs<T>
         this.setTabContentGenerator(tabContentGenerator);
         this.tabs.setAutoselect(false);
         this.tabs.setWidthFull();
+        this.tabs.getElement().getClassList().add("part-of-supertabs");
         final C mainContents = mainContentSupplier.get();
         if(mainContents instanceof HasSize)
             ((HasSize) mainContents).setWidthFull();
@@ -460,8 +470,45 @@ public class SuperTabs<T>
         return this;
     }
 
+    /**
+     * Checks whether tabs wrap to a new line.
+     * @return When {@code true} and tabs would overflow current viewport, the extra ones will drop to the next line; {@code false} otherwise and by default.
+     */
+    public boolean isMultiline() {
+        return this.multiline;
+    }
+
+    /**
+     * Sets whether or not tabs should overflow to next line.
+     * @param multiline When {@code true} and tabs overflow current viewport, the extra ones will drop to the next line; {@code false} when all should be displayed in one line (with navigation buttons if needed).
+     */
+    public void setMultiline(boolean multiline) {
+        this.multiline = multiline;
+        if(this.multiline)
+            this.tabs.setThemeName(MULTILINE_THEME_NAME);
+        else this.tabs.removeThemeName(MULTILINE_THEME_NAME);
+    }
+
+    /**
+     * Chains {@link #setMultiline(boolean)} and returns itself.
+     * @param multiline Whether or not wrap tabs into new line on overflow.
+     * @return This.
+     * @see #setMultiline(boolean)
+     */
+    public SuperTabs<T> withMultiline(boolean multiline) {
+        this.setMultiline(multiline);
+        return this;
+    }
+
     @Override
     public void setItems(Collection<T> collection) {
         this.addTabs(collection);
     }
+
+    @Override
+    public void setId(String id) {
+        this.tabs.setId(id == null ? null : "belongs-to-"+id);
+        super.setId(id);
+    }
+
 }

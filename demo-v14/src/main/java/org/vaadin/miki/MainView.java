@@ -1,12 +1,13 @@
 package org.vaadin.miki;
 
+import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
@@ -19,12 +20,18 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.function.SerializableBiConsumer;
+import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.vaadin.miki.events.text.TextSelectionNotifier;
+import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
+import org.vaadin.miki.markers.CanSelectText;
+import org.vaadin.miki.markers.HasDatePattern;
 import org.vaadin.miki.markers.HasLocale;
-import org.vaadin.miki.superfields.dates.DatePattern;
-import org.vaadin.miki.superfields.dates.DatePatterns;
-import org.vaadin.miki.superfields.dates.HasDatePattern;
+import org.vaadin.miki.markers.WithNullValueOptionallyAllowed;
+import org.vaadin.miki.shared.dates.DatePattern;
+import org.vaadin.miki.shared.dates.DatePatterns;
 import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
@@ -39,6 +46,8 @@ import org.vaadin.miki.superfields.numbers.SuperLongField;
 import org.vaadin.miki.superfields.tabs.SuperTabs;
 import org.vaadin.miki.superfields.tabs.TabHandler;
 import org.vaadin.miki.superfields.tabs.TabHandlers;
+import org.vaadin.miki.superfields.text.SuperTextArea;
+import org.vaadin.miki.superfields.text.SuperTextField;
 import org.vaadin.miki.superfields.unload.UnloadObserver;
 
 import java.time.LocalDate;
@@ -47,7 +56,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -58,15 +66,18 @@ import java.util.function.Supplier;
  */
 @CssImport("./styles/demo-styles.css")
 @CssImport(value = "./styles/super-number-fields-styles.css", themeFor = "vaadin-text-field")
+@CssImport(value = "./styles/super-tabs-styles.css", themeFor = "vaadin-tabs")
 @Route
 @PageTitle("SuperFields Demo")
 public class MainView extends VerticalLayout {
 
+    private static final int NOTIFICATION_TIME = 1500;
+
     private final Map<Class<?>, Component> components = new LinkedHashMap<>();
 
-    private final Map<Class<?>, Consumer<Object>> afterLocaleChange = new HashMap<>();
+    private final Map<Class<?>, SerializableConsumer<Object>> afterLocaleChange = new HashMap<>();
 
-    private final Map<Class<?>, BiConsumer<Component, Consumer<Component[]>>> contentBuilders = new LinkedHashMap<>();
+    private final Map<Class<?>, SerializableBiConsumer<Component, Consumer<Component[]>>> contentBuilders = new LinkedHashMap<>();
 
     private static Component generateParagraph(Class<? extends Component> type, int row, int column) {
         Paragraph result = new Paragraph(type.getSimpleName());
@@ -116,6 +127,20 @@ public class MainView extends VerticalLayout {
         callback.accept(new Component[]{autoselect, separatorHidden, prefix, suffix, alignRight});
     }
 
+    private void buildFocusNotifier(Component component, Consumer<Component[]> callback) {
+        ((FocusNotifier<?>)component).addFocusListener(event ->
+           Notification.show("Component "+component.getClass().getSimpleName()+" received focus.", NOTIFICATION_TIME, Notification.Position.BOTTOM_END)
+        );
+        callback.accept(new Component[]{new Span("Focus the demo component to see a notification.")});
+    }
+
+    private void buildBlurNotifier(Component component, Consumer<Component[]> callback) {
+        ((BlurNotifier<?>)component).addBlurListener(event ->
+                Notification.show("Component "+component.getClass().getSimpleName()+" lost focus.", NOTIFICATION_TIME, Notification.Position.BOTTOM_END)
+        );
+        callback.accept(new Component[]{new Span("Leave the demo component to see a notification.")});
+    }
+
     private void buildHasLocale(Component component, Consumer<Component[]> callback) {
         final ComboBox<Locale> locales = new ComboBox<>("Select locale:", new Locale("pl", "PL"), Locale.UK, Locale.FRANCE, Locale.GERMANY, Locale.CHINA);
         locales.setItemLabelGenerator(locale -> locale.getDisplayCountry() + " / "+locale.getDisplayLanguage());
@@ -128,8 +153,40 @@ public class MainView extends VerticalLayout {
         callback.accept(new Component[]{locales});
     }
 
+    private void buildNullValueOptionallyAllowed(Component component, Consumer<Component[]> callback) {
+        final Checkbox allow = new Checkbox("Allow empty string as null value?", event -> ((WithNullValueOptionallyAllowed<?, ?, ?>)component).setNullValueAllowed(event.getValue()));
+        callback.accept(new Component[]{allow});
+    }
+
     private void buildHasValue(Component component, Consumer<Component[]> callback) {
+        final Checkbox toggle = new Checkbox("Mark component as read only?", event -> ((HasValue<?, ?>)component).setReadOnly(event.getValue()));
         ((HasValue<?, ?>) component).addValueChangeListener(this::onAnyValueChanged);
+        callback.accept(new Component[]{toggle});
+    }
+
+    private void buildCanSelectText(Component component, Consumer<Component[]> callback) {
+        final Button selectAll = new Button("Select all", event -> ((CanSelectText)component).selectAll());
+        final Button selectNone = new Button("Select none", event -> ((CanSelectText)component).selectNone());
+        final HorizontalLayout layout = new HorizontalLayout(new Span("Type something in the field, then click one of the buttons:"), selectAll, selectNone);
+        layout.setAlignItems(Alignment.CENTER);
+        callback.accept(new Component[]{
+                layout
+        });
+        if(component instanceof CanReceiveSelectionEventsFromClient) {
+            final Checkbox receiveFromClient = new Checkbox("Allow selection events initiated by keyboard or mouse?",
+                    event -> ((CanReceiveSelectionEventsFromClient) component).setReceivingSelectionEventsFromClient(event.getValue()));
+            callback.accept(new Component[] {receiveFromClient});
+        }
+        if(component instanceof TextSelectionNotifier<?>) {
+            final Span selection = new Span();
+            ((TextSelectionNotifier<?>) component).addTextSelectionListener(event -> selection.setText(event.getSelectedText()));
+            Icon icon = VaadinIcon.INFO_CIRCLE.create();
+            icon.setColor("green");
+            icon.getElement().setAttribute("title", "When the component does not receive events from the browser, selection events will only be called for server-side initiated actions.");
+            callback.accept(new Component[]{
+                    new HorizontalLayout(new Span("Most recently selected text: <"), selection, new Span(">"), icon)
+            });
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -215,6 +272,8 @@ public class MainView extends VerticalLayout {
     }
 
     private void buildSuperTabs(Component component, Consumer<Component[]> callback) {
+        final Checkbox multilineTabs = new Checkbox("Multiline tabs?", event -> ((SuperTabs<?>)component).setMultiline(event.getValue()));
+
         final ComboBox<TabHandler> tabHandlers = new ComboBox<>("Select a tab handler: ",
                 TabHandlers.VISIBILITY_HANDLER, TabHandlers.REMOVING_HANDLER, TabHandlers.selectedContentHasClassName("selected-tab"));
         tabHandlers.addValueChangeListener(event -> {
@@ -222,33 +281,41 @@ public class MainView extends VerticalLayout {
                 ((SuperTabs<?>)component).setTabHandler(event.getValue());
         });
 
-        callback.accept(new Component[]{tabHandlers});
+        callback.accept(new Component[]{multilineTabs, tabHandlers});
     }
 
     private Component buildContentsFor(Class<?> type) {
-        VerticalLayout result = new VerticalLayout();
         Component component = this.components.get(type);
+        component.getElement().getClassList().add("demo");
+        Div result = new Div();
+        result.setSizeUndefined();
+        result.addClassName("component-page");
+        VerticalLayout componentSection = new VerticalLayout();
+        componentSection.setSizeUndefined();
+        componentSection.addClassName("component-section");
+        Span title = new Span("Demo page of "+component.getClass().getSimpleName());
+        title.addClassName("section-header");
+        title.addClassName("component-header");
+        componentSection.add(title, component);
+        result.add(componentSection);
 
         this.contentBuilders.entrySet().stream().
                 filter(entry -> entry.getKey().isAssignableFrom(type)).
-                forEach(entry -> entry.getValue().accept(component, result::add));
-
-        result.add(component);
+                forEach(entry -> {
+                    VerticalLayout section = new VerticalLayout();
+                    section.setSizeUndefined();
+                    section.addClassName("section-layout");
+                    Span header = new Span("Configuration options for "+entry.getKey().getSimpleName());
+                    header.addClassName("section-header");
+                    section.add(header);
+                    entry.getValue().accept(component, section::add);
+                    result.add(section);
+                });
         return result;
     }
 
     private void onAnyValueChanged(HasValue.ValueChangeEvent<?> valueChangeEvent) {
         Notification.show(String.format("%s changed value to %s", valueChangeEvent.getHasValue().getClass().getSimpleName(), valueChangeEvent.getValue()));
-    }
-
-    private Component getInfoPage() {
-        return new VerticalLayout(
-                new Span("Hello and welcome to SuperFields demo! Thank you for your interest in this little project, I hope you find it useful."),
-                new Span("The components shown in this demo are available in SuperFields, a small collection of handy stuff designed to work with Vaadin 14 and Java. One day I got tired of repeating the same code over and over again to fix issues that repeat across pretty much every project I coded... and instead of complaining, I decided to fix the problems by releasing this library."),
-                new Anchor("https://github.com/vaadin-miki/super-fields/issues", "Please use this link to report issues and request features and components."),
-                new Anchor("https://github.com/vaadin-miki/super-fields", "You can also visit the project's main page on GitHub."),
-                new Span("Unless otherwise noted, all code has been written by me (Miki) and is released under Apache 2.0 License.")
-        );
     }
 
     public MainView() {
@@ -258,13 +325,18 @@ public class MainView extends VerticalLayout {
         this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1).withId("big-decimal"));
         this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
         this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH).withValue(LocalDateTime.now()));
+        this.components.put(SuperTextField.class, new SuperTextField("Type something:").withPlaceholder("(nothing typed)").withId("super-text-field"));
+        this.components.put(SuperTextArea.class, new SuperTextArea("Type a lot of something:").withPlaceholder("(nothing typed)").withId("super-text-area"));
         this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
                 .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
-                .withItems("Java friendly", "Super-configurable", "Open source")
+                .withItems(
+                        "Java friendly", "Super-configurable", "Open source",
+                        "Fun to use", "Reasonably well documented"
+                ).withId("super-tabs")
         );
         this.components.put(ObservedField.class, new ObservedField());
         this.components.put(ComponentObserver.class, new ComponentObserver());
-        this.components.put(UnloadObserver.class, new UnloadObserver(false));
+        this.components.put(UnloadObserver.class, UnloadObserver.get(false));
         this.components.put(ItemGrid.class, new ItemGrid<Class<? extends Component>>(
                 null,
                 () -> {
@@ -295,28 +367,33 @@ public class MainView extends VerticalLayout {
                 })
         );
 
-        this.contentBuilders.put(AbstractSuperNumberField.class, this::buildAbstractSuperNumberField);
-        this.contentBuilders.put(HasLocale.class, this::buildHasLocale);
+        this.contentBuilders.put(CanSelectText.class, this::buildCanSelectText);
         this.contentBuilders.put(HasValue.class, this::buildHasValue);
+        this.contentBuilders.put(AbstractSuperNumberField.class, this::buildAbstractSuperNumberField);
+        this.contentBuilders.put(WithNullValueOptionallyAllowed.class, this::buildNullValueOptionallyAllowed);
+        this.contentBuilders.put(HasLocale.class, this::buildHasLocale);
         this.contentBuilders.put(ItemGrid.class, this::buildItemGrid);
         this.contentBuilders.put(HasDatePattern.class, this::buildHasDatePattern);
         this.contentBuilders.put(SuperTabs.class, this::buildSuperTabs);
         this.contentBuilders.put(ObservedField.class, this::buildObservedField);
         this.contentBuilders.put(ComponentObserver.class, this::buildIntersectionObserver);
         this.contentBuilders.put(UnloadObserver.class, this::buildUnloadObserver);
+        this.contentBuilders.put(FocusNotifier.class, this::buildFocusNotifier);
+        this.contentBuilders.put(BlurNotifier.class, this::buildBlurNotifier);
 
         this.afterLocaleChange.put(SuperIntegerField.class, o -> ((SuperIntegerField)o).setMaximumIntegerDigits(6));
         this.afterLocaleChange.put(SuperLongField.class, o -> ((SuperLongField)o).setMaximumIntegerDigits(11));
         this.afterLocaleChange.put(SuperDoubleField.class, o -> ((SuperDoubleField)o).withMaximumIntegerDigits(8).setMaximumFractionDigits(4));
         this.afterLocaleChange.put(SuperBigDecimalField.class, o -> ((SuperBigDecimalField)o).withMaximumIntegerDigits(12).withMaximumFractionDigits(3).setMinimumFractionDigits(1));
 
-        final SuperTabs<Class<?>> tabs = new SuperTabs<>(
+        final SuperTabs<Class<?>> tabs = new SuperTabs<Class<?>>(
                 type -> new Tab(type.getSimpleName()),
-                this::buildContentsFor,
-                this.components.keySet().toArray(new Class<?>[0])
+                this::buildContentsFor
         );
 
-        tabs.addTab(MainView.class, new Tab(new Icon(VaadinIcon.INFO_CIRCLE), new Span("About this demo")), this.getInfoPage());
+        tabs.addTab(MainView.class, new Tab(new Icon(VaadinIcon.INFO_CIRCLE), new Span("SuperFields demo")), new InfoPage());
+
+        tabs.addTab(this.components.keySet().toArray(new Class<?>[0]));
 
         this.add(tabs);
     }

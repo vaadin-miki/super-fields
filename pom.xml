@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.vaadin.miki</groupId>
     <artifactId>superfields-parent</artifactId>
-    <version>0.6.2</version>
+    <version>0.7.0</version>
     <modules>
         <module>superfields</module>
         <module>demo-v14</module>
