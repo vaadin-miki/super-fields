@@ -1,5 +1,7 @@
 package org.vaadin.miki.superfields.dates;
 
+import org.vaadin.miki.shared.dates.DatePattern;
+
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;

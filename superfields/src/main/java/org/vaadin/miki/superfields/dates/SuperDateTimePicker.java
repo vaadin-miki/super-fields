@@ -11,6 +11,7 @@ import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.shared.dates.DatePattern;
 import org.vaadin.miki.util.ReflectTools;
 
 import java.time.LocalDateTime;

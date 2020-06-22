@@ -8,6 +8,7 @@
 ## Changes to API
 * \#123 - [Add text selection API to existing components](https://api.github.com/repos/vaadin-miki/super-fields/issues/123)
 * \#147 - [HasId marker interface](https://api.github.com/repos/vaadin-miki/super-fields/issues/147)
+* \#171 - [DatePattern should be moved to a shared package](https://github.com/vaadin-miki/super-fields/issues/171)
 ## Bug fixes
 * \#132 - [No deployment to Heroku](https://api.github.com/repos/vaadin-miki/super-fields/issues/132)
 * \#136 - [setReadOnly has no effect on number fields](https://api.github.com/repos/vaadin-miki/super-fields/issues/136)
