@@ -19,6 +19,7 @@ import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.shared.dates.DatePattern;
 import org.vaadin.miki.shared.text.TextSelectionDelegate;
 
 import java.time.LocalDate;
