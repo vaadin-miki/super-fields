@@ -1,4 +1,4 @@
-package org.vaadin.miki.superfields.dates;
+package org.vaadin.miki.shared.dates;
 
 import java.io.Serializable;
 import java.util.Objects;

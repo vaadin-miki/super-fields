@@ -5,6 +5,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.vaadin.miki.shared.dates.DatePatterns;
 
 import java.time.LocalDate;
 import java.util.Locale;
