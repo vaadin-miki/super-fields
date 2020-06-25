@@ -13,7 +13,7 @@ import org.vaadin.miki.markers.WithIdMixin;
 /**
  * Server-side component that listens to {@code beforeunload} events.
  * Based on <a href="https://vaadin.com/forum/thread/17523194/unsaved-changes-detect-page-exit-or-reload">the code by Kaspar Scherrer and Stuart Robinson</a>.
- * Warning: this class is a Singleton; the class is final, the constructors are private and there is at most one global instance.
+ * Warning: this class is a {@link ThreadLocal} singleton; the class is final, the constructors are private and there is at most one global instance per thread.
  *
  * @author Kaspar Scherrer, Stuart Robinson; adapted to web-component by miki
  * @since 2020-04-29
@@ -22,16 +22,16 @@ import org.vaadin.miki.markers.WithIdMixin;
 @Tag("unload-observer")
 public final class UnloadObserver extends PolymerTemplate<TemplateModel> implements WithIdMixin<UnloadObserver> {
 
-    private static UnloadObserver instance = null;
+    private static final ThreadLocal<UnloadObserver> INSTANCES = new ThreadLocal<>();
 
     /**
      * Returns the current instance. Will create one using default no-arg constructor if none is present yet.
      * @return An instance of {@link UnloadObserver}.
      */
     public static UnloadObserver get() {
-        if(instance == null)
-            instance = new UnloadObserver();
-        return instance;
+        if(INSTANCES.get() == null)
+            INSTANCES.set(new UnloadObserver());
+        return INSTANCES.get();
     }
 
     /**
@@ -40,10 +40,18 @@ public final class UnloadObserver extends PolymerTemplate<TemplateModel> impleme
      * @return An instance of {@link UnloadObserver}.
      */
     public static UnloadObserver get(boolean queryingOnUnload) {
-        if(instance == null)
-            instance = new UnloadObserver(queryingOnUnload);
-        else instance.setQueryingOnUnload(queryingOnUnload);
-        return instance;
+        if(INSTANCES.get() == null)
+            INSTANCES.set(new UnloadObserver(queryingOnUnload));
+        else INSTANCES.get().setQueryingOnUnload(queryingOnUnload);
+        return INSTANCES.get();
+    }
+
+    /**
+     * Cleans up the thread-local variable. This method should be called when the unload observer is no longer needed.
+     */
+    public static void remove() {
+        if(INSTANCES.get() != null)
+            INSTANCES.remove();
     }
 
     private boolean queryingOnUnload;
@@ -152,5 +160,4 @@ public final class UnloadObserver extends PolymerTemplate<TemplateModel> impleme
     public Registration addUnloadListener(UnloadListener listener) {
         return this.getEventBus().addListener(UnloadEvent.class, listener);
     }
-
 }
