@@ -24,6 +24,7 @@ import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.slf4j.LoggerFactory;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
@@ -266,7 +267,10 @@ public class MainView extends VerticalLayout {
         final Span description = new Span("This component optionally displays a browser-native window when leaving this app. Select the checkbox above and try to close the window or tab to see it in action.");
         final Span counterText = new Span("There were this many attempts to leave this app so far: ");
         final Span counter = new Span("0");
-        ((UnloadObserver)component).addUnloadListener(event -> counter.setText(String.valueOf(Integer.parseInt(counter.getText())+1)));
+        ((UnloadObserver)component).addUnloadListener(event -> {
+            counter.setText(String.valueOf(Integer.parseInt(counter.getText()) + 1));
+            LoggerFactory.getLogger(this.getClass()).info("Unload attempted, happened in {} and UnloadObserver is inside {}", this.getClass().getSimpleName(), event.getSource().getParent().orElseGet(()->this).getClass().getSimpleName());
+        });
 
         callback.accept(new Component[]{query, description, new HorizontalLayout(counterText, counter)});
     }
