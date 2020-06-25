@@ -46,6 +46,14 @@ public final class UnloadObserver extends PolymerTemplate<TemplateModel> impleme
         return INSTANCES.get();
     }
 
+    /**
+     * Cleans up the thread-local variable. This method should be called when the unload observer is no longer needed.
+     */
+    public static void remove() {
+        if(INSTANCES.get() != null)
+            INSTANCES.remove();
+    }
+
     private boolean queryingOnUnload;
 
     private boolean clientInitialised;
@@ -152,5 +160,4 @@ public final class UnloadObserver extends PolymerTemplate<TemplateModel> impleme
     public Registration addUnloadListener(UnloadListener listener) {
         return this.getEventBus().addListener(UnloadEvent.class, listener);
     }
-
 }
