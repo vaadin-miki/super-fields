@@ -23,14 +23,14 @@ export class UnloadObserver extends PolymerElement {
         const src = this;
         if (window.Vaadin.unloadObserver === undefined) {
             window.Vaadin.unloadObserver = {
-                handler: undefined
+                attemptHandler: undefined
             }
         }
-        if (window.Vaadin.unloadObserver.handler !== undefined) {
-            window.removeEventListener('beforeunload', window.Vaadin.unloadObserver.handler);
+        if (window.Vaadin.unloadObserver.attemptHandler !== undefined) {
+            window.removeEventListener('beforeunload', window.Vaadin.unloadObserver.attemptHandler);
         }
-        window.Vaadin.unloadObserver.handler = event => src.unloadHappened(src, event);
-        window.addEventListener('beforeunload', window.Vaadin.unloadObserver.handler);
+        window.Vaadin.unloadObserver.attemptHandler = event => src.unloadAttempted(src, event);
+        window.addEventListener('beforeunload', window.Vaadin.unloadObserver.attemptHandler);
     }
 
     /**
@@ -38,14 +38,16 @@ export class UnloadObserver extends PolymerElement {
      * @param source An unload observer.
      * @param event Event that happened.
      */
-    unloadHappened(source, event) {
+    unloadAttempted(source, event) {
         if (window.Vaadin.unloadObserver.query) {
+            console.log("UO: responding to unload attempt...");
             event.preventDefault();
             event.returnValue = '';
             if (source.$server) {
                 source.$server.unloadAttempted();
             }
         }
+        else source.$server.unloadHappened();
     }
 
     /**
