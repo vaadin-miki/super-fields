@@ -13,7 +13,14 @@ import org.vaadin.miki.markers.WithIdMixin;
 /**
  * Server-side component that listens to {@code beforeunload} events.
  * Based on <a href="https://vaadin.com/forum/thread/17523194/unsaved-changes-detect-page-exit-or-reload">the code by Kaspar Scherrer and Stuart Robinson</a>.
+ * This component will broadcast events on {@code beforeunload} event in the browser. If {@link #isQueryingOnUnload()}
+ * is {@code true}, before the event the user will be prompted about leaving the page. However, there is no way to find out what the user selected.
+ * If {@link #isQueryingOnUnload()} is {@code false}, the event on the server will be called just before the page is unloaded.
+ * Note that the component must be present in the DOM structure in the browser for the event to be received on the server.
+ *
  * Warning: this class is a {@link ThreadLocal} singleton; the class is final, the constructors are private and there is at most one global instance per thread.
+ *
+ * Warning: when the page is unloaded, the thread-local instance should be removed to prevent memory leaks. See {@link #remove()}.
  *
  * @author Kaspar Scherrer, Stuart Robinson; adapted to web-component by miki
  * @since 2020-04-29
@@ -47,7 +54,7 @@ public final class UnloadObserver extends PolymerTemplate<TemplateModel> impleme
     }
 
     /**
-     * Cleans up the thread-local variable. This method should be called when the unload observer is no longer needed.
+     * Cleans up the thread-local variable. This method is called automatically when the component receives {@code unload} event.
      */
     public static void remove() {
         if(INSTANCES.get() != null)
@@ -140,8 +147,13 @@ public final class UnloadObserver extends PolymerTemplate<TemplateModel> impleme
     }
 
     @ClientCallable
+    private void unloadHappened() {
+        this.fireUnloadEvent(new UnloadEvent(this, false));
+    }
+
+    @ClientCallable
     private void unloadAttempted() {
-        this.fireUnloadEvent(new UnloadEvent(this));
+        this.fireUnloadEvent(new UnloadEvent(this, true));
     }
 
     /**

@@ -268,8 +268,9 @@ public class MainView extends VerticalLayout {
         final Span counterText = new Span("There were this many attempts to leave this app so far: ");
         final Span counter = new Span("0");
         ((UnloadObserver)component).addUnloadListener(event -> {
-            counter.setText(String.valueOf(Integer.parseInt(counter.getText()) + 1));
-            LoggerFactory.getLogger(this.getClass()).info("Unload attempted, happened in {} and UnloadObserver is inside {}", this.getClass().getSimpleName(), event.getSource().getParent().orElseGet(()->this).getClass().getSimpleName());
+            if(event.isBecauseOfQuerying())
+                counter.setText(String.valueOf(Integer.parseInt(counter.getText()) + 1));
+            LoggerFactory.getLogger(this.getClass()).info("Unload event; attempt? {}; captured in {} and UnloadObserver is inside {}", event.isBecauseOfQuerying(), this.getClass().getSimpleName(), event.getSource().getParent().orElse(this).getClass().getSimpleName());
         });
 
         callback.accept(new Component[]{query, description, new HorizontalLayout(counterText, counter)});
