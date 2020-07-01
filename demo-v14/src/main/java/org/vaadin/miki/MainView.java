@@ -341,7 +341,7 @@ public class MainView extends VerticalLayout {
         );
         this.components.put(ObservedField.class, new ObservedField());
         this.components.put(ComponentObserver.class, new ComponentObserver());
-        this.components.put(UnloadObserver.class, UnloadObserver.get(false));
+        this.components.put(UnloadObserver.class, UnloadObserver.get().withoutQueryingOnUnload());
         this.components.put(ItemGrid.class, new ItemGrid<Class<? extends Component>>(
                 null,
                 () -> {
