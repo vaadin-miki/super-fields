@@ -122,12 +122,12 @@ public class SuperDatePicker extends DatePicker
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        this.textSelectionDelegate.onAttach(attachEvent, super::onAttach);
+        this.textSelectionDelegate.onAttach(attachEvent, event -> super.onAttach(event));
     }
 
     @Override
     protected void onDetach(DetachEvent detachEvent) {
-        this.textSelectionDelegate.onDetach(detachEvent, super::onDetach);
+        this.textSelectionDelegate.onDetach(detachEvent, event -> super.onDetach(event));
     }
 
     @ClientCallable

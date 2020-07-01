@@ -62,12 +62,12 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        this.delegate.onAttach(attachEvent, super::onAttach);
+        this.delegate.onAttach(attachEvent, event -> super.onAttach(event));
     }
 
     @Override
     protected void onDetach(DetachEvent detachEvent) {
-        this.delegate.onDetach(detachEvent, super::onDetach);
+        this.delegate.onDetach(detachEvent, event -> super.onDetach(event));
     }
 
     @Override
