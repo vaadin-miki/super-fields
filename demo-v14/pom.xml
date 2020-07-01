@@ -4,11 +4,11 @@
     <parent>
         <artifactId>superfields-parent</artifactId>
         <groupId>org.vaadin.miki</groupId>
-        <version>0.6.66-SNAPSHOT</version>
+        <version>0.7.1</version>
     </parent>
 
     <artifactId>superfields-demo-v14</artifactId>
-    <version>0.6.66-SNAPSHOT</version>
+    <version>0.7.1</version>
     <name>V14 demo app for SuperFields</name>
     <description>Showcase application for V14 and SuperFields.</description>
     <packaging>war</packaging>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.vaadin.miki</groupId>
             <artifactId>superfields</artifactId>
-            <version>0.6.66-SNAPSHOT</version>
+            <version>0.7.1</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
