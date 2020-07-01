@@ -1,3 +1,11 @@
+# 0.7.1 - Fixes to UnloadObserver
+## New features and enhancements
+* \#170 - [UnloadObserver should always send an event before unloading](https://api.github.com/repos/vaadin-miki/super-fields/issues/170)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#178 - [UnloadObserver should belong to the UI that will be unloaded.](https://api.github.com/repos/vaadin-miki/super-fields/issues/178)
+
 # 0.7.0 - SuperTextField
 ## New features and enhancements
 * \#122 - [SuperTextField, SuperTextArea and text selection API](https://api.github.com/repos/vaadin-miki/super-fields/issues/122)
