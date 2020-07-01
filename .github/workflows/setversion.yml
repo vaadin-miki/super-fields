@@ -9,6 +9,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Set up JDK 10
         uses: actions/setup-java@v1
         with:
@@ -28,29 +30,21 @@ jobs:
           mvn versions:set -DnewVersion=$VERSION --file pom.xml
           mvn versions:set -DnewVersion=$VERSION --file superfields/pom.xml
           sed -i -e s/{VERSION}/$VERSION/g ./README.md
-      - name: Create milestone notes
-        uses: UnforgivenPL/milestone-notes@v1
-        with:
-          match-milestone: "^${{ steps.what-version.outputs.version }} "
-          repository: ${{ github.repository }}
-          labels: "enhancement, api, bug"
-      - name: Format milestone notes
-        run: |
-          sed -i -e "s/## enhancement/## New features and enhancements/g" milestone-notes.md
-          sed -i -e "s/## api/## Changes to API/g" milestone-notes.md
-          sed -i -e "s/## bug/## Bug fixes/g" milestone-notes.md
-          sed -i -e "s/^$/(nothing reported)/g" milestone-notes.md
-      - name: Update release notes
-        run: |
-          echo -e "\n" | cat milestone-notes.md - superfields/release-notes.md > superfields/release-notes.md.new
-          mv superfields/release-notes.md.new superfields/release-notes.md
-      - name: Remove milestone notes
-        run: rm milestone-notes.md
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
         with:
-          commit_message: "(bot) version and release notes updated to ${{ steps.what-version.outputs.version }}"
+          commit_message: "(bot) version updated to ${{ steps.what-version.outputs.version }}"
           branch: ${{ github.event.ref }}
+      - name: Resolve conflicts (keep ours)
+        run: |
+          set -x
+          git fetch
+          git checkout master
+          git checkout ${{ github.event.ref }}
+          git config user.email "${{ secrets.EMAIL }}"
+          git config user.name "Miki (bot)"
+          git merge master --strategy=ours
+          git push origin
       - name: Create PR
         uses: UnforgivenPL/pull-request@v1
         with:

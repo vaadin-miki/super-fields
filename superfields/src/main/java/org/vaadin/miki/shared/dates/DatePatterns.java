@@ -1,7 +1,7 @@
-package org.vaadin.miki.superfields.dates;
+package org.vaadin.miki.shared.dates;
 
 /**
- * Enumeration class with some common {@link DatePattern}s.
+ * Container class with some common {@link DatePattern}s.
  * @author miki
  * @since 2020-04-24
  */

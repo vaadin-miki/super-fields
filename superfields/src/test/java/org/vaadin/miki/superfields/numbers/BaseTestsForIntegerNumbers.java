@@ -1,6 +1,9 @@
 package org.vaadin.miki.superfields.numbers;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.shared.Registration;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,6 +14,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -33,6 +38,8 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     private final Map<Integer, Set<String>> invalidLimitedInputs = new HashMap<>();
 
     private AbstractSuperNumberField<T, ?> field;
+
+    private boolean eventFlag = false;
 
     public BaseTestsForIntegerNumbers(Supplier<AbstractSuperNumberField<T, ?>> fieldSupplier, T baseTestNumber, T negativeTestNumber, String numberWithGroups, String numberWithoutGroups, T zero) {
         this.fieldSupplier = fieldSupplier;
@@ -182,6 +189,42 @@ class BaseTestsForIntegerNumbers<T extends Number> {
         String regexp = this.getField().getRegexp();
         for(String s: new String[]{"1234567890", "12345678901", "123456789012", "123 456 789 0", "123 456 789 01", "123 456 789 012"})
             Assert.assertFalse(String.format("%s must not match %s (regression on bug #10)", regexp, s), s.matches(regexp));
+    }
+
+    @Test
+    public void testNullWithNullAllowed() {
+        this.getField().setNullValueAllowed(true);
+        this.getField().setValue(null);
+        T value = this.getField().getValue();
+        Assert.assertNull("value was set to null and it must be null", value);
+        Assert.assertTrue("null representation must be an empty string", this.getField().getRawValue().isEmpty());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullWithNoNullAllowedThrowsException() {
+        // by default, there should be no allowance for null values
+        this.getField().setValue(null);
+    }
+
+    private <E extends ComponentEvent<?>> void checkEventTriggered(Function<ComponentEventListener<E>, Registration> addEvent, Consumer<AbstractSuperNumberField<T, ?>> fireEvent) {
+        this.eventFlag = false;
+        Registration registration = addEvent.apply(event -> this.eventFlag = true);
+        fireEvent.accept(this.getField());
+        Assert.assertTrue(this.eventFlag);
+        this.eventFlag = false;
+        registration.remove();
+        this.getField().simulateFocus();
+        Assert.assertFalse(this.eventFlag);
+    }
+
+    @Test
+    public void testFocus() {
+        this.checkEventTriggered(this.getField()::addFocusListener, AbstractSuperNumberField::simulateFocus);
+    }
+
+    @Test
+    public void testBlur() {
+        this.checkEventTriggered(this.getField()::addBlurListener, AbstractSuperNumberField::simulateBlur);
     }
 
 }

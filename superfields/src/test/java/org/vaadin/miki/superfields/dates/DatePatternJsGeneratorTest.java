@@ -3,6 +3,7 @@ package org.vaadin.miki.superfields.dates;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.vaadin.miki.shared.dates.DatePattern;
 
 public class DatePatternJsGeneratorTest {
 

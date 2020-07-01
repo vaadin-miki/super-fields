@@ -20,8 +20,17 @@ export class UnloadObserver extends PolymerElement {
      * Initialises the observer and registers a beforeunload listener.
      */
     initObserver() {
-        console.log("registering unload listener")
-        window.addEventListener('beforeunload', event => this.unloadHappened(this, event));
+        const src = this;
+        if (window.Vaadin.unloadObserver === undefined) {
+            window.Vaadin.unloadObserver = {
+                attemptHandler: undefined
+            }
+        }
+        if (window.Vaadin.unloadObserver.attemptHandler !== undefined) {
+            window.removeEventListener('beforeunload', window.Vaadin.unloadObserver.attemptHandler);
+        }
+        window.Vaadin.unloadObserver.attemptHandler = event => src.unloadAttempted(src, event);
+        window.addEventListener('beforeunload', window.Vaadin.unloadObserver.attemptHandler);
     }
 
     /**
@@ -29,12 +38,16 @@ export class UnloadObserver extends PolymerElement {
      * @param source An unload observer.
      * @param event Event that happened.
      */
-    unloadHappened(source, event) {
-        if (source.dataset.queryOnUnload) {
+    unloadAttempted(source, event) {
+        if (window.Vaadin.unloadObserver.query) {
+            console.log("UO: responding to unload attempt...");
             event.preventDefault();
             event.returnValue = '';
-            source.$server.unloadAttempted();
+            if (source.$server) {
+                source.$server.unloadAttempted();
+            }
         }
+        else source.$server.unloadHappened();
     }
 
     /**
@@ -43,19 +56,11 @@ export class UnloadObserver extends PolymerElement {
      */
     queryOnUnload(value) {
         if (value) {
-            this.dataset.queryOnUnload = 'true';
+            window.Vaadin.unloadObserver.query = 'true';
         }
         else {
-            delete this.dataset.queryOnUnload;
+            delete window.Vaadin.unloadObserver.query;
         }
-    }
-
-    /**
-     * Unregisters itself from listening to unload events.
-     */
-    stopObserver() {
-        console.log("removing unload listener")
-        window.removeEventListener('beforeunload', event => this.unloadHappened(this, event));
     }
 
     static get properties() {
