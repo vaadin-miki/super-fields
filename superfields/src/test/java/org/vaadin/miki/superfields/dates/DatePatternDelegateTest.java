@@ -38,7 +38,7 @@ public class DatePatternDelegateTest {
 
         // now formatted according to locale
         raw = this.datePicker.getFormattedValue();
-        Assert.assertEquals("03.05.99", raw); // in java8 this seems to be 99 instead of 1999
+        Assert.assertEquals("03.05.1999", raw);
     }
 
 }
