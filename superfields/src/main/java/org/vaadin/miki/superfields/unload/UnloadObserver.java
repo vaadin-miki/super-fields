@@ -2,8 +2,10 @@ package org.vaadin.miki.superfields.unload;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -55,6 +57,51 @@ public final class UnloadObserver extends PolymerTemplate<TemplateModel> impleme
             ComponentUtil.setData(ui, UnloadObserver.class, instance);
         }
         return instance;
+    }
+
+    /**
+     * Returns or creates an instance for current UI and attaches that instance to the UI, if not yet attached.
+     * The result is associated with the UI and added to it directly. Identical to calling {@link #getAttached(Component)} with {@code UI.getCurrent()}.
+     * @return An instance of {@link UnloadObserver}.
+     */
+    public static UnloadObserver getAttached() {
+        return getAttached(UI.getCurrent());
+    }
+
+    /**
+     * Returns or creates an instance for the UI associated with given {@code parent} and attaches that instance to {@code parent}.
+     * If the instance was already created and belonged to some other parent and that parent allows removing components, an attempt will be made to
+     * remove the instance before adding it to the new parent. If that fails, an {@link IllegalStateException} will be thrown.
+     * If the UI associated with {@code parent} is {@code null}, an {@link IllegalArgumentException} will be thrown.
+     * @param parent A {@link Component} to add the {@link UnloadObserver} to. Must not be {@code null}.
+     * @param <C> Generic type to ensure the parent can have other components added to it.
+     * @return An instance of {@link UnloadObserver}.
+     * @throws IllegalStateException when an instance of {@link UnloadObserver} is attached to a component it cannot be removed from
+     * @throws IllegalArgumentException when the {@link Component#getUI()} for {@code parent} is not present
+     */
+    public static <C extends Component & HasComponents> UnloadObserver getAttached(C parent) {
+        if(parent == null)
+            throw new NullPointerException("parent component to attach UnloadObserver to must not be null");
+        if(!parent.getUI().isPresent())
+            throw new IllegalArgumentException("parent component is not attached to any UI, hence UnloadObserver cannot be added to it");
+
+        @SuppressWarnings("squid:S3655") // the check is done just a few lines above
+        UnloadObserver observer = get(parent.getUI().get());
+        // if the observer is already attached to something, remove it from there - unless, of course, it is the same parent
+        if(observer.getParent().isPresent()) {
+            @SuppressWarnings("squid:S3655") // the check is done just a line above
+            Component currentParent = observer.getParent().get();
+            if(currentParent != parent) {
+                if(!(currentParent instanceof HasComponents))
+                    throw new IllegalStateException("UnloadObserver is currently attached to "+currentParent.getClass().getName()+" which is not HasComponents and cannot be automatically removed");
+                else {
+                    ((HasComponents) currentParent).remove(observer);
+                    parent.add(observer);
+                }
+            }
+        }
+        else parent.add(observer);
+        return observer;
     }
 
     private boolean queryingOnUnload;

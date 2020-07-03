@@ -94,6 +94,6 @@ A boolean field that changes its value (`true` or `false`) depending on whether 
 
 A component that listens and reacts to browser's `beforeunload` events that happen for example when browser window/tab is closed. The support [varies between browsers](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event), but in general is quite good. This should work with at least the major browsers.
 
-**Please note**: This component is a singleton - there can be only one instance of it. As such, please refrain from adding the same instance into multiple layouts.
+**Please note**: This component is basically a UI-scoped singleton - there can be only one instance of it per active UI. As such, please refrain from adding the same instance into multiple layouts.
 
-The code is based on solution [posted by Kaspar Scherrer and Stuart Robinson](https://vaadin.com/forum/thread/17523194/unsaved-changes-detect-page-exit-or-reload). It does not work with `<a href>` or `Anchor` as download links, so please use [FileDownloadWrapper](https://vaadin.com/directory/component/file-download-wrapper/discussions) for that. 
+The code is based on solution [posted by Kaspar Scherrer and Stuart Robinson](https://vaadin.com/forum/thread/17523194/unsaved-changes-detect-page-exit-or-reload) (with invaluable feedback from Jean-François Lamy). It does not work with `<a href>` or `Anchor` as download links, so please use [FileDownloadWrapper](https://vaadin.com/directory/component/file-download-wrapper/discussions) for that.
