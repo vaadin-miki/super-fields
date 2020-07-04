@@ -3,12 +3,16 @@ package org.vaadin.miki;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 
 /**
  * Information about the demo, its organisation and components.
  * @author miki
  * @since 2020-06-03
  */
+@Route(value = "", layout = MainLayout.class)
+@PageTitle("SuperFields - Demo App")
 public class InfoPage extends VerticalLayout {
 
     public InfoPage() {
