@@ -1,3 +1,11 @@
+# 0.7.2 - UI-scoped UnloadObserver
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#183 - [Introduce UnloadObserver.get(Component)](https://api.github.com/repos/vaadin-miki/super-fields/issues/183)
+## Bug fixes
+
+
 # 0.7.1 - Fixes to UnloadObserver
 ## New features and enhancements
 * \#170 - [UnloadObserver should always send an event before unloading](https://api.github.com/repos/vaadin-miki/super-fields/issues/170)
