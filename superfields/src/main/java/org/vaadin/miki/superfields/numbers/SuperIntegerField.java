@@ -48,12 +48,21 @@ public class SuperIntegerField extends AbstractSuperNumberField<Integer, SuperIn
     }
 
     /**
+     * Constructs the field with given default value and label, and with default {@link Locale}.
+     * @param defaultValue Default value.
+     * @param label Label that accompanies the field.
+     */
+    public SuperIntegerField(Integer defaultValue, String label) {
+        this(defaultValue, label, Locale.getDefault());
+    }
+
+    /**
      * Constructs the field.
      * @param defaultValue Default value.
      * @param label Label that accompanies the field.
      * @param locale Locale to use for formatting.
      */
-    public SuperIntegerField(int defaultValue, String label, Locale locale) {
+    public SuperIntegerField(Integer defaultValue, String label, Locale locale) {
         super(defaultValue, d -> d < 0, Math::abs, label, locale, 0);
     }
 

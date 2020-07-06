@@ -16,19 +16,21 @@ import com.vaadin.flow.router.Route;
 @Route(value = "demo", layout = MainLayout.class)
 public class DemoPage extends VerticalLayout implements HasUrlParameter<String>, HasDynamicTitle {
 
+    private final DemoComponentFactory demoComponentFactory = DemoComponentFactory.get();
+
     private Class<? extends Component> componentType;
 
     @Override
     public void setParameter(BeforeEvent event, String parameter) {
         this.removeAll();
-        DemoComponentFactory.get().getDemoableComponentTypes().stream()
+        this.demoComponentFactory.getDemoableComponentTypes().stream()
                 .filter(type -> type.getSimpleName().equalsIgnoreCase(parameter))
                 .findFirst().ifPresentOrElse(this::buildDemoPageFor, this::buildErrorPage);
     }
 
     private void buildDemoPageFor(Class<? extends Component> type) {
         this.componentType = type;
-        this.add(DemoComponentFactory.get().buildDemoPageFor(type));
+        this.add(this.demoComponentFactory.buildDemoPageFor(type));
     }
 
     private void buildErrorPage() {

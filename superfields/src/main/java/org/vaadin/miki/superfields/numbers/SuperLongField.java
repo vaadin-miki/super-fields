@@ -44,7 +44,16 @@ public class SuperLongField extends AbstractSuperNumberField<Long, SuperLongFiel
      * @param locale Locale to use for formatting.
      */
     public SuperLongField(String label, Locale locale) {
-        this(0, label, locale);
+        this(0L, label, locale);
+    }
+
+    /**
+     * Constructs the field with given default value and label, and with default {@link Locale}.
+     * @param defaultValue Default value.
+     * @param label Label that accompanies the field.
+     */
+    public SuperLongField(Long defaultValue, String label) {
+        this(defaultValue, label, Locale.getDefault());
     }
 
     /**
@@ -53,7 +62,7 @@ public class SuperLongField extends AbstractSuperNumberField<Long, SuperLongFiel
      * @param label Label that accompanies the field.
      * @param locale Locale to use for formatting.
      */
-    public SuperLongField(long defaultValue, String label, Locale locale) {
+    public SuperLongField(Long defaultValue, String label, Locale locale) {
         super(defaultValue, d -> d < 0, Math::abs, label, locale, 0);
     }
 

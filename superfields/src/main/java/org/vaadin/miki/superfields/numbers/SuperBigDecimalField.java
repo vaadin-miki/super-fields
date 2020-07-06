@@ -58,6 +58,15 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
     }
 
     /**
+     * Constructs the field with given default value and label, and with default {@link Locale}.
+     * @param defaultValue Default value.
+     * @param label Label that accompanies the field.
+     */
+    public SuperBigDecimalField(BigDecimal defaultValue, String label) {
+        this(defaultValue, label, Locale.getDefault(), -1);
+    }
+
+    /**
      * Constructs the field with {@link BigDecimal#ZERO} as the default value..
      * @param label Label accompanying the field.
      * @param locale Locale to use for formatting.
