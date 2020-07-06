@@ -38,7 +38,7 @@ jobs:
       - name: Update release notes
         run: |
           echo -e "\n" | cat milestone-notes.md - superfields/release-notes.md > superfields/release-notes.md.new
-          sed -i -e "/^$/d" milestone-notes.md.new
+          sed -i -e "/^$/d" superfields/release-notes.md.new
           mv superfields/release-notes.md.new superfields/release-notes.md
       - name: Remove milestone notes
         run: rm milestone-notes.md
