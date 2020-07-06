@@ -1,3 +1,10 @@
+# 0.7.3 - Null as default value in number fields
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#189 - [Number fields constructors should allow null as default value](https://github.com/vaadin-miki/super-fields/issues/189)
+## Bug fixes
+* \#189 - [Number fields constructors should allow null as default value](https://github.com/vaadin-miki/super-fields/issues/189)
 # 0.7.2 - UI-scoped UnloadObserver
 ## New features and enhancements
 (nothing reported)
