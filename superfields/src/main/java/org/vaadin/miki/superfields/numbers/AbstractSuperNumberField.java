@@ -121,6 +121,9 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.negativityPredicate = negativityPredicate;
         this.turnToPositiveOperator = turnToPositiveOperator;
 
+        if(defaultValue == null)
+            this.setNullValueAllowed(true);
+
         this.locale = locale;
         this.format = this.getFormat(locale);
         if(maxFractionDigits >= 0)
@@ -620,7 +623,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     @Override
-    public void setNullValueAllowed(boolean allowingNullValue) {
+    public final void setNullValueAllowed(boolean allowingNullValue) {
         this.nullValueAllowed = allowingNullValue;
         if(!allowingNullValue && this.getRawValue().isEmpty())
             this.setValue(this.getEmptyValue());
