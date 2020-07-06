@@ -61,7 +61,6 @@ import java.util.function.Supplier;
 
 /**
  * Stores information about components to demo.
- * This is a singleton.
  * @author miki
  * @since 2020-07-04
  */
@@ -69,10 +68,8 @@ public final class DemoComponentFactory {
 
     private static final int NOTIFICATION_TIME = 1500;
 
-    private static final DemoComponentFactory INSTANCE = new DemoComponentFactory();
-
     public static DemoComponentFactory get() {
-        return INSTANCE;
+        return new DemoComponentFactory();
     }
 
     private static Component generateParagraph(Class<? extends Component> type, int row, int column) {
@@ -102,10 +99,10 @@ public final class DemoComponentFactory {
     private final Map<Class<?>, SerializableConsumer<Object>> afterLocaleChange = new HashMap<>();
 
     private DemoComponentFactory() {
-        this.components.put(SuperIntegerField.class, new SuperIntegerField("Integer (6 digits):").withMaximumIntegerDigits(6));
-        this.components.put(SuperLongField.class, new SuperLongField("Long (11 digits):").withMaximumIntegerDigits(11).withId("long"));
-        this.components.put(SuperDoubleField.class, new SuperDoubleField("Double (8 + 4 digits):").withMaximumIntegerDigits(8).withMaximumFractionDigits(4));
-        this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField("Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1).withId("big-decimal"));
+        this.components.put(SuperIntegerField.class, new SuperIntegerField(null, "Integer (6 digits):").withMaximumIntegerDigits(6));
+        this.components.put(SuperLongField.class, new SuperLongField(null, "Long (11 digits):").withMaximumIntegerDigits(11).withId("long"));
+        this.components.put(SuperDoubleField.class, new SuperDoubleField(null, "Double (8 + 4 digits):").withMaximumIntegerDigits(8).withMaximumFractionDigits(4));
+        this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField(null, "Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1).withId("big-decimal"));
         this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
         this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH).withValue(LocalDateTime.now()));
         this.components.put(SuperTextField.class, new SuperTextField("Type something:").withPlaceholder("(nothing typed)").withId("super-text-field"));
@@ -377,15 +374,15 @@ public final class DemoComponentFactory {
      * @return A demo page.
      */
     public Component buildDemoPageFor(Class<? extends Component> type) {
-        Component component = this.components.get(type);
+        final Component component = this.components.get(type);
         component.getElement().getClassList().add("demo");
-        Div result = new Div();
+        final Div result = new Div();
         result.setSizeUndefined();
         result.addClassName("component-page");
-        VerticalLayout componentSection = new VerticalLayout();
+        final VerticalLayout componentSection = new VerticalLayout();
         componentSection.setSizeUndefined();
         componentSection.addClassName("component-section");
-        Span title = new Span("Demo page of "+component.getClass().getSimpleName());
+        final Span title = new Span("Demo page of "+component.getClass().getSimpleName());
         title.addClassName("section-header");
         title.addClassName("component-header");
         componentSection.add(title, component);

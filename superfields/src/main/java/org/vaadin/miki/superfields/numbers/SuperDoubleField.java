@@ -57,6 +57,15 @@ public class SuperDoubleField extends AbstractSuperFloatingPointField<Double, Su
     }
 
     /**
+     * Constructs the field with given default value and label, and with default {@link Locale}.
+     * @param defaultValue Default value.
+     * @param label Label that accompanies the field.
+     */
+    public SuperDoubleField(Double defaultValue, String label) {
+        this(defaultValue, label, Locale.getDefault(), -1);
+    }
+
+    /**
      * Constructs the field with zero as the default value..
      * @param label Label accompanying the field.
      * @param locale Locale to use for formatting.
@@ -73,7 +82,7 @@ public class SuperDoubleField extends AbstractSuperFloatingPointField<Double, Su
      * @param locale Locale to use for formatting.
      * @param maxFractionDigits Maximum number of fraction digits allowed (overwrites setting found in {@code locale}.
      */
-    public SuperDoubleField(double defaultValue, String label, Locale locale, int maxFractionDigits) {
+    public SuperDoubleField(Double defaultValue, String label, Locale locale, int maxFractionDigits) {
         super(defaultValue, d -> d < 0.0d, Math::abs, label, locale, maxFractionDigits);
     }
 
