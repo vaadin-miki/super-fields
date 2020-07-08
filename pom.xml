@@ -16,7 +16,7 @@
         <maven.compiler.source>10</maven.compiler.source>
         <maven.compiler.target>10</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>14.2.0</vaadin.version>
+        <vaadin.version>14.3.0</vaadin.version>
     </properties>
 
 </project>
