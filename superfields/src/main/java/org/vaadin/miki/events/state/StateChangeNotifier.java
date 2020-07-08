@@ -4,6 +4,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.markers.HasState;
 
+import java.io.Serializable;
+
 /**
  * Marker interface for objects that broadcast {@link StateChangeEvent}s.
  * @param <S> State type.
@@ -12,7 +14,7 @@ import org.vaadin.miki.markers.HasState;
  * @since 2020-07-08
  */
 @FunctionalInterface
-public interface StateChangeNotifier<S, C extends Component & HasState<S>> {
+public interface StateChangeNotifier<S extends Serializable, C extends Component & HasState<S>> {
 
     /**
      * Adds given {@link StateChangeListener}.
