@@ -4,7 +4,9 @@ import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Div;
@@ -22,6 +24,7 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.function.SerializableConsumer;
 import org.slf4j.LoggerFactory;
+import org.vaadin.miki.events.state.StateChangeNotifier;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
@@ -30,6 +33,8 @@ import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.markers.WithNullValueOptionallyAllowed;
 import org.vaadin.miki.shared.dates.DatePattern;
 import org.vaadin.miki.shared.dates.DatePatterns;
+import org.vaadin.miki.superfields.buttons.MultiClickButton;
+import org.vaadin.miki.superfields.buttons.SimpleButtonState;
 import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
@@ -115,6 +120,12 @@ public final class DemoComponentFactory {
                 ).withId("super-tabs")
         );
         this.components.put(ObservedField.class, new ObservedField());
+        this.components.put(MultiClickButton.class, new MultiClickButton(
+                event -> UI.getCurrent().navigate(""),
+                new SimpleButtonState("Click to navigate to Info Page").withThemeVariant(ButtonVariant.LUMO_PRIMARY),
+                new SimpleButtonState("Are you sure?", VaadinIcon.INFO_CIRCLE.create()),
+                new SimpleButtonState("Really navigate away?", VaadinIcon.INFO.create()).withThemeVariant(ButtonVariant.LUMO_ERROR)
+        ).withId("multi-click-button"));
         this.components.put(ComponentObserver.class, new ComponentObserver());
         this.components.put(UnloadObserver.class, UnloadObserver.get().withoutQueryingOnUnload());
         this.components.put(ItemGrid.class, new ItemGrid<Class<? extends Component>>(
@@ -160,6 +171,7 @@ public final class DemoComponentFactory {
         this.contentBuilders.put(UnloadObserver.class, this::buildUnloadObserver);
         this.contentBuilders.put(FocusNotifier.class, this::buildFocusNotifier);
         this.contentBuilders.put(BlurNotifier.class, this::buildBlurNotifier);
+        this.contentBuilders.put(StateChangeNotifier.class, this::buildStateChangeNotifier);
 
         this.afterLocaleChange.put(SuperIntegerField.class, o -> ((SuperIntegerField)o).setMaximumIntegerDigits(6));
         this.afterLocaleChange.put(SuperLongField.class, o -> ((SuperLongField)o).setMaximumIntegerDigits(11));
@@ -207,6 +219,13 @@ public final class DemoComponentFactory {
                 Notification.show("Component "+component.getClass().getSimpleName()+" lost focus.", NOTIFICATION_TIME, Notification.Position.BOTTOM_END)
         );
         callback.accept(new Component[]{new Span("Leave the demo component to see a notification.")});
+    }
+
+    private void buildStateChangeNotifier(Component component, Consumer<Component[]> callback) {
+        ((StateChangeNotifier<?, ?>)component).addStateChangeListener(event ->
+                Notification.show("Component "+component.getClass().getSimpleName()+" changed its state.", NOTIFICATION_TIME, Notification.Position.BOTTOM_END)
+        );
+        callback.accept(new Component[]{new Span("Notifications will be shown when this component changes its state for any reason.")});
     }
 
     private void buildHasLocale(Component component, Consumer<Component[]> callback) {
