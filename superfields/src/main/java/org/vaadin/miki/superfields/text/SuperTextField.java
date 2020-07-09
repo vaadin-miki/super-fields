@@ -64,6 +64,9 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         this.delegate.onAttach(attachEvent, super::onAttach);
+        this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
+                this.getElement().callJsFunction("configureAutoGrow")
+        ));
     }
 
     @Override
@@ -105,5 +108,7 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     public void setReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
         this.delegate.setReceivingSelectionEventsFromClient(receivingSelectionEventsFromClient);
     }
+
+
 
 }
