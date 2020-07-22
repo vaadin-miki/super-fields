@@ -200,6 +200,37 @@ class BaseTestsForIntegerNumbers<T extends Number> {
         Assert.assertTrue("null representation must be an empty string", this.getField().getRawValue().isEmpty());
     }
 
+    @Test
+    public void testNullWithNullAllowedAndNegativeNotAllowed() {
+        this.getField().setNullValueAllowed(true);
+        this.getField().setNegativeValueAllowed(false);
+        this.getField().setValue(null);
+        T value = this.getField().getValue();
+        Assert.assertNull("value was set to null and it must be null", value);
+        Assert.assertTrue("null representation must be an empty string", this.getField().getRawValue().isEmpty());
+    }
+
+    @Test
+    public void testNullWithNullAllowedAndNegativeAllowed() {
+        this.getField().setNullValueAllowed(true);
+        this.getField().setNegativeValueAllowed(true);
+        this.getField().setValue(null);
+        T value = this.getField().getValue();
+        Assert.assertNull("value was set to null and it must be null", value);
+        Assert.assertTrue("null representation must be an empty string", this.getField().getRawValue().isEmpty());
+    }
+
+    @Test
+    public void testNullAllowedSetNullThenChangeRegexp() {
+        this.getField().setNullValueAllowed(true);
+        this.getField().setValue(null);
+        this.getField().setNegativeValueAllowed(!this.getField().isNegativeValueAllowed());
+        T value = this.getField().getValue();
+        Assert.assertNull("value was set to null and it must be null", value);
+        Assert.assertTrue("null representation must be an empty string", this.getField().getRawValue().isEmpty());
+    }
+
+
     @Test(expected = IllegalArgumentException.class)
     public void testNullWithNoNullAllowedThrowsException() {
         // by default, there should be no allowance for null values
