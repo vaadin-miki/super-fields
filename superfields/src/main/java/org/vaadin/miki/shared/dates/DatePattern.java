@@ -1,5 +1,8 @@
 package org.vaadin.miki.shared.dates;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -17,9 +20,21 @@ public class DatePattern implements Serializable {
      */
     public enum Order {DAY_MONTH_YEAR, MONTH_DAY_YEAR, YEAR_MONTH_DAY}
 
+    /**
+     * Shorthand for no separator (character 0).
+     */
+    public static final char NO_SEPARATOR = 0;
+
+    /**
+     * Default separator, {@code -}.
+     */
+    public static final char DEFAULT_SEPARATOR = '-';
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatePattern.class);
+
     private final String displayName;
 
-    private char separator = '-';
+    private char separator = DEFAULT_SEPARATOR;
 
     private boolean zeroPrefixedDay = true;
 
@@ -59,11 +74,24 @@ public class DatePattern implements Serializable {
     }
 
     /**
+     * Checks whether or not there is a separator present.
+     * @return Whether or not {@link #getSeparator()} returns something else than {@link #NO_SEPARATOR}.
+     */
+    public boolean hasSeparator() {
+        return this.getSeparator() != NO_SEPARATOR;
+    }
+
+    /**
      * Sets new separator.
+     * If the separator is {@link #NO_SEPARATOR} (zero), zero-prefixed month and zero-prefixed day will be automatically enabled.
      * @param separator Separator between parts.
      */
     public void setSeparator(char separator) {
         this.separator = separator;
+        if(separator == NO_SEPARATOR) {
+            this.withZeroPrefixedDay(true).setZeroPrefixedMonth(true);
+            LOGGER.warn("disabling date pattern separator, turning on zero-prefixed day and zero-prefixed month");
+        }
     }
 
     /**
@@ -71,10 +99,21 @@ public class DatePattern implements Serializable {
      * @param separator Separator.
      * @return This.
      * @see #setSeparator(char)
+     * @see #withoutSeparator()
      */
     public DatePattern withSeparator(char separator) {
         this.setSeparator(separator);
         return this;
+    }
+
+    /**
+     * Identical to {@code withSeparator(DatePattern.NO_SEPARATOR}.
+     * @return This.
+     * @see #withSeparator(char)
+     * @see #setSeparator(char)
+     */
+    public DatePattern withoutSeparator() {
+        return this.withSeparator(NO_SEPARATOR);
     }
 
     /**
@@ -87,10 +126,15 @@ public class DatePattern implements Serializable {
 
     /**
      * Sets whether or not days should be prefixed with {@code 0}.
+     * When there is no separator and this flag is turned off, the separator will be set to {@link #DEFAULT_SEPARATOR}.
      * @param zeroPrefixedDay When {@code true} and day is one digit, zero will be added in front of that number.
      */
     public void setZeroPrefixedDay(boolean zeroPrefixedDay) {
         this.zeroPrefixedDay = zeroPrefixedDay;
+        if(!zeroPrefixedDay && !this.hasSeparator()) {
+            this.setSeparator(DEFAULT_SEPARATOR);
+            LOGGER.warn("turning off zero-prefixed day requires a separator, setting it to be the default one ({})", DEFAULT_SEPARATOR);
+        }
     }
 
     /**
@@ -118,6 +162,10 @@ public class DatePattern implements Serializable {
      */
     public void setZeroPrefixedMonth(boolean zeroPrefixedMonth) {
         this.zeroPrefixedMonth = zeroPrefixedMonth;
+        if(!zeroPrefixedMonth && !this.hasSeparator()) {
+            this.setSeparator(DEFAULT_SEPARATOR);
+            LOGGER.warn("turning off zero-prefixed month requires a separator, setting it to be the default one ({})", DEFAULT_SEPARATOR);
+        }
     }
 
     /**

@@ -38,7 +38,8 @@ final class DatePatternDelegate<C extends Component & HasDatePattern> implements
             final String yearPart = pattern.isShortYear() ? "0y" : "_y";
 
             StringBuilder builder = new StringBuilder();
-            builder.append(pattern.getSeparator());
+            if(pattern.hasSeparator())
+                builder.append(pattern.getSeparator());
             switch (pattern.getDisplayOrder()) {
                 case DAY_MONTH_YEAR:
                     builder.append(dayPart).append(monthPart).append(yearPart);
