@@ -8,13 +8,13 @@
     <artifactId>superfields</artifactId>
     <name>SuperFields</name>
     <description>Code for various V14+ fields and other components.</description>
-    <version>0.7.3.java8</version>
+    <version>0.8.0.java8</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>14.2.0</vaadin.version>
+        <vaadin.version>14.3.0</vaadin.version>
         <maven.jar.plugin.version>3.1.2</maven.jar.plugin.version>
     </properties>
 

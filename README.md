@@ -19,7 +19,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>org.vaadin.miki</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.7.3</version>
+   <version>0.8.0</version>
 </dependency>
 ```
 
