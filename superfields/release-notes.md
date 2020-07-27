@@ -1,3 +1,11 @@
+# 0.8.0 - MultiClickButton
+## New features and enhancements
+* \#160 - [Confirm-on-click button](https://github.com/vaadin-miki/super-fields/issues/160)
+* \#201 - [Allow date pattern with no separator character](https://github.com/vaadin-miki/super-fields/issues/201)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#199 - [Number fields causes NPE when null value is used](https://github.com/vaadin-miki/super-fields/issues/199)
 # 0.7.3 - Null as default value in number fields
 ## New features and enhancements
 (nothing reported)

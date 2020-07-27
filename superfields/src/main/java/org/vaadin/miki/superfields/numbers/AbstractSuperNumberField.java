@@ -291,7 +291,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.field.setPattern(this.regexp);
 
         LOGGER.debug("pattern updated to {}", this.regexp);
-        if(!this.isNegativeValueAllowed() && this.negativityPredicate.test(value)) {
+        if(!this.isNegativeValueAllowed() && value != null && this.negativityPredicate.test(value)) {
             LOGGER.debug("negative values are not allowed, so turning into positive value {}", value);
             this.setValue(this.turnToPositiveOperator.apply(value));
         }
