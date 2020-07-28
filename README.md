@@ -47,6 +47,19 @@ This repository has a branch `java-8` which contains the most recent release com
 
 You are more than welcome to contribute. Feel free to make PRs, submit issues, ideas etc.
 
+### Contributors
+
+The author of the majority of the code is Miki, but this project would not be possible without these wonderful people - listed in alphabetical order:
+
+* Wolfgang Fischlein
+* Jean-Christophe Gueriaud
+* Holger Hähnel
+* Gerald Koch
+* Sebastian Kühnau
+* Jean-François Lamy
+* Stuart Robinson
+* Kaspar Scherrer
+
 ## Small print
 
 All components are provided "as is", with no warranty or liability. See license for details.
