@@ -37,6 +37,7 @@ import org.vaadin.miki.superfields.buttons.MultiClickButton;
 import org.vaadin.miki.superfields.buttons.SimpleButtonState;
 import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
+import org.vaadin.miki.superfields.gridselect.GridSelect;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
 import org.vaadin.miki.superfields.lazyload.ComponentObserver;
 import org.vaadin.miki.superfields.lazyload.LazyLoad;
@@ -63,6 +64,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Stores information about components to demo.
@@ -126,6 +128,8 @@ public final class DemoComponentFactory {
                 new SimpleButtonState("Are you sure?", VaadinIcon.INFO_CIRCLE.create()),
                 new SimpleButtonState("Really navigate away?", VaadinIcon.INFO.create()).withThemeVariant(ButtonVariant.LUMO_ERROR)
         ).withId("multi-click-button"));
+        final GridSelect<SuperFieldsGridItem> gridSelect = new GridSelect<>(SuperFieldsGridItem.class, true);
+        this.components.put(GridSelect.class, gridSelect); // note: extra config below to include all fields
         this.components.put(ComponentObserver.class, new ComponentObserver());
         this.components.put(UnloadObserver.class, UnloadObserver.get().withoutQueryingOnUnload());
         this.components.put(ItemGrid.class, new ItemGrid<Class<? extends Component>>(
@@ -157,6 +161,7 @@ public final class DemoComponentFactory {
                             return result;
                         })
         );
+        gridSelect.setItems(this.components.keySet().stream().map(SuperFieldsGridItem::new).collect(Collectors.toList()));
 
         this.contentBuilders.put(CanSelectText.class, this::buildCanSelectText);
         this.contentBuilders.put(HasValue.class, this::buildHasValue);
