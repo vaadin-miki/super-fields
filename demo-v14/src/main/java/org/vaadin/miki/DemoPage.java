@@ -8,6 +8,9 @@ import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Page that shows a demo of a component.
  * @author miki
@@ -18,24 +21,31 @@ public class DemoPage extends VerticalLayout implements HasUrlParameter<String>,
 
     private final DemoComponentFactory demoComponentFactory = DemoComponentFactory.get();
 
+    private final Map<String, Component> pages = new HashMap<>();
+
     private Class<? extends Component> componentType;
 
     @Override
     public void setParameter(BeforeEvent event, String parameter) {
         this.removeAll();
-        this.demoComponentFactory.getDemoableComponentTypes().stream()
-                .filter(type -> type.getSimpleName().equalsIgnoreCase(parameter))
-                .findFirst().ifPresentOrElse(this::buildDemoPageFor, this::buildErrorPage);
+
+        this.add(this.pages.computeIfAbsent(parameter, s ->
+                this.demoComponentFactory.getDemoableComponentTypes().stream()
+                        .filter(type -> type.getSimpleName().equalsIgnoreCase(s))
+                        .findFirst()
+                        .map(this::buildDemoPageFor)
+                        .orElseGet(this::buildErrorPage)
+        ));
     }
 
-    private void buildDemoPageFor(Class<? extends Component> type) {
+    private Component buildDemoPageFor(Class<? extends Component> type) {
         this.componentType = type;
-        this.add(this.demoComponentFactory.buildDemoPageFor(type));
+        return this.demoComponentFactory.buildDemoPageFor(type);
     }
 
-    private void buildErrorPage() {
+    private Component buildErrorPage() {
         this.componentType = null;
-        this.add(new Span("You are seeing this because there was a problem in navigating to the demo page for your selected component."));
+        return new Span("You are seeing this because there was a problem in navigating to the demo page for your selected component.");
     }
 
     @Override
