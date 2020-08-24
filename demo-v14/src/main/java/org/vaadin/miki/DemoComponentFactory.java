@@ -54,6 +54,7 @@ import org.vaadin.miki.superfields.text.SuperTextArea;
 import org.vaadin.miki.superfields.text.SuperTextField;
 import org.vaadin.miki.superfields.unload.UnloadObserver;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -71,7 +72,7 @@ import java.util.stream.Collectors;
  * @author miki
  * @since 2020-07-04
  */
-public final class DemoComponentFactory {
+public final class DemoComponentFactory implements Serializable {
 
     private static final int NOTIFICATION_TIME = 1500;
 
