@@ -8,21 +8,17 @@ package org.vaadin.miki;
 // needs to be public, otherwise grid cannot access it
 public class SuperFieldsGridItem {
 
-    private Class<?> type;
+    private final int nameLength;
 
     private String name;
 
     SuperFieldsGridItem(Class<?> type) {
-        this.type = type;
         this.name = type.getSimpleName();
+        this.nameLength = this.name.length();
     }
 
-    public Class<?> getType() {
-        return type;
-    }
-
-    public void setType(Class<?> type) {
-        this.type = type;
+    public int getNameLength() {
+        return this.nameLength;
     }
 
     public String getName() {

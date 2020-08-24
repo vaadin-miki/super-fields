@@ -161,6 +161,7 @@ public final class DemoComponentFactory {
                             return result;
                         })
         );
+        gridSelect.getGrid().getColumnByKey("nameLength").setAutoWidth(true);
         gridSelect.setItems(this.components.keySet().stream().map(SuperFieldsGridItem::new).collect(Collectors.toList()));
 
         this.contentBuilders.put(CanSelectText.class, this::buildCanSelectText);
