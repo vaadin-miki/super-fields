@@ -149,10 +149,8 @@ export class DatePatternMixin {
                        }
                     }
                     // end of parsing stuff
-                    console.log("SDP: parsed so far year, month, date "+year+", "+month+", "+date);
                     // now, if short year is allowed (i.e. there is a description of default century and boundary year)
                     if (ddp.length === 12 || ddp.length === 11) {
-                    // if (shortYear) {
                         const boundaryYear = parseInt(ddp.substr(-2));
                         const defaultCentury = parseInt(ddp.substr(-4, 2));
                         if (year < boundaryYear) {
