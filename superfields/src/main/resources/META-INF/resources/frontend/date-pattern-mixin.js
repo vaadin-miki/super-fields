@@ -149,16 +149,18 @@ export class DatePatternMixin {
                        }
                     }
                     // end of parsing stuff
-
-                    // now, if short year is used
-                    if (shortYear) {
+                    console.log("SDP: parsed so far year, month, date "+year+", "+month+", "+date);
+                    // now, if short year is allowed (i.e. there is a description of default century and boundary year)
+                    if (ddp.length === 12 || ddp.length === 11) {
+                    // if (shortYear) {
                         const boundaryYear = parseInt(ddp.substr(-2));
                         const defaultCentury = parseInt(ddp.substr(-4, 2));
                         if (year < boundaryYear) {
                             year += (ddp[ddp.length-5] === '+' ? defaultCentury - 2 : defaultCentury - 1) * 100;
                         } else if (year < 100) {
-                            year += (ddp[ddp.length-5] === '+' ? defaultCentury - 2 : defaultCentury - 1) * 100;
+                            year += (ddp[ddp.length-5] === '+' ? defaultCentury - 1 : defaultCentury - 2) * 100;
                         }
+                        console.log("SDP: after fixing the year is "+year);
                     }
                     // return result
                     if (date !== undefined) {

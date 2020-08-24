@@ -51,7 +51,7 @@ final class DatePatternDelegate<C extends Component & HasDatePattern> implements
                     builder.append(yearPart).append(monthPart).append(dayPart);
                     break;
             }
-            if (pattern.isShortYear()) {
+            if (pattern.isShortYear() || pattern.isShortYearAlwaysAccepted()) {
                 builder.append(pattern.isPreviousCenturyBelowBoundary() ? '+' : '-');
                 builder.append(String.format("%02d", pattern.getBaseCentury() % 100));
                 builder.append(String.format("%02d", pattern.getCenturyBoundaryYear() % 100));

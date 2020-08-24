@@ -48,6 +48,8 @@ public class DatePattern implements Serializable {
 
     private boolean previousCenturyBelowBoundary = false;
 
+    private boolean shortYearAlwaysAccepted = false;
+
     private Order displayOrder = Order.YEAR_MONTH_DAY;
 
     /**
@@ -317,6 +319,37 @@ public class DatePattern implements Serializable {
     }
 
     /**
+     * Allows short year to be always accepted as input.
+     * @param shortYearAlwaysAccepted When {@code true}, short year can always be entered and will be parsed properly and displayed as full year.
+     * @see #setBaseCentury(int)
+     * @see #setCenturyBoundaryYear(int)
+     * @see #setPreviousCenturyBelowBoundary(boolean)
+     * @see #setShortYear(boolean)
+     */
+    public void setShortYearAlwaysAccepted(boolean shortYearAlwaysAccepted) {
+        this.shortYearAlwaysAccepted = shortYearAlwaysAccepted;
+    }
+
+    /**
+     * Whether or not short year is accepted as user input even if {@link #isShortYear()} returns {@code false}.
+     * @return When {@code true}, user can input last two digits of the year and it will be properly parsed.
+     */
+    public boolean isShortYearAlwaysAccepted() {
+        return shortYearAlwaysAccepted;
+    }
+
+    /**
+     * Chains {@link #setShortYearAlwaysAccepted(boolean)} and returns itself.
+     * @param shortYearAlwaysAccepted Whether or not to always accept short year as user input.
+     * @return This.
+     * @see #setShortYearAlwaysAccepted(boolean)
+     */
+    public DatePattern withShortYearAlwaysAccepted(boolean shortYearAlwaysAccepted) {
+        this.setShortYearAlwaysAccepted(shortYearAlwaysAccepted);
+        return this;
+    }
+
+    /**
      * Returns display name defined in the constructor. The display name is irrelevant in {@link #equals(Object)} and {@link #hashCode()}.
      * @return Display name. May be {@code null} when no-arg constructor has been used.
      */
@@ -336,12 +369,13 @@ public class DatePattern implements Serializable {
                 getBaseCentury() == pattern.getBaseCentury() &&
                 getCenturyBoundaryYear() == pattern.getCenturyBoundaryYear() &&
                 isPreviousCenturyBelowBoundary() == pattern.isPreviousCenturyBelowBoundary() &&
+                isShortYearAlwaysAccepted() == pattern.isShortYearAlwaysAccepted() &&
                 getDisplayOrder() == pattern.getDisplayOrder();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getSeparator(), isZeroPrefixedDay(), isZeroPrefixedMonth(), isShortYear(), getBaseCentury(), getCenturyBoundaryYear(), isPreviousCenturyBelowBoundary(), getDisplayOrder());
+        return Objects.hash(getSeparator(), isZeroPrefixedDay(), isZeroPrefixedMonth(), isShortYear(), getBaseCentury(), getCenturyBoundaryYear(), isPreviousCenturyBelowBoundary(), isShortYearAlwaysAccepted(), getDisplayOrder());
     }
 
     @Override
@@ -355,6 +389,7 @@ public class DatePattern implements Serializable {
                 ", baseCentury=" + baseCentury +
                 ", centuryBoundaryYear=" + centuryBoundaryYear +
                 ", previousCenturyBelowBoundary=" + previousCenturyBelowBoundary +
+                ", shortYearAlwaysAccepted=" + shortYearAlwaysAccepted +
                 ", displayOrder=" + displayOrder +
                 '}' :
                 getDisplayName();
