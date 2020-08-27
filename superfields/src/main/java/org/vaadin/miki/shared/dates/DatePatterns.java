@@ -20,6 +20,16 @@ public final class DatePatterns {
             .withSeparator('.');
 
     /**
+     * Uses zero-prefixed day and month, optionally full year, separated by {@code .}.
+     * For short years the century boundary year is 40 (years less than 40 are from 21st century).
+     */
+    public static final DatePattern DD_MM_YY_OR_YYYY_DOTTED = new DatePattern("dd.MM.(yy)yy")
+            .withDisplayOrder(DatePattern.Order.DAY_MONTH_YEAR)
+            .withShortYearAlwaysAccepted(true)
+            .withBaseCentury(21).withCenturyBoundaryYear(40).withPreviousCenturyBelowBoundary(false)
+            .withSeparator('.');
+
+    /**
      * Uses day, month and short year with century boundary year 40 (years less than 40 are from 21st century), separated by {@code .}.
      */
     public static final DatePattern D_M_YY_DOTTED = new DatePattern("d.M.yy")

@@ -19,7 +19,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>org.vaadin.miki</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.8.0</version>
+   <version>0.9.0</version>
 </dependency>
 ```
 
@@ -46,6 +46,20 @@ This repository has a branch `java-8` which contains the most recent release com
 ## Contribution guidelines
 
 You are more than welcome to contribute. Feel free to make PRs, submit issues, ideas etc.
+
+### Contributors
+
+The author of the majority of the code is Miki, but this project would not be possible without these wonderful people - listed in alphabetical order:
+
+* Wolfgang Fischlein
+* Jean-Christophe Gueriaud
+* Holger Hähnel
+* Gerald Koch
+* Sebastian Kühnau
+* Jean-François Lamy
+* Stuart Robinson
+* Kaspar Scherrer
+* Tomi Virkki
 
 ## Small print
 

@@ -186,6 +186,12 @@ public final class UnloadObserver extends PolymerTemplate<TemplateModel> impleme
     @Override
     protected void onDetach(DetachEvent detachEvent) {
         this.clientInitialised = false;
+        
+        // getElement().callJsFunction(..) doesn't work in this phase, so let's execute the necessary js directly without the element involved.
+        detachEvent.getUI().getPage().executeJs(
+                "if (window.Vaadin.unloadObserver.attemptHandler !== undefined) {" +
+                "    window.removeEventListener('beforeunload', window.Vaadin.unloadObserver.attemptHandler);" +
+                "}");
         super.onDetach(detachEvent);
     }
 

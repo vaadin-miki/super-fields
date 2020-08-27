@@ -37,6 +37,7 @@ import org.vaadin.miki.superfields.buttons.MultiClickButton;
 import org.vaadin.miki.superfields.buttons.SimpleButtonState;
 import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
+import org.vaadin.miki.superfields.gridselect.GridSelect;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
 import org.vaadin.miki.superfields.lazyload.ComponentObserver;
 import org.vaadin.miki.superfields.lazyload.LazyLoad;
@@ -53,6 +54,7 @@ import org.vaadin.miki.superfields.text.SuperTextArea;
 import org.vaadin.miki.superfields.text.SuperTextField;
 import org.vaadin.miki.superfields.unload.UnloadObserver;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -63,13 +65,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Stores information about components to demo.
  * @author miki
  * @since 2020-07-04
  */
-public final class DemoComponentFactory {
+public final class DemoComponentFactory implements Serializable {
 
     private static final int NOTIFICATION_TIME = 1500;
 
@@ -126,6 +129,8 @@ public final class DemoComponentFactory {
                 new SimpleButtonState("Are you sure?", VaadinIcon.INFO_CIRCLE.create()),
                 new SimpleButtonState("Really navigate away?", VaadinIcon.INFO.create()).withThemeVariant(ButtonVariant.LUMO_ERROR)
         ).withId("multi-click-button"));
+        final GridSelect<SuperFieldsGridItem> gridSelect = new GridSelect<>(SuperFieldsGridItem.class, true);
+        this.components.put(GridSelect.class, gridSelect); // note: extra config below to include all fields
         this.components.put(ComponentObserver.class, new ComponentObserver());
         this.components.put(UnloadObserver.class, UnloadObserver.get().withoutQueryingOnUnload());
         this.components.put(ItemGrid.class, new ItemGrid<Class<? extends Component>>(
@@ -157,6 +162,8 @@ public final class DemoComponentFactory {
                             return result;
                         })
         );
+        gridSelect.getGrid().getColumnByKey("nameLength").setAutoWidth(true);
+        gridSelect.setItems(this.components.keySet().stream().map(SuperFieldsGridItem::new).collect(Collectors.toList()));
 
         this.contentBuilders.put(CanSelectText.class, this::buildCanSelectText);
         this.contentBuilders.put(HasValue.class, this::buildHasValue);
@@ -296,7 +303,7 @@ public final class DemoComponentFactory {
     private void buildHasDatePattern(Component component, Consumer<Component[]> callback) {
         final ComboBox<DatePattern> patterns = new ComboBox<>("Select date display pattern:",
                 DatePatterns.YYYY_MM_DD, DatePatterns.M_D_YYYY_SLASH,
-                DatePatterns.DD_MM_YYYY_DOTTED, DatePatterns.D_M_YY_DOTTED,
+                DatePatterns.DD_MM_YYYY_DOTTED, DatePatterns.DD_MM_YY_OR_YYYY_DOTTED, DatePatterns.D_M_YY_DOTTED,
                 DatePatterns.YYYYMMDD, DatePatterns.DDMMYY
         );
         final Button clearPattern = new Button("Clear pattern", event -> ((HasDatePattern)component).setDatePattern(null));
