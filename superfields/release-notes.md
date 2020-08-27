@@ -1,3 +1,13 @@
+# 0.9.0 - GridSelect
+## New features and enhancements
+* \#211 - [GridSelect](https://github.com/vaadin-miki/super-fields/issues/211)
+* \#212 - [Date pickers should have an option to always accept short year as input](https://github.com/vaadin-miki/super-fields/issues/212)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#206 - [Client-side listener for UnloadObserver is not cleared when navigating away](https://github.com/vaadin-miki/super-fields/issues/206)
+* \#214 - [Demo app events are triggered multiple times](https://github.com/vaadin-miki/super-fields/issues/214)
+* \#216 - [Year calculation in date pickers for short year is incorrect](https://github.com/vaadin-miki/super-fields/issues/216)
 # 0.8.0 - MultiClickButton
 ## New features and enhancements
 * \#160 - [Confirm-on-click button](https://github.com/vaadin-miki/super-fields/issues/160)
