@@ -129,7 +129,7 @@ public final class DemoComponentFactory implements Serializable {
                 new SimpleButtonState("Are you sure?", VaadinIcon.INFO_CIRCLE.create()),
                 new SimpleButtonState("Really navigate away?", VaadinIcon.INFO.create()).withThemeVariant(ButtonVariant.LUMO_ERROR)
         ).withId("multi-click-button"));
-        final GridSelect<SuperFieldsGridItem> gridSelect = new GridSelect<>(SuperFieldsGridItem.class, true);
+        final GridSelect<SuperFieldsGridItem> gridSelect = new GridSelect<SuperFieldsGridItem>(SuperFieldsGridItem.class, true);
         this.components.put(GridSelect.class, gridSelect); // note: extra config below to include all fields
         this.components.put(ComponentObserver.class, new ComponentObserver());
         this.components.put(UnloadObserver.class, UnloadObserver.get().withoutQueryingOnUnload());
