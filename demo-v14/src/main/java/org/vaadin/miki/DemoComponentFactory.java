@@ -22,7 +22,6 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.function.SerializableBiConsumer;
-import com.vaadin.flow.function.SerializableConsumer;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.events.state.StateChangeNotifier;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
@@ -59,7 +58,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -103,8 +101,6 @@ public final class DemoComponentFactory implements Serializable {
     private final Map<Class<? extends Component>, Component> components = new LinkedHashMap<>();
 
     private final Map<Class<?>, SerializableBiConsumer<Component, Consumer<Component[]>>> contentBuilders = new LinkedHashMap<>();
-
-    private final Map<Class<?>, SerializableConsumer<Object>> afterLocaleChange = new HashMap<>();
 
     private DemoComponentFactory() {
         this.components.put(SuperIntegerField.class, new SuperIntegerField(null, "Integer (6 digits):").withMaximumIntegerDigits(6));
@@ -180,10 +176,6 @@ public final class DemoComponentFactory implements Serializable {
         this.contentBuilders.put(BlurNotifier.class, this::buildBlurNotifier);
         this.contentBuilders.put(StateChangeNotifier.class, this::buildStateChangeNotifier);
 
-        this.afterLocaleChange.put(SuperIntegerField.class, o -> ((SuperIntegerField)o).setMaximumIntegerDigits(6));
-        this.afterLocaleChange.put(SuperLongField.class, o -> ((SuperLongField)o).setMaximumIntegerDigits(11));
-        this.afterLocaleChange.put(SuperDoubleField.class, o -> ((SuperDoubleField)o).withMaximumIntegerDigits(8).setMaximumFractionDigits(4));
-        this.afterLocaleChange.put(SuperBigDecimalField.class, o -> ((SuperBigDecimalField)o).withMaximumIntegerDigits(12).withMaximumFractionDigits(3).setMinimumFractionDigits(1));
     }
 
     private void buildAbstractSuperNumberField(Component component, Consumer<Component[]> callback) {
@@ -239,11 +231,7 @@ public final class DemoComponentFactory implements Serializable {
         final ComboBox<Locale> locales = new ComboBox<>("Select locale:", new Locale("pl", "PL"), Locale.UK, Locale.FRANCE, Locale.GERMANY, Locale.CHINA);
         locales.setItemLabelGenerator(locale -> locale.getDisplayCountry() + " / "+locale.getDisplayLanguage());
         locales.setAllowCustomValue(false);
-        locales.addValueChangeListener(event -> {
-            ((HasLocale) component).setLocale(event.getValue());
-            if(this.afterLocaleChange.containsKey(component.getClass()))
-                this.afterLocaleChange.get(component.getClass()).accept(component);
-        });
+        locales.addValueChangeListener(event -> ((HasLocale) component).setLocale(event.getValue()));
         callback.accept(new Component[]{locales});
     }
 
