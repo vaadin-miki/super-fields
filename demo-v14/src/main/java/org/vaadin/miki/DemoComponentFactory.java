@@ -103,14 +103,14 @@ public final class DemoComponentFactory implements Serializable {
     private final Map<Class<?>, SerializableBiConsumer<Component, Consumer<Component[]>>> contentBuilders = new LinkedHashMap<>();
 
     private DemoComponentFactory() {
-        this.components.put(SuperIntegerField.class, new SuperIntegerField(null, "Integer (6 digits):").withMaximumIntegerDigits(6));
-        this.components.put(SuperLongField.class, new SuperLongField(null, "Long (11 digits):").withMaximumIntegerDigits(11).withId("long"));
-        this.components.put(SuperDoubleField.class, new SuperDoubleField(null, "Double (8 + 4 digits):").withMaximumIntegerDigits(8).withMaximumFractionDigits(4));
-        this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField(null, "Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1).withId("big-decimal"));
-        this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
-        this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH).withValue(LocalDateTime.now()));
-        this.components.put(SuperTextField.class, new SuperTextField("Type something:").withPlaceholder("(nothing typed)").withId("super-text-field"));
-        this.components.put(SuperTextArea.class, new SuperTextArea("Type a lot of something:").withPlaceholder("(nothing typed)").withId("super-text-area"));
+        this.components.put(SuperIntegerField.class, new SuperIntegerField(null, "Integer:").withMaximumIntegerDigits(6).withHelperText("(6 digits)"));
+        this.components.put(SuperLongField.class, new SuperLongField(null, "Long:").withMaximumIntegerDigits(11).withId("long").withHelperText("(11 digits)"));
+        this.components.put(SuperDoubleField.class, new SuperDoubleField(null, "Double:").withMaximumIntegerDigits(8).withMaximumFractionDigits(4).withHelperText("(8 + 4 digits)"));
+        this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField(null, "Big decimal:").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1).withId("big-decimal").withHelperText("(12 + 3 digits)"));
+        this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()).withHelperText("(default date pattern is YYYY-MM-DD)"));
+        this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH).withValue(LocalDateTime.now()).withHelperText("(default date pattern is month/day/year)"));
+        this.components.put(SuperTextField.class, new SuperTextField("Type something:").withPlaceholder("(nothing typed)").withId("super-text-field").withHelperText("(anything goes)"));
+        this.components.put(SuperTextArea.class, new SuperTextArea("Type a lot of something:").withPlaceholder("(nothing typed)").withId("super-text-area").withHelperText("(anything goes)"));
         this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
                 .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
                 .withItems(

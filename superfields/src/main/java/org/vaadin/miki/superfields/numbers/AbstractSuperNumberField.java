@@ -18,6 +18,7 @@ import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
+import org.vaadin.miki.markers.WithHelper;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
@@ -47,7 +48,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                    TextSelectionNotifier<SELF>, HasPrefixAndSuffix,
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
-                   WithIdMixin<SELF>, WithNullValueOptionallyAllowed<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T> {
+                   WithIdMixin<SELF>, WithNullValueOptionallyAllowed<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
+                   WithHelper<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -646,6 +648,26 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public boolean isNullValueAllowed() {
         return this.nullValueAllowed;
+    }
+
+    @Override
+    public void setHelperComponent(Component component) {
+        this.field.setHelperComponent(component);
+    }
+
+    @Override
+    public void setHelperText(String helperText) {
+        this.field.setHelperText(helperText);
+    }
+
+    @Override
+    public Component getHelperComponent() {
+        return this.field.getHelperComponent();
+    }
+
+    @Override
+    public String getHelperText() {
+        return this.field.getHelperText();
     }
 
     /**
