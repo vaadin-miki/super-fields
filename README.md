@@ -58,9 +58,12 @@ The author of the majority of the code is Miki, but this project would not be po
 * Gerald Koch
 * Sebastian Kühnau
 * Jean-François Lamy
+* Simon Martinelli
+* Stefan Penndorf
 * Stuart Robinson
 * Kaspar Scherrer
 * Tomi Virkki
+* Martin Vysny
 
 ## Small print
 
