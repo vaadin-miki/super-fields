@@ -27,8 +27,8 @@ jobs:
         run: |
           set -x
           export VERSION="${{ steps.what-version.outputs.version }}"
+          mvn versions:set -DnewVersion=$VERSION --file pom.xml -DartifactId=superfields
           mvn versions:set -DnewVersion=$VERSION --file pom.xml
-          mvn versions:set -DnewVersion=$VERSION --file superfields/pom.xml
           sed -i -e s/{VERSION}/$VERSION/g ./README.md
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
