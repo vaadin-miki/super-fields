@@ -19,7 +19,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>org.vaadin.miki</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.9.0</version>
+   <version>0.9.1</version>
 </dependency>
 ```
 
@@ -54,12 +54,16 @@ The author of the majority of the code is Miki, but this project would not be po
 * Wolfgang Fischlein
 * Jean-Christophe Gueriaud
 * Holger Hähnel
+* Matthias Hämmerle
 * Gerald Koch
 * Sebastian Kühnau
 * Jean-François Lamy
+* Simon Martinelli
+* Stefan Penndorf
 * Stuart Robinson
 * Kaspar Scherrer
 * Tomi Virkki
+* Martin Vysny
 
 ## Small print
 

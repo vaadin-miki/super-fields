@@ -12,6 +12,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -256,6 +257,18 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     @Test
     public void testBlur() {
         this.checkEventTriggered(this.getField()::addBlurListener, AbstractSuperNumberField::simulateBlur);
+    }
+
+    @Test
+    public void testChangesInLocaleDoNotAffectPrecision() {
+        this.field.setMaximumIntegerDigits(4);
+        final int maxFraction = this.field.getMaximumFractionDigits();
+        final int minFraction = this.field.getMinimumFractionDigits();
+        final int maxDigits = this.field.getMaximumIntegerDigits();
+        this.field.setLocale(Locale.GERMANY); // ticket #224 - any change in locale would trigger this
+        Assert.assertEquals("max fraction digits must not change when changing locale", maxFraction, this.field.getMaximumFractionDigits());
+        Assert.assertEquals("min fraction digits must not change when changing locale", minFraction, this.field.getMinimumFractionDigits());
+        Assert.assertEquals("max integer digits must not change when changing locale", maxDigits, this.field.getMaximumIntegerDigits());
     }
 
 }

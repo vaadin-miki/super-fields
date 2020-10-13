@@ -70,4 +70,10 @@ public class SuperLongField extends AbstractSuperNumberField<Long, SuperLongFiel
     protected Long parseRawValue(String rawValue, DecimalFormat format) throws ParseException {
         return format.parse(rawValue).longValue();
     }
+
+    @Override
+    public void setDecimalFormat(DecimalFormat format) {
+        format.setMaximumFractionDigits(0);
+        super.setDecimalFormat(format);
+    }
 }
