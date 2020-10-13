@@ -70,4 +70,10 @@ public class SuperIntegerField extends AbstractSuperNumberField<Integer, SuperIn
     protected Integer parseRawValue(String rawValue, DecimalFormat format) throws ParseException {
         return format.parse(rawValue).intValue();
     }
+
+    @Override
+    public void setDecimalFormat(DecimalFormat format) {
+        format.setMaximumFractionDigits(0);
+        super.setDecimalFormat(format);
+    }
 }

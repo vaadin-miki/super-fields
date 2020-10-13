@@ -64,6 +64,10 @@ Both components behave funky when changing locale at runtime if their calendars 
 
 A highly configurable grid that allows single selection. Each cell in the grid corresponds to one item (in contrast to Vaadin `Grid`, which displays one item per row).
 
+### `GridSelect`
+
+A single-selection `Grid` that is a value component, meaning it broadcasts value change events (rather than selection events). It allows access to the underlying `Grid`, except changing selection mode.
+
 ### `SuperTabs`
 
 A customisable tabbed pane (something like `TabSheet` in the Vaadin 8 era) that also serves as a value component (current value corresponds to the selected tab).
@@ -89,6 +93,10 @@ A simple wrapper to lazy load contents when the component gets into view.
 A boolean field that changes its value (`true` or `false`) depending on whether it is currently shown on the screen or not. 
 
 ## Other components
+
+### `MultiClickButton`
+
+A button that needs to be clicked many times before it notifies its click listeners. Each transition is stored as a state with text, icon, class names and theme names. 
 
 ### `UnloadObserver`
 

@@ -22,7 +22,6 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.function.SerializableBiConsumer;
-import com.vaadin.flow.function.SerializableConsumer;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.events.state.StateChangeNotifier;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
@@ -59,7 +58,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -104,17 +102,15 @@ public final class DemoComponentFactory implements Serializable {
 
     private final Map<Class<?>, SerializableBiConsumer<Component, Consumer<Component[]>>> contentBuilders = new LinkedHashMap<>();
 
-    private final Map<Class<?>, SerializableConsumer<Object>> afterLocaleChange = new HashMap<>();
-
     private DemoComponentFactory() {
-        this.components.put(SuperIntegerField.class, new SuperIntegerField(null, "Integer (6 digits):").withMaximumIntegerDigits(6));
-        this.components.put(SuperLongField.class, new SuperLongField(null, "Long (11 digits):").withMaximumIntegerDigits(11).withId("long"));
-        this.components.put(SuperDoubleField.class, new SuperDoubleField(null, "Double (8 + 4 digits):").withMaximumIntegerDigits(8).withMaximumFractionDigits(4));
-        this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField(null, "Big decimal (12 + 3 digits):").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1).withId("big-decimal"));
-        this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()));
-        this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH).withValue(LocalDateTime.now()));
-        this.components.put(SuperTextField.class, new SuperTextField("Type something:").withPlaceholder("(nothing typed)").withId("super-text-field"));
-        this.components.put(SuperTextArea.class, new SuperTextArea("Type a lot of something:").withPlaceholder("(nothing typed)").withId("super-text-area"));
+        this.components.put(SuperIntegerField.class, new SuperIntegerField(null, "Integer:").withMaximumIntegerDigits(6).withHelperText("(6 digits)"));
+        this.components.put(SuperLongField.class, new SuperLongField(null, "Long:").withMaximumIntegerDigits(11).withId("long").withHelperText("(11 digits)"));
+        this.components.put(SuperDoubleField.class, new SuperDoubleField(null, "Double:").withMaximumIntegerDigits(8).withMaximumFractionDigits(4).withHelperText("(8 + 4 digits)"));
+        this.components.put(SuperBigDecimalField.class, new SuperBigDecimalField(null, "Big decimal:").withMaximumIntegerDigits(12).withMaximumFractionDigits(3).withMinimumFractionDigits(1).withId("big-decimal").withHelperText("(12 + 3 digits)"));
+        this.components.put(SuperDatePicker.class, new SuperDatePicker("Pick a date:").withDatePattern(DatePatterns.YYYY_MM_DD).withValue(LocalDate.now()).withHelperText("(default date pattern is YYYY-MM-DD)"));
+        this.components.put(SuperDateTimePicker.class, new SuperDateTimePicker("Pick a date and time:").withDatePattern(DatePatterns.M_D_YYYY_SLASH).withValue(LocalDateTime.now()).withHelperText("(default date pattern is month/day/year)"));
+        this.components.put(SuperTextField.class, new SuperTextField("Type something:").withPlaceholder("(nothing typed)").withId("super-text-field").withHelperText("(anything goes)"));
+        this.components.put(SuperTextArea.class, new SuperTextArea("Type a lot of something:").withPlaceholder("(nothing typed)").withId("super-text-area").withHelperText("(anything goes)"));
         this.components.put(SuperTabs.class, new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
                 .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
                 .withItems(
@@ -129,7 +125,7 @@ public final class DemoComponentFactory implements Serializable {
                 new SimpleButtonState("Are you sure?", VaadinIcon.INFO_CIRCLE.create()),
                 new SimpleButtonState("Really navigate away?", VaadinIcon.INFO.create()).withThemeVariant(ButtonVariant.LUMO_ERROR)
         ).withId("multi-click-button"));
-        final GridSelect<SuperFieldsGridItem> gridSelect = new GridSelect<>(SuperFieldsGridItem.class, true);
+        final GridSelect<SuperFieldsGridItem> gridSelect = new GridSelect<SuperFieldsGridItem>(SuperFieldsGridItem.class, true);
         this.components.put(GridSelect.class, gridSelect); // note: extra config below to include all fields
         this.components.put(ComponentObserver.class, new ComponentObserver());
         this.components.put(UnloadObserver.class, UnloadObserver.get().withoutQueryingOnUnload());
@@ -180,10 +176,6 @@ public final class DemoComponentFactory implements Serializable {
         this.contentBuilders.put(BlurNotifier.class, this::buildBlurNotifier);
         this.contentBuilders.put(StateChangeNotifier.class, this::buildStateChangeNotifier);
 
-        this.afterLocaleChange.put(SuperIntegerField.class, o -> ((SuperIntegerField)o).setMaximumIntegerDigits(6));
-        this.afterLocaleChange.put(SuperLongField.class, o -> ((SuperLongField)o).setMaximumIntegerDigits(11));
-        this.afterLocaleChange.put(SuperDoubleField.class, o -> ((SuperDoubleField)o).withMaximumIntegerDigits(8).setMaximumFractionDigits(4));
-        this.afterLocaleChange.put(SuperBigDecimalField.class, o -> ((SuperBigDecimalField)o).withMaximumIntegerDigits(12).withMaximumFractionDigits(3).setMinimumFractionDigits(1));
     }
 
     private void buildAbstractSuperNumberField(Component component, Consumer<Component[]> callback) {
@@ -239,11 +231,7 @@ public final class DemoComponentFactory implements Serializable {
         final ComboBox<Locale> locales = new ComboBox<>("Select locale:", new Locale("pl", "PL"), Locale.UK, Locale.FRANCE, Locale.GERMANY, Locale.CHINA);
         locales.setItemLabelGenerator(locale -> locale.getDisplayCountry() + " / "+locale.getDisplayLanguage());
         locales.setAllowCustomValue(false);
-        locales.addValueChangeListener(event -> {
-            ((HasLocale) component).setLocale(event.getValue());
-            if(this.afterLocaleChange.containsKey(component.getClass()))
-                this.afterLocaleChange.get(component.getClass()).accept(component);
-        });
+        locales.addValueChangeListener(event -> ((HasLocale) component).setLocale(event.getValue()));
         callback.accept(new Component[]{locales});
     }
 

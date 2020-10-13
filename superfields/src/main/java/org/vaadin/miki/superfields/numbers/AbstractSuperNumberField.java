@@ -18,6 +18,7 @@ import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
+import org.vaadin.miki.markers.WithHelper;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
@@ -47,7 +48,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                    TextSelectionNotifier<SELF>, HasPrefixAndSuffix,
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
-                   WithIdMixin<SELF>, WithNullValueOptionallyAllowed<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T> {
+                   WithIdMixin<SELF>, WithNullValueOptionallyAllowed<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
+                   WithHelper<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -153,13 +155,25 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Sets the locale of the component.
      * The locale (or more precisely, its corresponding {@link NumberFormat}) is used to format how the number is displayed.
+     * Contrary to {@link #setDecimalFormat(DecimalFormat)} this method preserves the precision of the number.
      * @param locale {@link Locale} to use. When {@code null}, {@link Locale#getDefault()} will be used.
      * @see #setDecimalFormat(DecimalFormat)
      */
     @Override
     public void setLocale(Locale locale) {
+        // preserve information about precision
+        final int maxFraction = this.format.getMaximumFractionDigits();
+        final int minFraction = this.format.getMinimumFractionDigits();
+        final int maxInteger = this.format.getMaximumIntegerDigits();
+
+        final DecimalFormat newFormat = this.getFormat(locale);
+        newFormat.setMaximumFractionDigits(maxFraction);
+        newFormat.setMinimumFractionDigits(minFraction);
+        newFormat.setMaximumIntegerDigits(maxInteger);
+
+        // set locale and format
         this.locale = locale;
-        this.setDecimalFormat(this.getFormat(locale));
+        this.setDecimalFormat(newFormat);
     }
 
     @Override
@@ -169,6 +183,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     /**
      * Sets the format definition used to displaying the value.
+     * Note: subclasses may overwrite the data in the format to make sure it follows type-specific constraints.
+     * Also note: changes to the format object may result in unpredictable behaviour of this component.
      * @param format {@link DecimalFormat} to use. When {@code null}, {@link NumberFormat#getNumberInstance()} will be used.
      */
     public void setDecimalFormat(DecimalFormat format) {
@@ -178,7 +194,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     /**
      * Sets the minimum number of fraction digits displayed. Overwrites the value in the underlying {@link DecimalFormat}.
-     * Will be overwritten by calls to {@link #setLocale(Locale)} or {@link #setDecimalFormat(DecimalFormat)}.
+     * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
      * @param digits Number of digits to use.
      */
     protected void setMinimumFractionDigits(int digits) {
@@ -188,7 +204,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     /**
      * Sets the maximum number of fraction digits displayed and allowed. Overwrites the value in the underlying {@link DecimalFormat}.
-     * Will be overwritten by calls to {@link #setLocale(Locale)} or {@link #setDecimalFormat(DecimalFormat)}.
+     * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
      * Note: this has no effect on {@link #setValue(Object)}. If the value is set with more digits, it will stay there until input changes, even though the component shows less digits.
      * @param digits Number of digits to use.
      */
@@ -199,7 +215,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     /**
      * Sets the maximum number of integer digits (before decimal point) displayed and allowed. Overwrites the value in the underlying {@link DecimalFormat}.
-     * Will be overwritten by calls to {@link #setLocale(Locale)} or {@link #setDecimalFormat(DecimalFormat)}.
+     * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
      * Note: this has no effect on {@link #setValue(Object)}. If the value is set with more digits, it will stay there until input changes, even though the component shows less digits.
      * @param digits Number of digits to use.
      */
@@ -634,6 +650,26 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         return this.nullValueAllowed;
     }
 
+    @Override
+    public void setHelperComponent(Component component) {
+        this.field.setHelperComponent(component);
+    }
+
+    @Override
+    public void setHelperText(String helperText) {
+        this.field.setHelperText(helperText);
+    }
+
+    @Override
+    public Component getHelperComponent() {
+        return this.field.getHelperComponent();
+    }
+
+    @Override
+    public String getHelperText() {
+        return this.field.getHelperText();
+    }
+
     /**
      * Explicitly invokes code that would otherwise be called when the component receives focus.
      * For testing purposes only.
@@ -649,4 +685,32 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     final void simulateBlur() {
         this.onFieldBlurred(new BlurNotifier.BlurEvent<>(this.field, false));
     }
+
+    /**
+     * Returns the maximum number of fraction digits allowed by this component.
+     * For testing purposes mostly.
+     * @return The maximum number of fraction digits defined in this component's {@link DecimalFormat}.
+     */
+    final int getMaximumFractionDigits() {
+        return this.format.getMaximumFractionDigits();
+    }
+
+    /**
+     * Returns the minimum number of fraction digits allowed by this component.
+     * For testing purposes mostly.
+     * @return The minimum number of fraction digits defined in this component's {@link DecimalFormat}.
+     */
+    final int getMinimumFractionDigits() {
+        return this.format.getMinimumFractionDigits();
+    }
+
+    /**
+     * Returns the maximum number of integer digits allowed by this component.
+     * For testing purposes mostly.
+     * @return The maximum number of integer digits defined in this component's {@link DecimalFormat}.
+     */
+    final int getMaximumIntegerDigits() {
+        return this.format.getMaximumIntegerDigits();
+    }
+
 }

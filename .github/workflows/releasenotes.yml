@@ -54,7 +54,7 @@ jobs:
           target: development
           repository: ${{ github.repository }}
           token: ${{ secrets.ACTIONS_PAT }}
-          pr-title: Release notes for version ${{ steps.what-version.outputs.version }}
-          pr-body: Automatically updated notes ${{ steps.what-version.outputs.version }}.
+          pr-title: Release notes for version ${{ steps.version.outputs.version }}
+          pr-body: Automatically updated notes ${{ steps.version.outputs.version }}.
           pr-assignees: ${{ github.actor }}
           pr-labels: release
