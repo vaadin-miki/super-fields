@@ -1,3 +1,11 @@
+# 0.9.1 - Vaadin 14.4
+## New features and enhancements
+* \#224 - [Changing locale should preserve number precision information](https://github.com/vaadin-miki/super-fields/issues/224)
+## Changes to API
+* \#227 - [Upgrade Vaadin to 14.4 and add field helpers where required](https://github.com/vaadin-miki/super-fields/issues/227)
+## Bug fixes
+* \#222 - [GridSelect should not allow changing selection mode of the underlying grid](https://github.com/vaadin-miki/super-fields/issues/222)
+* \#226 - [super-fields addon should not ship with a logging library](https://github.com/vaadin-miki/super-fields/issues/226)
 # 0.9.0 - GridSelect
 ## New features and enhancements
 * \#211 - [GridSelect](https://github.com/vaadin-miki/super-fields/issues/211)
