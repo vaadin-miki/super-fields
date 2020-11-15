@@ -3,6 +3,7 @@ package org.vaadin.miki;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.FocusNotifier;
+import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -21,6 +22,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.function.SerializableBiConsumer;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.events.state.StateChangeNotifier;
@@ -175,7 +177,6 @@ public final class DemoComponentFactory implements Serializable {
         this.contentBuilders.put(FocusNotifier.class, this::buildFocusNotifier);
         this.contentBuilders.put(BlurNotifier.class, this::buildBlurNotifier);
         this.contentBuilders.put(StateChangeNotifier.class, this::buildStateChangeNotifier);
-
     }
 
     private void buildAbstractSuperNumberField(Component component, Consumer<Component[]> callback) {
@@ -243,7 +244,23 @@ public final class DemoComponentFactory implements Serializable {
     private void buildHasValue(Component component, Consumer<Component[]> callback) {
         final Checkbox toggle = new Checkbox("Mark component as read only?", event -> ((HasValue<?, ?>)component).setReadOnly(event.getValue()));
         ((HasValue<?, ?>) component).addValueChangeListener(this::onAnyValueChanged);
-        callback.accept(new Component[]{toggle});
+        final Span binder = new Span("This component has a validation check. Every other value will be marked as invalid. Simply enter another value and it becomes valid again.");
+        this.addBinder((HasValue<?, ?>)component);
+        callback.accept(new Component[]{toggle, binder});
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> void addBinder(HasValue<?, T> component) {
+        final SampleModel<T> sampleModel = new SampleModel<>();
+        final Binder<SampleModel<T>> binder = new Binder<>((Class<SampleModel<T>>)(Class<?>)SampleModel.class);
+        binder.setBean(sampleModel);
+        binder.forField(component)
+                .withValidator(value -> {
+                    final boolean result = !((HasValidation)component).isInvalid();
+                    LoggerFactory.getLogger(this.getClass()).info("new validation status is {}", result);
+                    return result;
+                }, "(every other value is invalid; please change the value)")
+                .bind(SampleModel::getValue, SampleModel::setValue);
     }
 
     private void buildCanSelectText(Component component, Consumer<Component[]> callback) {
