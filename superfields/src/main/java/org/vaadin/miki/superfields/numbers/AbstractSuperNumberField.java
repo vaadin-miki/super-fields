@@ -589,10 +589,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         super.setInvalid(invalid);
         this.field.setInvalid(invalid);
         // fixes #241 caused by a Vaadin bug https://github.com/vaadin/vaadin-text-field/issues/547
-        this.field.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.field, context -> {
-                    LOGGER.warn("overriding invalid property of the text field due to a framework bug");
-                    this.field.getElement().setProperty("invalid", false);
-                }
+        this.field.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.field, context ->
+                this.field.getElement().setProperty("invalid", super.isInvalid())
         ));
     }
 

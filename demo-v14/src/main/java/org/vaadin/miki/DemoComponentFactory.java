@@ -3,7 +3,6 @@ package org.vaadin.miki;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.FocusNotifier;
-import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -23,6 +22,9 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationResult;
+import com.vaadin.flow.data.binder.Validator;
+import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.function.SerializableBiConsumer;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.events.state.StateChangeNotifier;
@@ -60,6 +62,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -103,6 +106,8 @@ public final class DemoComponentFactory implements Serializable {
     private final Map<Class<? extends Component>, Component> components = new LinkedHashMap<>();
 
     private final Map<Class<?>, SerializableBiConsumer<Component, Consumer<Component[]>>> contentBuilders = new LinkedHashMap<>();
+
+    private final Map<Class<? extends HasValue<?, ?>>, Validator<?>> validators = new HashMap<>();
 
     private DemoComponentFactory() {
         this.components.put(SuperIntegerField.class, new SuperIntegerField(null, "Integer:").withMaximumIntegerDigits(6).withHelperText("(6 digits)"));
@@ -177,6 +182,16 @@ public final class DemoComponentFactory implements Serializable {
         this.contentBuilders.put(FocusNotifier.class, this::buildFocusNotifier);
         this.contentBuilders.put(BlurNotifier.class, this::buildBlurNotifier);
         this.contentBuilders.put(StateChangeNotifier.class, this::buildStateChangeNotifier);
+
+        this.registerValidator(SuperIntegerField.class, this::validateInteger);
+    }
+
+    private <T> void registerValidator(Class<? extends HasValue<?, T>> componentType, Validator<T> validator) {
+        this.validators.put(componentType, validator);
+    }
+
+    private ValidationResult validateInteger(Integer integer, ValueContext context) {
+        return integer != null && integer % 2 == 0 ? ValidationResult.ok() : ValidationResult.error("only even values are allowed");
     }
 
     private void buildAbstractSuperNumberField(Component component, Consumer<Component[]> callback) {
@@ -244,22 +259,22 @@ public final class DemoComponentFactory implements Serializable {
     private void buildHasValue(Component component, Consumer<Component[]> callback) {
         final Checkbox toggle = new Checkbox("Mark component as read only?", event -> ((HasValue<?, ?>)component).setReadOnly(event.getValue()));
         ((HasValue<?, ?>) component).addValueChangeListener(this::onAnyValueChanged);
-        final Span binder = new Span("This component has a validation check. Every other value will be marked as invalid. Simply enter another value and it becomes valid again.");
-        this.addBinder((HasValue<?, ?>)component);
-        callback.accept(new Component[]{toggle, binder});
+        callback.accept(new Component[]{toggle});
+        if(this.validators.containsKey(component.getClass())) {
+            final Span binder = new Span("This component has a validation check.");
+            this.addBinder((HasValue<?, ?>) component);
+            callback.accept(new Component[]{binder});
+        }
     }
 
     @SuppressWarnings("unchecked")
     private <T> void addBinder(HasValue<?, T> component) {
+        final Validator<T> validator = (Validator<T>)this.validators.get(component.getClass());
         final SampleModel<T> sampleModel = new SampleModel<>();
         final Binder<SampleModel<T>> binder = new Binder<>((Class<SampleModel<T>>)(Class<?>)SampleModel.class);
         binder.setBean(sampleModel);
         binder.forField(component)
-                .withValidator(value -> {
-                    final boolean result = !((HasValidation)component).isInvalid();
-                    LoggerFactory.getLogger(this.getClass()).info("new validation status is {}", result);
-                    return result;
-                }, "(every other value is invalid; please change the value)")
+                .withValidator(validator)
                 .bind(SampleModel::getValue, SampleModel::setValue);
     }
 
