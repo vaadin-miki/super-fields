@@ -19,7 +19,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>org.vaadin.miki</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.9.1</version>
+   <version>0.9.2</version>
 </dependency>
 ```
 
@@ -58,7 +58,9 @@ The author of the majority of the code is Miki, but this project would not be po
 * Gerald Koch
 * Sebastian Kühnau
 * Jean-François Lamy
+* Erik Lumme
 * Simon Martinelli
+* Dmitry Nazukin
 * Stefan Penndorf
 * Stuart Robinson
 * Kaspar Scherrer
@@ -68,3 +70,5 @@ The author of the majority of the code is Miki, but this project would not be po
 ## Small print
 
 All components are provided "as is", with no warranty or liability. See license for details.
+
+This library is not officially supported or endorsed by Vaadin and is not part of the Vaadin Platform.

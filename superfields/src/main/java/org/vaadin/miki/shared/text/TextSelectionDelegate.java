@@ -27,7 +27,9 @@ import java.util.function.Consumer;
  * The source component must implement {@link CanSelectText} and {@link CanReceiveSelectionEventsFromClient} and delegate them
  * to this object.
  * The client-side component must mix in {@code text-selection-mixin.js} or otherwise react to needed JS method calls.
- * Finally, the delegating class must implement a method {@code @ClientCallable void selectionChanged(int, int, String)}.
+ * Finally, the delegating class must implement methods: {@code @ClientCallable void selectionChanged(int, int, String)} and
+ * {@code @ClientCallable void reinitialiseEventListening()}. The first method should call this object's
+ * {@link #fireTextSelectionEvent(boolean, int, int, String)} and the second method should just be delegated to this object.
  *
  * @author miki
  * @since 2020-06-01
@@ -115,7 +117,6 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
         }
     }
 
-
     @Override
     public void select(int from, int to) {
         if(from <= to)
@@ -181,5 +182,13 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
     public void setReceivingSelectionEventsFromClient(boolean receivingSelectionEventsFromClient) {
         this.receivingSelectionEventsFromClient = receivingSelectionEventsFromClient;
         this.informClientAboutSendingEvents(receivingSelectionEventsFromClient);
+    }
+
+    /**
+     * This method should be called in response to {@code @ClientCallable void reinitialiseListeners()} on the owning object.
+     */
+    // fix for https://github.com/vaadin-miki/super-fields/issues/243 and the way components are initialised inside Grid
+    public void reinitialiseListeners() {
+        this.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
     }
 }
