@@ -4,6 +4,7 @@ import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
 import org.vaadin.miki.demo.ComponentProvider;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.numbers.SuperIntegerField;
 
 /**
@@ -11,6 +12,7 @@ import org.vaadin.miki.superfields.numbers.SuperIntegerField;
  * @author miki
  * @since 2020-11-17
  */
+@Order(10)
 public class SuperIntegerFieldProvider implements ComponentProvider<SuperIntegerField>, Validator<Integer> {
 
     @Override

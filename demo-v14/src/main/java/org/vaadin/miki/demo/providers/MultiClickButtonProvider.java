@@ -4,6 +4,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import org.vaadin.miki.demo.ComponentProvider;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.buttons.MultiClickButton;
 import org.vaadin.miki.superfields.buttons.SimpleButtonState;
 
@@ -12,7 +13,9 @@ import org.vaadin.miki.superfields.buttons.SimpleButtonState;
  * @author miki
  * @since 2020-11-17
  */
+@Order(110)
 public class MultiClickButtonProvider implements ComponentProvider<MultiClickButton> {
+
     @Override
     public MultiClickButton getComponent() {
         return new MultiClickButton(

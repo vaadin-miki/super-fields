@@ -5,6 +5,7 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import org.vaadin.miki.demo.ContentBuilder;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.numbers.AbstractSuperNumberField;
 
 import java.util.function.Consumer;
@@ -14,6 +15,7 @@ import java.util.function.Consumer;
  * @author miki
  * @since 2020-11-19
  */
+@Order(30)
 @SuppressWarnings("squid:S5411") // no way around boxed values
 public class AbstractSuperNumberFieldBuilder implements ContentBuilder<AbstractSuperNumberField<?, ?>> {
 

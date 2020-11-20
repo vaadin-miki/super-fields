@@ -13,14 +13,17 @@ import org.slf4j.LoggerFactory;
 import org.vaadin.miki.demo.ComponentProvider;
 import org.vaadin.miki.demo.ContentBuilder;
 import org.vaadin.miki.demo.NeedsValidatorStorage;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.demo.ValidatorStorage;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.StreamSupport;
 
 /**
  * Builds demo pages for components.
@@ -44,21 +47,21 @@ public final class DemoComponentFactory implements Serializable {
     private DemoComponentFactory() {
         final ValidatorStorage storage = new ValidatorStorage();
 
-        ClassIndex.getSubclasses(ComponentProvider.class).forEach(type -> {
-            // only real classes, no interfaces
-            if(!type.isInterface()) {
-                try {
-                    final ComponentProvider<?> componentProvider = type.getDeclaredConstructor().newInstance();
-                    final Component component = componentProvider.getComponent();
-                    this.components.put(component.getClass(), component);
-                    if(componentProvider instanceof Validator && component instanceof HasValue)
-                        //noinspection rawtypes
-                        storage.registerValidator((HasValue<?, ?>)component).accept((Validator)componentProvider);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    LOGGER.error("creating a component from {} failed due to error {} with message {}", type.getSimpleName(), e.getClass().getSimpleName(), e.getMessage());
-                }
-            }
-        });
+        StreamSupport.stream(ClassIndex.getSubclasses(ComponentProvider.class).spliterator(), false)
+                .filter(type -> !type.isInterface())
+                .sorted(Comparator.comparingInt(t -> t.isAnnotationPresent(Order.class) ? t.getAnnotation(Order.class).value() : Integer.MAX_VALUE - t.getSimpleName().charAt(0)))
+                .forEach(type -> {
+                    try {
+                        final ComponentProvider<?> componentProvider = type.getDeclaredConstructor().newInstance();
+                        final Component component = componentProvider.getComponent();
+                        this.components.put(component.getClass(), component);
+                        if (componentProvider instanceof Validator && component instanceof HasValue)
+                            //noinspection rawtypes
+                            storage.registerValidator((HasValue<?, ?>) component).accept((Validator) componentProvider);
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                        LOGGER.error("creating a component from {} failed due to error {} with message {}", type.getSimpleName(), e.getClass().getSimpleName(), e.getMessage());
+                    }
+                });
 
         ClassIndex.getSubclasses(ContentBuilder.class).forEach(type -> {
             try {

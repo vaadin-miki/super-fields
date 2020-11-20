@@ -6,6 +6,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.demo.ContentBuilder;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.unload.UnloadObserver;
 
 import java.util.function.Consumer;
@@ -15,6 +16,7 @@ import java.util.function.Consumer;
  * @author miki
  * @since 2020-11-19
  */
+@Order(110)
 public class UnloadObserverBuilder implements ContentBuilder<UnloadObserver> {
 
     @Override

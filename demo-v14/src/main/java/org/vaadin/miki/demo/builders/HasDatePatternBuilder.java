@@ -8,6 +8,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.vaadin.miki.demo.ContentBuilder;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.markers.HasDatePattern;
 import org.vaadin.miki.shared.dates.DatePattern;
 import org.vaadin.miki.shared.dates.DatePatterns;
@@ -20,6 +21,7 @@ import java.util.function.Consumer;
  * @author miki
  * @since 2020-11-19
  */
+@Order(70)
 public class HasDatePatternBuilder implements ContentBuilder<HasDatePattern> {
 
     @Override

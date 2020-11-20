@@ -2,6 +2,7 @@ package org.vaadin.miki.demo.providers;
 
 import org.atteo.classindex.ClassIndex;
 import org.vaadin.miki.demo.ComponentProvider;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.gridselect.GridSelect;
 
 import java.util.stream.StreamSupport;
@@ -11,6 +12,7 @@ import java.util.stream.StreamSupport;
  * @author miki
  * @since 2020-11-18
  */
+@Order(120)
 public class GridSelectProvider implements ComponentProvider<GridSelect<SuperFieldsGridItem>> {
 
     @Override

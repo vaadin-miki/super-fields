@@ -9,6 +9,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.vaadin.miki.demo.ContentBuilder;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
@@ -20,7 +21,9 @@ import java.util.function.Consumer;
  * @author miki
  * @since 2020-11-18
  */
+@Order(10)
 public class CanSelectTextBuilder implements ContentBuilder<CanSelectText> {
+
     @Override
     public void buildContent(CanSelectText component, Consumer<Component[]> callback) {
         final Button selectAll = new Button("Select all", event -> component.selectAll());

@@ -4,6 +4,7 @@ import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
 import org.vaadin.miki.demo.ComponentProvider;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.text.SuperTextArea;
 
 /**
@@ -11,7 +12,9 @@ import org.vaadin.miki.superfields.text.SuperTextArea;
  * @author miki
  * @since 2020-11-17
  */
+@Order(80)
 public class SuperTextAreaProvider implements ComponentProvider<SuperTextArea>, Validator<String> {
+
     @Override
     public SuperTextArea getComponent() {
         return new SuperTextArea("Type a lot of something:").withPlaceholder("(nothing typed)").withId("super-text-area").withHelperText("(anything without ? goes)");
@@ -19,6 +22,6 @@ public class SuperTextAreaProvider implements ComponentProvider<SuperTextArea>, 
 
     @Override
     public ValidationResult apply(String s, ValueContext valueContext) {
-        return s.contains("?") ? ValidationResult.error("? is not allowed") : ValidationResult.ok();
+        return s != null && s.contains("?") ? ValidationResult.error("? is not allowed") : ValidationResult.ok();
     }
 }

@@ -4,6 +4,7 @@ import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
 import org.vaadin.miki.demo.ComponentProvider;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.text.SuperTextField;
 
 /**
@@ -11,6 +12,7 @@ import org.vaadin.miki.superfields.text.SuperTextField;
  * @author miki
  * @since 2020-11-18
  */
+@Order(70)
 public class SuperTextFieldProvider implements ComponentProvider<SuperTextField>, Validator<String> {
 
     @Override
@@ -20,6 +22,6 @@ public class SuperTextFieldProvider implements ComponentProvider<SuperTextField>
 
     @Override
     public ValidationResult apply(String s, ValueContext valueContext) {
-        return s.contains("!") ? ValidationResult.error("! is not allowed") : ValidationResult.ok();
+        return s != null && s.contains("!") ? ValidationResult.error("! is not allowed") : ValidationResult.ok();
     }
 }

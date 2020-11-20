@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import org.vaadin.miki.demo.ContentBuilder;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.tabs.SuperTabs;
 import org.vaadin.miki.superfields.tabs.TabHandler;
 import org.vaadin.miki.superfields.tabs.TabHandlers;
@@ -15,6 +16,7 @@ import java.util.function.Consumer;
  * @author miki
  * @since 2020-11-19
  */
+@Order(80)
 public class SuperTabsBuilder implements ContentBuilder<SuperTabs<?>> {
 
     @Override

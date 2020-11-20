@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import org.vaadin.miki.demo.ContentBuilder;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.demo.providers.ItemGridGenerators;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
 
@@ -14,7 +15,8 @@ import java.util.function.Consumer;
  * @author miki
  * @since 2020-11-19
  */
-@SuppressWarnings("squid:S5411")
+@Order(60)
+@SuppressWarnings("squid:S5411") // no way around boxed values
 public class ItemGridBuilder implements ContentBuilder<ItemGrid<?>> {
 
     @Override

@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import org.vaadin.miki.demo.ContentBuilder;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.lazyload.ComponentObserver;
 
 import java.util.function.Consumer;
@@ -13,6 +14,7 @@ import java.util.function.Consumer;
  * @author miki
  * @since 2020-11-19
  */
+@Order(100)
 public class ComponentObserverBuilder implements ContentBuilder<ComponentObserver> {
 
     @Override

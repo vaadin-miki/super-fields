@@ -10,6 +10,7 @@ import com.vaadin.flow.data.binder.Validator;
 import org.vaadin.miki.SampleModel;
 import org.vaadin.miki.demo.ContentBuilder;
 import org.vaadin.miki.demo.NeedsValidatorStorage;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.demo.ValidatorStorage;
 
 import java.util.function.Consumer;
@@ -20,6 +21,7 @@ import java.util.function.Consumer;
  * @author miki
  * @since 2020-11-18
  */
+@Order(20)
 public class HasValueBuilder implements ContentBuilder<HasValue<?, ?>>, NeedsValidatorStorage {
 
     private ValidatorStorage storage;
@@ -34,7 +36,7 @@ public class HasValueBuilder implements ContentBuilder<HasValue<?, ?>>, NeedsVal
         final Checkbox toggle = new Checkbox("Mark component as read only?", event -> component.setReadOnly(event.getValue()));
         component.addValueChangeListener(this::onAnyValueChanged);
         callback.accept(new Component[]{toggle});
-        if(this.storage.isValidatorPresent(component)) {
+        if(this.storage != null && this.storage.isValidatorPresent(component)) {
             final Span binder = new Span("This component has a validation check.");
             this.addBinder(component);
             callback.accept(new Component[]{binder});

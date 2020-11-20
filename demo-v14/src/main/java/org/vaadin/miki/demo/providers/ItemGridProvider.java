@@ -5,6 +5,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import org.vaadin.miki.demo.ComponentProvider;
+import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.dates.SuperDatePicker;
 import org.vaadin.miki.superfields.dates.SuperDateTimePicker;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
@@ -23,7 +24,9 @@ import org.vaadin.miki.superfields.unload.UnloadObserver;
  * @author miki
  * @since 2020-11-18
  */
+@Order(150)
 public class ItemGridProvider implements ComponentProvider<ItemGrid<Class<? extends Component>>> {
+
     @Override
     public ItemGrid<Class<? extends Component>> getComponent() {
         return new ItemGrid<Class<? extends Component>>(
