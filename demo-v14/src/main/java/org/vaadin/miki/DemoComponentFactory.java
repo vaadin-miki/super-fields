@@ -34,6 +34,12 @@ public final class DemoComponentFactory implements Serializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DemoComponentFactory.class);
 
+    private static final Comparator<Class<?>> CLASS_ORDER_COMPARATOR = Comparator.comparingInt(t -> t.isAnnotationPresent(Order.class) ? t.getAnnotation(Order.class).value() : Integer.MAX_VALUE - t.getSimpleName().charAt(0));
+
+    private static boolean isNotInterface(Class<?> type) {
+        return !type.isInterface();
+    }
+
     public static DemoComponentFactory get() {
         return new DemoComponentFactory();
     }
@@ -42,14 +48,13 @@ public final class DemoComponentFactory implements Serializable {
 
     private final Map<Class<?>, ContentBuilder<?>> contentBuilders = new LinkedHashMap<>();
 
-
     @SuppressWarnings("unchecked")
     private DemoComponentFactory() {
         final ValidatorStorage storage = new ValidatorStorage();
 
         StreamSupport.stream(ClassIndex.getSubclasses(ComponentProvider.class).spliterator(), false)
-                .filter(type -> !type.isInterface())
-                .sorted(Comparator.comparingInt(t -> t.isAnnotationPresent(Order.class) ? t.getAnnotation(Order.class).value() : Integer.MAX_VALUE - t.getSimpleName().charAt(0)))
+                .filter(DemoComponentFactory::isNotInterface)
+                .sorted(CLASS_ORDER_COMPARATOR)
                 .forEach(type -> {
                     try {
                         final ComponentProvider<?> componentProvider = type.getDeclaredConstructor().newInstance();
@@ -63,18 +68,20 @@ public final class DemoComponentFactory implements Serializable {
                     }
                 });
 
-        ClassIndex.getSubclasses(ContentBuilder.class).forEach(type -> {
-            try {
-                final ContentBuilder<?> contentBuilder = type.getDeclaredConstructor().newInstance();
-                final Class<?> suitableType = ReflectTools.getGenericInterfaceType(contentBuilder.getClass(), ContentBuilder.class);
-                this.contentBuilders.put(suitableType, contentBuilder);
-                if(contentBuilder instanceof NeedsValidatorStorage)
-                    ((NeedsValidatorStorage) contentBuilder).setValidatorStorage(storage);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                LOGGER.error("creating a content builder from {} failed due to error {} with message {}", type.getSimpleName(), e.getClass().getSimpleName(), e.getMessage());
-            }
-        });
-
+        StreamSupport.stream(ClassIndex.getSubclasses(ContentBuilder.class).spliterator(), false)
+                .filter(DemoComponentFactory::isNotInterface)
+                .sorted(CLASS_ORDER_COMPARATOR)
+                .forEach(type -> {
+                    try {
+                        final ContentBuilder<?> contentBuilder = type.getDeclaredConstructor().newInstance();
+                        final Class<?> suitableType = ReflectTools.getGenericInterfaceType(contentBuilder.getClass(), ContentBuilder.class);
+                        this.contentBuilders.put(suitableType, contentBuilder);
+                        if (contentBuilder instanceof NeedsValidatorStorage)
+                            ((NeedsValidatorStorage) contentBuilder).setValidatorStorage(storage);
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                        LOGGER.error("creating a content builder from {} failed due to error {} with message {}", type.getSimpleName(), e.getClass().getSimpleName(), e.getMessage());
+                    }
+                });
     }
 
     /**
