@@ -107,4 +107,9 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
         this.delegate.fireTextSelectionEvent(true, start, end, selection);
     }
 
+    @ClientCallable
+    private void reinitialiseListening() {
+        this.delegate.reinitialiseListeners();
+    }
+
 }
