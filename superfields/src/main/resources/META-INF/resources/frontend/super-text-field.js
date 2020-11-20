@@ -7,6 +7,7 @@ class SuperTextField extends TextSelectionMixin.to(TextFieldElement) {
 
     setCallingServer(callingServer) {
         console.log('STF: configuring event listeners; callingServer flag is '+callingServer);
+        console.log('STF: this now refers to '+this);
         this.listenToEvents(this.inputElement, this, callingServer);
     }
 

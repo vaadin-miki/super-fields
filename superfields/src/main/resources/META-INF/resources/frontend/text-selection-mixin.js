@@ -46,6 +46,11 @@ export class TextSelectionMixin {
 
             listenToEvents(inputComponent, webComponent, notifyServer) {
                 console.log('TSM: setting up text selection for component <'+webComponent.tagName+'>');
+                if (inputComponent === undefined) {
+                    console.log('TSM: input component is undefined, attempting to find it from shadow root/input element');
+                    inputComponent = webComponent.inputElement;
+                }
+                console.log('TSM: input component is '+inputComponent);
                 if (webComponent.selectionMixin === undefined) {
                     webComponent.selectionMixin = {
                         input: inputComponent,
@@ -56,9 +61,14 @@ export class TextSelectionMixin {
                     }
 
                     const listener = () => webComponent.updateData(webComponent.selectionMixin, webComponent);
-                    inputComponent.addEventListener('mouseup', listener);
-                    inputComponent.addEventListener('keyup', listener);
-                    inputComponent.addEventListener('mouseleave', listener);
+                    if (inputComponent !== undefined) {
+                        inputComponent.addEventListener('mouseup', listener);
+                        inputComponent.addEventListener('keyup', listener);
+                        inputComponent.addEventListener('mouseleave', listener);
+                    }
+                    else {
+                        console.warn('TSM: input component passed to text selection mixin is undefined; text selection might not work');
+                    }
                 }
                 else {
                     webComponent.selectionMixin.callServer = notifyServer;
