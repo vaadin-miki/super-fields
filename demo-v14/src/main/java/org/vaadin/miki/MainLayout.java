@@ -54,7 +54,7 @@ public class MainLayout extends VerticalLayout implements RouterLayout, AfterNav
     public void afterNavigation(AfterNavigationEvent event) {
         if(event.getLocation().getPath().isEmpty())
             this.navigationTabs.setSelectedIndex(0);
-        else
+        else if(!event.getLocation().getPath().equals("binder"))
             this.navigationTabs.setSelectedTab(this.tabs.get(event.getLocation().getSegments().get(1)));
     }
 }

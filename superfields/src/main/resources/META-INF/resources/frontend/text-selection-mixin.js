@@ -46,22 +46,33 @@ export class TextSelectionMixin {
 
             listenToEvents(inputComponent, webComponent, notifyServer) {
                 console.log('TSM: setting up text selection for component <'+webComponent.tagName+'>');
-                if (webComponent.selectionMixin === undefined) {
-                    webComponent.selectionMixin = {
-                        input: inputComponent,
-                        callServer: notifyServer,
-                        startsAt: -1,
-                        endsAt: -1,
-                        selection: ''
+                if (inputComponent === undefined) {
+                    console.log('TSM: input component is undefined, attempting to find it from shadow root/input element');
+                    inputComponent = webComponent.inputElement;
+                    if (inputComponent === undefined) {
+                        console.warn('TSM: no input component, server will reinitialise this component shortly');
+                        // this trick has been suggested by the magnificent Erik Lumme, thank you!
+                        webComponent.$server.reinitialiseListening();
                     }
-
-                    const listener = () => webComponent.updateData(webComponent.selectionMixin, webComponent);
-                    inputComponent.addEventListener('mouseup', listener);
-                    inputComponent.addEventListener('keyup', listener);
-                    inputComponent.addEventListener('mouseleave', listener);
                 }
-                else {
-                    webComponent.selectionMixin.callServer = notifyServer;
+                if (inputComponent !== undefined) {
+                    console.log('TSM: input component is ' + inputComponent);
+                    if (webComponent.selectionMixin === undefined) {
+                        webComponent.selectionMixin = {
+                            input: inputComponent,
+                            callServer: notifyServer,
+                            startsAt: -1,
+                            endsAt: -1,
+                            selection: ''
+                        }
+
+                        const listener = () => webComponent.updateData(webComponent.selectionMixin, webComponent);
+                        inputComponent.addEventListener('mouseup', listener);
+                        inputComponent.addEventListener('keyup', listener);
+                        inputComponent.addEventListener('mouseleave', listener);
+                    } else {
+                        webComponent.selectionMixin.callServer = notifyServer;
+                    }
                 }
             }
         }

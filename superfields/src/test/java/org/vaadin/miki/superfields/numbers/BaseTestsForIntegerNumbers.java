@@ -3,6 +3,10 @@ package org.vaadin.miki.superfields.numbers;
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationResult;
+import com.vaadin.flow.data.binder.Validator;
+import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.shared.Registration;
 import org.junit.After;
 import org.junit.Assert;
@@ -14,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -24,6 +29,62 @@ import java.util.function.Supplier;
  * This is not a test class, rather a superclass for test classes.
  */
 class BaseTestsForIntegerNumbers<T extends Number> {
+
+    public static final class NumberWrapper<X extends Number> {
+        private X number;
+
+        public X getNumber() {
+            return number;
+        }
+
+        public void setNumber(X number) {
+            this.number = number;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            NumberWrapper<?> that = (NumberWrapper<?>) o;
+            return Objects.equals(getNumber(), that.getNumber());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getNumber());
+        }
+    }
+
+    public static final class NumberValidator<X extends Number> implements Validator<X> {
+
+        private X referenceValue;
+
+        @Override
+        public ValidationResult apply(X x, ValueContext valueContext) {
+            return Objects.equals(x, this.referenceValue) ? ValidationResult.ok() : ValidationResult.error("nope");
+        }
+
+        public X getReferenceValue() {
+            return referenceValue;
+        }
+
+        public void setReferenceValue(X referenceValue) {
+            this.referenceValue = referenceValue;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            NumberValidator<?> that = (NumberValidator<?>) o;
+            return Objects.equals(getReferenceValue(), that.getReferenceValue());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getReferenceValue());
+        }
+    }
 
     private final Supplier<AbstractSuperNumberField<T, ?>> fieldSupplier;
     private final T baseTestNumber;
@@ -269,6 +330,37 @@ class BaseTestsForIntegerNumbers<T extends Number> {
         Assert.assertEquals("max fraction digits must not change when changing locale", maxFraction, this.field.getMaximumFractionDigits());
         Assert.assertEquals("min fraction digits must not change when changing locale", minFraction, this.field.getMinimumFractionDigits());
         Assert.assertEquals("max integer digits must not change when changing locale", maxDigits, this.field.getMaximumIntegerDigits());
+    }
+
+    @Test
+    public void testBinderAndValidation() {
+        final NumberWrapper<T> wrapper = new NumberWrapper<>();
+        @SuppressWarnings("unchecked")
+        final Binder<NumberWrapper<T>> binder = new Binder<>((Class<NumberWrapper<T>>)(Class<?>)NumberWrapper.class);
+        final NumberValidator<T> validator = new NumberValidator<>();
+        validator.setReferenceValue(this.baseTestNumber);
+        this.field.setNegativeValueAllowed(true);
+        binder.forField(this.field)
+                .withValidator(validator)
+                .bind("number");
+        binder.setBean(wrapper);
+        Assert.assertFalse("validator must fail with no number", binder.isValid());
+        wrapper.setNumber(this.baseTestNumber);
+        binder.setBean(wrapper);
+        Assert.assertTrue("validator must not fail with the correct number", binder.isValid());
+        wrapper.setNumber(this.negativeTestNumber);
+        binder.setBean(wrapper);
+        Assert.assertFalse("validator must fail with wrong number", binder.isValid());
+
+        this.field.setValue(this.baseTestNumber);
+        Assert.assertTrue("validator must be ok after field was changed to good number", binder.isValid());
+
+        validator.setReferenceValue(this.negativeTestNumber);
+        Assert.assertFalse("validator must not be ok after it was changed", binder.isValid());
+        validator.setReferenceValue(this.baseTestNumber);
+        this.field.setValue(this.baseTestNumber);
+        Assert.assertTrue("validator must be ok", binder.isValid());
+
     }
 
 }

@@ -1,3 +1,11 @@
+# 0.9.2 - Bugfixes to number fields
+## New features and enhancements
+(nothing reported)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#241 - [SuperBigDecimalField loses validation information](https://github.com/vaadin-miki/super-fields/issues/241)
+* \#243 - [Text selection mixin throws JS errors when used in Grid](https://github.com/vaadin-miki/super-fields/issues/243)
 # 0.9.1 - Vaadin 14.4
 ## New features and enhancements
 * \#224 - [Changing locale should preserve number precision information](https://github.com/vaadin-miki/super-fields/issues/224)

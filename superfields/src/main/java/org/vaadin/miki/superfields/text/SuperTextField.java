@@ -98,6 +98,11 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
         this.delegate.fireTextSelectionEvent(true, start, end, selection);
     }
 
+    @ClientCallable
+    private void reinitialiseListening() {
+        this.delegate.reinitialiseListeners();
+    }
+
     @Override
     public boolean isReceivingSelectionEventsFromClient() {
         return this.delegate.isReceivingSelectionEventsFromClient();
