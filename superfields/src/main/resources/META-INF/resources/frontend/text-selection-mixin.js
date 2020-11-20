@@ -49,29 +49,30 @@ export class TextSelectionMixin {
                 if (inputComponent === undefined) {
                     console.log('TSM: input component is undefined, attempting to find it from shadow root/input element');
                     inputComponent = webComponent.inputElement;
-                }
-                console.log('TSM: input component is '+inputComponent);
-                if (webComponent.selectionMixin === undefined) {
-                    webComponent.selectionMixin = {
-                        input: inputComponent,
-                        callServer: notifyServer,
-                        startsAt: -1,
-                        endsAt: -1,
-                        selection: ''
+                    if (inputComponent === undefined) {
+                        console.warn('TSM: no input component, server will reinitialise this component shortly');
+                        // this trick has been suggested by the magnificent Erik Lumme, thank you!
+                        webComponent.$server.reinitialiseListening();
                     }
+                }
+                if (inputComponent !== undefined) {
+                    console.log('TSM: input component is ' + inputComponent);
+                    if (webComponent.selectionMixin === undefined) {
+                        webComponent.selectionMixin = {
+                            input: inputComponent,
+                            callServer: notifyServer,
+                            startsAt: -1,
+                            endsAt: -1,
+                            selection: ''
+                        }
 
-                    const listener = () => webComponent.updateData(webComponent.selectionMixin, webComponent);
-                    if (inputComponent !== undefined) {
+                        const listener = () => webComponent.updateData(webComponent.selectionMixin, webComponent);
                         inputComponent.addEventListener('mouseup', listener);
                         inputComponent.addEventListener('keyup', listener);
                         inputComponent.addEventListener('mouseleave', listener);
+                    } else {
+                        webComponent.selectionMixin.callServer = notifyServer;
                     }
-                    else {
-                        console.warn('TSM: input component passed to text selection mixin is undefined; text selection might not work');
-                    }
-                }
-                else {
-                    webComponent.selectionMixin.callServer = notifyServer;
                 }
             }
         }
