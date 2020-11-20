@@ -1,4 +1,4 @@
-package org.vaadin.miki;
+package org.vaadin.miki.demo.providers;
 
 /**
  * Simple data class to showcase in grid select demo.
@@ -12,8 +12,8 @@ public class SuperFieldsGridItem {
 
     private String name;
 
-    SuperFieldsGridItem(Class<?> type) {
-        this.name = type.getSimpleName();
+    SuperFieldsGridItem(String name) {
+        this.name = name;
         this.nameLength = this.name.length();
     }
 
