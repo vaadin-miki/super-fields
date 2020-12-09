@@ -11,14 +11,14 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * A single-selection {@link Grid} that also is a value component that broadcasts value change events.
- * @param <V> Type of value to include in the grid.
+ * A multi-selection {@link GridSelect}. Holds a value that is a {@link Set}<{@code V}>.
+ * @param <V> Value to store in the {@link Grid}.
  * @author miki
- * @since 2020-08-07
+ * @since 2020-12-09
  */
-public class GridSelect<V> extends AbstractGridSelect<V, V>
-        implements WithIdMixin<GridSelect<V>>, WithItemsMixin<V, GridSelect<V>>,
-                   WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<V>, V>, V, GridSelect<V>> {
+public class GridMultiSelect<V> extends AbstractGridSelect<V, Set<V>>
+        implements WithIdMixin<GridMultiSelect<V>>, WithItemsMixin<V, GridMultiSelect<V>>,
+        WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<Set<V>>, Set<V>>, Set<V>, GridMultiSelect<V>> {
 
     /**
      * Creates the component.
@@ -27,8 +27,8 @@ public class GridSelect<V> extends AbstractGridSelect<V, V>
      * @see #getGrid()
      */
     @SafeVarargs
-    public GridSelect(V... items) {
-        super(new RestrictedModeGrid<>());
+    public GridMultiSelect(V... items) {
+        super(new RestrictedModeGrid<>(Grid.SelectionMode.MULTI));
         this.setItems(items);
     }
 
@@ -39,8 +39,8 @@ public class GridSelect<V> extends AbstractGridSelect<V, V>
      * @param items Items to add to the grid.
      */
     @SafeVarargs
-    public GridSelect(Class<V> type, boolean createColumns, V... items) {
-        super(new RestrictedModeGrid<>(type, createColumns));
+    public GridMultiSelect(Class<V> type, boolean createColumns, V... items) {
+        super(new RestrictedModeGrid<>(type, createColumns, Grid.SelectionMode.MULTI));
         this.setItems(items);
     }
 
@@ -49,25 +49,24 @@ public class GridSelect<V> extends AbstractGridSelect<V, V>
      * It is not public, as usage of this constructor implies you know what you are doing.
      * @param underlyingGrid A grid to use.
      */
-    protected GridSelect(Grid<V> underlyingGrid) {
+    protected GridMultiSelect(Grid<V> underlyingGrid) {
         super(underlyingGrid);
     }
 
     @Override
-    protected V generateModelValue() {
-        final Set<V> items = this.getGrid().getSelectedItems();
-        return items.isEmpty() ? null : items.iterator().next();
+    protected Set<V> generateModelValue() {
+        return this.getGrid().getSelectedItems();
     }
 
     @Override
-    protected void setPresentationValue(V v) {
-        this.getGrid().select(v);
+    protected void setPresentationValue(Set<V> vs) {
+        // one way is casting grid's selection model to GridMultiSelectionModel<V>
+        // another is the one below
+        this.getGrid().asMultiSelect().updateSelection(vs, this.getGrid().getSelectedItems());
     }
 
     @Override
     public void setItems(Collection<V> collection) {
         this.getGrid().setItems(collection);
-        this.getGrid().recalculateColumnWidths();
     }
-
 }
