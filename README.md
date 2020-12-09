@@ -51,6 +51,7 @@ You are more than welcome to contribute. Feel free to make PRs, submit issues, i
 
 The author of the majority of the code is Miki, but this project would not be possible without these wonderful people - listed in alphabetical order:
 
+* Diego Cardoso
 * Wolfgang Fischlein
 * Jean-Christophe Gueriaud
 * Holger Hähnel

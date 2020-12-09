@@ -5,6 +5,7 @@ import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.grid.Grid;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithItemsMixin;
+import org.vaadin.miki.markers.WithMaximumSelectionSize;
 import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.Collection;
@@ -18,7 +19,10 @@ import java.util.Set;
  */
 public class GridMultiSelect<V> extends AbstractGridSelect<V, Set<V>>
         implements WithIdMixin<GridMultiSelect<V>>, WithItemsMixin<V, GridMultiSelect<V>>,
+        WithMaximumSelectionSize<GridMultiSelect<V>>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<Set<V>>, Set<V>>, Set<V>, GridMultiSelect<V>> {
+
+    private int maximumSelectionSize = UNLIMITED;
 
     /**
      * Creates the component.
@@ -54,6 +58,18 @@ public class GridMultiSelect<V> extends AbstractGridSelect<V, Set<V>>
     }
 
     @Override
+    protected void configureGrid(Grid<V> grid) {
+        super.configureGrid(grid);
+        // below JS magic courtesy of Diego Cardoso
+        grid.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(grid, context ->
+                grid.getElement().executeJs("$0.addEventListener('selected-items-changed', " +
+                        "({target: grid}) => {if (grid.selectedItems.length > grid.maximumSelectionSize) {" +
+                        "grid.splice('selectedItems', -1);" +
+                        "}});")
+        ));
+    }
+
+    @Override
     protected Set<V> generateModelValue() {
         return this.getGrid().getSelectedItems();
     }
@@ -69,4 +85,16 @@ public class GridMultiSelect<V> extends AbstractGridSelect<V, Set<V>>
     public void setItems(Collection<V> collection) {
         this.getGrid().setItems(collection);
     }
+
+    @Override
+    public void setMaximumSelectionSize(int maximumSelectionSize) {
+        this.maximumSelectionSize = maximumSelectionSize;
+        this.getGrid().getElement().setProperty("maximumSelectionSize", maximumSelectionSize);
+    }
+
+    @Override
+    public int getMaximumSelectionSize() {
+        return maximumSelectionSize;
+    }
+
 }
