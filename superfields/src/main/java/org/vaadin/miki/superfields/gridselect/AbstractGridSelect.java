@@ -42,7 +42,12 @@ public abstract class AbstractGridSelect<V, F> extends CustomField<F> {
         grid.addClassName("grid-select-inner-grid");
     }
 
-    private void onGridSelected(SelectionEvent<Grid<V>, V> event) {
+    /**
+     * This method is called when a grid cell is selected in the client.
+     * By default it calls {@link #updateValue()}.
+     * @param event Event with selection details.
+     */
+    protected void onGridSelected(SelectionEvent<Grid<V>, V> event) {
         this.updateValue();
     }
 

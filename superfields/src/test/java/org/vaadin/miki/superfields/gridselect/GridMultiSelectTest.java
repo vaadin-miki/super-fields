@@ -56,6 +56,10 @@ public class GridMultiSelectTest {
         Assert.assertEquals(2, this.eventCount);
         Assert.assertEquals(Set.of("test", "this"), this.grid.getValue());
         Assert.assertEquals(2, this.grid.getGrid().getSelectedItems().size());
+        this.grid.setMaximumSelectionSize(1);
+        Assert.assertEquals(3, this.eventCount);
+        Assert.assertTrue(this.grid.getValue().isEmpty());
+        Assert.assertTrue(this.grid.getGrid().getSelectedItems().isEmpty());
     }
 
 }

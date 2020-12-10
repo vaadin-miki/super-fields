@@ -22,6 +22,8 @@ public class WithMaximumSelectionSizeBuilder implements ContentBuilder<WithMaxim
         final ComboBox<Integer> selectionSize = new ComboBox<>("Maximum allowed selection size:",
                 HasMaximumSelectionSize.UNLIMITED, 1, 2, 3, 4, 5, 6);
         selectionSize.addValueChangeListener(event -> component.setMaximumSelectionSize(event.getValue()));
+        selectionSize.setWidth("350px");
+        selectionSize.setHelperText("0 means unlimited selection");
         callback.accept(new Component[]{selectionSize});
     }
 }
