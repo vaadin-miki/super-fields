@@ -3,6 +3,7 @@ package org.vaadin.miki.superfields.gridselect;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridMultiSelectionModel;
 import com.vaadin.flow.data.selection.SelectionEvent;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithItemsMixin;
@@ -132,9 +133,10 @@ public class GridMultiSelect<V> extends AbstractGridSelect<V, Set<V>>
         if(maximumSelectionSize > UNLIMITED && this.getGrid().getSelectedItems().size() > maximumSelectionSize)
             this.setValue(Collections.emptySet());
         // selecting/deselecting all makes no sense when there is a limit
-        this.getGrid().getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.getGrid(), executionContext ->
-            this.getGrid().getElement().executeJs("$0.querySelector('#selectAllCheckbox').style.display = '"+(maximumSelectionSize > UNLIMITED ? "none" : "")+"';")
-        ));
+        ((GridMultiSelectionModel<V>)this.getGrid().getSelectionModel())
+            .setSelectAllCheckboxVisibility(maximumSelectionSize <= UNLIMITED
+              ? GridMultiSelectionModel.SelectAllCheckboxVisibility.VISIBLE
+              : GridMultiSelectionModel.SelectAllCheckboxVisibility.HIDDEN);
     }
 
     @Override

@@ -67,6 +67,7 @@ The author of the majority of the code is Miki, but this project would not be po
 * Kaspar Scherrer
 * Tomi Virkki
 * Martin Vysny
+* Leif Åstrand
 
 ## Small print
 
