@@ -16,9 +16,10 @@ public class CellInformation<T> {
     private final int column;
     private final T value;
     private final Component component;
+    private final boolean valueCell;
 
     /**
-     * Constructs cell information.
+     * Constructs cell information for a non-padding cell.
      * @param row Row number.
      * @param column Column number.
      * @param value Value in the cell.
@@ -29,6 +30,21 @@ public class CellInformation<T> {
         this.column = column;
         this.value = value;
         this.component = component;
+        this.valueCell = true;
+    }
+
+    /**
+     * Constructs cell information for a padding cell.
+     * @param row Row number.
+     * @param column Column number.
+     * @param component Component in the cell.
+     */
+    public CellInformation(int row, int column, Component component) {
+        this.row = row;
+        this.column = column;
+        this.value = null;
+        this.component = component;
+        this.valueCell = false;
     }
 
     public int getRow() {
@@ -47,6 +63,10 @@ public class CellInformation<T> {
         return component;
     }
 
+    public boolean isValueCell() {
+        return valueCell;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -54,13 +74,14 @@ public class CellInformation<T> {
         CellInformation<?> that = (CellInformation<?>) o;
         return getRow() == that.getRow() &&
                 getColumn() == that.getColumn() &&
+                isValueCell() == that.isValueCell() &&
                 Objects.equals(getValue(), that.getValue()) &&
                 Objects.equals(getComponent(), that.getComponent());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getRow(), getColumn(), getValue(), getComponent());
+        return Objects.hash(getRow(), getColumn(), getValue(), getComponent(), isValueCell());
     }
 
     @Override
@@ -70,6 +91,7 @@ public class CellInformation<T> {
                 ", column=" + column +
                 ", value=" + value +
                 ", component=" + component +
+                ", valueCell=" + valueCell +
                 '}';
     }
 }

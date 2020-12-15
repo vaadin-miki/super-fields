@@ -15,6 +15,7 @@ import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -121,6 +122,8 @@ public class ItemGrid<T>
 
     private RowComponentGenerator<?> rowComponentGenerator = ItemGrid::defaultRowComponentGenerator;
 
+    private RowPaddingStrategy rowPaddingStrategy = RowPaddingStrategies.NO_PADDING;
+
     private int columnCount = DEFAULT_COLUMN_COUNT;
 
     /**
@@ -188,7 +191,7 @@ public class ItemGrid<T>
      * Repaints all current items.
      */
     protected final void repaintAllItems() {
-        this.repaintAllItems(this.cells.stream().map(CellInformation::getValue).collect(Collectors.toList()));
+        this.repaintAllItems(this.cells.stream().filter(CellInformation::isValueCell).map(CellInformation::getValue).collect(Collectors.toList()));
     }
 
     /**
@@ -207,24 +210,52 @@ public class ItemGrid<T>
         int row = 0;
         int column = 0;
 
-        for(T item: itemCollection) {
-            final boolean selected = Objects.equals(item, currentValue);
-            final Component itemComponent = this.getCellGenerator().generateComponent(item, row, column);
-            CellInformation<T> cellInformation = new CellInformation<>(row, column, item, itemComponent);
-            this.getCellSelectionHandler().cellSelectionChanged(new CellSelectionEvent<>(cellInformation, selected));
-            this.registerClickEvents(cellInformation);
+        int itemsLeft = itemCollection.size();
 
-            if(selected)
-                this.markedAsSelected = cellInformation;
-            this.cells.add(cellInformation);
+        final Iterator<T> iterator = itemCollection.iterator();
+        RowPadding padding = this.getRowPaddingStrategy().getRowPadding(row, this.getColumnCount(), itemsLeft);
 
-            rowContainer.add(itemComponent);
-            column+=1;
-            if(column == this.getColumnCount()) {
-                column = 0;
-                row+=1;
-                this.contents.add((Component)rowContainer);
-                rowContainer = this.getRowComponentGenerator().generateRowComponent(row);
+        while (itemsLeft > 0) {
+            // there must be space for at least one cell from the data set
+            if(padding.getBeginning() + padding.getEnd() >= this.getColumnCount())
+                throw new IllegalStateException(String.format("row padding requires %d and %d cells - that is too many, as there are %d columns", padding.getBeginning(), padding.getEnd(), this.getColumnCount()));
+
+            for(int zmp1=0; zmp1<this.getColumnCount() && itemsLeft > 0; zmp1++) {
+
+                final T item;
+                final boolean paddingCell;
+                // if in padding, no item
+                if (column < padding.getBeginning() || column >= this.getColumnCount() - padding.getEnd()) {
+                    item = null;
+                    paddingCell = true;
+                }
+                else {
+                    paddingCell = false;
+                    item = iterator.next();
+                    itemsLeft--;
+                }
+
+                final boolean selected = !paddingCell && Objects.equals(item, currentValue);
+                final Component itemComponent = this.getCellGenerator().generateComponent(item, row, column);
+                final CellInformation<T> cellInformation = paddingCell ?
+                        new CellInformation<>(row, column, itemComponent) :
+                        new CellInformation<>(row, column, item, itemComponent);
+                this.getCellSelectionHandler().cellSelectionChanged(new CellSelectionEvent<>(cellInformation, selected));
+                this.registerClickEvents(cellInformation);
+
+                if (selected)
+                    this.markedAsSelected = cellInformation;
+                this.cells.add(cellInformation);
+
+                rowContainer.add(itemComponent);
+                column += 1;
+                if (column == this.getColumnCount()) {
+                    column = 0;
+                    row += 1;
+                    this.contents.add((Component) rowContainer);
+                    rowContainer = this.getRowComponentGenerator().generateRowComponent(row);
+                    padding = this.getRowPaddingStrategy().getRowPadding(row, this.getColumnCount(), itemsLeft);
+                }
             }
         }
         // add last row, unless it was full
@@ -470,6 +501,37 @@ public class ItemGrid<T>
      */
     public ItemGrid<T> withRowComponentGenerator(RowComponentGenerator<?> generator) {
         this.setRowComponentGenerator(generator);
+        return this;
+    }
+
+    /**
+     * Sets new {@link RowPaddingStrategy}. Repaints all items.
+     * @param rowPaddingStrategy An implementation of {@link RowPaddingStrategy}. If {@code null} is passed, {@link RowPaddingStrategies#NO_PADDING} will be used.
+     * @see RowPaddingStrategies
+     */
+    public void setRowPaddingStrategy(RowPaddingStrategy rowPaddingStrategy) {
+        this.rowPaddingStrategy = Objects.requireNonNullElse(rowPaddingStrategy, RowPaddingStrategies.NO_PADDING);
+        this.repaintAllItems();
+    }
+
+    /**
+     * Returns current {@link RowPaddingStrategy}.
+     * @return A {@link RowPaddingStrategy} currently assigned to this object. Defaults to {@link RowPaddingStrategies#NO_PADDING}.
+     * @see RowPaddingStrategies
+     */
+    public RowPaddingStrategy getRowPaddingStrategy() {
+        return rowPaddingStrategy;
+    }
+
+    /**
+     * Chains {@link #setRowPaddingStrategy(RowPaddingStrategy)} and returns itself.
+     * @param rowPaddingStrategy A {@link RowPaddingStrategy} to use.
+     * @return This.
+     * @see #setRowPaddingStrategy(RowPaddingStrategy)
+     * @see RowPaddingStrategies
+     */
+    public ItemGrid<T> withRowPaddingStrategy(RowPaddingStrategy rowPaddingStrategy) {
+        this.setRowPaddingStrategy(rowPaddingStrategy);
         return this;
     }
 
