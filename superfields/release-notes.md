@@ -1,3 +1,10 @@
+# 0.9.3 - GridMultiSelect and ItemGrid row padding
+## New features and enhancements
+* \#239 - [GridMultiSelect](https://github.com/vaadin-miki/super-fields/issues/239)
+* \#250 - [ItemGrid should pad rows with empty cells](https://github.com/vaadin-miki/super-fields/issues/250)
+## Changes to API
+* \#256 - [ItemGrid should allow fetching cells information by row and by column](https://github.com/vaadin-miki/super-fields/issues/256)
+## Bug fixes
 # 0.9.2 - Bugfixes to number fields
 ## New features and enhancements
 (nothing reported)

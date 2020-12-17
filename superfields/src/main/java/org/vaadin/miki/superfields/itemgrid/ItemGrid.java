@@ -15,6 +15,7 @@ import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -117,9 +118,15 @@ public class ItemGrid<T>
 
     private CellGenerator<T> cellGenerator;
 
+    private CellGenerator<T> paddingCellGenerator;
+
+    private boolean paddingCellsClickable = false;
+
     private CellSelectionHandler<T> cellSelectionHandler;
 
     private RowComponentGenerator<?> rowComponentGenerator = ItemGrid::defaultRowComponentGenerator;
+
+    private RowPaddingStrategy rowPaddingStrategy = RowPaddingStrategies.NO_PADDING;
 
     private int columnCount = DEFAULT_COLUMN_COUNT;
 
@@ -188,7 +195,17 @@ public class ItemGrid<T>
      * Repaints all current items.
      */
     protected final void repaintAllItems() {
-        this.repaintAllItems(this.cells.stream().map(CellInformation::getValue).collect(Collectors.toList()));
+        this.repaintAllItems(this.cells.stream().filter(CellInformation::isValueCell).map(CellInformation::getValue).collect(Collectors.toList()));
+    }
+
+    protected final CellInformation<T> buildPaddingCell(int row, int column) {
+        final Component itemComponent = this.getPaddingCellGenerator().generateComponent(null, row, column);
+        return new CellInformation<>(row, column, itemComponent);
+    }
+
+    protected final CellInformation<T> buildValueCell(T item, int row, int column) {
+        final Component itemComponent = this.getCellGenerator().generateComponent(item, row, column);
+        return new CellInformation<>(row, column, item, itemComponent);
     }
 
     /**
@@ -201,35 +218,55 @@ public class ItemGrid<T>
         this.contents.removeAll();
         this.cells.clear();
 
-        // do all items again
-        HasComponents rowContainer = this.getRowComponentGenerator().generateRowComponent(0);
-
+        // do all passed items
         int row = 0;
-        int column = 0;
 
-        for(T item: itemCollection) {
-            final boolean selected = Objects.equals(item, currentValue);
-            final Component itemComponent = this.getCellGenerator().generateComponent(item, row, column);
-            CellInformation<T> cellInformation = new CellInformation<>(row, column, item, itemComponent);
-            this.getCellSelectionHandler().cellSelectionChanged(new CellSelectionEvent<>(cellInformation, selected));
-            this.registerClickEvents(cellInformation);
+        int itemsLeft = itemCollection.size(); // used for padding
 
-            if(selected)
-                this.markedAsSelected = cellInformation;
-            this.cells.add(cellInformation);
+        final Iterator<T> iterator = itemCollection.iterator();
+        final ArrayList<CellInformation<T>> currentRow = new ArrayList<>();
 
-            rowContainer.add(itemComponent);
-            column+=1;
-            if(column == this.getColumnCount()) {
-                column = 0;
-                row+=1;
-                this.contents.add((Component)rowContainer);
-                rowContainer = this.getRowComponentGenerator().generateRowComponent(row);
-            }
-        }
-        // add last row, unless it was full
-        if(column != 0)
+        RowPadding padding = this.getRowPaddingStrategy().getRowPadding(row, this.getColumnCount(), itemsLeft);
+
+        while (itemsLeft > 0) {
+            // there must be space for at least one cell from the data set
+            if(padding.getBeginning() + padding.getEnd() >= this.getColumnCount())
+                throw new IllegalStateException(String.format("row padding requires %d and %d cells - that is too many, as there are %d columns", padding.getBeginning(), padding.getEnd(), this.getColumnCount()));
+
+            currentRow.clear();
+
+            int column = 0;
+            // first, the padding at the beginning
+            for(; column < padding.getBeginning(); column++)
+                currentRow.add(this.buildPaddingCell(row, column));
+
+            // then, items
+            for(; iterator.hasNext() && column < this.getColumnCount()-padding.getEnd() && itemsLeft-- >= 0; column++)
+                currentRow.add(this.buildValueCell(iterator.next(), row, column));
+
+            // end padding only when the padding is defined
+            if(padding.getEnd() > 0)
+                for(int zmp1 = column; zmp1 < Math.min(this.getColumnCount(), column + padding.getEnd()); zmp1++)
+                    currentRow.add(this.buildPaddingCell(row, zmp1));
+
+            // do processing - register events, add to row component, etc.
+            final HasComponents rowContainer = this.getRowComponentGenerator().generateRowComponent(row);
+            currentRow.forEach(cellInformation -> {
+                final boolean selected = cellInformation.isValueCell() && Objects.equals(cellInformation.getValue(), currentValue);
+                this.getCellSelectionHandler().cellSelectionChanged(new CellSelectionEvent<>(cellInformation, selected));
+                this.registerClickEvents(cellInformation);
+                this.cells.add(cellInformation);
+
+                if (selected)
+                    this.markedAsSelected = cellInformation;
+
+                rowContainer.add(cellInformation.getComponent());
+            });
+
+            row += 1;
             this.contents.add((Component)rowContainer);
+            padding = this.getRowPaddingStrategy().getRowPadding(row, this.getColumnCount(), itemsLeft);
+        }
     }
 
     /**
@@ -244,12 +281,15 @@ public class ItemGrid<T>
     }
 
     private void clickCellAndUpdateValue(CellInformation<T> information) {
-        this.clickCell(information);
-        this.updateValue();
+        if(this.arePaddingCellsClickable() || information.isValueCell()) {
+            this.clickCell(information);
+            this.updateValue();
+        }
     }
 
     /**
      * Reacts to cell being clicked in the browser.
+     * This method is invoked for padding cells if {@link #arePaddingCellsClickable()} is {@code true}.
      * @param information Information about the clicked cell.
      */
     protected void clickCell(CellInformation<T> information) {
@@ -258,8 +298,8 @@ public class ItemGrid<T>
             this.markedAsSelected = information;
             this.getCellSelectionHandler().cellSelectionChanged(new CellSelectionEvent<>(this.markedAsSelected, true));
         }
-        // if the same value is selected, deselect it and do nothing else
-        else if(Objects.equals(this.markedAsSelected.getValue(), information.getValue())) {
+        // if the same cell is already selected, deselect it and do nothing else
+        else if(Objects.equals(this.markedAsSelected, information)) {
             this.getCellSelectionHandler().cellSelectionChanged(new CellSelectionEvent<>(information, false));
             this.markedAsSelected = null;
         }
@@ -435,6 +475,24 @@ public class ItemGrid<T>
     }
 
     /**
+     * Returns a list with {@link CellInformation} for each cell in given row.
+     * @param row Row number, 0-based.
+     * @return An unmodifiable list. May be empty.
+     */
+    public List<CellInformation<T>> getRowCellInformation(int row) {
+        return this.cells.stream().filter(cell -> cell.getRow() == row).collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
+     * Returns a list with {@link CellInformation} for each cell in given column.
+     * @param column Column number, 0-based.
+     * @return An unmodifiable list. May be empty.
+     */
+    public List<CellInformation<T>> getColumnCellInformation(int column) {
+        return this.cells.stream().filter(cell -> cell.getColumn() == column).collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
      * Returns a {@link Stream} of all {@link Component}s in the cells.
      * @return A {@link Stream}. Never {@code null}.
      * @see #setCellGenerator(CellGenerator)
@@ -470,6 +528,93 @@ public class ItemGrid<T>
      */
     public ItemGrid<T> withRowComponentGenerator(RowComponentGenerator<?> generator) {
         this.setRowComponentGenerator(generator);
+        return this;
+    }
+
+    /**
+     * Sets new {@link RowPaddingStrategy}. Repaints all items.
+     * @param rowPaddingStrategy An implementation of {@link RowPaddingStrategy}. If {@code null} is passed, {@link RowPaddingStrategies#NO_PADDING} will be used.
+     * @see RowPaddingStrategies
+     */
+    public void setRowPaddingStrategy(RowPaddingStrategy rowPaddingStrategy) {
+        this.rowPaddingStrategy = Objects.requireNonNullElse(rowPaddingStrategy, RowPaddingStrategies.NO_PADDING);
+        this.repaintAllItems();
+    }
+
+    /**
+     * Returns current {@link RowPaddingStrategy}.
+     * @return A {@link RowPaddingStrategy} currently assigned to this object. Defaults to {@link RowPaddingStrategies#NO_PADDING}.
+     * @see RowPaddingStrategies
+     */
+    public RowPaddingStrategy getRowPaddingStrategy() {
+        return rowPaddingStrategy;
+    }
+
+    /**
+     * Chains {@link #setRowPaddingStrategy(RowPaddingStrategy)} and returns itself.
+     * @param rowPaddingStrategy A {@link RowPaddingStrategy} to use.
+     * @return This.
+     * @see #setRowPaddingStrategy(RowPaddingStrategy)
+     * @see RowPaddingStrategies
+     */
+    public ItemGrid<T> withRowPaddingStrategy(RowPaddingStrategy rowPaddingStrategy) {
+        this.setRowPaddingStrategy(rowPaddingStrategy);
+        return this;
+    }
+
+    /**
+     * Returns the cell generator used for constructing padding cells. If none present, {@link #getCellGenerator()} will be used.
+     * @return A generator for padding cells. Is used only when there is some {@link RowPaddingStrategy} set.
+     * @see #setRowPaddingStrategy(RowPaddingStrategy)
+     */
+    public CellGenerator<T> getPaddingCellGenerator() {
+        return Objects.requireNonNullElse(this.paddingCellGenerator, this.getCellGenerator());
+    }
+
+    /**
+     * Sets cell generator for padding cells. If {@code null} is passed, {@link #getCellGenerator()} will be used.
+     * @param paddingCellGenerator A generator for padding cells. Is used only when there is some {@link RowPaddingStrategy} set.
+     * @see #setRowPaddingStrategy(RowPaddingStrategy)
+     */
+    public void setPaddingCellGenerator(CellGenerator<T> paddingCellGenerator) {
+        this.paddingCellGenerator = paddingCellGenerator;
+    }
+
+    /**
+     * Chains {@link #setPaddingCellGenerator(CellGenerator)} and returns itself.
+     * @param paddingCellGenerator A generator for padding cells.
+     * @return This.
+     * @see #setPaddingCellGenerator(CellGenerator)
+     */
+    public ItemGrid<T> withPaddingCellGenerator(CellGenerator<T> paddingCellGenerator) {
+        this.setPaddingCellGenerator(paddingCellGenerator);
+        return this;
+    }
+
+    /**
+     * Checks whether the padding cells (if any present) are clickable.
+     * @return Whether or not padding cells can be clicked. Defaults to {@code false}.
+     */
+    public boolean arePaddingCellsClickable() {
+        return paddingCellsClickable;
+    }
+
+    /**
+     * Enables or disables click events on padding cells. If {@code true}, clicking a padding cell turns value to {@code null}.
+     * @param paddingCellsClickable Whether or not to allow padding cells to react to clicks.
+     */
+    public void setPaddingCellsClickable(boolean paddingCellsClickable) {
+        this.paddingCellsClickable = paddingCellsClickable;
+    }
+
+    /**
+     * Chains {@link #setPaddingCellsClickable(boolean)} and returns itself.
+     * @param paddingCellsClickable Whether or not to allow padding cells to react to clicks.
+     * @return This.
+     * @see #setPaddingCellsClickable(boolean)
+     */
+    public ItemGrid<T> withPaddingCellsClickable(boolean paddingCellsClickable) {
+        this.setPaddingCellsClickable(paddingCellsClickable);
         return this;
     }
 

@@ -64,9 +64,11 @@ Both components behave funky when changing locale at runtime if their calendars 
 
 A highly configurable grid that allows single selection. Each cell in the grid corresponds to one item (in contrast to Vaadin `Grid`, which displays one item per row).
 
-### `GridSelect`
+### `GridSelect` and `GridMultiSelect`
 
-A single-selection `Grid` that is a value component, meaning it broadcasts value change events (rather than selection events). It allows access to the underlying `Grid`, except changing selection mode.
+A single- and multi-selection `Grid`s that are value components, meaning it broadcast value change events (rather than selection events). Both allow access to the underlying `Grid`, except changing selection mode.
+
+`GridMultiSelect` operates on `Set` and it has an option to limit the size of the selection.
 
 ### `SuperTabs`
 

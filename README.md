@@ -19,7 +19,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>org.vaadin.miki</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.9.2</version>
+   <version>0.9.3</version>
 </dependency>
 ```
 
@@ -51,6 +51,7 @@ You are more than welcome to contribute. Feel free to make PRs, submit issues, i
 
 The author of the majority of the code is Miki, but this project would not be possible without these wonderful people - listed in alphabetical order:
 
+* Diego Cardoso
 * Wolfgang Fischlein
 * Jean-Christophe Gueriaud
 * Holger Hähnel
@@ -66,6 +67,7 @@ The author of the majority of the code is Miki, but this project would not be po
 * Kaspar Scherrer
 * Tomi Virkki
 * Martin Vysny
+* Leif Åstrand
 
 ## Small print
 
