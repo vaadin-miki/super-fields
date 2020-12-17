@@ -15,6 +15,7 @@ import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -480,7 +481,7 @@ public class ItemGrid<T>
      * @return An unmodifiable list. May be empty.
      */
     public List<CellInformation<T>> getRowCellInformation(int row) {
-        return this.cells.stream().filter(cell -> cell.getRow() == row).collect(Collectors.toUnmodifiableList());
+        return Collections.unmodifiableList(this.cells.stream().filter(cell -> cell.getRow() == row).collect(Collectors.toList()));
     }
 
     /**
@@ -489,7 +490,7 @@ public class ItemGrid<T>
      * @return An unmodifiable list. May be empty.
      */
     public List<CellInformation<T>> getColumnCellInformation(int column) {
-        return this.cells.stream().filter(cell -> cell.getColumn() == column).collect(Collectors.toUnmodifiableList());
+        return Collections.unmodifiableList(this.cells.stream().filter(cell -> cell.getColumn() == column).collect(Collectors.toList()));
     }
 
     /**
@@ -537,7 +538,7 @@ public class ItemGrid<T>
      * @see RowPaddingStrategies
      */
     public void setRowPaddingStrategy(RowPaddingStrategy rowPaddingStrategy) {
-        this.rowPaddingStrategy = Objects.requireNonNullElse(rowPaddingStrategy, RowPaddingStrategies.NO_PADDING);
+        this.rowPaddingStrategy = Optional.ofNullable(rowPaddingStrategy).orElse(RowPaddingStrategies.NO_PADDING);
         this.repaintAllItems();
     }
 
@@ -568,7 +569,7 @@ public class ItemGrid<T>
      * @see #setRowPaddingStrategy(RowPaddingStrategy)
      */
     public CellGenerator<T> getPaddingCellGenerator() {
-        return Objects.requireNonNullElse(this.paddingCellGenerator, this.getCellGenerator());
+        return Optional.ofNullable(this.paddingCellGenerator).orElse(this.getCellGenerator());
     }
 
     /**

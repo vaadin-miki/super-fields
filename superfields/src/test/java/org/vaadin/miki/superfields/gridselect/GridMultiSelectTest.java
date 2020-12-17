@@ -7,8 +7,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Set;
+import java.util.HashSet;
 
 public class GridMultiSelectTest {
 
@@ -52,9 +53,9 @@ public class GridMultiSelectTest {
         Assert.assertEquals(Collections.singleton("a"), this.grid.getValue());
         Assert.assertEquals(1, this.grid.getGrid().getSelectedItems().size());
         Assert.assertEquals("a", this.grid.getGrid().getSelectedItems().iterator().next());
-        this.grid.setValue(Set.of("test", "this"));
+        this.grid.setValue(new HashSet<>(Arrays.asList("test", "this")));
         Assert.assertEquals(2, this.eventCount);
-        Assert.assertEquals(Set.of("test", "this"), this.grid.getValue());
+        Assert.assertEquals(new HashSet<>(Arrays.asList("test", "this")), this.grid.getValue());
         Assert.assertEquals(2, this.grid.getGrid().getSelectedItems().size());
         this.grid.setMaximumSelectionSize(1);
         Assert.assertEquals(3, this.eventCount);
