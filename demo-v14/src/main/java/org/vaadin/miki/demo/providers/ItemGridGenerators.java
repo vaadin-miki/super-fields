@@ -22,7 +22,7 @@ public final class ItemGridGenerators {
      * @return A grid cell.
      */
     public static Component generateParagraph(Class<? extends Component> type, int row, int column) {
-        Paragraph result = new Paragraph(type.getSimpleName());
+        Paragraph result = new Paragraph(type == null ? "(no data)" : type.getSimpleName());
         result.setTitle(String.format("row %d, column %d", row, column));
         return result;
     }
@@ -39,13 +39,19 @@ public final class ItemGridGenerators {
             final Div result = new Div();
             result.addClassNames("item-grid-cell");
             result.add(new Span(String.format("Row: %d. Column: %d.", row, column)));
-            final TextField text = new TextField("Class name: ", type.getSimpleName());
-            text.setValue(type.getSimpleName());
-            text.addClassName("highlighted");
-            text.addBlurListener(event -> text.setValue(type.getSimpleName()));
+            final TextField text = new TextField("Class name: ");
+            if(type != null) {
+                text.setValue(type.getSimpleName());
+                text.addClassName("highlighted");
+                text.addBlurListener(event -> text.setValue(type.getSimpleName()));
+            }
+            else {
+                text.setValue("(nothing)");
+                text.setReadOnly(true);
+            }
             result.add(text);
             return result;
-        }).withId(type.getSimpleName() + "-" + row + "-" + column);
+        });
     }
 
     private ItemGridGenerators() {

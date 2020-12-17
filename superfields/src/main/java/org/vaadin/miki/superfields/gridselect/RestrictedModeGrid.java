@@ -23,16 +23,19 @@ public class RestrictedModeGrid<T> extends Grid<T> {
     public RestrictedModeGrid(SelectionMode allowedSelectionMode) {
         super();
         this.allowedSelectionMode = allowedSelectionMode;
+        this.setSelectionMode(allowedSelectionMode);
     }
 
     public RestrictedModeGrid(int pageSize, SelectionMode allowedSelectionMode) {
         super(pageSize);
         this.allowedSelectionMode = allowedSelectionMode;
+        this.setSelectionMode(allowedSelectionMode);
     }
 
     public RestrictedModeGrid(Class<T> beanType, boolean autoCreateColumns, SelectionMode allowedSelectionMode) {
         super(beanType, autoCreateColumns);
         this.allowedSelectionMode = allowedSelectionMode;
+        this.setSelectionMode(allowedSelectionMode);
     }
 
     public RestrictedModeGrid(Class<T> beanType, boolean autoCreateColumns) {
