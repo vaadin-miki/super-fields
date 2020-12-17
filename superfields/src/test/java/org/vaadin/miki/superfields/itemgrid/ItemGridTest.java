@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ItemGridTest {
@@ -281,6 +282,25 @@ public class ItemGridTest {
         this.grid.setColumnCount(3);
         this.grid.setItems(items);
         this.grid.setRowPaddingStrategy((rowNumber, gridColumns, itemsLeft) -> new RowPadding(2, 2));
+    }
+
+    @Test
+    public void clickPaddingCells() {
+        final String[] items = new String[]{"one", "two"};
+        this.grid.setItems(items);
+        this.grid.setRowPaddingStrategy(RowPaddingStrategies.FIRST_ROW_FILL_BEGINNING);
+        final Optional<CellInformation<String>> perhapsCell = this.grid.getCellInformation(0, 0);
+        Assert.assertTrue("there should be cell at (0, 0)", perhapsCell.isPresent());
+        Assert.assertFalse("cell at (0, 0) must not be a value cell", perhapsCell.get().isValueCell());
+        this.grid.simulateCellClick(0, 0);
+        Assert.assertEquals("padding cells are not clickable by default", 0, this.eventCounter);
+        this.grid.simulateCellClick(0, 1);
+        Assert.assertEquals("value cells are clickable", 1, this.eventCounter);
+        this.grid.setPaddingCellsClickable(true);
+        this.grid.simulateCellClick(0, 0);
+        Assert.assertEquals("padding cells should now be clickable", 2, this.eventCounter);
+        this.grid.simulateCellClick(0, 1);
+        Assert.assertEquals("value cells are still clickable", 3, this.eventCounter);
     }
 
 }

@@ -8,6 +8,7 @@ import org.vaadin.miki.demo.ContentBuilder;
 import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.demo.providers.ItemGridGenerators;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
+import org.vaadin.miki.superfields.itemgrid.RowPadding;
 import org.vaadin.miki.superfields.itemgrid.RowPaddingStrategies;
 import org.vaadin.miki.superfields.itemgrid.RowPaddingStrategy;
 
@@ -31,6 +32,14 @@ public class ItemGridBuilder implements ContentBuilder<ItemGrid<?>> {
         this.strategyCaptions.put(RowPaddingStrategies.FIRST_ROW_FILL_BEGINNING, "Pad first row at beginning");
         this.strategyCaptions.put(RowPaddingStrategies.LAST_ROW_CENTRE_BEGINNING, "Last row centred");
         this.strategyCaptions.put(RowPaddingStrategies.LAST_ROW_FILL_END, "Pad last row at end");
+        this.strategyCaptions.put((rowNumber, gridColumns, itemsLeft) -> {
+            // with special greetings to Stuart Robinson ;)
+            if(rowNumber == 0 && gridColumns > 3)
+                return new RowPadding(2, 0);
+            else if(itemsLeft < gridColumns)
+                return new RowPadding(0, gridColumns-itemsLeft);
+            else return new RowPadding(0, 0);
+        }, "'Calendar' padding for 4+ columns");
     }
 
     @Override
@@ -55,6 +64,8 @@ public class ItemGridBuilder implements ContentBuilder<ItemGrid<?>> {
         rowPaddingStrategies.setValue(RowPaddingStrategies.NO_PADDING);
         rowPaddingStrategies.addValueChangeListener(event -> component.setRowPaddingStrategy(event.getValue()));
 
-        callback.accept(new Component[]{buttons, alternate, rowPaddingStrategies});
+        final Checkbox paddingClickable = new Checkbox("Padding cells clickable?", event -> component.setPaddingCellsClickable(event.getValue()));
+
+        callback.accept(new Component[]{buttons, alternate, rowPaddingStrategies, paddingClickable});
     }
 }

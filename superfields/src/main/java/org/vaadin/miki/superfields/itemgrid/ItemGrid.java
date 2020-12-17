@@ -120,6 +120,8 @@ public class ItemGrid<T>
 
     private CellGenerator<T> paddingCellGenerator;
 
+    private boolean paddingCellsClickable = false;
+
     private CellSelectionHandler<T> cellSelectionHandler;
 
     private RowComponentGenerator<?> rowComponentGenerator = ItemGrid::defaultRowComponentGenerator;
@@ -279,12 +281,15 @@ public class ItemGrid<T>
     }
 
     private void clickCellAndUpdateValue(CellInformation<T> information) {
-        this.clickCell(information);
-        this.updateValue();
+        if(this.arePaddingCellsClickable() || information.isValueCell()) {
+            this.clickCell(information);
+            this.updateValue();
+        }
     }
 
     /**
      * Reacts to cell being clicked in the browser.
+     * This method is invoked for padding cells if {@link #arePaddingCellsClickable()} is {@code true}.
      * @param information Information about the clicked cell.
      */
     protected void clickCell(CellInformation<T> information) {
@@ -293,8 +298,8 @@ public class ItemGrid<T>
             this.markedAsSelected = information;
             this.getCellSelectionHandler().cellSelectionChanged(new CellSelectionEvent<>(this.markedAsSelected, true));
         }
-        // if the same value is selected, deselect it and do nothing else
-        else if(Objects.equals(this.markedAsSelected.getValue(), information.getValue())) {
+        // if the same cell is already selected, deselect it and do nothing else
+        else if(Objects.equals(this.markedAsSelected, information)) {
             this.getCellSelectionHandler().cellSelectionChanged(new CellSelectionEvent<>(information, false));
             this.markedAsSelected = null;
         }
@@ -583,6 +588,33 @@ public class ItemGrid<T>
      */
     public ItemGrid<T> withPaddingCellGenerator(CellGenerator<T> paddingCellGenerator) {
         this.setPaddingCellGenerator(paddingCellGenerator);
+        return this;
+    }
+
+    /**
+     * Checks whether the padding cells (if any present) are clickable.
+     * @return Whether or not padding cells can be clicked. Defaults to {@code false}.
+     */
+    public boolean arePaddingCellsClickable() {
+        return paddingCellsClickable;
+    }
+
+    /**
+     * Enables or disables click events on padding cells. If {@code true}, clicking a padding cell turns value to {@code null}.
+     * @param paddingCellsClickable Whether or not to allow padding cells to react to clicks.
+     */
+    public void setPaddingCellsClickable(boolean paddingCellsClickable) {
+        this.paddingCellsClickable = paddingCellsClickable;
+    }
+
+    /**
+     * Chains {@link #setPaddingCellsClickable(boolean)} and returns itself.
+     * @param paddingCellsClickable Whether or not to allow padding cells to react to clicks.
+     * @return This.
+     * @see #setPaddingCellsClickable(boolean)
+     */
+    public ItemGrid<T> withPaddingCellsClickable(boolean paddingCellsClickable) {
+        this.setPaddingCellsClickable(paddingCellsClickable);
         return this;
     }
 
