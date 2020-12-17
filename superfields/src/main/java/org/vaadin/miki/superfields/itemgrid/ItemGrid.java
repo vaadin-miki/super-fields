@@ -470,6 +470,24 @@ public class ItemGrid<T>
     }
 
     /**
+     * Returns a list with {@link CellInformation} for each cell in given row.
+     * @param row Row number, 0-based.
+     * @return An unmodifiable list. May be empty.
+     */
+    public List<CellInformation<T>> getRowCellInformation(int row) {
+        return this.cells.stream().filter(cell -> cell.getRow() == row).collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
+     * Returns a list with {@link CellInformation} for each cell in given column.
+     * @param column Column number, 0-based.
+     * @return An unmodifiable list. May be empty.
+     */
+    public List<CellInformation<T>> getColumnCellInformation(int column) {
+        return this.cells.stream().filter(cell -> cell.getColumn() == column).collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
      * Returns a {@link Stream} of all {@link Component}s in the cells.
      * @return A {@link Stream}. Never {@code null}.
      * @see #setCellGenerator(CellGenerator)
