@@ -262,6 +262,25 @@ public class ItemGridTest {
         Assert.assertEquals("9 elements, 4 columns with 2 padding cells - 5 rows", 5, this.grid.getRowCount());
         Assert.assertEquals("weird padding should have 19 cells in total", 19, this.grid.size());
 
+        for(int zmp1=0; zmp1<4; zmp1++)
+            Assert.assertEquals("four rows with 4 columns", 4, this.grid.getRowCellInformation(zmp1).size());
+        Assert.assertEquals("last row with only 3 columns", 3, this.grid.getRowCellInformation(4).size());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testPaddingStrategyMustNotTakeAllColumns() {
+        final String[] items = new String[]{"A", "B", "C", "D"};
+        this.grid.setColumnCount(2);
+        this.grid.setRowPaddingStrategy((rowNumber, gridColumns, itemsLeft) -> new RowPadding(1, 1));
+        this.grid.setItems(items); // now this must fail
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testPaddingStrategyMustNotTakeMoreColumns() {
+        final String[] items = new String[]{"A", "B", "C", "D"};
+        this.grid.setColumnCount(3);
+        this.grid.setItems(items);
+        this.grid.setRowPaddingStrategy((rowNumber, gridColumns, itemsLeft) -> new RowPadding(2, 2));
     }
 
 }
