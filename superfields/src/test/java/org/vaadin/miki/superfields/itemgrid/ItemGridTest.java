@@ -240,4 +240,28 @@ public class ItemGridTest {
         Assert.assertTrue(this.grid.getCellInformation().stream().noneMatch(info -> info.getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)));
     }
 
+    @Test
+    public void testPaddingStrategyChanges() {
+        final String[] items = new String[]{"item-1", "item-2", "item-3", "item-4", "item-5", "item-6", "item-7", "item-8", "item-9"};
+        this.grid.setItems(items);
+        this.grid.setColumnCount(4);
+
+        Assert.assertEquals("9 elements in 4 columns - that is 3 rows", 3, this.grid.getRowCount());
+
+        this.grid.setRowPaddingStrategy(RowPaddingStrategies.LAST_ROW_FILL_END);
+
+        Assert.assertEquals("padded 9 elements in 4 columns - that is 3 rows", 3, this.grid.getRowCount());
+        Assert.assertEquals("with padding there should be 12 elements", 12, this.grid.size());
+        Assert.assertEquals("only 3 padding cells should be there", 3, this.grid.getCellInformation().stream().filter(cell -> !cell.isValueCell()).count());
+        for(int zmp1=1; zmp1<=3; zmp1++)
+            Assert.assertFalse("last three cells in last row must not be value cells", this.grid.getCellInformation(2, zmp1).map(CellInformation::isValueCell).orElse(false));
+
+        // this makes the grid effectively 2 columns, with padding column on each side
+        this.grid.setRowPaddingStrategy((rowNumber, gridColumns, itemsLeft) -> new RowPadding(1, 1));
+
+        Assert.assertEquals("9 elements, 4 columns with 2 padding cells - 5 rows", 5, this.grid.getRowCount());
+        Assert.assertEquals("weird padding should have 19 cells in total", 19, this.grid.size());
+
+    }
+
 }
