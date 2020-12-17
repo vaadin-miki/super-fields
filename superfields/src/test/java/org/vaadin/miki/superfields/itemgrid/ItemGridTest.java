@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ItemGridTest {
@@ -238,6 +239,68 @@ public class ItemGridTest {
 
         // old selection handler should not be invoked
         Assert.assertTrue(this.grid.getCellInformation().stream().noneMatch(info -> info.getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)));
+    }
+
+    @Test
+    public void testPaddingStrategyChanges() {
+        final String[] items = new String[]{"item-1", "item-2", "item-3", "item-4", "item-5", "item-6", "item-7", "item-8", "item-9"};
+        this.grid.setItems(items);
+        this.grid.setColumnCount(4);
+
+        Assert.assertEquals("9 elements in 4 columns - that is 3 rows", 3, this.grid.getRowCount());
+
+        this.grid.setRowPaddingStrategy(RowPaddingStrategies.LAST_ROW_FILL_END);
+
+        Assert.assertEquals("padded 9 elements in 4 columns - that is 3 rows", 3, this.grid.getRowCount());
+        Assert.assertEquals("with padding there should be 12 elements", 12, this.grid.size());
+        Assert.assertEquals("only 3 padding cells should be there", 3, this.grid.getCellInformation().stream().filter(cell -> !cell.isValueCell()).count());
+        for(int zmp1=1; zmp1<=3; zmp1++)
+            Assert.assertFalse("last three cells in last row must not be value cells", this.grid.getCellInformation(2, zmp1).map(CellInformation::isValueCell).orElse(false));
+
+        // this makes the grid effectively 2 columns, with padding column on each side
+        this.grid.setRowPaddingStrategy((rowNumber, gridColumns, itemsLeft) -> new RowPadding(1, 1));
+
+        Assert.assertEquals("9 elements, 4 columns with 2 padding cells - 5 rows", 5, this.grid.getRowCount());
+        Assert.assertEquals("weird padding should have 19 cells in total", 19, this.grid.size());
+
+        for(int zmp1=0; zmp1<4; zmp1++)
+            Assert.assertEquals("four rows with 4 columns", 4, this.grid.getRowCellInformation(zmp1).size());
+        Assert.assertEquals("last row with only 3 columns", 3, this.grid.getRowCellInformation(4).size());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testPaddingStrategyMustNotTakeAllColumns() {
+        final String[] items = new String[]{"A", "B", "C", "D"};
+        this.grid.setColumnCount(2);
+        this.grid.setRowPaddingStrategy((rowNumber, gridColumns, itemsLeft) -> new RowPadding(1, 1));
+        this.grid.setItems(items); // now this must fail
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testPaddingStrategyMustNotTakeMoreColumns() {
+        final String[] items = new String[]{"A", "B", "C", "D"};
+        this.grid.setColumnCount(3);
+        this.grid.setItems(items);
+        this.grid.setRowPaddingStrategy((rowNumber, gridColumns, itemsLeft) -> new RowPadding(2, 2));
+    }
+
+    @Test
+    public void clickPaddingCells() {
+        final String[] items = new String[]{"one", "two"};
+        this.grid.setItems(items);
+        this.grid.setRowPaddingStrategy(RowPaddingStrategies.FIRST_ROW_FILL_BEGINNING);
+        final Optional<CellInformation<String>> perhapsCell = this.grid.getCellInformation(0, 0);
+        Assert.assertTrue("there should be cell at (0, 0)", perhapsCell.isPresent());
+        Assert.assertFalse("cell at (0, 0) must not be a value cell", perhapsCell.get().isValueCell());
+        this.grid.simulateCellClick(0, 0);
+        Assert.assertEquals("padding cells are not clickable by default", 0, this.eventCounter);
+        this.grid.simulateCellClick(0, 1);
+        Assert.assertEquals("value cells are clickable", 1, this.eventCounter);
+        this.grid.setPaddingCellsClickable(true);
+        this.grid.simulateCellClick(0, 0);
+        Assert.assertEquals("padding cells should now be clickable", 2, this.eventCounter);
+        this.grid.simulateCellClick(0, 1);
+        Assert.assertEquals("value cells are still clickable", 3, this.eventCounter);
     }
 
 }
