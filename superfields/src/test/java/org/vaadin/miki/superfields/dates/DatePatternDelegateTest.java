@@ -34,6 +34,11 @@ public class DatePatternDelegateTest {
         String raw = this.datePicker.getFormattedValue();
         Assert.assertEquals("1999-05-03", raw);
 
+        // now server-side month formatting
+        this.datePicker.setDatePattern(DatePatterns.D_MMMM_YYYY);
+        raw = this.datePicker.getFormattedValue();
+        Assert.assertEquals("3 maja 1999", raw);
+
         this.datePicker.setDatePattern(null);
 
         // now formatted according to locale

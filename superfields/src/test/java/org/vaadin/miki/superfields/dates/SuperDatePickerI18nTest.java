@@ -36,5 +36,6 @@ public class SuperDatePickerI18nTest {
         Assert.assertEquals(Arrays.asList("niedziela", "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota"), this.i18n.getWeekdays());
         Assert.assertEquals(Arrays.asList("niedz.", "pon.", "wt.", "śr.", "czw.", "pt.", "sob."), this.i18n.getWeekdaysShort());
         Assert.assertEquals(1, this.i18n.getFirstDayOfWeek());
+        Assert.assertEquals(Arrays.asList("stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września", "października", "listopada", "grudnia"), this.i18n.getDisplayMonthNames());
     }
 }

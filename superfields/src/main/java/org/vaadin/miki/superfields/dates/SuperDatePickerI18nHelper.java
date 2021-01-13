@@ -2,12 +2,15 @@ package org.vaadin.miki.superfields.dates;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * A helper class for setting locale and I18N.
+ * A helper class related to setting locale and super-I18N objects.
  * Internal use only.
  *
  * @author miki
@@ -33,4 +36,44 @@ final class SuperDatePickerI18nHelper {
 
     }
 
+    /**
+     * Helper method to process a property under a certain condition.
+     * @param getter Method to get a value.
+     * @param condition Condition on the value.
+     * @param setter Setter to invoke when the condition is {@code true}.
+     * @param <T> Type of value.
+     */
+    private static <T> void processProperty(Supplier<T> getter, Predicate<T> condition, Function<T, DatePicker.DatePickerI18n> setter) {
+        final T value = getter.get();
+        if(condition.test(value))
+            setter.apply(value);
+    }
+
+    /**
+     * Builds an instance of {@link SuperDatePickerI18n} from given {@link DatePicker.DatePickerI18n}.
+     * @param i18n Simplified version to use.
+     * @param locale A {@link Locale} to use.
+     * @return A super version, with all defined (non-empty) properties copied from {@code i18n}.
+     */
+    public static SuperDatePickerI18n from(DatePicker.DatePickerI18n i18n, Locale locale) {
+        SuperDatePickerI18n result = new SuperDatePickerI18n(locale);
+
+        final Predicate<String> stringCheck = s -> s != null && !s.isEmpty();
+        final Predicate<List<String>> listCheck = list -> list != null && !list.isEmpty();
+
+        processProperty(i18n::getCalendar, stringCheck, result::setCalendar);
+        processProperty(i18n::getCancel, stringCheck, result::setCancel);
+        processProperty(i18n::getClear, stringCheck, result::setClear);
+        processProperty(i18n::getToday, stringCheck, result::setToday);
+        processProperty(i18n::getWeek, stringCheck, result::setWeek);
+        processProperty(i18n::getMonthNames, listCheck, result::setMonthNames);
+        processProperty(i18n::getWeekdays, listCheck, result::setWeekdays);
+        processProperty(i18n::getWeekdaysShort, listCheck, result::setWeekdaysShort);
+        processProperty(i18n::getMonthNames, listCheck, result::setDisplayMonthNames);
+        processProperty(i18n::getFirstDayOfWeek, x -> x > -1, result::setFirstDayOfWeek);
+
+        if(i18n.getCalendar() != null && !i18n.getCalendar().isEmpty())
+            result.setCalendar(i18n.getCalendar());
+        return null;
+    }
 }

@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
  * Utility class that generates JS code needed by {@code vaadin-date-picker} and {@code vaadin-date-time-picker}.
  * @author miki
  * @since 2020-04-24
+ * @deprecated This class is not needed, there is dedicated client-side code now.
  */
+@Deprecated(forRemoval = true, since = "0.9.4") // how come this is still around?
 public class DatePatternJsGenerator {
 
     /**
@@ -43,7 +45,7 @@ public class DatePatternJsGenerator {
     public String formatDate(DatePattern pattern) {
         Map<Integer, Supplier<Boolean>> patternMethods = new HashMap<>();
         patternMethods.put((int)'d', pattern::isZeroPrefixedDay);
-        patternMethods.put((int)'M', pattern::isZeroPrefixedMonth);
+        patternMethods.put((int)'M', () -> pattern.getMonthDisplayMode() == DatePattern.MonthDisplayMode.ZERO_PREFIXED_NUMBER);
         patternMethods.put((int)'y', pattern::isShortYear);
 
         return this.orders.get(pattern.getDisplayOrder()).chars().

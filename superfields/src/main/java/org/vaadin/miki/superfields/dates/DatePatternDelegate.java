@@ -15,14 +15,15 @@ import java.time.LocalDate;
  * @author miki
  * @since 2020-05-02
  */
-final class DatePatternDelegate<C extends Component & HasDatePattern> implements Serializable {
+final class DatePatternDelegate<C extends Component & HasDatePattern & HasSuperDatePickerI18N> implements Serializable {
 
     private static final long serialVersionUID = 20200506L;
 
     /**
      * Returns the pattern descriptor string expected by the client-side code.
      * The descriptor starts with a separator character, followed (in whatever order is decided) by
-     * {@code 0d} or {@code _d} for (zero prefixed) day, {@code 0M} or {@code _M} for (zero prefixed) month,
+     * {@code 0d} or {@code _d} for (zero prefixed) day, {@code 0M} or {@code _M} for (zero prefixed) month
+     * or {@code MM} for month name,
      * {@code 0y} or {@code _y} for short or full year. If short year is used, the resulting string ends
      * with {@code +} or {@code -} depending on {@link DatePattern#isPreviousCenturyBelowBoundary()}, followed by
      * two digits of the {@link DatePattern#getBaseCentury()} and two digits of {@link DatePattern#getCenturyBoundaryYear()}.
@@ -34,7 +35,18 @@ final class DatePatternDelegate<C extends Component & HasDatePattern> implements
             return null;
         else {
             final String dayPart = pattern.isZeroPrefixedDay() ? "0d" : "_d";
-            final String monthPart = pattern.isZeroPrefixedMonth() ? "0M" : "_M";
+            final String monthPart;
+            switch (pattern.getMonthDisplayMode()) {
+                case NAME:
+                    monthPart = "mM";
+                    break;
+                case NUMBER:
+                    monthPart = "_M";
+                    break;
+                default:
+                    monthPart = "0M";
+                    break;
+            }
             final String yearPart = pattern.isShortYear() ? "0y" : "_y";
 
             StringBuilder builder = new StringBuilder();
@@ -123,7 +135,16 @@ final class DatePatternDelegate<C extends Component & HasDatePattern> implements
         final String[] parts = new String[3];
         final int[] indices = this.getDayMonthYearPositions(pattern.getDisplayOrder());
         parts[indices[0]] = pattern.isZeroPrefixedDay() ? String.format("%02d", date.getDayOfMonth()) : String.valueOf(date.getDayOfMonth());
-        parts[indices[1]] = pattern.isZeroPrefixedMonth() ? String.format("%02d", date.getMonthValue()) : String.valueOf(date.getMonthValue());
+        switch (pattern.getMonthDisplayMode()) {
+            case ZERO_PREFIXED_NUMBER:
+                parts[indices[1]] = String.format("%02d", date.getMonthValue());
+                break;
+            case NAME:
+                parts[indices[1]] = this.source.getSuperDatePickerI18n().getDisplayMonthNames().get(date.getMonthValue() - 1);
+                break;
+            default:
+                parts[indices[1]] = String.valueOf(date.getMonthValue());
+        }
         parts[indices[2]] = pattern.isShortYear() ? String.format("%02d", date.getYear() % 100) : String.valueOf(date.getYear());
         return String.join(String.valueOf(pattern.getSeparator()), parts);
     }
