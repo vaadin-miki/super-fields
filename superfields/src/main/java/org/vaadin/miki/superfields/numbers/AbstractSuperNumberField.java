@@ -144,7 +144,12 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.field.addTextSelectionListener(this::onTextSelected);
     }
 
-    private static String escapeDot(char character) {
+    /**
+     * Escapes the {@link #DOT} for regular expression, if needed.
+     * @param character Character to escape.
+     * @return Dot escaped or the passed character.
+     */
+    protected static String escapeDot(char character) {
         return character == DOT ? "\\." : String.valueOf(character);
     }
 
@@ -243,66 +248,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         // updating the expression may change formatting
         T value = this.getValue();
 
-        final String groupSeparatorRegexp =
-                this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE
-                        ? "[ "+this.format.getDecimalFormatSymbols().getGroupingSeparator()+"]"
-                        : escapeDot(this.format.getDecimalFormatSymbols().getGroupingSeparator());
-
-        StringBuilder builder = new StringBuilder("^");
-
-        if(this.isNegativeValueAllowed())
-            builder.append(this.format.getDecimalFormatSymbols().getMinusSign()).append("?");
-
-        // everything after the negative sign can be optional, meaning that empty string is ok
-        builder.append("(");
-
-        // if the maximum number of digits allowed is less than a single group:
-        if(this.format.getMaximumIntegerDigits() <= this.format.getGroupingSize())
-            builder.append("\\d{0,").append(this.format.getMaximumIntegerDigits()).append("}");
-        // or, there will be at least one group of digits in the formatted number
-        else {
-            int leftmostGroupMaxSize = this.format.getMaximumIntegerDigits() % this.format.getGroupingSize();
-            int middleGroupCount = this.format.getMaximumIntegerDigits() / this.format.getGroupingSize() - 1;
-            if (leftmostGroupMaxSize == 0) {
-                leftmostGroupMaxSize = this.format.getGroupingSize();
-                middleGroupCount-=1; // the left-most group is full size, so there will be one less middle group; fixes https://github.com/vaadin-miki/super-fields/issues/10
-            }
-
-            // if there are no middle groups, things are simple
-            if(middleGroupCount == 0) {
-                builder.append("\\d{0,").append(leftmostGroupMaxSize).append("}")
-                        .append(groupSeparatorRegexp).append("?\\d{0,").append(this.format.getGroupingSize()).append("}");
-            }
-            else {
-                builder.append("(");
-                // two cases to check against, if middle groups are present,
-                builder.append("(");
-                // case 1. the leftmost group is present...
-                builder.append("\\d{1,").append(leftmostGroupMaxSize).append("}");
-                //         ...followed by (optionally) separated middle groups
-                builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(this.format.getGroupingSize()).append("}){0,").append(middleGroupCount).append("}");
-                //         ...followed by (optionally) separated last group
-                builder.append("(").append(groupSeparatorRegexp).append("?\\d{0,").append(this.format.getGroupingSize()).append("}").append(")?");
-                builder.append(")|(");
-                // case 2. the number is less than maximum allowed, so it starts with full size or less than full size group...
-                builder.append("\\d{1,").append(this.format.getGroupingSize()).append("}");
-                //         ...followed by (optionally) separated one less middle groups, if any
-                if (middleGroupCount > 1)
-                    builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(this.format.getGroupingSize()).append("}){0,").append(middleGroupCount - 1).append("}");
-                //         ...followed by (optionally) separated last group
-                builder.append("(").append(groupSeparatorRegexp).append("?\\d{0,").append(this.format.getGroupingSize()).append("}").append(")?");
-                builder.append(")");
-                builder.append(")");
-            }
-        }
-
-        if(this.format.getMaximumFractionDigits() > 0)
-            builder.append("(").append(escapeDot(this.format.getDecimalFormatSymbols().getDecimalSeparator()))
-            .append("\\d{0,").append(this.format.getMaximumFractionDigits()).append("})?");
-
-        builder.append(")?$");
-
-        this.regexp = builder.toString();
+        this.regexp = this.buildRegularExpression(new StringBuilder(), this.format).toString();
 
         this.field.setPattern(this.regexp);
 
@@ -313,6 +259,75 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         }
         else
             this.setPresentationValue(value);
+    }
+
+    /**
+     * Builds regular expression that allows neat typing of the number already formatted.
+     * Overwrite with care.
+     * @param builder Builder, initially empty.
+     * @param format Information about the format.
+     * @return Builder with the regular expression.
+     */
+    protected StringBuilder buildRegularExpression(StringBuilder builder, DecimalFormat format) {
+        final String groupSeparatorRegexp =
+                this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE
+                        ? "[ "+this.format.getDecimalFormatSymbols().getGroupingSeparator()+"]"
+                        : escapeDot(this.format.getDecimalFormatSymbols().getGroupingSeparator());
+
+        builder.append("^");
+
+        if(this.isNegativeValueAllowed())
+            builder.append(this.format.getDecimalFormatSymbols().getMinusSign()).append("?");
+
+        // everything after the negative sign can be optional, meaning that empty string is ok
+        builder.append("(");
+
+        // if the maximum number of digits allowed is less than a single group:
+        if(this.format.getMaximumIntegerDigits() <= this.format.getGroupingSize())
+            builder.append("\\d{0,").append(format.getMaximumIntegerDigits()).append("}");
+            // or, there will be at least one group of digits in the formatted number
+        else {
+            int leftmostGroupMaxSize = format.getMaximumIntegerDigits() % format.getGroupingSize();
+            int middleGroupCount = format.getMaximumIntegerDigits() / format.getGroupingSize() - 1;
+            if (leftmostGroupMaxSize == 0) {
+                leftmostGroupMaxSize = format.getGroupingSize();
+                middleGroupCount-=1; // the left-most group is full size, so there will be one less middle group; fixes https://github.com/vaadin-miki/super-fields/issues/10
+            }
+
+            // if there are no middle groups, things are simple
+            if(middleGroupCount == 0) {
+                builder.append("\\d{0,").append(leftmostGroupMaxSize).append("}")
+                        .append(groupSeparatorRegexp).append("?\\d{0,").append(format.getGroupingSize()).append("}");
+            }
+            else {
+                builder.append("(");
+                // two cases to check against, if middle groups are present,
+                builder.append("(");
+                // case 1. the leftmost group is present...
+                builder.append("\\d{1,").append(leftmostGroupMaxSize).append("}");
+                //         ...followed by (optionally) separated middle groups
+                builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(format.getGroupingSize()).append("}){0,").append(middleGroupCount).append("}");
+                //         ...followed by (optionally) separated last group
+                builder.append("(").append(groupSeparatorRegexp).append("?\\d{0,").append(format.getGroupingSize()).append("}").append(")?");
+                builder.append(")|(");
+                // case 2. the number is less than maximum allowed, so it starts with full size or less than full size group...
+                builder.append("\\d{1,").append(format.getGroupingSize()).append("}");
+                //         ...followed by (optionally) separated one less middle groups, if any
+                if (middleGroupCount > 1)
+                    builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(format.getGroupingSize()).append("}){0,").append(middleGroupCount - 1).append("}");
+                //         ...followed by (optionally) separated last group
+                builder.append("(").append(groupSeparatorRegexp).append("?\\d{0,").append(format.getGroupingSize()).append("}").append(")?");
+                builder.append(")");
+                builder.append(")");
+            }
+        }
+
+        if(this.format.getMaximumFractionDigits() > 0)
+            builder.append("(").append(escapeDot(format.getDecimalFormatSymbols().getDecimalSeparator()))
+                    .append("\\d{0,").append(format.getMaximumFractionDigits()).append("})?");
+
+        builder.append(")?$");
+        return builder;
     }
 
     private void onFieldBlurred(BlurNotifier.BlurEvent<TextField> event) {
@@ -716,6 +731,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      */
     final int getMaximumIntegerDigits() {
         return this.format.getMaximumIntegerDigits();
+    }
+
+    /**
+     * Calls {@link #parseRawValue(String, DecimalFormat)} using this object's format.
+     * @param rawValue Raw value to parse.
+     * @return Parsed number.
+     * @throws ParseException when parsing goes wrong.
+     */
+    final T parseRawValue(String rawValue) throws ParseException {
+        return this.parseRawValue(rawValue, this.format);
     }
 
 }

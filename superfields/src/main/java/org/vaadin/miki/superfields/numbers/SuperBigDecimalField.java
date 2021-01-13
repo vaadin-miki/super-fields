@@ -89,13 +89,7 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
 
     @Override
     protected BigDecimal parseRawValue(String rawValue, DecimalFormat format) throws ParseException {
-        // no idea how decimal formats work, but just in case the instance is shared across many objects...
-        boolean oldParse = format.isParseBigDecimal();
-        format.setParseBigDecimal(true);
-        BigDecimal result = (BigDecimal)format.parse(rawValue);
-        // ...here it returns to the prior state after it was used
-        format.setParseBigDecimal(oldParse);
-        return result;
+        return BigDecimalFormatParser.parseFromString(rawValue, format);
     }
 
 }
