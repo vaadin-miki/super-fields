@@ -29,7 +29,7 @@ public class HasDatePatternBuilder implements ContentBuilder<HasDatePattern> {
         final ComboBox<DatePattern> patterns = new ComboBox<>("Select date display pattern:",
                 DatePatterns.YYYY_MM_DD, DatePatterns.M_D_YYYY_SLASH,
                 DatePatterns.DD_MM_YYYY_DOTTED, DatePatterns.DD_MM_YY_OR_YYYY_DOTTED, DatePatterns.D_M_YY_DOTTED,
-                DatePatterns.YYYYMMDD, DatePatterns.DDMMYY
+                DatePatterns.YYYYMMDD, DatePatterns.DDMMYY, DatePatterns.D_MMMM_YYYY
         );
         final Button clearPattern = new Button("Clear pattern", event -> component.setDatePattern(null));
         clearPattern.setDisableOnClick(true);

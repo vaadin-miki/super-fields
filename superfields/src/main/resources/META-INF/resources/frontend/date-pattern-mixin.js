@@ -10,8 +10,8 @@ export class DatePatternMixin {
                     console.error("SDP: no connector set, things will not work until it is set");
                     return;
                 }
-                    datepicker.set('oldSetLocale', datepicker.$connector.setLocale);
-                    datepicker.$connector.setLocale = locale => {
+                datepicker.set('oldSetLocale', datepicker.$connector.setLocale);
+                datepicker.$connector.setLocale = locale => {
                         console.log('SDP: setting locale ' + locale);
                         datepicker.oldSetLocale(locale);
                         datepicker.noPatternParseAndFormat = [datepicker.i18n.parseDate, datepicker.i18n.formatDate];
@@ -63,6 +63,7 @@ export class DatePatternMixin {
                 }
                 datepicker.set('i18n.formatDate', date => {
                     const ddp = datepicker.i18n.dateDisplayPattern;
+                    const monthNames = datepicker.i18n.displayMonthNames;
                     const startIndex = (ddp.length === 7 || ddp.length === 12) ? 1 : 0;
                     console.log('SDP: custom formatting for ' + ddp);
                     return [ddp.substr(startIndex, 2), ddp.substr(startIndex+2, 2), ddp.substr(startIndex+4, 2)].map(part => {
@@ -74,6 +75,8 @@ export class DatePatternMixin {
                             return String(date.month + 1).padStart(2, '0')
                         } else if (part === '_M') {
                             return String(date.month + 1)
+                        } else if (part === 'mM') {
+                            return monthNames[date.month]
                         } else if (part === '0y') {
                             return date.year < 10 ? '0' + String(date.year) : String(date.year).substr(-2)
                         } else if (part === '_y') {
@@ -84,6 +87,8 @@ export class DatePatternMixin {
                 datepicker.set('i18n.parseDate', text => {
                     const ddp = datepicker.i18n.dateDisplayPattern;
                     const shortYear = ddp.indexOf('0y') !== -1;
+                    const useMonthName = ddp.indexOf('mM') >= 0;
+                    const monthNames = datepicker.i18n.displayMonthNames;
                     console.log('SDP: custom parsing for ' + ddp);
                     const today = new Date();
                     let date, month = today.getMonth(), year = today.getFullYear();
@@ -93,15 +98,40 @@ export class DatePatternMixin {
                         if (parts.length === 3) {
                             // d, M, y can be at index 2, 4 or 6 in the pattern
                             year = parseInt(parts[(ddp.indexOf('y') / 2) - 1]);
-                            month = parseInt(parts[(ddp.indexOf('M') / 2) - 1]) - 1;
+                            if (useMonthName) {
+                                const userInput = parts[(ddp.indexOf('M') / 2) - 1];
+                                month = monthNames.indexOf(monthNames.find(m => m.substring(0, userInput.length).localeCompare(userInput, undefined, {sensitivity: 'base'}) === 0));
+                                // this is here in case the locale was changed or the month was not found
+                                if (month === -1) {
+                                    month = parseInt(datepicker.value.substring(5, 7)) - 1;
+                                }
+                            } else {
+                                month = parseInt(parts[(ddp.indexOf('M') / 2) - 1]) - 1;
+                            }
                             date = parseInt(parts[(ddp.indexOf('d') / 2) - 1]);
                         } else if (parts.length === 2) {
                             if (ddp.indexOf('d') < ddp.indexOf('M')) {
                                 date = parseInt(parts[0]);
-                                month = parseInt(parts[1]) - 1;
+                                if (useMonthName) {
+                                    month = monthNames.indexOf(monthNames.find(m => m.substring(0, parts[1].length).localeCompare(parts[1], undefined, {sensitivity: 'base'}) === 0));
+                                    // this is here in case the locale was changed or the month was not found
+                                    if (month === -1) {
+                                        month = parseInt(datepicker.value.substring(5, 7)) - 1;
+                                    }
+                                } else {
+                                    month = parseInt(parts[1]) - 1;
+                                }
                             } else {
                                 date = parseInt(parts[1]);
-                                month = parseInt(parts[0]) - 1;
+                                if (useMonthName) {
+                                    month = monthNames.indexOf(monthNames.find(m => m.substring(0, parts[0].length).localeCompare(parts[0], undefined, {sensitivity: 'base'}) === 0));
+                                    // this is here in case the locale was changed or the month was not found
+                                    if (month === -1) {
+                                        month = parseInt(datepicker.value.substring(5, 7)) - 1;
+                                    }
+                                } else {
+                                    month = parseInt(parts[0]) - 1;
+                                }
                             }
                         } else if (parts.length === 1) {
                             date = parseInt(parts[0]);

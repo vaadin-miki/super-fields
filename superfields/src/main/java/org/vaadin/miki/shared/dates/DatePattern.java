@@ -21,6 +21,11 @@ public class DatePattern implements Serializable {
     public enum Order {DAY_MONTH_YEAR, MONTH_DAY_YEAR, YEAR_MONTH_DAY}
 
     /**
+     * Defines available ways of displaying month.
+     */
+    public enum MonthDisplayMode {ZERO_PREFIXED_NUMBER, NUMBER, NAME}
+
+    /**
      * Shorthand for no separator (character 0).
      */
     public static final char NO_SEPARATOR = 0;
@@ -38,7 +43,7 @@ public class DatePattern implements Serializable {
 
     private boolean zeroPrefixedDay = true;
 
-    private boolean zeroPrefixedMonth = true;
+    private MonthDisplayMode monthDisplayMode = MonthDisplayMode.ZERO_PREFIXED_NUMBER;
 
     private boolean shortYear = false;
 
@@ -91,7 +96,7 @@ public class DatePattern implements Serializable {
     public void setSeparator(char separator) {
         this.separator = separator;
         if(separator == NO_SEPARATOR) {
-            this.withZeroPrefixedDay(true).setZeroPrefixedMonth(true);
+            this.withZeroPrefixedDay(true).setMonthDisplayMode(MonthDisplayMode.ZERO_PREFIXED_NUMBER);
             LOGGER.warn("disabling date pattern separator, turning on zero-prefixed day and zero-prefixed month");
         }
     }
@@ -151,23 +156,55 @@ public class DatePattern implements Serializable {
     }
 
     /**
+     * Sets month display mode from available options.
+     * @param monthDisplayMode Month display mode.
+     */
+    public void setMonthDisplayMode(MonthDisplayMode monthDisplayMode) {
+        this.monthDisplayMode = monthDisplayMode;
+        if(monthDisplayMode != MonthDisplayMode.ZERO_PREFIXED_NUMBER && !this.hasSeparator()) {
+            this.setSeparator(DEFAULT_SEPARATOR);
+            LOGGER.warn("turning off zero-prefixed month requires a separator, setting it to be the default one ({})", DEFAULT_SEPARATOR);
+        }
+
+    }
+
+    /**
+     * Returns current month display mode.
+     * @return A month display mode. {@link MonthDisplayMode#ZERO_PREFIXED_NUMBER} by default.
+     */
+    public MonthDisplayMode getMonthDisplayMode() {
+        return monthDisplayMode;
+    }
+
+    /**
+     * Chains {@link #setMonthDisplayMode(MonthDisplayMode)} and returns itself.
+     * @param monthDisplayMode Month display mode.
+     * @return This
+     * @see #setMonthDisplayMode(MonthDisplayMode)
+     */
+    public DatePattern withMonthDisplayMode(MonthDisplayMode monthDisplayMode) {
+        this.setMonthDisplayMode(monthDisplayMode);
+        return this;
+    }
+
+    /**
      * Checks whether months should be prefixed with {@code 0}.
      * @return Whether or not months will be zero-prefixed ({@code 09} instead of {@code 9}); {@code true} by default.
+     * @deprecated Use {@link #getMonthDisplayMode()} instead.
      */
+    @Deprecated(forRemoval = true, since = "0.9.4")
     public boolean isZeroPrefixedMonth() {
-        return zeroPrefixedMonth;
+        return this.monthDisplayMode == MonthDisplayMode.ZERO_PREFIXED_NUMBER;
     }
 
     /**
      * Sets whether or not months should be prefixed with {@code 0}.
      * @param zeroPrefixedMonth When {@code true} and month is one digit, zero will be added in front of that number.
+     * @deprecated Use {@link #setMonthDisplayMode(MonthDisplayMode)} instead.
      */
+    @Deprecated(forRemoval = true, since = "0.9.4")
     public void setZeroPrefixedMonth(boolean zeroPrefixedMonth) {
-        this.zeroPrefixedMonth = zeroPrefixedMonth;
-        if(!zeroPrefixedMonth && !this.hasSeparator()) {
-            this.setSeparator(DEFAULT_SEPARATOR);
-            LOGGER.warn("turning off zero-prefixed month requires a separator, setting it to be the default one ({})", DEFAULT_SEPARATOR);
-        }
+        this.setMonthDisplayMode(zeroPrefixedMonth ? MonthDisplayMode.ZERO_PREFIXED_NUMBER : MonthDisplayMode.NUMBER);
     }
 
     /**
@@ -175,7 +212,9 @@ public class DatePattern implements Serializable {
      * @param zeroPrefixedMonth Whether or not to zero-prefix months.
      * @return This.
      * @see #setZeroPrefixedMonth(boolean)
+     * @deprecated Use {@link #withMonthDisplayMode(MonthDisplayMode)} instead.
      */
+    @Deprecated(forRemoval = true, since = "0.10.0")
     public DatePattern withZeroPrefixedMonth(boolean zeroPrefixedMonth) {
         this.setZeroPrefixedMonth(zeroPrefixedMonth);
         return this;
@@ -364,7 +403,7 @@ public class DatePattern implements Serializable {
         DatePattern pattern = (DatePattern) o;
         return getSeparator() == pattern.getSeparator() &&
                 isZeroPrefixedDay() == pattern.isZeroPrefixedDay() &&
-                isZeroPrefixedMonth() == pattern.isZeroPrefixedMonth() &&
+                getMonthDisplayMode() == pattern.getMonthDisplayMode() &&
                 isShortYear() == pattern.isShortYear() &&
                 getBaseCentury() == pattern.getBaseCentury() &&
                 getCenturyBoundaryYear() == pattern.getCenturyBoundaryYear() &&
@@ -375,7 +414,7 @@ public class DatePattern implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getSeparator(), isZeroPrefixedDay(), isZeroPrefixedMonth(), isShortYear(), getBaseCentury(), getCenturyBoundaryYear(), isPreviousCenturyBelowBoundary(), isShortYearAlwaysAccepted(), getDisplayOrder());
+        return Objects.hash(getSeparator(), isZeroPrefixedDay(), getMonthDisplayMode(), isShortYear(), getBaseCentury(), getCenturyBoundaryYear(), isPreviousCenturyBelowBoundary(), isShortYearAlwaysAccepted(), getDisplayOrder());
     }
 
     @Override
@@ -384,7 +423,7 @@ public class DatePattern implements Serializable {
                 "DatePattern{" +
                 "separator=" + separator +
                 ", zeroPrefixedDay=" + zeroPrefixedDay +
-                ", zeroPrefixedMonth=" + zeroPrefixedMonth +
+                ", monthDisplayMode=" + monthDisplayMode +
                 ", shortYear=" + shortYear +
                 ", baseCentury=" + baseCentury +
                 ", centuryBoundaryYear=" + centuryBoundaryYear +
