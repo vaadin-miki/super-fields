@@ -35,7 +35,7 @@ public final class DatePatterns {
     public static final DatePattern D_M_YY_DOTTED = new DatePattern("d.M.yy")
             .withDisplayOrder(DatePattern.Order.DAY_MONTH_YEAR)
             .withShortYear(true)
-            .withSeparator('.').withZeroPrefixedDay(false).withZeroPrefixedMonth(false)
+            .withSeparator('.').withZeroPrefixedDay(false).withMonthDisplayMode(DatePattern.MonthDisplayMode.NUMBER)
             .withBaseCentury(21).withCenturyBoundaryYear(40).withPreviousCenturyBelowBoundary(false);
 
     /**
@@ -43,7 +43,7 @@ public final class DatePatterns {
      */
     public static final DatePattern M_D_YYYY_SLASH = new DatePattern("M/d/yyyy")
             .withDisplayOrder(DatePattern.Order.MONTH_DAY_YEAR)
-            .withSeparator('/').withZeroPrefixedDay(false).withZeroPrefixedMonth(false);
+            .withSeparator('/').withZeroPrefixedDay(false).withMonthDisplayMode(DatePattern.MonthDisplayMode.NUMBER);
 
     /**
      * Uses full year, zero-prefixed month and day, and no separator.
@@ -60,6 +60,14 @@ public final class DatePatterns {
             .withSeparator(DatePattern.NO_SEPARATOR)
             .withShortYear(true)
             .withBaseCentury(21).withCenturyBoundaryYear(40).withPreviousCenturyBelowBoundary(false);
+
+    /**
+     * Uses day, four digit year and month name (obtained from locale).
+     */
+    public static final DatePattern D_MMMM_YYYY = new DatePattern("d MMMM yyyy")
+            .withDisplayOrder(DatePattern.Order.DAY_MONTH_YEAR)
+            .withSeparator(' ').withZeroPrefixedDay(false)
+            .withMonthDisplayMode(DatePattern.MonthDisplayMode.NAME);
 
     private DatePatterns() {} // instances not needed
 }
