@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @since 2020-04-24
  * @deprecated This class is not needed, there is dedicated client-side code now.
  */
-@Deprecated(forRemoval = true, since = "0.9.4") // how come this is still around?
+@Deprecated // how come this is still around?
 public class DatePatternJsGenerator {
 
     /**

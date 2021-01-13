@@ -192,7 +192,7 @@ public class DatePattern implements Serializable {
      * @return Whether or not months will be zero-prefixed ({@code 09} instead of {@code 9}); {@code true} by default.
      * @deprecated Use {@link #getMonthDisplayMode()} instead.
      */
-    @Deprecated(forRemoval = true, since = "0.9.4")
+    @Deprecated
     public boolean isZeroPrefixedMonth() {
         return this.monthDisplayMode == MonthDisplayMode.ZERO_PREFIXED_NUMBER;
     }
@@ -202,7 +202,7 @@ public class DatePattern implements Serializable {
      * @param zeroPrefixedMonth When {@code true} and month is one digit, zero will be added in front of that number.
      * @deprecated Use {@link #setMonthDisplayMode(MonthDisplayMode)} instead.
      */
-    @Deprecated(forRemoval = true, since = "0.9.4")
+    @Deprecated
     public void setZeroPrefixedMonth(boolean zeroPrefixedMonth) {
         this.setMonthDisplayMode(zeroPrefixedMonth ? MonthDisplayMode.ZERO_PREFIXED_NUMBER : MonthDisplayMode.NUMBER);
     }
@@ -214,7 +214,7 @@ public class DatePattern implements Serializable {
      * @see #setZeroPrefixedMonth(boolean)
      * @deprecated Use {@link #withMonthDisplayMode(MonthDisplayMode)} instead.
      */
-    @Deprecated(forRemoval = true, since = "0.10.0")
+    @Deprecated
     public DatePattern withZeroPrefixedMonth(boolean zeroPrefixedMonth) {
         this.setZeroPrefixedMonth(zeroPrefixedMonth);
         return this;
