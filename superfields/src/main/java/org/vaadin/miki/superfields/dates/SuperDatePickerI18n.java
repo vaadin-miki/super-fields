@@ -6,8 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.vaadin.miki.markers.HasLocale;
 
 import java.text.DateFormatSymbols;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -25,7 +27,7 @@ import java.util.stream.Collectors;
  * @since 2020-04-09
  */
 // this is a workaround for https://github.com/vaadin/vaadin-date-time-picker-flow/issues/26
-final class SuperDatePickerI18n extends DatePicker.DatePickerI18n implements HasLocale {
+public final class SuperDatePickerI18n extends DatePicker.DatePickerI18n implements HasLocale {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SuperDatePickerI18n.class);
 
@@ -34,6 +36,8 @@ final class SuperDatePickerI18n extends DatePicker.DatePickerI18n implements Has
     private final Map<String, Function<String, DatePicker.DatePickerI18n>> keysToStringMethods = new HashMap<>();
 
     private final Map<String, Function<List<String>, DatePicker.DatePickerI18n>> keysToListStringMethods = new HashMap<>();
+
+    private final List<String> displayMonthNames = new ArrayList<>();
 
     private Locale locale;
 
@@ -57,15 +61,37 @@ final class SuperDatePickerI18n extends DatePicker.DatePickerI18n implements Has
         this.keysToListStringMethods.put("month-names", this::setMonthNames);
         this.keysToListStringMethods.put("weekdays", this::setWeekdays);
         this.keysToListStringMethods.put("weekdays-short", this::setWeekdaysShort);
+        this.keysToListStringMethods.put("display-month-names", this::setDisplayMonthNames);
         // finally, set locale
         this.setLocale(locale);
+    }
+
+    /**
+     * Controls the month names used for displaying and typing in by the user.
+     * @param displayMonthNames Names of months. If empty or {@code null}, {@link #getMonthNames()} will be used.
+     * @return This.
+     */
+    public DatePicker.DatePickerI18n setDisplayMonthNames(List<String> displayMonthNames) {
+        this.displayMonthNames.clear();
+        this.displayMonthNames.addAll(displayMonthNames == null || displayMonthNames.isEmpty() ?
+                this.getMonthNames() : displayMonthNames);
+        return this;
+    }
+
+    /**
+     * Returns current month names for displaying as user formatted month name.
+     * @return A list of 12 month names (from January to December).
+     */
+    public List<String> getDisplayMonthNames() {
+        return Collections.unmodifiableList(this.displayMonthNames.isEmpty() ? this.getMonthNames() : this.displayMonthNames);
     }
 
     @Override
     public void setLocale(Locale locale) {
         this.locale = locale == null ? Locale.getDefault() : locale;
         DateFormatSymbols symbols = new DateFormatSymbols(locale);
-        this.setMonthNames(Arrays.asList(symbols.getMonths()));
+        this.setMonthNames(Arrays.asList(symbols.getMonths()).subList(0, 12));
+        this.setDisplayMonthNames(Arrays.asList(symbols.getMonths()).subList(0, 12));
         this.setFirstDayOfWeek(Calendar.getInstance(this.locale).getFirstDayOfWeek() == Calendar.MONDAY ? 1 : 0);
         this.setWeekdays(Arrays.stream(symbols.getWeekdays()).filter(s -> !s.isEmpty()).collect(Collectors.toList()));
         this.setWeekdaysShort(Arrays.stream(symbols.getShortWeekdays()).filter(s -> !s.isEmpty()).collect(Collectors.toList()));

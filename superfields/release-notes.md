@@ -1,3 +1,11 @@
+# 0.9.4 - Month name support for DatePattern
+## New features and enhancements
+* \#242 - [Add "month name" to supported date patterns](https://github.com/vaadin-miki/super-fields/issues/242)
+## Changes to API
+* \#242 - [Add "month name" to supported date patterns](https://github.com/vaadin-miki/super-fields/issues/242)
+## Bug fixes
+* \#87 - [Calling SuperDateTimePicker.setDatePattern when it is on an invisible layout results in "$connector undefined"](https://github.com/vaadin-miki/super-fields/issues/87)
+* \#260 - [TypeError (datepicker is null) in SuperDateTimePicker](https://github.com/vaadin-miki/super-fields/issues/260)
 # 0.9.3 - GridMultiSelect and ItemGrid row padding
 ## New features and enhancements
 * \#239 - [GridMultiSelect](https://github.com/vaadin-miki/super-fields/issues/239)

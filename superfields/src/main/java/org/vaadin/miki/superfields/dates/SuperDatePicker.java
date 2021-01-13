@@ -38,7 +38,7 @@ import java.util.Locale;
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperDatePicker extends DatePicker
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SuperDatePicker>,
-                   TextSelectionNotifier<SuperDatePicker>,
+                   TextSelectionNotifier<SuperDatePicker>, HasSuperDatePickerI18N,
                    WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>,
                    WithPlaceholderMixin<SuperDatePicker>, WithDatePatternMixin<SuperDatePicker>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<DatePicker, LocalDate>, LocalDate, SuperDatePicker>,
@@ -100,6 +100,7 @@ public class SuperDatePicker extends DatePicker
     }
 
     @Override
+    @SuppressWarnings("squid:S2589")
     public final void setLocale(Locale locale) {
         // there is a call for setting locale from the superclass' constructor
         // and when that happens, the field is not yet initialised
@@ -178,5 +179,17 @@ public class SuperDatePicker extends DatePicker
     @Override
     public Registration addTextSelectionListener(TextSelectionListener<SuperDatePicker> listener) {
         return this.textSelectionDelegate.addTextSelectionListener(listener);
+    }
+
+    @Override
+    public SuperDatePickerI18n getSuperDatePickerI18n() {
+        return (SuperDatePickerI18n) this.getI18n();
+    }
+
+    @Override
+    public void setI18n(DatePickerI18n i18n) {
+        if(!(i18n instanceof SuperDatePickerI18n))
+            i18n = SuperDatePickerI18nHelper.from(i18n, this.getLocale());
+        super.setI18n(i18n);
     }
 }

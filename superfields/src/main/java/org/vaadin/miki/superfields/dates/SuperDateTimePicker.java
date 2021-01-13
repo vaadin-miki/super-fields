@@ -28,7 +28,8 @@ import java.util.Optional;
 @Tag("super-date-time-picker")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperDateTimePicker extends DateTimePicker
-        implements WithLocaleMixin<SuperDateTimePicker>, WithLabelMixin<SuperDateTimePicker>,
+        implements HasSuperDatePickerI18N,
+                   WithLocaleMixin<SuperDateTimePicker>, WithLabelMixin<SuperDateTimePicker>,
                    WithDatePatternMixin<SuperDateTimePicker>, WithIdMixin<SuperDateTimePicker>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<DateTimePicker, LocalDateTime>, LocalDateTime, SuperDateTimePicker>,
                    WithHelper<SuperDateTimePicker> {
@@ -92,6 +93,7 @@ public class SuperDateTimePicker extends DateTimePicker
     }
 
     @Override
+    @SuppressWarnings("squid:S2589")
     public void setLocale(Locale locale) {
         // this method is called from the constructor of the superclass
         // which means that first time it gets called, the delegate is not yet initialised
@@ -127,5 +129,17 @@ public class SuperDateTimePicker extends DateTimePicker
     @Override
     public DatePattern getDatePattern() {
         return this.datePattern;
+    }
+
+    @Override
+    public SuperDatePickerI18n getSuperDatePickerI18n() {
+        return (SuperDatePickerI18n) this.getDatePickerI18n();
+    }
+
+    @Override
+    public void setDatePickerI18n(DatePicker.DatePickerI18n i18n) {
+        if(!(i18n instanceof SuperDatePickerI18n))
+            i18n = SuperDatePickerI18nHelper.from(i18n, this.getLocale());
+        super.setDatePickerI18n(i18n);
     }
 }
