@@ -244,7 +244,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Builds the regular expression for matching the input.
      */
-    private void updateRegularExpression() {
+    protected final void updateRegularExpression() {
         // updating the expression may change formatting
         T value = this.getValue();
 
@@ -358,10 +358,10 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     @Override
-    protected void setPresentationValue(T number) {
+    protected final void setPresentationValue(T number) {
         if(number == null && !this.isNullValueAllowed())
             throw new IllegalArgumentException("null value is not allowed");
-        String formatted = number == null ? "" : this.format.format(number);
+        final String formatted = number == null ? "" : this.format.format(number);
         LOGGER.debug("value {} to be presented as {} with {} decimal digits", number, formatted, this.format.getMaximumFractionDigits());
         this.field.setValue(formatted);
         // fixes #241 caused by a Vaadin bug https://github.com/vaadin/vaadin-text-field/issues/547

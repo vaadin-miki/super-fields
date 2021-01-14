@@ -132,7 +132,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
         this.invalidInputs(3, "1 ", "1 2", "1 23", "12 3", "1234");
     }
 
-    protected final AbstractSuperNumberField<T, ?> getField() {
+    protected AbstractSuperNumberField<T, ?> getField() {
         return this.field;
     }
 
