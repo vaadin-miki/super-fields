@@ -51,7 +51,9 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
 
     @Test
     public void testInputsWithScientificNotationTurnedOn() {
+        Assert.assertFalse(this.getField().isScientificNotationSupported());
         this.getField().setMaximumExponentDigits(3);
+        Assert.assertTrue(this.getField().isScientificNotationSupported());
         this.testInvalidOutOfTheBoxInputs();
         this.testValidOutOfTheBoxInputs();
         this.testValidLimitedInputs();
@@ -70,6 +72,29 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
             Assert.assertEquals("string "+entry.getKey()+" should be parsed as "+entry.getValue().toEngineeringString(), 0, entry.getValue().compareTo(this.getField().parseRawValue(entry.getKey())));
             Assert.assertNotNull("string "+entry.getKey()+" must parse as proper value", this.getField().parseRawValue(entry.getKey()));
         }
+    }
+
+    @Test
+    public void testScientificNotationConstraints() {
+        // constraints are so that the significand digits are not ever larger than the regular digit's constraints
+        this.getField().setMaximumIntegerDigits(4);
+        this.getField().setMaximumFractionDigits(8);
+        this.getField().setMaximumSignificandIntegerDigits(6);
+        this.getField().setMaximumSignificandFractionDigits(11);
+        Assert.assertEquals(4, this.getField().getMaximumSignificandIntegerDigits());
+        Assert.assertEquals(8, this.getField().getMaximumSignificandFractionDigits());
+        this.getField().setMaximumSignificandFractionDigits(6);
+        Assert.assertEquals(6, this.getField().getMaximumSignificandFractionDigits());
+        this.getField().setMaximumFractionDigits(3);
+        Assert.assertEquals(3, this.getField().getMaximumSignificandFractionDigits());
+        this.getField().setMaximumFractionDigits(5);
+        Assert.assertEquals(5, this.getField().getMaximumSignificandFractionDigits());
+        this.getField().setMaximumFractionDigits(11);
+        Assert.assertEquals(6, this.getField().getMaximumSignificandFractionDigits());
+        // exponent size is 0, so feature is disabled
+        Assert.assertFalse(this.getField().isScientificNotationSupported());
+        this.getField().setMaximumExponentDigits(2);
+        Assert.assertTrue(this.getField().isScientificNotationSupported());
     }
 
 }
