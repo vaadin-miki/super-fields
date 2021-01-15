@@ -61,9 +61,14 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
     public void testScientificNotationSupported() throws ParseException {
         this.getField().setMaximumExponentDigits(3);
         for(Map.Entry<String, BigDecimal> entry: SCI_NOTATION.entrySet()) {
-            for(int zmp1 = 0; zmp1<entry.getKey().length(); zmp1++)
-                Assert.assertTrue("scientific string "+entry.getKey()+" should properly parse as input in step "+zmp1+" of "+entry.getKey().length(), entry.getKey().substring(0, zmp1).matches(this.getField().getRegexp()));
+            for(int zmp1 = 0; zmp1<entry.getKey().length(); zmp1++) {
+                final String sub = entry.getKey().substring(0, zmp1);
+                Assert.assertTrue("scientific string " + entry.getKey() + " should be accepted as " + sub + " in step " + zmp1 + " with regexp " + this.getField().getRegexp(), sub.matches(this.getField().getRegexp()));
+                if(!sub.isEmpty())
+                    Assert.assertNotNull("non-empty entry "+sub+" must parse as non-null", this.getField().parseRawValue(sub));
+            }
             Assert.assertEquals("string "+entry.getKey()+" should be parsed as "+entry.getValue().toEngineeringString(), 0, entry.getValue().compareTo(this.getField().parseRawValue(entry.getKey())));
+            Assert.assertNotNull("string "+entry.getKey()+" must parse as proper value", this.getField().parseRawValue(entry.getKey()));
         }
     }
 

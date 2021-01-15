@@ -17,9 +17,10 @@ import java.util.Locale;
  * @since 2020-04-08
  */
 @Tag("super-big-decimal-field")
+@SuppressWarnings("squid:S110") // yes, it has more than 5 superclasses, but what can I do?
 public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDecimal, SuperBigDecimalField> {
 
-    private int maximumSignificandIntegerDigits = 1;
+    private int maximumSignificandIntegerDigits = -1;
     private int maximumSignificandFractionDigits = -1;
     private int maximumExponentDigits = 0;
     private boolean negativeExponentAllowed = true;
@@ -119,15 +120,25 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
             if(this.isNegativeExponentAllowed())
                 builder.append("(\\+|-)?");
             else builder.append("\\+?");
-            builder.append("\\d*)").append("$)");
+            builder.append("\\d{0,").append(this.getMaximumExponentDigits()).append("})").append("$)");
         }
         return builder;
     }
 
+    public final boolean isScientificNotationSupported() {
+        return this.getExponentSeparator() > 0;
+    }
+
     @Override
     protected BigDecimal parseRawValue(String rawValue, DecimalFormat format) throws ParseException {
-        if(rawValue.toUpperCase(Locale.ROOT).contains("E"))
+        // using scientific notation typing allows for some weird situations, e.g. when the last character can be E or - or + - in general, something outside of 0 to 9
+        // and yes, Character.isDigit actually supports more than 0 to 9, let's hope this omission does not bite back
+        if(!Character.isDigit(rawValue.charAt(rawValue.length()-1)))
+            rawValue = rawValue + "0";
+
+        if(this.isScientificNotationSupported() && rawValue.toUpperCase(this.getLocale()).contains(String.valueOf(this.getExponentSeparator()).toUpperCase(this.getLocale()))) {
             return new BigDecimal(rawValue.replace(format.getDecimalFormatSymbols().getDecimalSeparator(), '.'));
+        }
         else {
             // no idea how decimal formats work, but just in case the instance is shared across many objects...
             boolean oldParse = format.isParseBigDecimal();
@@ -154,7 +165,10 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
     }
 
     public int getMaximumSignificandIntegerDigits() {
-        return maximumSignificandIntegerDigits;
+        if(this.maximumSignificandIntegerDigits < 0)
+            return this.getMaximumIntegerDigits();
+        else
+            return Math.max(1, Math.min(this.maximumSignificandIntegerDigits, this.getMaximumIntegerDigits()));
     }
 
     public void setMaximumSignificandIntegerDigits(int maximumSignificandIntegerDigits) {
@@ -168,7 +182,10 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
     }
 
     public int getMaximumSignificandFractionDigits() {
-        return maximumSignificandFractionDigits;
+        if(this.maximumSignificandFractionDigits < 0)
+            return this.getMaximumFractionDigits();
+        else
+            return Math.max(0, Math.min(this.maximumSignificandFractionDigits, this.getMaximumFractionDigits()));
     }
 
     public void setMaximumSignificandFractionDigits(int maximumSignificandFractionDigits) {
