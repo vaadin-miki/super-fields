@@ -51,9 +51,9 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
 
     @Test
     public void testInputsWithScientificNotationTurnedOn() {
-        Assert.assertFalse(this.getField().isScientificNotationSupported());
+        Assert.assertFalse(this.getField().isScientificNotationEnabled());
         this.getField().setMaximumExponentDigits(3);
-        Assert.assertTrue(this.getField().isScientificNotationSupported());
+        Assert.assertTrue(this.getField().isScientificNotationEnabled());
         this.testInvalidOutOfTheBoxInputs();
         this.testValidOutOfTheBoxInputs();
         this.testValidLimitedInputs();
@@ -92,9 +92,9 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
         this.getField().setMaximumFractionDigits(11);
         Assert.assertEquals(6, this.getField().getMaximumSignificandFractionDigits());
         // exponent size is 0, so feature is disabled
-        Assert.assertFalse(this.getField().isScientificNotationSupported());
+        Assert.assertFalse(this.getField().isScientificNotationEnabled());
         this.getField().setMaximumExponentDigits(2);
-        Assert.assertTrue(this.getField().isScientificNotationSupported());
+        Assert.assertTrue(this.getField().isScientificNotationEnabled());
     }
 
 }
