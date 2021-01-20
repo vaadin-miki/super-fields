@@ -1,5 +1,7 @@
 package org.vaadin.miki.superfields.itemgrid;
 
+import java.io.Serializable;
+
 /**
  * Defines a strategy for padding each row in the grid.
  * Note that by default the strategy has no access to the data in the grid.
@@ -7,7 +9,7 @@ package org.vaadin.miki.superfields.itemgrid;
  * @since 2020-12-15
  */
 @FunctionalInterface
-public interface RowPaddingStrategy {
+public interface RowPaddingStrategy extends Serializable {
 
     /**
      * Calculates padding for a given row.
