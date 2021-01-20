@@ -36,6 +36,8 @@ All number fields support text selection API.
 
 An input field for entering localised `Double` and `BigDecimal` numbers. Supports thousands (grouping) separators for the integer part and optional decimal separator.
 
+In addition to that `SuperBigDecimalField` supports (optionally) entering numbers with scientific notation, e.g. `12.34e-1`.
+
 ### `SuperIntegerField` and `SuperLongField`
 
 An input field for entering localised `Integer` and `Long` numbers. Supports thousands (grouping) separators.
