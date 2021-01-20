@@ -2,6 +2,7 @@ package org.vaadin.miki.superfields.itemgrid;
 
 import com.vaadin.flow.component.Component;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -10,11 +11,13 @@ import java.util.Objects;
  * @author miki
  * @since 2020-04-15
  */
-public class CellInformation<T> {
+public class CellInformation<T> implements Serializable {
+
+    private static final long serialVersionUID = 20210120L;
 
     private final int row;
     private final int column;
-    private final T value;
+    private final transient T value;
     private final Component component;
     private final boolean valueCell;
 

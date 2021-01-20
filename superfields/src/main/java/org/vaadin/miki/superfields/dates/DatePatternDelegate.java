@@ -7,6 +7,8 @@ import org.vaadin.miki.shared.dates.DatePattern;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Helper class that contains code related handling date patterns.
@@ -18,6 +20,24 @@ import java.time.LocalDate;
 final class DatePatternDelegate<C extends Component & HasDatePattern & HasSuperDatePickerI18N> implements Serializable {
 
     private static final long serialVersionUID = 20200506L;
+
+    /**
+     * Stores month display mode patterns that are understood by client side.
+     */
+    private static final Map<DatePattern.MonthDisplayMode, String> MONTH_DISPLAY_PATTERNS = Map.of(
+            DatePattern.MonthDisplayMode.NAME, "mM",
+            DatePattern.MonthDisplayMode.NUMBER, "_M",
+            DatePattern.MonthDisplayMode.ZERO_PREFIXED_NUMBER, "0M"
+    );
+
+    /**
+     * Builds pattern according to the defined order.
+     */
+    private static final Map<DatePattern.Order, BiConsumer<StringBuilder, String[]>> ORDER_BUILDERS = Map.of(
+            DatePattern.Order.DAY_MONTH_YEAR, (builder, strings) -> builder.append(strings[2]).append(strings[1]).append(strings[0]),
+            DatePattern.Order.MONTH_DAY_YEAR, (builder, strings) -> builder.append(strings[1]).append(strings[2]).append(strings[0]),
+            DatePattern.Order.YEAR_MONTH_DAY, (builder, strings) -> builder.append(strings[0]).append(strings[1]).append(strings[2])
+    );
 
     /**
      * Returns the pattern descriptor string expected by the client-side code.
@@ -35,34 +55,15 @@ final class DatePatternDelegate<C extends Component & HasDatePattern & HasSuperD
             return null;
         else {
             final String dayPart = pattern.isZeroPrefixedDay() ? "0d" : "_d";
-            final String monthPart;
-            switch (pattern.getMonthDisplayMode()) {
-                case NAME:
-                    monthPart = "mM";
-                    break;
-                case NUMBER:
-                    monthPart = "_M";
-                    break;
-                default:
-                    monthPart = "0M";
-                    break;
-            }
+            final String monthPart = MONTH_DISPLAY_PATTERNS.get(pattern.getMonthDisplayMode());
             final String yearPart = pattern.isShortYear() ? "0y" : "_y";
 
             StringBuilder builder = new StringBuilder();
             if(pattern.hasSeparator())
                 builder.append(pattern.getSeparator());
-            switch (pattern.getDisplayOrder()) {
-                case DAY_MONTH_YEAR:
-                    builder.append(dayPart).append(monthPart).append(yearPart);
-                    break;
-                case MONTH_DAY_YEAR:
-                    builder.append(monthPart).append(dayPart).append(yearPart);
-                    break;
-                default:
-                    builder.append(yearPart).append(monthPart).append(dayPart);
-                    break;
-            }
+
+            ORDER_BUILDERS.get(pattern.getDisplayOrder()).accept(builder, new String[]{yearPart, monthPart, dayPart});
+
             if (pattern.isShortYear() || pattern.isShortYearAlwaysAccepted()) {
                 builder.append(pattern.isPreviousCenturyBelowBoundary() ? '+' : '-');
                 builder.append(String.format("%02d", pattern.getBaseCentury() % 100));
