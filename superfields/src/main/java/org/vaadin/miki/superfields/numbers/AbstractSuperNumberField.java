@@ -5,6 +5,7 @@ import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;

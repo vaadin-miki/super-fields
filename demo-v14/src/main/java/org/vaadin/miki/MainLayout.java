@@ -23,7 +23,6 @@ import java.util.Map;
 @CssImport("./styles/demo-styles.css")
 @CssImport(value = "./styles/super-number-fields-styles.css", themeFor = "vaadin-text-field")
 @CssImport(value = "./styles/super-tabs-styles.css", themeFor = "vaadin-tabs")
-@CssImport(value = "./styles/form-layout-number-field-styles.css", themeFor = "vaadin-form-item")
 public class MainLayout extends VerticalLayout implements RouterLayout, AfterNavigationObserver {
 
     private final Tabs navigationTabs = new Tabs();
