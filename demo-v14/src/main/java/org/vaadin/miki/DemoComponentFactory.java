@@ -1,7 +1,9 @@
 package org.vaadin.miki;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -109,7 +111,13 @@ public final class DemoComponentFactory implements Serializable {
         final Span title = new Span("Demo page of "+component.getClass().getSimpleName());
         title.addClassName("section-header");
         title.addClassName("component-header");
-        componentSection.add(title, component);
+
+        final FormLayout formLayout = new FormLayout();
+        formLayout.addFormItem(component, "Form layout for "+component.getClass().getSimpleName());
+        if(component instanceof HasSize)
+            ((HasSize) component).setWidth("100px");
+
+        componentSection.add(title, formLayout);
         result.add(componentSection);
 
         this.contentBuilders.entrySet().stream().
