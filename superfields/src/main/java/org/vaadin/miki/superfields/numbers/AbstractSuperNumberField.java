@@ -43,6 +43,7 @@ import java.util.Optional;
  * @author miki
  * @since 2020-04-07
  */
+@CssImport(value = "./styles/form-layout-number-field-styles.css")
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SELF>,
