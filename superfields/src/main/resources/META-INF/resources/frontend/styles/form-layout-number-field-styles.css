@@ -1,0 +1,7 @@
+/* fix for https://github.com/vaadin-miki/super-fields/issues/270 */
+vaadin-form-item > super-integer-field,
+vaadin-form-item > super-long-field,
+vaadin-form-item > super-double-field,
+vaadin-form-item > super-big-decimal-field {
+    display: inline-block;
+}
