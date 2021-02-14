@@ -332,8 +332,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         return builder;
     }
 
-    private void onFieldBlurred(BlurNotifier.BlurEvent<TextField> event) {
+    /**
+     * This method is called when the field loses its focus.
+     * Do not overwrite it without a very good reason.
+     */
+    protected void updateFieldValue() {
         this.setPresentationValue(this.getValue());
+    }
+
+    private void onFieldBlurred(BlurNotifier.BlurEvent<TextField> event) {
+        this.updateFieldValue();
         // fire event
         this.getEventBus().fireEvent(new BlurEvent<>(this, event.isFromClient()));
     }

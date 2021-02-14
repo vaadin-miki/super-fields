@@ -134,6 +134,10 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
         return this.getExponentSeparator() > 0 && this.getMaximumExponentDigits() > 0;
     }
 
+    private boolean isValueInScientificNotation(String rawValue) {
+        return this.isScientificNotationEnabled() && rawValue.toUpperCase(this.getLocale()).contains(String.valueOf(this.getExponentSeparator()).toUpperCase(this.getLocale()));
+    }
+
     @Override
     protected BigDecimal parseRawValue(String rawValue, DecimalFormat format) throws ParseException {
         // using scientific notation typing allows for some weird situations, e.g. when the last character can be E or - or + - in general, something outside of 0 to 9
@@ -141,7 +145,7 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
         if(!Character.isDigit(rawValue.charAt(rawValue.length()-1)))
             rawValue = rawValue + "0";
 
-        if(this.isScientificNotationEnabled() && rawValue.toUpperCase(this.getLocale()).contains(String.valueOf(this.getExponentSeparator()).toUpperCase(this.getLocale()))) {
+        if(this.isValueInScientificNotation(rawValue)) {
             return new BigDecimal(rawValue.replace(format.getDecimalFormatSymbols().getDecimalSeparator(), '.'));
         }
         else {
@@ -153,6 +157,21 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
             format.setParseBigDecimal(oldParse);
             return result;
         }
+    }
+
+    @Override
+    protected void updateFieldValue() {
+        // this is here to fix #268
+        // not a nice-looking fix, but it seems to work nice
+        if(this.isValueInScientificNotation(this.getRawValue())) {
+            try {
+                this.setValue(this.parseRawValue(this.getRawValue()));
+            }
+            catch (ParseException pe) {
+                super.updateFieldValue();
+            }
+        }
+        else super.updateFieldValue();
     }
 
     /**
