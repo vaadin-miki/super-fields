@@ -5,6 +5,7 @@ import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -42,6 +43,7 @@ import java.util.Optional;
  * @author miki
  * @since 2020-04-07
  */
+@CssImport(value = "./styles/form-layout-number-field-styles.css")
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SELF>,
@@ -330,8 +332,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         return builder;
     }
 
-    private void onFieldBlurred(BlurNotifier.BlurEvent<TextField> event) {
+    /**
+     * This method is called when the field loses its focus.
+     * Do not overwrite it without a very good reason.
+     */
+    protected void updateFieldValue() {
         this.setPresentationValue(this.getValue());
+    }
+
+    private void onFieldBlurred(BlurNotifier.BlurEvent<TextField> event) {
+        this.updateFieldValue();
         // fire event
         this.getEventBus().fireEvent(new BlurEvent<>(this, event.isFromClient()));
     }
