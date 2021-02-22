@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Content-aware that sends events when a component is added to or removed from anywhere in its contents (even in a nested layout).
+ * Observing changes to the dom structure is disabled by default.
  *
  * @author miki
  * @since 2021-01-20
@@ -42,10 +43,10 @@ public class ContentAware extends Div implements ContentChangeNotifier {
     }
 
     private void notifyClient() {
-        if(this.isActive())
-            this.getElement().executeJs("$0.observer.observe($0, {attributes: false, childList: true, subtree: true});");
-        else
-            this.getElement().executeJs("$0.observer.disconnect();");
+        this.getElement().executeJs(this.isActive() ?
+            "$0.observer.observe($0, {attributes: false, childList: true, subtree: true});" :
+            "$0.observer.disconnect();"
+        );
     }
 
     /**

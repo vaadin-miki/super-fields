@@ -13,6 +13,7 @@
 ## Changes to API
 * \#256 - [ItemGrid should allow fetching cells information by row and by column](https://github.com/vaadin-miki/super-fields/issues/256)
 ## Bug fixes
+(nothing reported)
 # 0.9.2 - Bugfixes to number fields
 ## New features and enhancements
 (nothing reported)

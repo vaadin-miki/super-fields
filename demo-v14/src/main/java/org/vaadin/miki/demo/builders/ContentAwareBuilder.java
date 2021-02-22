@@ -41,7 +41,6 @@ public class ContentAwareBuilder implements ContentBuilder<ContentAware> {
         final Button addTextField = new Button("Add text field", event -> ((HasComponents)getRandomChild(component)).add(new SuperTextField("dynamically added", "(nothing here, carry on)")));
         final Button addDivAndText = new Button("Add text and div", event -> ((HasComponents)getRandomChild(component)).add(new Div(new Text("epoch day is "+ LocalDate.now().toEpochDay()))));
         final Button removeRandom = new Button("Remove random", event -> {
-
             final HasComponents randomChild = (HasComponents) getRandomChild(component);
             if (((Component)randomChild).getChildren().count() == 0)
                 Notification.show("Randomly selected empty layout; nothing to remove. Please try again.", NotificationConstants.NOTIFICATION_TIME, Notification.Position.BOTTOM_END);
