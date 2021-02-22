@@ -6,6 +6,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.shared.Registration;
 import org.slf4j.LoggerFactory;
+import org.vaadin.miki.markers.WithIdMixin;
 
 /**
  * Content-aware that sends events when a component is added to or removed from anywhere in its contents (even in a nested layout).
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * @since 2021-01-20
  */
 @Tag("content-aware")
-public class ContentAware extends Div implements ContentChangeNotifier {
+public class ContentAware extends Div implements ContentChangeNotifier, WithIdMixin<ContentAware> {
 
     private boolean active = false;
 
