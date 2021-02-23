@@ -159,7 +159,6 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
      * @param originalMethod Method to call. Must not be {@code null}.
      */
     public void onAttach(AttachEvent event, Consumer<AttachEvent> originalMethod) {
-        LoggerFactory.getLogger(this.getClass()).warn("hello {}", event.isInitialAttach());
         this.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
         originalMethod.accept(event);
     }
