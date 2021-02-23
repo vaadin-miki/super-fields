@@ -8,6 +8,8 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vaadin.miki.events.text.TextSelectionEvent;
 import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
@@ -42,6 +44,10 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
      */
     public static final String SELECTED_TEXT_ATTRIBUTE_NAME = "data-selected-text";
 
+    private static final int MAX_REINITIALISING_ATTEMPTS = 3;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TextSelectionDelegate.class);
+
     private final C source;
     
     private final Element sourceElement;
@@ -51,6 +57,8 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
     private final SerializableSupplier<String> stringValueSupplier;
     
     private boolean receivingSelectionEventsFromClient = false;
+
+    private int reinitialisationAttemptsLeft = MAX_REINITIALISING_ATTEMPTS;
 
     /**
      * Creates the delegate for a given component.
@@ -151,6 +159,7 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
      * @param originalMethod Method to call. Must not be {@code null}.
      */
     public void onAttach(AttachEvent event, Consumer<AttachEvent> originalMethod) {
+        LoggerFactory.getLogger(this.getClass()).warn("hello {}", event.isInitialAttach());
         this.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
         originalMethod.accept(event);
     }
@@ -188,7 +197,10 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
      * This method should be called in response to {@code @ClientCallable void reinitialiseListeners()} on the owning object.
      */
     // fix for https://github.com/vaadin-miki/super-fields/issues/243 and the way components are initialised inside Grid
+    // also included in the workaround for https://github.com/vaadin-miki/super-fields/issues/274 and GridPro
     public void reinitialiseListeners() {
-        this.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
+        if(this.reinitialisationAttemptsLeft-- > 0)
+            this.informClientAboutSendingEvents(this.isReceivingSelectionEventsFromClient());
+        else LOGGER.warn("failed {} init attempts for {} (perhaps it is used in GridPro?) - browser-initiated text selection events may not work correctly", MAX_REINITIALISING_ATTEMPTS, this.source.getClass().getSimpleName());
     }
 }
