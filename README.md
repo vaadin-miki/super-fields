@@ -10,7 +10,7 @@ This is a collection of hopefully useful Vaadin 14 components, grouped into seve
 
 [SuperFields are also available in Vaadin Directory](https://vaadin.com/directory/component/superfields). If you find this library useful, consider rating it there or leaving a review. Thanks :)
 
-SuperFields require Java 10 or newer and work with the latest Vaadin 14 LTS version.
+SuperFields require **Java 11** or newer and work with the latest Vaadin 14 LTS version.
 
 ### Maven setup
 
