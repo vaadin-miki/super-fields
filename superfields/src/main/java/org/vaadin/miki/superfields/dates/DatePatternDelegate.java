@@ -7,6 +7,7 @@ import org.vaadin.miki.shared.dates.DatePattern;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
@@ -24,20 +25,23 @@ final class DatePatternDelegate<C extends Component & HasDatePattern & HasSuperD
     /**
      * Stores month display mode patterns that are understood by client side.
      */
-    private static final Map<DatePattern.MonthDisplayMode, String> MONTH_DISPLAY_PATTERNS = Map.of(
-            DatePattern.MonthDisplayMode.NAME, "mM",
-            DatePattern.MonthDisplayMode.NUMBER, "_M",
-            DatePattern.MonthDisplayMode.ZERO_PREFIXED_NUMBER, "0M"
-    );
+    private static final Map<DatePattern.MonthDisplayMode, String> MONTH_DISPLAY_PATTERNS = new HashMap<DatePattern.MonthDisplayMode, String>() {
+        {
+            this.put(DatePattern.MonthDisplayMode.NAME, "mM");
+            this.put(DatePattern.MonthDisplayMode.NUMBER, "_M");
+            this.put(DatePattern.MonthDisplayMode.ZERO_PREFIXED_NUMBER, "0M");
+        }
+    };
 
     /**
      * Builds pattern according to the defined order.
      */
-    private static final Map<DatePattern.Order, BiConsumer<StringBuilder, String[]>> ORDER_BUILDERS = Map.of(
-            DatePattern.Order.DAY_MONTH_YEAR, (builder, strings) -> builder.append(strings[2]).append(strings[1]).append(strings[0]),
-            DatePattern.Order.MONTH_DAY_YEAR, (builder, strings) -> builder.append(strings[1]).append(strings[2]).append(strings[0]),
-            DatePattern.Order.YEAR_MONTH_DAY, (builder, strings) -> builder.append(strings[0]).append(strings[1]).append(strings[2])
-    );
+    private static final Map<DatePattern.Order, BiConsumer<StringBuilder, String[]>> ORDER_BUILDERS = new HashMap<DatePattern.Order, BiConsumer<StringBuilder, String[]>>() {
+        {
+            this.put(DatePattern.Order.DAY_MONTH_YEAR, (builder, strings) -> builder.append(strings[2]).append(strings[1]).append(strings[0]));
+            this.put(DatePattern.Order.MONTH_DAY_YEAR, (builder, strings) -> builder.append(strings[1]).append(strings[2]).append(strings[0]));
+            this.put(DatePattern.Order.YEAR_MONTH_DAY, (builder, strings) -> builder.append(strings[0]).append(strings[1]).append(strings[2]));
+    }};
 
     /**
      * Returns the pattern descriptor string expected by the client-side code.

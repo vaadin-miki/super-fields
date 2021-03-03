@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -14,11 +15,13 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
     public static final String FORMATTED_TEN_DIGITS_PLUS_TWO = "1 234 567 890,12"; // there are NBSPs in this string
     public static final String NO_GROUPS_FORMATTED_TEN_DIGITS_PLUS_TWO = "1234567890,12";
 
-    private static final Map<String, BigDecimal> SCI_NOTATION = Map.of(
-            "2E2", BigDecimal.valueOf(200),
-            "2,3e-2", BigDecimal.valueOf(23, 3),
-            "-0,4e2", BigDecimal.valueOf(-40)
-    );
+    private static final Map<String, BigDecimal> SCI_NOTATION = new HashMap<String, BigDecimal>() {
+        {
+            this.put("2E2", BigDecimal.valueOf(200));
+            this.put("2,3e-2", BigDecimal.valueOf(23, 3));
+            this.put("-0,4e2", BigDecimal.valueOf(-40));
+        }
+    };
 
     public SuperBigDecimalFieldTest() {
         super(
