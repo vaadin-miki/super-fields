@@ -188,39 +188,6 @@ public class DatePattern implements Serializable {
     }
 
     /**
-     * Checks whether months should be prefixed with {@code 0}.
-     * @return Whether or not months will be zero-prefixed ({@code 09} instead of {@code 9}); {@code true} by default.
-     * @deprecated Use {@link #getMonthDisplayMode()} instead.
-     */
-    @Deprecated
-    public boolean isZeroPrefixedMonth() {
-        return this.monthDisplayMode == MonthDisplayMode.ZERO_PREFIXED_NUMBER;
-    }
-
-    /**
-     * Sets whether or not months should be prefixed with {@code 0}.
-     * @param zeroPrefixedMonth When {@code true} and month is one digit, zero will be added in front of that number.
-     * @deprecated Use {@link #setMonthDisplayMode(MonthDisplayMode)} instead.
-     */
-    @Deprecated
-    public void setZeroPrefixedMonth(boolean zeroPrefixedMonth) {
-        this.setMonthDisplayMode(zeroPrefixedMonth ? MonthDisplayMode.ZERO_PREFIXED_NUMBER : MonthDisplayMode.NUMBER);
-    }
-
-    /**
-     * Chains {@link #setZeroPrefixedMonth(boolean)} and returns itself.
-     * @param zeroPrefixedMonth Whether or not to zero-prefix months.
-     * @return This.
-     * @see #setZeroPrefixedMonth(boolean)
-     * @deprecated Use {@link #withMonthDisplayMode(MonthDisplayMode)} instead.
-     */
-    @Deprecated
-    public DatePattern withZeroPrefixedMonth(boolean zeroPrefixedMonth) {
-        this.setZeroPrefixedMonth(zeroPrefixedMonth);
-        return this;
-    }
-
-    /**
      * Checks whether year number should be shortened to two digits; {@code false} by default.
      * @return When {@code true}, only the last two digits of the year will be displayed.
      */

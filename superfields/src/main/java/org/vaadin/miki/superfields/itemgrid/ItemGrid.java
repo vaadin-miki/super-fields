@@ -117,15 +117,15 @@ public class ItemGrid<T>
 
     private CellInformation<T> markedAsSelected;
 
-    private CellGenerator<T> cellGenerator;
+    private transient CellGenerator<T> cellGenerator;
 
-    private CellGenerator<T> paddingCellGenerator;
+    private transient CellGenerator<T> paddingCellGenerator;
 
     private boolean paddingCellsClickable = false;
 
-    private CellSelectionHandler<T> cellSelectionHandler;
+    private transient CellSelectionHandler<T> cellSelectionHandler;
 
-    private RowComponentGenerator<?> rowComponentGenerator = ItemGrid::defaultRowComponentGenerator;
+    private transient RowComponentGenerator<?> rowComponentGenerator = ItemGrid::defaultRowComponentGenerator;
 
     private RowPaddingStrategy rowPaddingStrategy = RowPaddingStrategies.NO_PADDING;
 
@@ -250,17 +250,10 @@ public class ItemGrid<T>
                 for(int zmp1 = column; zmp1 < Math.min(this.getColumnCount(), column + padding.getEnd()); zmp1++)
                     currentRow.add(this.buildPaddingCell(row, zmp1));
 
-            // do processing - register events, add to row component, etc.
+            // do processing and add to row component.
             final HasComponents rowContainer = this.getRowComponentGenerator().generateRowComponent(row);
             currentRow.forEach(cellInformation -> {
-                final boolean selected = cellInformation.isValueCell() && Objects.equals(cellInformation.getValue(), currentValue);
-                this.getCellSelectionHandler().cellSelectionChanged(new CellSelectionEvent<>(cellInformation, selected));
-                this.registerClickEvents(cellInformation);
-                this.cells.add(cellInformation);
-
-                if (selected)
-                    this.markedAsSelected = cellInformation;
-
+                this.processCell(cellInformation, currentValue);
                 rowContainer.add(cellInformation.getComponent());
             });
 
@@ -268,6 +261,21 @@ public class ItemGrid<T>
             this.contents.add((Component)rowContainer);
             padding = this.getRowPaddingStrategy().getRowPadding(row, this.getColumnCount(), itemsLeft);
         }
+    }
+
+    /**
+     * Adds events to the cell and marks it as selected, if needed.
+     * @param cellInformation Cell information.
+     * @param currentValue Current value of the component. If the passed cell contains this value, the cell will be marked as selected.
+     */
+    private void processCell(CellInformation<T> cellInformation, T currentValue) {
+        final boolean selected = cellInformation.isValueCell() && Objects.equals(cellInformation.getValue(), currentValue);
+        this.getCellSelectionHandler().cellSelectionChanged(new CellSelectionEvent<>(cellInformation, selected));
+        this.registerClickEvents(cellInformation);
+        this.cells.add(cellInformation);
+
+        if (selected)
+            this.markedAsSelected = cellInformation;
     }
 
     /**

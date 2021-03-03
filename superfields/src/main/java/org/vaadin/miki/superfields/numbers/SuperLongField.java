@@ -13,6 +13,7 @@ import java.util.Locale;
  * @since 2020-04-07
  */
 @Tag("super-long-field")
+@SuppressWarnings("squid:S110") // yes, it has more than 5 superclasses, but what can I do?
 public class SuperLongField extends AbstractSuperNumberField<Long, SuperLongField> {
 
     /**

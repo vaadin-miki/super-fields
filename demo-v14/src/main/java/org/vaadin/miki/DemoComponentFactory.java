@@ -109,6 +109,7 @@ public final class DemoComponentFactory implements Serializable {
         final Span title = new Span("Demo page of "+component.getClass().getSimpleName());
         title.addClassName("section-header");
         title.addClassName("component-header");
+
         componentSection.add(title, component);
         result.add(componentSection);
 
