@@ -1,3 +1,14 @@
+# 0.10.0 - ContentAware and Scientific Notation
+## New features and enhancements
+* \#156 - [Content-aware component containers](https://github.com/vaadin-miki/super-fields/issues/156)
+* \#244 - [Number fields should support scientific notation](https://github.com/vaadin-miki/super-fields/issues/244)
+## Changes to API
+* \#264 - [Remove deprecated code from DatePattern](https://github.com/vaadin-miki/super-fields/issues/264)
+* \#280 - [Java 11](https://github.com/vaadin-miki/super-fields/issues/280)
+## Bug fixes
+* \#268 - [Number with big precision cannot be changed with direct input representation](https://github.com/vaadin-miki/super-fields/issues/268)
+* \#270 - [Incorrect width of fields when used in FormLayout](https://github.com/vaadin-miki/super-fields/issues/270)
+* \#274 - [Using SuperBigDecimalField as a editor component in a gridpro produces warnings in developer console](https://github.com/vaadin-miki/super-fields/issues/274)
 # 0.9.4 - Month name support for DatePattern
 ## New features and enhancements
 * \#242 - [Add "month name" to supported date patterns](https://github.com/vaadin-miki/super-fields/issues/242)
@@ -13,6 +24,7 @@
 ## Changes to API
 * \#256 - [ItemGrid should allow fetching cells information by row and by column](https://github.com/vaadin-miki/super-fields/issues/256)
 ## Bug fixes
+(nothing reported)
 # 0.9.2 - Bugfixes to number fields
 ## New features and enhancements
 (nothing reported)

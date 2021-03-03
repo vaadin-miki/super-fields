@@ -36,6 +36,8 @@ All number fields support text selection API.
 
 An input field for entering localised `Double` and `BigDecimal` numbers. Supports thousands (grouping) separators for the integer part and optional decimal separator.
 
+In addition to that `SuperBigDecimalField` supports (optionally) entering numbers with scientific notation, e.g. `12.34e-1`.
+
 ### `SuperIntegerField` and `SuperLongField`
 
 An input field for entering localised `Integer` and `Long` numbers. Supports thousands (grouping) separators.
@@ -107,3 +109,11 @@ A component that listens and reacts to browser's `beforeunload` events that happ
 **Please note**: This component is basically a UI-scoped singleton - there can be only one instance of it per active UI. As such, please refrain from adding the same instance into multiple layouts.
 
 The code is based on solution [posted by Kaspar Scherrer and Stuart Robinson](https://vaadin.com/forum/thread/17523194/unsaved-changes-detect-page-exit-or-reload) (with invaluable feedback from Jean-François Lamy). It does not work with `<a href>` or `Anchor` as download links, so please use [FileDownloadWrapper](https://vaadin.com/directory/component/file-download-wrapper/discussions) for that.
+
+### `ContentAware`
+
+This is an extension of a `Div` that is aware (through [mutation observers](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)) of changes happening to any of its contents (including deeply nested elements).
+
+**Please note:** Currently Vaadin does not allow passing client-side elements to the server-side code, so there is no way to figure out which component was added or removed. Until a reasonable workaround is designed, the current behaviour has to suffice.
+
+**Please also note:** Changes to the attributes in the contained components are ignored, even though it would be possible to notify the server about such changes. If that ever becomes needed, please submit an improvement ticket.
