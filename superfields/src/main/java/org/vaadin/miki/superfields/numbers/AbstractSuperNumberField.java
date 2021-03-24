@@ -394,13 +394,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     protected T generateModelValue() {
         try {
             String fromEvent = this.field.getValue();
-            if (fromEvent == null)
-                fromEvent = "";
-            if (fromEvent.isEmpty() && this.isNullValueAllowed())
-                return null;
-            if (this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE)
-                fromEvent = fromEvent.replace(SPACE, NON_BREAKING_SPACE);
-            T value = this.parseRawValue(fromEvent, this.format);
+            T value = this.parseRawValue(fromEvent);
             LOGGER.debug("received raw value {}, matching? {} - parsed as {}", fromEvent, fromEvent.matches(this.regexp), value);
             return value;
         } catch (ParseException | NullPointerException e) {
@@ -745,11 +739,22 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     /**
      * Calls {@link #parseRawValue(String, DecimalFormat)} using this object's format.
+     * Does some mandatory checks as well (i.e. empty vs null value allowed).
+     * This method is called by {@link #generateModelValue()} with the String value currently in the field.
      * @param rawValue Raw value to parse.
      * @return Parsed number.
      * @throws ParseException when parsing goes wrong.
      */
     final T parseRawValue(String rawValue) throws ParseException {
+        if (rawValue == null)
+            rawValue = "";
+        if (rawValue.isEmpty()) {
+            if (this.isNullValueAllowed())
+                return null;
+            else return this.getEmptyValue();
+        }
+        if (this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE)
+            rawValue = rawValue.replace(SPACE, NON_BREAKING_SPACE);
         return this.parseRawValue(rawValue, this.format);
     }
 
