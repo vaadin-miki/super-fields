@@ -17,7 +17,7 @@ public class SuperIntegerFieldProvider implements ComponentProvider<SuperInteger
 
     @Override
     public SuperIntegerField getComponent() {
-        return new SuperIntegerField(null, "Integer:").withMaximumIntegerDigits(6).withHelperText("(6 digits)");
+        return new SuperIntegerField(0, "Integer:").withMaximumIntegerDigits(6).withHelperText("(6 digits; default value is 0)");
     }
 
     @Override
