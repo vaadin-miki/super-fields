@@ -1,3 +1,10 @@
+# 0.10.1 - Vaadin 14.5
+## New features and enhancements
+(nothing reported)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#284 - [If the input is deleted (empty string), a StringIndexOutOfBoundsException is thrown](https://github.com/vaadin-miki/super-fields/issues/284)
 # 0.10.0 - ContentAware and Scientific Notation
 ## New features and enhancements
 * \#156 - [Content-aware component containers](https://github.com/vaadin-miki/super-fields/issues/156)
