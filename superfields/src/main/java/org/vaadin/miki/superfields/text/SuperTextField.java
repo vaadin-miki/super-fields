@@ -10,6 +10,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
+import org.vaadin.miki.markers.CanModifyText;
 import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.markers.WithHelper;
 import org.vaadin.miki.markers.WithIdMixin;
@@ -17,7 +18,7 @@ import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithValueMixin;
-import org.vaadin.miki.shared.text.TextSelectionDelegate;
+import org.vaadin.miki.shared.text.TextModificationDelegate;
 
 /**
  * An extension of {@link TextField} with some useful (hopefully) features.
@@ -28,12 +29,13 @@ import org.vaadin.miki.shared.text.TextSelectionDelegate;
 @JsModule("./super-text-field.js")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextField extends TextField implements CanSelectText, TextSelectionNotifier<SuperTextField>,
+        CanModifyText,
         WithIdMixin<SuperTextField>,  WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
         WithHelper<SuperTextField>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextField> {
 
-    private final TextSelectionDelegate<SuperTextField> delegate = new TextSelectionDelegate<>(this, this.getEventBus(), this::getValue);
+    private final TextModificationDelegate<SuperTextField> delegate = new TextModificationDelegate<>(this, this.getEventBus(), this::getValue);
 
     public SuperTextField() {
         super();
@@ -113,4 +115,8 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
         this.delegate.setReceivingSelectionEventsFromClient(receivingSelectionEventsFromClient);
     }
 
+    @Override
+    public void modifyText(String replacement, int from, int to) {
+        this.delegate.modifyText(replacement, from, to);
+    }
 }

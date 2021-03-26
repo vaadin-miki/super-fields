@@ -48,6 +48,8 @@ An input field for entering localised `Integer` and `Long` numbers. Supports tho
 
 These are the same components as their Vaadin counterparts, except they fully support text selection API. This means that the text contained in the components can be selected from server-side code and that changes to selection in the browser are sent to the server as events.
 
+In addition to that, both components allow server-side initiated text change at caret position (or any selected range).
+
 ## Date fields
 
 ### `SuperDatePicker` and `SuperDateTimePicker`

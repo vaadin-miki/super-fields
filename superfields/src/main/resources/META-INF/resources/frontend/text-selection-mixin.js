@@ -44,6 +44,17 @@ export class TextSelectionMixin {
                 }
             }
 
+            replaceText(src, text, from, to) {
+                console.log('TSM: replacing text '+text+' from '+from+' to '+to);
+                if (from < 0) {
+                    from = src.selectionMixin.input.selectionStart;
+                }
+                if (to < 0) {
+                    to = src.selectionMixin.input.selectionEnd;
+                }
+                src.selectionMixin.input.setRangeText(text, from, to);
+            }
+
             listenToEvents(inputComponent, webComponent, notifyServer) {
                 console.log('TSM: setting up text selection for component <'+webComponent.tagName+'>');
                 if (inputComponent === undefined) {
