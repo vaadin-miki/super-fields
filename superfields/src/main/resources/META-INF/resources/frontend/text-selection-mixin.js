@@ -53,6 +53,12 @@ export class TextSelectionMixin {
                     to = src.selectionMixin.input.selectionEnd;
                 }
                 src.selectionMixin.input.setRangeText(text, from, to);
+                // the above code does not trigger value changes
+                // so using the trick from clear-button handler
+                const inputEvent = new Event('input', { bubbles: true, composed: true });
+                const changeEvent = new Event('change', { bubbles: !src._slottedInput });
+                src.selectionMixin.input.dispatchEvent(inputEvent);
+                src.selectionMixin.input.dispatchEvent(changeEvent);
             }
 
             listenToEvents(inputComponent, webComponent, notifyServer) {
