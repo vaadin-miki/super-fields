@@ -26,6 +26,10 @@ Some components contain server-side methods to control text selection in their w
 
 The web components listen to each key press and mouse click. If text selection changes as a result of that action, they send an event to the server-side component. This may happen quite often and increase server load, so the feature is turned off by default. To turn it on simply call `setReceivingSelectionEventsFromClient(true)` (or `withReceivingSelectionEventsFromClient(true)`).  
 
+#### Log messages
+
+Quite a few components log their state using [SLF4J](https://www.slf4j.org). Critical information is logged as error or warning, debugging messages are, well, debug or trace. Information about [how to configure which log messages get displayed can be found e.g. on Stack Overflow](https://stackoverflow.com/questions/45997759/how-to-change-slf4j-logging-level).
+
 ## Number fields
 
 None of the number fields support range checking, so if you allow too many digits, overflows will occur.
