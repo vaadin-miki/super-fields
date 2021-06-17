@@ -4,6 +4,7 @@
 ## Changes to API
 * \#299 - [Update to Vaadin 14.6](https://github.com/vaadin-miki/super-fields/issues/299)
 ## Bug fixes
+(nothing reported)
 # 0.10.1 - Vaadin 14.5
 ## New features and enhancements
 (nothing reported)
