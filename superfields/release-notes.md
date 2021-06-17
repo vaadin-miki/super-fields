@@ -1,3 +1,9 @@
+# 0.10.2 - CanModifyText and Vaadin 14.6
+## New features and enhancements
+* \#290 - [Add text at caret position](https://github.com/vaadin-miki/super-fields/issues/290)
+## Changes to API
+* \#299 - [Update to Vaadin 14.6](https://github.com/vaadin-miki/super-fields/issues/299)
+## Bug fixes
 # 0.10.1 - Vaadin 14.5
 ## New features and enhancements
 (nothing reported)
