@@ -76,6 +76,22 @@ public class TextSelectionDelegate<C extends Component & CanSelectText & CanRece
     }
 
     /**
+     * Gets the source component.
+     * @return Source component.
+     */
+    protected final C getSource() {
+        return this.source;
+    }
+
+    /**
+     * Gets the element for the source component.
+     * @return The element.
+     */
+    protected final Element getSourceElement() {
+        return this.sourceElement;
+    }
+
+    /**
      * Sends information to the client side about whether or not it should forward text selection change events.
      * @param value When {@code true}, client-side will notify server about changes in text selection.
      */

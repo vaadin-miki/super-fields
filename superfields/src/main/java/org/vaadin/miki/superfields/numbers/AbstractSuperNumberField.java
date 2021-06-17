@@ -372,7 +372,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         if(number == null && !this.isNullValueAllowed())
             throw new IllegalArgumentException("null value is not allowed");
         final String formatted = number == null ? "" : this.format.format(number);
-        LOGGER.info("value {} to be presented as {} with {} decimal digits", number, formatted, this.format.getMaximumFractionDigits());
+        LOGGER.debug("value {} to be presented as {} with {} decimal digits", number, formatted, this.format.getMaximumFractionDigits());
         this.field.setValue(formatted);
         // fixes #241 caused by a Vaadin bug https://github.com/vaadin/vaadin-text-field/issues/547
         this.field.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.field, context ->

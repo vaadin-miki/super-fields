@@ -11,6 +11,9 @@ import java.io.Serializable;
  * Somewhat similar to value change.
  * @param <C> Source component.
  * @param <S> Information about the state.
+ *
+ * @author miki
+ * @since 2020-07-08
  */
 public class StateChangeEvent<S extends Serializable, C extends Component & HasState<S>> extends ComponentEvent<C> {
 
@@ -19,7 +22,7 @@ public class StateChangeEvent<S extends Serializable, C extends Component & HasS
     /**
      * Creates a new event using the given source and indicator whether the
      * event originated from the client side or the server side.
-     *  @param source     the source component
+     * @param source     the source component
      * @param fromClient <code>true</code> if the event originated from the client
      * @param state Current state of the component.
      */
