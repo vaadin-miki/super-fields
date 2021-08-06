@@ -110,6 +110,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     private Locale locale;
 
+    private boolean integerPartRequired = true;
+
     /**
      * Creates the field.
      * @param defaultValue Default value to use on startup and when there are errors.
@@ -196,6 +198,24 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      */
     public void setDecimalFormat(DecimalFormat format) {
         this.format = Optional.ofNullable(format).orElse((DecimalFormat)NumberFormat.getNumberInstance());
+        this.updateRegularExpression();
+    }
+
+    /**
+     * Checks whether the integer part of a floating-point number is required.
+     * @return Whether the integer part is required ({@code true} by default).
+     */
+    protected boolean isIntegerPartRequired() {
+        return this.integerPartRequired;
+    }
+
+    /**
+     * Sets whether the integer part of a floating-point number is required.
+     * If it is not required, numbers can be entered without the integer part, which will be defaulted to zero.
+     * @param required Whether the integer part is required.
+     */
+    protected void setIntegerPartRequired(boolean required) {
+        this.integerPartRequired = required;
         this.updateRegularExpression();
     }
 

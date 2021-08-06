@@ -59,4 +59,25 @@ public abstract class AbstractSuperFloatingPointField<T extends Number, SELF ext
         this.setMaximumFractionDigits(digits);
         return (SELF)this;
     }
+
+    @Override
+    public void setIntegerPartRequired(boolean required) {
+        super.setIntegerPartRequired(required);
+    }
+
+    @Override
+    public boolean isIntegerPartRequired() {
+        return super.isIntegerPartRequired();
+    }
+
+    /**
+     * Chains {@link #setIntegerPartRequired(boolean)} and returns itself.
+     * @param required Whether the required part is required (default) or not.
+     * @return This.
+     */
+    @SuppressWarnings("unchecked")
+    public final SELF withIntegerPartRequired(boolean required) {
+        this.setIntegerPartRequired(required);
+        return (SELF) this;
+    }
 }
