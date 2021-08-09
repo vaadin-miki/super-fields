@@ -61,23 +61,39 @@ public abstract class AbstractSuperFloatingPointField<T extends Number, SELF ext
     }
 
     @Override
-    public void setIntegerPartRequired(boolean required) {
-        super.setIntegerPartRequired(required);
+    public void setIntegerPartOptional(boolean required) {
+        super.setIntegerPartOptional(required);
     }
 
     @Override
-    public boolean isIntegerPartRequired() {
-        return super.isIntegerPartRequired();
+    public boolean isIntegerPartOptional() {
+        return super.isIntegerPartOptional();
     }
 
     /**
-     * Chains {@link #setIntegerPartRequired(boolean)} and returns itself.
-     * @param required Whether the required part is required (default) or not.
+     * Chains {@link #setIntegerPartOptional(boolean)} and returns itself.
+     * @param optional Whether the required part is optional or not (default).
      * @return This.
      */
     @SuppressWarnings("unchecked")
-    public final SELF withIntegerPartRequired(boolean required) {
-        this.setIntegerPartRequired(required);
+    public final SELF withIntegerPartOptional(boolean optional) {
+        this.setIntegerPartOptional(optional);
         return (SELF) this;
+    }
+
+    /**
+     * Chains {@link #setIntegerPartOptional(boolean)} with {@code false} as parameter and returns itself.
+     * @return This.
+     */
+    public final SELF withIntegerPartRequired() {
+        return this.withIntegerPartOptional(false);
+    }
+
+    /**
+     * Chains {@link #setIntegerPartOptional(boolean)} with {@code true} as parameter and returns itself.
+     * @return This.
+     */
+    public final SELF withIntegerPartOptional() {
+        return this.withIntegerPartOptional(true);
     }
 }
