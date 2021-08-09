@@ -40,6 +40,8 @@ All number fields support text selection API.
 
 An input field for entering localised `Double` and `BigDecimal` numbers. Supports thousands (grouping) separators for the integer part and optional decimal separator.
 
+Both fields allow the integer part of the number to be optional (thus omitted and defaulted to zero - `.27` parsed as `0.27`). This feature is turned off by default (meaning the integer part is required).
+
 In addition to that `SuperBigDecimalField` supports (optionally) entering numbers with scientific notation, e.g. `12.34e-1`.
 
 ### `SuperIntegerField` and `SuperLongField`
