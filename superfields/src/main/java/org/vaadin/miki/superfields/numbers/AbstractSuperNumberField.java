@@ -61,6 +61,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     private static final String TEXT_FIELD_STYLE_PREFIX = "belongs-to-";
 
     /**
+     * Start of a regular expression to match at least one digit.
+     */
+    private static final String REGEXP_START_AT_LEAST_ONE_DIGIT = "\\d{1,";
+
+    /**
+     * Start of a regular expression to match any number of digits.
+     */
+    private static final String REGEXP_START_ANY_DIGITS = "\\d{0,";
+
+    /**
      * Some grouping separators are non-breaking spaces - impossible to type.
      */
     private static final char NON_BREAKING_SPACE = 160;
@@ -109,6 +119,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     private boolean nullValueAllowed = false;
 
     private Locale locale;
+
+    private boolean integerPartOptional = false;
 
     /**
      * Creates the field.
@@ -200,6 +212,24 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     /**
+     * Checks whether the integer part of a floating-point number is optional.
+     * @return Whether the integer part is optional ({@code false} by default - integer part is required).
+     */
+    protected boolean isIntegerPartOptional() {
+        return this.integerPartOptional;
+    }
+
+    /**
+     * Sets whether the integer part of a floating-point number is optional.
+     * If it is set as optional, numbers can be entered without the integer part, which will be defaulted to zero.
+     * @param optional Whether the integer part is optional.
+     */
+    protected void setIntegerPartOptional(boolean optional) {
+        this.integerPartOptional = optional;
+        this.updateRegularExpression();
+    }
+
+    /**
      * Sets the minimum number of fraction digits displayed. Overwrites the value in the underlying {@link DecimalFormat}.
      * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
      * @param digits Number of digits to use.
@@ -284,9 +314,11 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         // everything after the negative sign can be optional, meaning that empty string is ok
         builder.append("(");
 
+        final String startingGroup = this.isIntegerPartOptional() ? REGEXP_START_ANY_DIGITS : REGEXP_START_AT_LEAST_ONE_DIGIT;
+
         // if the maximum number of digits allowed is less than a single group:
         if(this.format.getMaximumIntegerDigits() <= this.format.getGroupingSize())
-            builder.append("\\d{0,").append(format.getMaximumIntegerDigits()).append("}");
+            builder.append(startingGroup).append(format.getMaximumIntegerDigits()).append("}");
             // or, there will be at least one group of digits in the formatted number
         else {
             int leftmostGroupMaxSize = format.getMaximumIntegerDigits() % format.getGroupingSize();
@@ -298,27 +330,27 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
             // if there are no middle groups, things are simple
             if(middleGroupCount == 0) {
-                builder.append("\\d{0,").append(leftmostGroupMaxSize).append("}")
-                        .append(groupSeparatorRegexp).append("?\\d{0,").append(format.getGroupingSize()).append("}");
+                builder.append(startingGroup).append(leftmostGroupMaxSize).append("}")
+                        .append(groupSeparatorRegexp).append("?").append(REGEXP_START_ANY_DIGITS).append(format.getGroupingSize()).append("}");
             }
             else {
                 builder.append("(");
                 // two cases to check against, if middle groups are present,
                 builder.append("(");
                 // case 1. the leftmost group is present...
-                builder.append("\\d{1,").append(leftmostGroupMaxSize).append("}");
+                builder.append(startingGroup).append(leftmostGroupMaxSize).append("}");
                 //         ...followed by (optionally) separated middle groups
                 builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(format.getGroupingSize()).append("}){0,").append(middleGroupCount).append("}");
                 //         ...followed by (optionally) separated last group
-                builder.append("(").append(groupSeparatorRegexp).append("?\\d{0,").append(format.getGroupingSize()).append("}").append(")?");
+                builder.append("(").append(groupSeparatorRegexp).append("?").append(REGEXP_START_ANY_DIGITS).append(format.getGroupingSize()).append("}").append(")?");
                 builder.append(")|(");
                 // case 2. the number is less than maximum allowed, so it starts with full size or less than full size group...
-                builder.append("\\d{1,").append(format.getGroupingSize()).append("}");
+                builder.append(startingGroup).append(format.getGroupingSize()).append("}");
                 //         ...followed by (optionally) separated one less middle groups, if any
                 if (middleGroupCount > 1)
                     builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(format.getGroupingSize()).append("}){0,").append(middleGroupCount - 1).append("}");
                 //         ...followed by (optionally) separated last group
-                builder.append("(").append(groupSeparatorRegexp).append("?\\d{0,").append(format.getGroupingSize()).append("}").append(")?");
+                builder.append("(").append(groupSeparatorRegexp).append("?").append(REGEXP_START_ANY_DIGITS).append(format.getGroupingSize()).append("}").append(")?");
                 builder.append(")");
                 builder.append(")");
             }
@@ -326,7 +358,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
         if(this.format.getMaximumFractionDigits() > 0)
             builder.append("(").append(escapeDot(format.getDecimalFormatSymbols().getDecimalSeparator()))
-                    .append("\\d{0,").append(format.getMaximumFractionDigits()).append("})?");
+                    .append(REGEXP_START_ANY_DIGITS).append(format.getMaximumFractionDigits()).append("})?");
 
         builder.append(")?$");
         return builder;
