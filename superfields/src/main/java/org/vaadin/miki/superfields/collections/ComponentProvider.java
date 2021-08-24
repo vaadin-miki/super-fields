@@ -3,13 +3,15 @@ package org.vaadin.miki.superfields.collections;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 
+import java.io.Serializable;
+
 /**
  * Interface for objects providing a component capable of displaying a single element of a {@link CollectionField}.
  * @param <T> Type of the element to display.
  * @param <C> Type of generated component.
  */
 @FunctionalInterface
-public interface ComponentProvider<T, C extends Component & HasValue<?, T>> {
+public interface ComponentProvider<T, C extends Component & HasValue<?, T>> extends Serializable {
 
     /**
      * Constructs the component for an object at given index.

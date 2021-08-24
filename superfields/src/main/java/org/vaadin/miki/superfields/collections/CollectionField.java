@@ -1,5 +1,6 @@
 package org.vaadin.miki.superfields.collections;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
@@ -7,6 +8,8 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
+import org.vaadin.miki.markers.WithIdMixin;
+import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +25,8 @@ import java.util.stream.Collectors;
  * @param <C> Type of the collection.
  */
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
-        implements CollectionController {
+        implements CollectionController, WithIdMixin<CollectionField<T, C>>,
+        WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<C>, C>, C, CollectionField<T, C>> {
 
     /**
      * CSS class name that will be added to the main layout of this component.
@@ -90,6 +94,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         this.fields.add(atIndex, hasValue);
         this.layout.addComponentAtIndex(atIndex, (Component) hasValue);
         this.updateIndices(atIndex);
+        this.updateValue();
     }
 
     @Override
@@ -98,6 +103,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         this.layout.remove(removed);
         this.eventRegistrations.remove(removed).remove(); // brilliant line of code
         this.updateIndices(atIndex);
+        this.updateValue();
     }
 
     @Override
@@ -122,6 +128,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         for(T t: ts)
             this.fields.get(zmp1++).setValue(t);
         this.valueUpdateInProgress = false;
+        this.updateValue();
     }
 
     private void valueChangedInSubComponent(ValueChangeEvent<T> o) {
@@ -142,6 +149,16 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
     public final CollectionField<T, C> withComponentProvider(ComponentProvider<T, ?> componentProvider) {
         this.setComponentProvider(componentProvider);
         return this;
+    }
+
+    /**
+     * Gets the component at specified position. No range checking.
+     * For testing purposes only.
+     * @param index Index to get a component at.
+     * @return A non-{@code null} component at a given index.
+     */
+    final HasValue<?, T> getField(int index) {
+        return this.fields.get(index);
     }
 
 }
