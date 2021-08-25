@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
  */
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         implements CollectionController, WithIdMixin<CollectionField<T, C>>,
+        WithCollectionComponentProvider<T, CollectionField<T, C>>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<C>, C>, C, CollectionField<T, C>> {
 
     /**
@@ -41,7 +42,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
 
     private final HasComponents layout;
 
-    private ComponentProvider<T, ?> componentProvider;
+    private CollectionComponentProvider<T, ?> collectionComponentProvider;
 
     private boolean valueUpdateInProgress = false;
 
@@ -50,7 +51,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
      * @param emptyCollectionSupplier Provides an empty collection of elements.
      * @param layoutProvider Source of root layout for this component.
      */
-    public CollectionField(SerializableSupplier<C> emptyCollectionSupplier, LayoutProvider<?> layoutProvider) {
+    public CollectionField(SerializableSupplier<C> emptyCollectionSupplier, LayoutProvider<?> layoutProvider, CollectionComponentProvider<T, ?> collectionComponentProvider) {
         // default value is empty collection
         super(emptyCollectionSupplier.get());
 
@@ -60,6 +61,8 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         this.add((Component) this.layout);
         if(this.layout instanceof HasStyle)
             ((HasStyle) this.layout).addClassName(LAYOUT_STYLE_NAME);
+
+        this.setCollectionComponentProvider(collectionComponentProvider);
     }
 
     @Override
@@ -79,6 +82,11 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         return this.fields.size();
     }
 
+    /**
+     * Updates all indices on all fields that implement {@link HasIndex}.
+     * This method is called after a component is removed or added, but before the value of the component is changed.
+     * @param fromIndex Index, from which the reindexing should occur.
+     */
     protected void updateIndices(int fromIndex) {
         // update index of each component that has it
         for(int zmp1 = fromIndex; zmp1 < this.fields.size(); zmp1++)
@@ -88,7 +96,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
 
     @Override
     public void add(int atIndex) {
-        final HasValue<?, T> hasValue = this.getComponentProvider().provideComponent(atIndex, this);
+        final HasValue<?, T> hasValue = this.getCollectionComponentProvider().provideComponent(atIndex, this);
         // make sure this component is updated whenever anything changes for single element
         this.eventRegistrations.put((Component) hasValue, hasValue.addValueChangeListener(this::valueChangedInSubComponent));
         this.fields.add(atIndex, hasValue);
@@ -136,19 +144,16 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
             this.updateValue();
     }
 
-    public void setComponentProvider(ComponentProvider<T, ?> componentProvider) {
-        this.componentProvider = componentProvider;
+    @Override
+    public final void setCollectionComponentProvider(CollectionComponentProvider<T, ?> collectionComponentProvider) {
+        this.collectionComponentProvider = collectionComponentProvider;
         this.fields.clear();
         this.repaintFields(this.getValue());
     }
 
-    public ComponentProvider<T, ?> getComponentProvider() {
-        return componentProvider;
-    }
-
-    public final CollectionField<T, C> withComponentProvider(ComponentProvider<T, ?> componentProvider) {
-        this.setComponentProvider(componentProvider);
-        return this;
+    @Override
+    public CollectionComponentProvider<T, ?> getCollectionComponentProvider() {
+        return collectionComponentProvider;
     }
 
     /**
