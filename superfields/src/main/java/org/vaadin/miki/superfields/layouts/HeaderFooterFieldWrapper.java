@@ -11,6 +11,7 @@ import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithIndexMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -42,6 +43,8 @@ public class HeaderFooterFieldWrapper<T,
     private final H header;
     private final F footer;
     private int index;
+    private boolean disablingHeaderOnReadOnly = true;
+    private boolean disablingFooterOnReadOnly = true;
 
     public <R extends Component & HasComponents, V extends Component & HasValue<?, T>> HeaderFooterFieldWrapper(Supplier<R> rootSupplier, H header, V field, F footer) {
         this.field = field;
@@ -72,7 +75,7 @@ public class HeaderFooterFieldWrapper<T,
 
     @Override
     protected void setPresentationValue(T t) {
-        this.field.setValue(t);
+        this.field.setValue(Objects.requireNonNullElse(t, this.field.getEmptyValue()));
     }
 
     @Override
@@ -105,4 +108,43 @@ public class HeaderFooterFieldWrapper<T,
         if(this.field instanceof HasIndex)
             ((HasIndex) this.field).setIndex(index);
     }
+
+    public void setDisablingFooterOnReadOnly(boolean disablingFooterOnReadOnly) {
+        this.disablingFooterOnReadOnly = disablingFooterOnReadOnly;
+    }
+
+    public boolean isDisablingFooterOnReadOnly() {
+        return disablingFooterOnReadOnly;
+    }
+
+    public final HeaderFooterFieldWrapper<T, H, F> withDisablingFooterOnReadOnly(boolean state) {
+        this.setDisablingFooterOnReadOnly(state);
+        return this;
+    }
+
+    public void setDisablingHeaderOnReadOnly(boolean disablingHeaderOnReadOnly) {
+        this.disablingHeaderOnReadOnly = disablingHeaderOnReadOnly;
+    }
+
+    public boolean isDisablingHeaderOnReadOnly() {
+        return disablingHeaderOnReadOnly;
+    }
+
+    public final HeaderFooterFieldWrapper<T, H, F> withDisablingHeaderOnReadOnly(boolean state) {
+        this.setDisablingHeaderOnReadOnly(state);
+        return this;
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+        this.field.setReadOnly(readOnly);
+
+        if(this.isDisablingFooterOnReadOnly())
+            this.getFooter().ifPresent(f -> f.setEnabled(!readOnly));
+
+        if(this.isDisablingHeaderOnReadOnly())
+            this.getHeader().ifPresent(h -> h.setEnabled(!readOnly));
+    }
+
 }

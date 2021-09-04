@@ -9,6 +9,7 @@ import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.markers.HasIndex;
+import org.vaadin.miki.markers.HasReadOnly;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
@@ -76,6 +77,19 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
             ((HasStyle) this.layout).addClassName(LAYOUT_STYLE_NAME);
 
         this.setCollectionComponentProvider(collectionComponentProvider);
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+        // if the layout itself can be in read-only, just call the layout
+        if(this.layout instanceof HasReadOnly)
+            ((HasReadOnly) this.layout).setReadOnly(readOnly);
+        // otherwise, figure out which components can be read-only and set those
+        else ((Component)this.layout).getChildren()
+                .forEach(component -> HasReadOnly.setReadOnly(readOnly, component));
+        // finally, pass that to every field
+        this.fields.forEach(field -> field.setReadOnly(readOnly));
     }
 
     @Override

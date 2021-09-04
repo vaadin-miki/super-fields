@@ -3,6 +3,7 @@ package org.vaadin.miki.superfields.layouts;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasComponents;
+import org.vaadin.miki.markers.HasReadOnly;
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -30,13 +31,15 @@ public class HeaderFooterLayoutWrapper<R extends Component & HasComponents,
                                  F extends Component & HasComponents>
         extends Composite<R>
         implements HasComponents, Iterable<Component>, WithHeaderComponentsMixin<H, HeaderFooterLayoutWrapper<R, H, B, F>>,
-        WithFooterComponentsMixin<F, HeaderFooterLayoutWrapper<R, H, B, F>>
+        WithFooterComponentsMixin<F, HeaderFooterLayoutWrapper<R, H, B, F>>, HasReadOnly
 {
 
     private final R root;
     private final H header;
     private final B body;
     private final F footer;
+
+    private boolean readOnly = false;
 
     /**
      * Creates the layout.
@@ -112,4 +115,23 @@ public class HeaderFooterLayoutWrapper<R extends Component & HasComponents,
         return this.body.getChildren();
     }
 
+    private void forwardReadOnly(boolean state, Stream<Component> components) {
+        components.forEach(component -> HasReadOnly.setReadOnly(state, component));
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+        Stream.of(this.getHeader(), this.getFooter())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(Component::getChildren)
+                .forEach(stream -> this.forwardReadOnly(readOnly, stream));
+        this.forwardReadOnly(readOnly, this.getComponents());
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return readOnly;
+    }
 }

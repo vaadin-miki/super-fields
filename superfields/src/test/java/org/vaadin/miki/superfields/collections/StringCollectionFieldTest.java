@@ -104,4 +104,26 @@ public class StringCollectionFieldTest {
         Assert.assertEquals(0, this.collectionField.size());
     }
 
+    @Test
+    public void testDisabling() {
+        this.collectionField.setValue(Arrays.asList("hello", "world"));
+        for(int zmp1 = 0; zmp1 < this.collectionField.size(); zmp1++)
+            Assert.assertTrue(((TextField)this.collectionField.getField(zmp1)).isEnabled());
+        // should be propagated to everywhere
+        this.collectionField.setEnabled(false);
+        for(int zmp1 = 0; zmp1 < this.collectionField.size(); zmp1++)
+            Assert.assertFalse(((TextField)this.collectionField.getField(zmp1)).isEnabled());
+    }
+
+    @Test
+    public void testReadOnly() {
+        this.collectionField.setValue(Arrays.asList("hello", "world"));
+        for(int zmp1 = 0; zmp1 < this.collectionField.size(); zmp1++)
+            Assert.assertFalse(this.collectionField.getField(zmp1).isReadOnly());
+        // should be propagated to everywhere
+        this.collectionField.setReadOnly(true);
+        for(int zmp1 = 0; zmp1 < this.collectionField.size(); zmp1++)
+            Assert.assertTrue(this.collectionField.getField(zmp1).isReadOnly());
+    }
+
 }
