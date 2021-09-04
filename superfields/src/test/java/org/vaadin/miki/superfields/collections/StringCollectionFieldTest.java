@@ -31,7 +31,7 @@ public class StringCollectionFieldTest {
            final FlexLayout result = new FlexLayout();
            result.setFlexDirection(FlexLayout.FlexDirection.COLUMN);
            return result;
-        }, (CollectionComponentProvider<String, TextField>)(index, controller) -> new TextField("element at index "+index));
+        }, (ValueComponentProvider<String, TextField>)(index, controller) -> new TextField("element at index "+index));
         this.collectionField.addValueChangeListener(event -> this.eventCounter++);
     }
 

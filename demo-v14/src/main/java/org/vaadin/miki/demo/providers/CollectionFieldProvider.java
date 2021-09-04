@@ -1,20 +1,15 @@
 package org.vaadin.miki.demo.providers;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
 import org.vaadin.miki.demo.ComponentProvider;
 import org.vaadin.miki.demo.Order;
-import org.vaadin.miki.markers.HasIndex;
-import org.vaadin.miki.superfields.collections.CollectionComponentProvider;
 import org.vaadin.miki.superfields.collections.CollectionField;
-import org.vaadin.miki.superfields.collections.IndexedButton;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
-import org.vaadin.miki.superfields.layouts.HeaderFooterFieldWrapper;
 import org.vaadin.miki.superfields.layouts.HeaderFooterLayoutWrapper;
+import org.vaadin.miki.superfields.util.CollectionComponentProviders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +36,7 @@ public class CollectionFieldProvider implements ComponentProvider<CollectionFiel
                             new Button("Add as first", buttonClickEvent -> controller.add(0))
                     ).withFooterComponents(new Button("Add as last", event -> controller.add()))
                 ,
-                (CollectionComponentProvider<String, CustomField<String>>) (index, controller) ->
-                        new HeaderFooterFieldWrapper<>(
-                                FlexLayoutHelpers::row,
-                                FlexLayoutHelpers.column(),
-                                new TextField("value"),
-                                FlexLayoutHelpers.column()
-                        ).withHeaderComponents(
-                                new IndexedButton("X", index, event -> controller.remove(((HasIndex)event.getSource()).getIndex()))
-                        )
+                CollectionComponentProviders.rowWithRemoveButtonFirst(CollectionComponentProviders::textField, "remove")
         );
     }
 

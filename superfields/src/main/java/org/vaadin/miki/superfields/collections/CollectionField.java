@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         implements CollectionController, WithIdMixin<CollectionField<T, C>>,
-        WithCollectionComponentProvider<T, CollectionField<T, C>>,
+        WithValueComponentProvider<T, CollectionField<T, C>>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<C>, C>, C, CollectionField<T, C>> {
 
     /**
@@ -44,7 +44,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
 
     private final HasComponents layout;
 
-    private CollectionComponentProvider<T, ?> collectionComponentProvider;
+    private ValueComponentProvider<T, ?> valueComponentProvider;
 
     private boolean valueUpdateInProgress = false;
 
@@ -56,16 +56,16 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
      * @param <F> Type of the field used.
      */
     public <F extends Component & HasValue<?, T>> CollectionField(SerializableSupplier<C> emptyCollectionSupplier, LayoutProvider<?> layoutProvider, SerializableSupplier<F> fieldSupplier) {
-        this(emptyCollectionSupplier, layoutProvider, (CollectionComponentProvider<T, F>) (index, controller) -> fieldSupplier.get());
+        this(emptyCollectionSupplier, layoutProvider, (ValueComponentProvider<T, F>) (index, controller) -> fieldSupplier.get());
     }
 
     /**
      * Creates new field.
      * @param emptyCollectionSupplier Provides an empty collection of elements.
      * @param layoutProvider Source of root layout for this component.
-     * @param collectionComponentProvider Provider for components for each element in the component.
+     * @param valueComponentProvider Provider for components for each element in the component.
      */
-    public CollectionField(SerializableSupplier<C> emptyCollectionSupplier, LayoutProvider<?> layoutProvider, CollectionComponentProvider<T, ?> collectionComponentProvider) {
+    public CollectionField(SerializableSupplier<C> emptyCollectionSupplier, LayoutProvider<?> layoutProvider, ValueComponentProvider<T, ?> valueComponentProvider) {
         // default value is empty collection
         super(emptyCollectionSupplier.get());
 
@@ -76,7 +76,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         if(this.layout instanceof HasStyle)
             ((HasStyle) this.layout).addClassName(LAYOUT_STYLE_NAME);
 
-        this.setCollectionComponentProvider(collectionComponentProvider);
+        this.setValueComponentProvider(valueComponentProvider);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
 
     @Override
     public void add(int atIndex) {
-        final HasValue<?, T> hasValue = this.getCollectionComponentProvider().provideComponent(atIndex, this);
+        final HasValue<?, T> hasValue = this.getValueComponentProvider().provideComponent(atIndex, this);
         // make sure this component is updated whenever anything changes for single element
         this.eventRegistrations.put((Component) hasValue, hasValue.addValueChangeListener(this::valueChangedInSubComponent));
         this.fields.add(atIndex, hasValue);
@@ -172,15 +172,15 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
     }
 
     @Override
-    public final void setCollectionComponentProvider(CollectionComponentProvider<T, ?> collectionComponentProvider) {
-        this.collectionComponentProvider = collectionComponentProvider;
+    public final void setValueComponentProvider(ValueComponentProvider<T, ?> valueComponentProvider) {
+        this.valueComponentProvider = valueComponentProvider;
         this.fields.clear();
         this.repaintFields(this.getValue());
     }
 
     @Override
-    public CollectionComponentProvider<T, ?> getCollectionComponentProvider() {
-        return collectionComponentProvider;
+    public ValueComponentProvider<T, ?> getValueComponentProvider() {
+        return valueComponentProvider;
     }
 
     /**
