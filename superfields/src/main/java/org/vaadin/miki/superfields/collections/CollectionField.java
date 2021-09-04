@@ -8,6 +8,7 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
+import org.vaadin.miki.markers.HasIndex;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
@@ -50,6 +51,18 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
      * Creates new field.
      * @param emptyCollectionSupplier Provides an empty collection of elements.
      * @param layoutProvider Source of root layout for this component.
+     * @param fieldSupplier Method to call when a component for an element is needed.
+     * @param <F> Type of the field used.
+     */
+    public <F extends Component & HasValue<?, T>> CollectionField(SerializableSupplier<C> emptyCollectionSupplier, LayoutProvider<?> layoutProvider, SerializableSupplier<F> fieldSupplier) {
+        this(emptyCollectionSupplier, layoutProvider, (CollectionComponentProvider<T, F>) (index, controller) -> fieldSupplier.get());
+    }
+
+    /**
+     * Creates new field.
+     * @param emptyCollectionSupplier Provides an empty collection of elements.
+     * @param layoutProvider Source of root layout for this component.
+     * @param collectionComponentProvider Provider for components for each element in the component.
      */
     public CollectionField(SerializableSupplier<C> emptyCollectionSupplier, LayoutProvider<?> layoutProvider, CollectionComponentProvider<T, ?> collectionComponentProvider) {
         // default value is empty collection

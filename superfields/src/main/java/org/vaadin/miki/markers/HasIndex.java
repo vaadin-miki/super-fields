@@ -1,4 +1,4 @@
-package org.vaadin.miki.superfields.collections;
+package org.vaadin.miki.markers;
 
 /**
  * Marker interface for objects having an index.

@@ -1,16 +1,20 @@
 package org.vaadin.miki.demo.providers;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
 import org.vaadin.miki.demo.ComponentProvider;
 import org.vaadin.miki.demo.Order;
+import org.vaadin.miki.markers.HasIndex;
 import org.vaadin.miki.superfields.collections.CollectionComponentProvider;
 import org.vaadin.miki.superfields.collections.CollectionField;
+import org.vaadin.miki.superfields.collections.IndexedButton;
+import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
+import org.vaadin.miki.superfields.layouts.HeaderFooterFieldWrapper;
+import org.vaadin.miki.superfields.layouts.HeaderFooterLayoutWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,15 +30,26 @@ public class CollectionFieldProvider implements ComponentProvider<CollectionFiel
     public CollectionField<String, List<String>> getComponent() {
         return new CollectionField<>(
                 ArrayList::new,
-                controller -> {
-                    final VerticalLayout layout = new VerticalLayout();
-                    layout.add(new HorizontalLayout(
+                controller ->
+                    new HeaderFooterLayoutWrapper<>(
+                            FlexLayoutHelpers::column,
+                            FlexLayoutHelpers.row(),
+                            FlexLayoutHelpers.column(),
+                            FlexLayoutHelpers.row()
+                    ).withHeaderComponents(
                             new Button("Clear", buttonClickEvent -> controller.removeAll()),
-                            new Button("Add", buttonClickEvent -> controller.add())
-                    ));
-                    return layout;
-                },
-                (CollectionComponentProvider<String, TextField>) (index, controller) -> new TextField(String.format("value at index %02d", index))
+                            new Button("Add as first", buttonClickEvent -> controller.add(0))
+                    ).withFooterComponents(new Button("Add as last", event -> controller.add()))
+                ,
+                (CollectionComponentProvider<String, CustomField<String>>) (index, controller) ->
+                        new HeaderFooterFieldWrapper<>(
+                                FlexLayoutHelpers::row,
+                                FlexLayoutHelpers.column(),
+                                new TextField("value"),
+                                FlexLayoutHelpers.column()
+                        ).withHeaderComponents(
+                                new IndexedButton("X", index, event -> controller.remove(((HasIndex)event.getSource()).getIndex()))
+                        )
         );
     }
 

@@ -1,12 +1,14 @@
 package org.vaadin.miki.superfields.collections;
 
+import java.io.Serializable;
+
 /**
  * Marker interface for all components that can control a collection.
  * Note: this is not generic in any way to allow reusing one controller among many components.
  * @author miki
  * @since 2021-08-14
  */
-public interface CollectionController {
+public interface CollectionController extends Serializable {
 
     /**
      * Returns the current size of the collection.
