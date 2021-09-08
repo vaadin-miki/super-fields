@@ -68,6 +68,26 @@ Both components behave funky when changing locale at runtime if their calendars 
 
 **Please note:** only `SuperDatePicker` has support for text selection API. 
 
+## `CollectionField` and related helpers
+
+### `CollectionField`
+
+Almost out-of-the-box, fully configurable `CustomField` for data of type `List<X>`. Supports custom layouts, fields, removing individual or all elements and adding at specified indices.
+
+To help navigate around functional interfaces `CollectionComponentProviders` contains some common use cases, like buttons for removing, clearing or adding elements.
+
+### `HasIndex` and `IndexedButton`
+
+While intended to work with `CollectionField`, here is a general interface for anything that needs an index (an integer number). `IndexedButton` does nothing by itself, but it is a `Button` that implements `HasIndex`. It is used e.g. to represent a button that removes an element from a collection.
+
+## `HasHeader`, `HasFooter` and layout helpers
+
+A three-part layout, with header, content and footer, is quite common in UX design. Two helper classes are offered:
+* `HeaderFooterFieldWrapper` - a fully functional `CustomField` that has a header and a footer, and the content is just the field;
+* `HeaderFooterLayoutWrapper` - a fully functional layout (`HasComponents`) that has a header and a footer, and the content is a layout to which `HasComponents` method calls are delegated.
+
+Both wrappers attempt to be API-transparent and can replace already existing layouts or fields (for example, replacing a `SuperTextField` with a `HeaderFooterFieldWrapper` should just result in a header and footer around the text field, and no other changes should be needed).
+
 ## Select fields
 
 ### `ItemGrid`
