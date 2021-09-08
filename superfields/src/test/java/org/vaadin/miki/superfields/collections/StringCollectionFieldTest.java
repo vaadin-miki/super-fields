@@ -26,12 +26,12 @@ public class StringCollectionFieldTest {
     @Before
     public void setup() {
         MockVaadin.setup();
-        this.collectionField = new CollectionField<>(ArrayList::new, controller -> {
+        this.collectionField = new CollectionField<>(ArrayList::new, (index, controller) -> {
            this.controller = controller;
            final FlexLayout result = new FlexLayout();
            result.setFlexDirection(FlexLayout.FlexDirection.COLUMN);
            return result;
-        }, (ValueComponentProvider<String, TextField>)(index, controller) -> new TextField("element at index "+index));
+        }, (CollectionValueComponentProvider<String, TextField>)(index, controller) -> new TextField("element at index "+index));
         this.collectionField.addValueChangeListener(event -> this.eventCounter++);
     }
 

@@ -1,17 +1,17 @@
 package org.vaadin.miki.demo.providers;
 
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
 import org.vaadin.miki.demo.ComponentProvider;
 import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.collections.CollectionField;
-import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
-import org.vaadin.miki.superfields.layouts.HeaderFooterLayoutWrapper;
+import org.vaadin.miki.superfields.text.SuperTextField;
 import org.vaadin.miki.superfields.util.CollectionComponentProviders;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,18 +25,13 @@ public class CollectionFieldProvider implements ComponentProvider<CollectionFiel
     public CollectionField<String, List<String>> getComponent() {
         return new CollectionField<>(
                 ArrayList::new,
-                controller ->
-                    new HeaderFooterLayoutWrapper<>(
-                            FlexLayoutHelpers::column,
-                            FlexLayoutHelpers.row(),
-                            FlexLayoutHelpers.column(),
-                            FlexLayoutHelpers.row()
-                    ).withHeaderComponents(
-                            new Button("Clear", buttonClickEvent -> controller.removeAll()),
-                            new Button("Add as first", buttonClickEvent -> controller.add(0))
-                    ).withFooterComponents(new Button("Add as last", event -> controller.add()))
-                ,
-                CollectionComponentProviders.rowWithRemoveButtonFirst(CollectionComponentProviders::textField, "remove")
+                CollectionComponentProviders.columnWithHeaderAndFooterRows(
+                        Arrays.asList(
+                            CollectionComponentProviders.removeAllButton("Clear"),
+                            CollectionComponentProviders.addFirstButton("Add as first")
+                        ),
+                        Collections.singletonList(CollectionComponentProviders.addLastButton("Add as last"))),
+                CollectionComponentProviders.rowWithRemoveButtonFirst(CollectionComponentProviders.labelledField(SuperTextField::new, "Value"), "Remove")
         );
     }
 

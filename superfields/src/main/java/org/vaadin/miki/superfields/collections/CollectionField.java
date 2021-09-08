@@ -28,13 +28,15 @@ import java.util.stream.Collectors;
  */
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         implements CollectionController, WithIdMixin<CollectionField<T, C>>,
-        WithValueComponentProvider<T, CollectionField<T, C>>,
+        WithCollectionValueComponentProvider<T, CollectionField<T, C>>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<C>, C>, C, CollectionField<T, C>> {
 
     /**
      * CSS class name that will be added to the main layout of this component.
      */
     public static final String LAYOUT_STYLE_NAME = "collection-field-main-layout";
+
+    public static final int NO_ITEM_INDEX = -1;
 
     private final List<HasValue<?, T>> fields = new ArrayList<>();
 
@@ -44,39 +46,39 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
 
     private final HasComponents layout;
 
-    private ValueComponentProvider<T, ?> valueComponentProvider;
+    private CollectionValueComponentProvider<T, ?> collectionValueComponentProvider;
 
     private boolean valueUpdateInProgress = false;
 
     /**
      * Creates new field.
      * @param emptyCollectionSupplier Provides an empty collection of elements.
-     * @param layoutProvider Source of root layout for this component.
+     * @param collectionLayoutProvider Source of root layout for this component.
      * @param fieldSupplier Method to call when a component for an element is needed.
      * @param <F> Type of the field used.
      */
-    public <F extends Component & HasValue<?, T>> CollectionField(SerializableSupplier<C> emptyCollectionSupplier, LayoutProvider<?> layoutProvider, SerializableSupplier<F> fieldSupplier) {
-        this(emptyCollectionSupplier, layoutProvider, (ValueComponentProvider<T, F>) (index, controller) -> fieldSupplier.get());
+    public <F extends Component & HasValue<?, T>> CollectionField(SerializableSupplier<C> emptyCollectionSupplier, CollectionLayoutProvider<?> collectionLayoutProvider, SerializableSupplier<F> fieldSupplier) {
+        this(emptyCollectionSupplier, collectionLayoutProvider, (CollectionValueComponentProvider<T, F>) (index, controller) -> fieldSupplier.get());
     }
 
     /**
      * Creates new field.
      * @param emptyCollectionSupplier Provides an empty collection of elements.
-     * @param layoutProvider Source of root layout for this component.
-     * @param valueComponentProvider Provider for components for each element in the component.
+     * @param collectionLayoutProvider Source of root layout for this component.
+     * @param collectionValueComponentProvider Provider for components for each element in the component.
      */
-    public CollectionField(SerializableSupplier<C> emptyCollectionSupplier, LayoutProvider<?> layoutProvider, ValueComponentProvider<T, ?> valueComponentProvider) {
+    public CollectionField(SerializableSupplier<C> emptyCollectionSupplier, CollectionLayoutProvider<?> collectionLayoutProvider, CollectionValueComponentProvider<T, ?> collectionValueComponentProvider) {
         // default value is empty collection
         super(emptyCollectionSupplier.get());
 
         this.emptyCollectionSupplier = emptyCollectionSupplier;
 
-        this.layout = layoutProvider.provideLayout(this);
+        this.layout = collectionLayoutProvider.provideComponent(NO_ITEM_INDEX, this);
         this.add((Component) this.layout);
         if(this.layout instanceof HasStyle)
             ((HasStyle) this.layout).addClassName(LAYOUT_STYLE_NAME);
 
-        this.setValueComponentProvider(valueComponentProvider);
+        this.setCollectionValueComponentProvider(collectionValueComponentProvider);
     }
 
     @Override
@@ -123,7 +125,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
 
     @Override
     public void add(int atIndex) {
-        final HasValue<?, T> hasValue = this.getValueComponentProvider().provideComponent(atIndex, this);
+        final HasValue<?, T> hasValue = this.getCollectionValueComponentProvider().provideComponent(atIndex, this);
         // make sure this component is updated whenever anything changes for single element
         this.eventRegistrations.put((Component) hasValue, hasValue.addValueChangeListener(this::valueChangedInSubComponent));
         this.fields.add(atIndex, hasValue);
@@ -172,15 +174,15 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
     }
 
     @Override
-    public final void setValueComponentProvider(ValueComponentProvider<T, ?> valueComponentProvider) {
-        this.valueComponentProvider = valueComponentProvider;
+    public final void setCollectionValueComponentProvider(CollectionValueComponentProvider<T, ?> collectionValueComponentProvider) {
+        this.collectionValueComponentProvider = collectionValueComponentProvider;
         this.fields.clear();
         this.repaintFields(this.getValue());
     }
 
     @Override
-    public ValueComponentProvider<T, ?> getValueComponentProvider() {
-        return valueComponentProvider;
+    public CollectionValueComponentProvider<T, ?> getCollectionValueComponentProvider() {
+        return collectionValueComponentProvider;
     }
 
     /**

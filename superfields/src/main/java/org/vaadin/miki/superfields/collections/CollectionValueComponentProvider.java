@@ -11,6 +11,6 @@ import com.vaadin.flow.component.HasValue;
  * @param <C> Type of generated component. Not the same as the {@code C} in {@link CollectionField}.
  */
 @FunctionalInterface
-public interface ValueComponentProvider<T, C extends Component & HasValue<?, T>> extends CollectionComponentProvider<C> {
+public interface CollectionValueComponentProvider<T, C extends Component & HasValue<?, T>> extends CollectionComponentProvider<C> {
 
 }
