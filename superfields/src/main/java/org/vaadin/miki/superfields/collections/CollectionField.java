@@ -6,6 +6,7 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.markers.HasIndex;
@@ -18,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +38,19 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
      */
     public static final String LAYOUT_STYLE_NAME = "collection-field-main-layout";
 
+    /**
+     * Integer value indicating no index being passed.
+     */
     public static final int NO_ITEM_INDEX = -1;
+
+    /**
+     * Default layout provider. Produces a column-based {@link FlexLayout}.
+     */
+    public static final CollectionLayoutProvider<FlexLayout> DEFAULT_LAYOUT_PROVIDER = ((index, controller) -> {
+        final FlexLayout result = new FlexLayout();
+        result.setFlexDirection(FlexLayout.FlexDirection.COLUMN);
+        return result;
+    });
 
     private final List<HasValue<?, T>> fields = new ArrayList<>();
 
@@ -44,19 +58,38 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
 
     private final Map<Component, Registration> eventRegistrations = new HashMap<>();
 
-    private final HasComponents layout;
+    private HasComponents layout;
 
     private CollectionValueComponentProvider<T, ?> collectionValueComponentProvider;
 
     private boolean valueUpdateInProgress = false;
 
     /**
-     * Creates new field.
+     * Creates new field using {@link #DEFAULT_LAYOUT_PROVIDER} as root layout provider.
      * @param emptyCollectionSupplier Provides an empty collection of elements.
-     * @param collectionLayoutProvider Source of root layout for this component.
      * @param fieldSupplier Method to call when a component for an element is needed.
      * @param <F> Type of the field used.
      */
+    public <F extends Component & HasValue<?, T>> CollectionField(SerializableSupplier<C> emptyCollectionSupplier, SerializableSupplier<F> fieldSupplier) {
+        this(emptyCollectionSupplier, DEFAULT_LAYOUT_PROVIDER, (CollectionValueComponentProvider<T, F>) (index, controller) -> fieldSupplier.get());
+    }
+
+    /**
+     * Creates new field using {@link #DEFAULT_LAYOUT_PROVIDER} as root layout provider.
+     * @param emptyCollectionSupplier Provides an empty collection of elements.
+     * @param collectionValueComponentProvider Provider for components for each element in the component.
+     */
+    public CollectionField(SerializableSupplier<C> emptyCollectionSupplier, CollectionValueComponentProvider<T, ?> collectionValueComponentProvider) {
+        this(emptyCollectionSupplier, DEFAULT_LAYOUT_PROVIDER, collectionValueComponentProvider);
+    }
+
+        /**
+         * Creates new field.
+         * @param emptyCollectionSupplier Provides an empty collection of elements.
+         * @param collectionLayoutProvider Source of root layout for this component.
+         * @param fieldSupplier Method to call when a component for an element is needed.
+         * @param <F> Type of the field used.
+         */
     public <F extends Component & HasValue<?, T>> CollectionField(SerializableSupplier<C> emptyCollectionSupplier, CollectionLayoutProvider<?> collectionLayoutProvider, SerializableSupplier<F> fieldSupplier) {
         this(emptyCollectionSupplier, collectionLayoutProvider, (CollectionValueComponentProvider<T, F>) (index, controller) -> fieldSupplier.get());
     }
@@ -72,13 +105,38 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         super(emptyCollectionSupplier.get());
 
         this.emptyCollectionSupplier = emptyCollectionSupplier;
-
-        this.layout = collectionLayoutProvider.provideComponent(NO_ITEM_INDEX, this);
-        this.add((Component) this.layout);
-        if(this.layout instanceof HasStyle)
-            ((HasStyle) this.layout).addClassName(LAYOUT_STYLE_NAME);
+        this.updateLayout(collectionLayoutProvider.provideComponent(NO_ITEM_INDEX, this));
 
         this.setCollectionValueComponentProvider(collectionValueComponentProvider);
+    }
+
+    private <L extends Component & HasComponents> void updateLayout(L newLayout) {
+        if(this.layout != null)
+            this.remove((Component) this.layout);
+        this.layout = newLayout;
+        this.add(newLayout);
+        if(this.layout instanceof HasStyle)
+            ((HasStyle) this.layout).addClassName(LAYOUT_STYLE_NAME);
+    }
+
+    /**
+     * Sets new layout from a given provider and repaints all fields.
+     * @param collectionLayoutProvider A provider to use. Defaults to {@link #DEFAULT_LAYOUT_PROVIDER}.
+     */
+    public final void setCollectionLayoutProvider(CollectionLayoutProvider<?> collectionLayoutProvider) {
+        this.updateLayout(Objects.requireNonNullElse(collectionLayoutProvider, DEFAULT_LAYOUT_PROVIDER).provideComponent(NO_ITEM_INDEX, this));
+        this.repaintFields(this.getValue());
+    }
+
+    /**
+     * Chains {@link #setCollectionLayoutProvider(CollectionLayoutProvider)} and returns itself.
+     * @param collectionLayoutProvider A provider to use. Defaults to {@link #DEFAULT_LAYOUT_PROVIDER}.
+     * @return This.
+     * @see #setCollectionLayoutProvider(CollectionLayoutProvider)
+     */
+    public final CollectionField<T, C> withCollectionLayoutProvider(CollectionLayoutProvider<?> collectionLayoutProvider) {
+        this.setCollectionLayoutProvider(collectionLayoutProvider);
+        return this;
     }
 
     @Override
@@ -97,6 +155,14 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
     @Override
     protected C generateModelValue() {
         return this.fields.stream().map(HasValue::getValue).collect(Collectors.toCollection(this.emptyCollectionSupplier));
+    }
+
+    @Override
+    protected void updateValue() {
+        super.updateValue();
+        // when using sets, it is possible for duplicates to appear, and they should not be possible
+        if(this.fields.size() != super.getValue().size())
+            this.repaintFields(super.getValue());
     }
 
     @Override

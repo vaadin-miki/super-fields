@@ -8,8 +8,16 @@ package org.vaadin.miki.superfields.collections;
  */
 public interface HasCollectionValueComponentProvider<T> {
 
+    /**
+     * Sets the provider used to generate components for each element of the collection.
+     * @param provider A non-{@code null} provider.
+     */
     void setCollectionValueComponentProvider(CollectionValueComponentProvider<T, ?> provider);
 
+    /**
+     * Returns the current provider used to generate components.
+     * @return A non-{@code null} provider.
+     */
     CollectionValueComponentProvider<T, ?> getCollectionValueComponentProvider();
 
 }

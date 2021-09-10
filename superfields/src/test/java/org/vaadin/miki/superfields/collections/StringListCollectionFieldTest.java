@@ -17,7 +17,7 @@ import java.util.List;
  * @author miki
  * @since 2021-08-23
  */
-public class StringCollectionFieldTest {
+public class StringListCollectionFieldTest {
 
     private CollectionField<String, List<String>> collectionField;
     private CollectionController controller;
