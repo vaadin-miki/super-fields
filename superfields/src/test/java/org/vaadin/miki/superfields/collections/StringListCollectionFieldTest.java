@@ -7,6 +7,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.vaadin.miki.markers.HasIndex;
+import org.vaadin.miki.superfields.util.CollectionComponentProviders;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -124,6 +126,38 @@ public class StringListCollectionFieldTest {
         this.collectionField.setReadOnly(true);
         for(int zmp1 = 0; zmp1 < this.collectionField.size(); zmp1++)
             Assert.assertTrue(this.collectionField.getField(zmp1).isReadOnly());
+    }
+
+    @Test
+    public void testReindexing() {
+        // wrapper is needed, as it HasIndex
+        this.collectionField.setCollectionValueComponentProvider(CollectionComponentProviders.rowWithRemoveButtonFirst(CollectionComponentProviders::textField, "remove"));
+        this.collectionField.setValue(Arrays.asList("this", "is", "an", "elaborate", "test"));
+        Assert.assertEquals(5, this.collectionField.size());
+        // each field needs to have the same index as its position
+        for (int zmp1=0; zmp1 < this.collectionField.size(); zmp1++)
+            Assert.assertEquals(zmp1, ((HasIndex)this.collectionField.getField(zmp1)).getIndex());
+
+        this.controller.add(2);
+        // each field still needs to have the same index as its position
+        for (int zmp1=0; zmp1 < this.collectionField.size(); zmp1++)
+            Assert.assertEquals(zmp1, ((HasIndex)this.collectionField.getField(zmp1)).getIndex());
+
+        // this extra added field should be null
+        Assert.assertNull(this.collectionField.getField(2).getValue());
+    }
+
+    @Test
+    public void testChangingRenderNoValueChangeTriggered() {
+        this.collectionField.setValue(Arrays.asList("hello", "world"));
+        this.eventCounter = 0;
+        // changing renderer should not trigger value change - none needed
+        this.collectionField.setCollectionValueComponentProvider(CollectionComponentProviders.rowWithRemoveButtonFirst(CollectionComponentProviders::textField, "remove"));
+        Assert.assertEquals(0, this.eventCounter);
+
+        // now this should trigger a value change
+        this.controller.add();
+        Assert.assertEquals(1, this.eventCounter);
     }
 
 }

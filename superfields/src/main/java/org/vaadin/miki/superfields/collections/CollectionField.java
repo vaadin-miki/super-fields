@@ -159,10 +159,12 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
 
     @Override
     protected void updateValue() {
-        super.updateValue();
-        // when using sets, it is possible for duplicates to appear, and they should not be possible
-        if(this.fields.size() != super.getValue().size())
-            this.repaintFields(super.getValue());
+        if(!this.valueUpdateInProgress) {
+            super.updateValue();
+            // when using sets, it is possible for duplicates to appear, and they should not be possible
+            if (this.fields.size() != super.getValue().size())
+                this.repaintFields(super.getValue());
+        }
     }
 
     @Override
@@ -242,6 +244,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
     @Override
     public final void setCollectionValueComponentProvider(CollectionValueComponentProvider<T, ?> collectionValueComponentProvider) {
         this.collectionValueComponentProvider = collectionValueComponentProvider;
+        this.valueUpdateInProgress = true; // setting it here
         this.layout.remove(this.fields.stream().map(Component.class::cast).toArray(Component[]::new));
         this.fields.clear();
         this.repaintFields(this.getValue());

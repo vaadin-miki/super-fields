@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  * @author miki
  * @since 2021-09-10
  */
-@Order(65)
+@Order(5)
 public class HasCollectionValueComponentProviderBuilder implements ContentBuilder<CollectionField<String, List<String>>> {
 
     @Override
