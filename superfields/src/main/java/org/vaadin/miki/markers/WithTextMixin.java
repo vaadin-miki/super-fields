@@ -8,19 +8,7 @@ package org.vaadin.miki.markers;
  * @author miki
  * @since 2020-07-07
  */
-public interface WithTextMixin<SELF extends WithTextMixin<SELF>> {
-
-    /**
-     * Sets text of this object.
-     * @param text Text to set.
-     */
-    void setText(String text);
-
-    /**
-     * Returns current text of this object.
-     * @return Current text.
-     */
-    String getText();
+public interface WithTextMixin<SELF extends HasText> extends HasText {
 
     /**
      * Chains {@link #setText(String)} and returns itself.

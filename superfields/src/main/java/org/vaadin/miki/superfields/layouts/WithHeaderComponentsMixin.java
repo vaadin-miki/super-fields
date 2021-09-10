@@ -1,0 +1,24 @@
+package org.vaadin.miki.superfields.layouts;
+
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasComponents;
+
+/**
+ * Mixin for adding components to a header.
+ * @param <H> Header type.
+ * @param <SELF> Self type.
+ */
+public interface WithHeaderComponentsMixin<H extends Component & HasComponents, SELF extends HasHeader<H>> extends HasHeader<H> {
+
+    /**
+     * Adds given components to the header, if it is present.
+     * @param components Components to add.
+     * @return This.
+     */
+    @SuppressWarnings("unchecked")
+    default SELF withHeaderComponents(Component... components) {
+        this.getHeader().ifPresent(header -> header.add(components));
+        return (SELF) this;
+    }
+
+}
