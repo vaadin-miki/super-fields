@@ -242,6 +242,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
     @Override
     public final void setCollectionValueComponentProvider(CollectionValueComponentProvider<T, ?> collectionValueComponentProvider) {
         this.collectionValueComponentProvider = collectionValueComponentProvider;
+        this.layout.remove(this.fields.stream().map(Component.class::cast).toArray(Component[]::new));
         this.fields.clear();
         this.repaintFields(this.getValue());
     }

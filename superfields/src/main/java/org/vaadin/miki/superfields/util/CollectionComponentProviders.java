@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.function.Supplier;
 
 /**
- * Utility class with common use-cases for {@link CollectionComponentProvider} and subclasses.
+ * Utility class with common (hopefully) use-cases of {@link CollectionComponentProvider} and subclasses.
  *
  * @author miki
  * @since 2021-09-04
@@ -114,6 +114,28 @@ public class CollectionComponentProviders {
      */
     public static <T, F extends Component & HasValue<?, T>> CollectionValueComponentProvider<T, HeaderFooterFieldWrapper<T, FlexLayout, FlexLayout>> rowWithRemoveButtonFirst(CollectionValueComponentProvider<T, F> inner, String removeButtonText) {
         return row(inner, Collections.singleton(CollectionComponentProviders.removeButton(removeButtonText)), Collections.emptyList());
+    }
+
+    /**
+     * A {@link CollectionValueComponentProvider} for a column-based {@link HeaderFooterFieldWrapper} where header and footer are row-based {@link FlexLayout}s.
+     * @param inner Inner field.
+     * @param headerComponents Components to put in the header. Must never be {@code null}.
+     * @param footerComponents Components to put in the footer. Must never be {@code null}.
+     * @param <T> Type of data to display.
+     * @param <F> Type of field to use.
+     * @return A {@link CollectionValueComponentProvider} that produces a {@link HeaderFooterFieldWrapper} with a given field.
+     */
+    public static <T, F extends Component & HasValue<?, T>> CollectionValueComponentProvider<T, HeaderFooterFieldWrapper<T, FlexLayout, FlexLayout>> columnWithHeaderAndFooterRows(
+            CollectionValueComponentProvider<T, F> inner,
+            Collection<CollectionComponentProvider<?>> headerComponents, Collection<CollectionComponentProvider<?>> footerComponents) {
+        return (index, controller) -> new HeaderFooterFieldWrapper<>(
+                FlexLayoutHelpers::column,
+                FlexLayoutHelpers.row(),
+                inner.provideComponent(index, controller),
+                FlexLayoutHelpers.row()
+        )
+                .withHeaderComponents(headerComponents.stream().map(f -> f.provideComponent(index, controller)).toArray(Component[]::new))
+                .withFooterComponents(footerComponents.stream().map(h -> h.provideComponent(index, controller)).toArray(Component[]::new));
     }
 
     /**
