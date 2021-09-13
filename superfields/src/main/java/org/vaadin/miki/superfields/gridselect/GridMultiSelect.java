@@ -5,6 +5,7 @@ import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridMultiSelectionModel;
 import com.vaadin.flow.data.selection.SelectionEvent;
+import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithItemsMixin;
 import org.vaadin.miki.markers.WithMaximumSelectionSize;
@@ -22,7 +23,7 @@ import java.util.Set;
  */
 public class GridMultiSelect<V> extends AbstractGridSelect<V, Set<V>>
         implements WithIdMixin<GridMultiSelect<V>>, WithItemsMixin<V, GridMultiSelect<V>>,
-        WithMaximumSelectionSize<GridMultiSelect<V>>,
+        WithMaximumSelectionSize<GridMultiSelect<V>>, WithHelperMixin<GridMultiSelect<V>>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<Set<V>>, Set<V>>, Set<V>, GridMultiSelect<V>> {
 
     private int maximumSelectionSize = UNLIMITED;

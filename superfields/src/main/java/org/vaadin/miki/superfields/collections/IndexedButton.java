@@ -21,30 +21,62 @@ public class IndexedButton extends Button implements WithIndexMixin<IndexedButto
 
     private int index = DEFAULT_INDEX;
 
+    /**
+     * Creates an indexed button with {@link #DEFAULT_INDEX} as index.
+     */
     public IndexedButton() {
         super();
     }
 
+    /**
+     * Creates an indexed button with {@link #DEFAULT_INDEX} as index and given text on the button.
+     * @param text Text to show on the button.
+     */
     public IndexedButton(String text) {
         super(text);
     }
 
+    /**
+     * Creates an indexed button with {@link #DEFAULT_INDEX} as index and an icon.
+     * @param icon Icon to put on the button.
+     */
     public IndexedButton(Component icon) {
         super(icon);
     }
 
+    /**
+     * Creates an indexed button with {@link #DEFAULT_INDEX} as index, given text and icon on the button.
+     * @param text Text on the button.
+     * @param icon Icon on the button.
+     */
     public IndexedButton(String text, Component icon) {
         super(text, icon);
     }
 
+    /**
+     * Creates an indexed button with {@link #DEFAULT_INDEX} as index, given text and a listener.
+     * @param text Text on the button.
+     * @param clickListener Event listener.
+     */
     public IndexedButton(String text, ComponentEventListener<ClickEvent<Button>> clickListener) {
         super(text, clickListener);
     }
 
+    /**
+     * Creates an indexed button with {@link #DEFAULT_INDEX} as index, given icon and a listener.
+     * @param icon Icon on the button.
+     * @param clickListener Event listener.
+     */
     public IndexedButton(Component icon, ComponentEventListener<ClickEvent<Button>> clickListener) {
         super(icon, clickListener);
     }
 
+    /**
+     * Creates an indexed button with {@link #DEFAULT_INDEX} as index, given text and icon, and a listener.
+     * @param text Text on the button.
+     * @param icon Icon on the button.
+     * @param clickListener Event listener.
+     */
     public IndexedButton(String text, Component icon, ComponentEventListener<ClickEvent<Button>> clickListener) {
         super(text, icon, clickListener);
     }
@@ -66,6 +98,29 @@ public class IndexedButton extends Button implements WithIndexMixin<IndexedButto
      */
     public IndexedButton(String text, int startingIndex, ComponentEventListener<ClickEvent<Button>> listener) {
         this(text, listener);
+        this.setIndex(startingIndex);
+    }
+
+    /**
+     * Creates the button with a given text, icon, starting index and a click listener.
+     * @param text Initial text.
+     * @param icon Icon.
+     * @param startingIndex Initial index of the button.
+     * @param listener Listener to be called on click.
+     */
+    public IndexedButton(String text, Component icon, int startingIndex, ComponentEventListener<ClickEvent<Button>> listener) {
+        this(text, icon, listener);
+        this.setIndex(startingIndex);
+    }
+
+    /**
+     * Creates the button with am icon, starting index and a click listener.
+     * @param icon Icon.
+     * @param startingIndex Initial index of the button.
+     * @param listener Listener to be called on click.
+     */
+    public IndexedButton(Component icon, int startingIndex, ComponentEventListener<ClickEvent<Button>> listener) {
+        this(icon, listener);
         this.setIndex(startingIndex);
     }
 

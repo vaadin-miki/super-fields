@@ -9,7 +9,7 @@ import com.vaadin.flow.component.HasHelper;
  * @author miki
  * @since 2020-10-12
  */
-public interface WithHelper<SELF extends HasHelper> extends HasHelper {
+public interface WithHelperMixin<SELF extends HasHelper> extends HasHelper {
 
     /**
      * Chains {@link #setHelperText(String)} and returns itself.
