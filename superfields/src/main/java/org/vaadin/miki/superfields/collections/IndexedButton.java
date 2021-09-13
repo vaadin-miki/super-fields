@@ -6,8 +6,13 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import org.vaadin.miki.markers.Clickable;
 import org.vaadin.miki.markers.HasIndex;
+import org.vaadin.miki.markers.WithComponentAsIconMixin;
+import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithIndexMixin;
 import org.vaadin.miki.markers.WithTextMixin;
+import org.vaadin.miki.markers.WithTitleMixin;
+
+import java.util.Objects;
 
 /**
  * An indexed {@link Button}, i.e. one that implements {@link HasIndex}.
@@ -15,7 +20,10 @@ import org.vaadin.miki.markers.WithTextMixin;
  * @author miki
  * @since 2021-08-30
  */
-public class IndexedButton extends Button implements WithIndexMixin<IndexedButton>, WithTextMixin<IndexedButton>, Clickable {
+public class IndexedButton extends Button
+        implements WithIndexMixin<IndexedButton>, WithIdMixin<IndexedButton>,
+        WithComponentAsIconMixin<IndexedButton>, WithTitleMixin<IndexedButton>,
+        WithTextMixin<IndexedButton>, Clickable {
 
     public static final int DEFAULT_INDEX = -1;
 
@@ -140,4 +148,15 @@ public class IndexedButton extends Button implements WithIndexMixin<IndexedButto
     public String getText() {
         return super.getText();
     }
+
+    @Override
+    public void setTitle(String title) {
+        this.getElement().setProperty("title", Objects.requireNonNullElse(title, ""));
+    }
+
+    @Override
+    public String getTitle() {
+        return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
+    }
+
 }

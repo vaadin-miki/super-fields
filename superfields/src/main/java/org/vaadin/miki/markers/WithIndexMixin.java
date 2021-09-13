@@ -13,6 +13,7 @@ public interface WithIndexMixin<SELF extends HasIndex> extends HasIndex {
      * Chains {@link #setIndex(int)} and returns itself.
      * @param index Index to set.
      * @return This.
+     * @see #setIndex(int)
      */
     @SuppressWarnings("unchecked")
     default SELF withIndex(int index) {

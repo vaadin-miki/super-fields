@@ -14,6 +14,7 @@ public interface WithNullValueOptionallyAllowedMixin<SELF extends HasNullValueOp
      * Chains {@link #setNullValueAllowed(boolean)} and returns itself.
      * @param allowingNullValue Whether to allow {@code null} as a value.
      * @return This.
+     * @see #setNullValueAllowed(boolean)
      */
     @SuppressWarnings("unchecked")
     default SELF withNullValueAllowed(boolean allowingNullValue) {

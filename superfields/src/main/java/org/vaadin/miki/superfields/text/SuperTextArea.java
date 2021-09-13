@@ -17,8 +17,11 @@ import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
+import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.text.TextModificationDelegate;
+
+import java.util.Objects;
 
 /**
  * An extension of {@link TextArea} with some useful features.
@@ -32,7 +35,7 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
         CanModifyText,
         WithIdMixin<SuperTextArea>, WithLabelMixin<SuperTextArea>, WithPlaceholderMixin<SuperTextArea>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextArea>,
-        WithHelperMixin<SuperTextArea>,
+        WithHelperMixin<SuperTextArea>, WithTitleMixin<SuperTextArea>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextArea, String>, String, SuperTextArea> {
 
     private final TextModificationDelegate<SuperTextArea> delegate = new TextModificationDelegate<>(this, this.getEventBus(), this::getValue);
@@ -119,4 +122,13 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
         this.delegate.reinitialiseListeners();
     }
 
+    @Override
+    public void setTitle(String title) {
+        this.getElement().setProperty("title", Objects.requireNonNullElse(title, ""));
+    }
+
+    @Override
+    public String getTitle() {
+        return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
+    }
 }

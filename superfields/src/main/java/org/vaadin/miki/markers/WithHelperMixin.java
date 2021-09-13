@@ -15,6 +15,7 @@ public interface WithHelperMixin<SELF extends HasHelper> extends HasHelper {
      * Chains {@link #setHelperText(String)} and returns itself.
      * @param helperText Helper text to set.
      * @return This.
+     * @see #setHelperText(String)
      */
     @SuppressWarnings("unchecked")
     default SELF withHelperText(String helperText) {
@@ -26,6 +27,7 @@ public interface WithHelperMixin<SELF extends HasHelper> extends HasHelper {
      * Chains {@link #setHelperComponent(Component)} and returns itself.
      * @param component Helper component to use.
      * @return This.
+     * @see #setHelperComponent(Component)
      */
     @SuppressWarnings("unchecked")
     default SELF withHelperComponent(Component component) {

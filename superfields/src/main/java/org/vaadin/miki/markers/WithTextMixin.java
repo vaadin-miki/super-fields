@@ -14,6 +14,7 @@ public interface WithTextMixin<SELF extends HasText> extends HasText {
      * Chains {@link #setText(String)} and returns itself.
      * @param text Text to set.
      * @return This.
+     * @see #setText(String)
      */
     @SuppressWarnings("unchecked")
     default SELF withText(String text) {
