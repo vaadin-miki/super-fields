@@ -6,7 +6,7 @@ import org.vaadin.miki.demo.ContentBuilder;
 import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.collections.CollectionField;
 import org.vaadin.miki.superfields.collections.CollectionValueComponentProvider;
-import org.vaadin.miki.superfields.collections.IndexedButton;
+import org.vaadin.miki.superfields.buttons.IndexedButton;
 import org.vaadin.miki.superfields.text.SuperTextField;
 import org.vaadin.miki.superfields.util.CollectionComponentProviders;
 

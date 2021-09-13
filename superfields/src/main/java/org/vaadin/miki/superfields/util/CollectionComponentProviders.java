@@ -10,7 +10,7 @@ import org.vaadin.miki.superfields.collections.CollectionComponentProvider;
 import org.vaadin.miki.superfields.collections.CollectionController;
 import org.vaadin.miki.superfields.collections.CollectionLayoutProvider;
 import org.vaadin.miki.superfields.collections.CollectionValueComponentProvider;
-import org.vaadin.miki.superfields.collections.IndexedButton;
+import org.vaadin.miki.superfields.buttons.IndexedButton;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
 import org.vaadin.miki.superfields.layouts.HeaderFooterFieldWrapper;
 import org.vaadin.miki.superfields.layouts.HeaderFooterLayoutWrapper;

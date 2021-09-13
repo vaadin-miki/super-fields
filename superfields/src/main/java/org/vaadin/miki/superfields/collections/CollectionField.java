@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         implements CollectionController, WithIdMixin<CollectionField<T, C>>,
-        WithCollectionValueComponentProvider<T, CollectionField<T, C>>,
+        WithCollectionValueComponentProviderMixin<T, CollectionField<T, C>>,
         WithHelperMixin<CollectionField<T, C>>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<C>, C>, C, CollectionField<T, C>> {
 

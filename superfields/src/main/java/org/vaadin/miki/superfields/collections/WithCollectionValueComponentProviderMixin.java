@@ -7,12 +7,13 @@ package org.vaadin.miki.superfields.collections;
  * @author miki
  * @since 2021-08-25
  */
-public interface WithCollectionValueComponentProvider<T, SELF extends HasCollectionValueComponentProvider<T>> extends HasCollectionValueComponentProvider<T> {
+public interface WithCollectionValueComponentProviderMixin<T, SELF extends HasCollectionValueComponentProvider<T>> extends HasCollectionValueComponentProvider<T> {
 
     /**
      * Chains {@link #setCollectionValueComponentProvider(CollectionValueComponentProvider)} and returns itself.
      * @param provider Provider to use.
      * @return This.
+     * @see #setCollectionValueComponentProvider(CollectionValueComponentProvider)
      */
     @SuppressWarnings("unchecked")
     default SELF withCollectionComponentProvider(CollectionValueComponentProvider<T, ?> provider) {

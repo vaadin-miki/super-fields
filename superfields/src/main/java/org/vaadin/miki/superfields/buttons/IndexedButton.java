@@ -1,4 +1,4 @@
-package org.vaadin.miki.superfields.collections;
+package org.vaadin.miki.superfields.buttons;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
