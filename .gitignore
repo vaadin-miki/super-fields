@@ -13,3 +13,4 @@ buildNumber.properties
 *.iml
 node
 node_modules
+build/
