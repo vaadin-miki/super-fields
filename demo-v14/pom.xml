@@ -16,7 +16,7 @@
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <node.version>v12.14.0</node.version>
-        <jetty.plugin.version>9.4.15.v20190215</jetty.plugin.version>
+        <jetty.plugin.version>9.4.36.v20210114</jetty.plugin.version>
     </properties>
 
     <dependencies>
