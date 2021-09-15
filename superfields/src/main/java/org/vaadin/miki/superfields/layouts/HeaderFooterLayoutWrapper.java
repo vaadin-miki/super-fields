@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasComponents;
 import org.vaadin.miki.markers.HasReadOnly;
+import org.vaadin.miki.markers.WithIdMixin;
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -30,7 +31,8 @@ public class HeaderFooterLayoutWrapper<R extends Component & HasComponents,
                                  B extends Component & HasComponents,
                                  F extends Component & HasComponents>
         extends Composite<R>
-        implements HasComponents, Iterable<Component>, WithHeaderComponentsMixin<H, HeaderFooterLayoutWrapper<R, H, B, F>>,
+        implements HasComponents, Iterable<Component>,
+        WithHeaderComponentsMixin<H, HeaderFooterLayoutWrapper<R, H, B, F>>, WithIdMixin<HeaderFooterLayoutWrapper<R, H, B, F>>,
         WithFooterComponentsMixin<F, HeaderFooterLayoutWrapper<R, H, B, F>>, HasReadOnly
 {
 

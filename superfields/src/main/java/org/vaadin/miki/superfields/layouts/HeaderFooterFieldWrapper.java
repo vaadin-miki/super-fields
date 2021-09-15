@@ -1,15 +1,18 @@
 package org.vaadin.miki.superfields.layouts;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.HasHelper;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import org.vaadin.miki.markers.HasIndex;
 import org.vaadin.miki.markers.HasLabel;
-import org.vaadin.miki.markers.WithHelper;
+import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithIndexMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
+import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -34,9 +37,10 @@ public class HeaderFooterFieldWrapper<T,
         extends CustomField<T>
         implements WithLabelMixin<HeaderFooterFieldWrapper<T, H, F>>,
                    WithIdMixin<HeaderFooterFieldWrapper<T, H, F>>,
-                   WithHelper<HeaderFooterFieldWrapper<T, H, F>>,
+                   WithHelperMixin<HeaderFooterFieldWrapper<T, H, F>>,
                    WithHeaderComponentsMixin<H, HeaderFooterFieldWrapper<T, H, F>>,
                    WithFooterComponentsMixin<F, HeaderFooterFieldWrapper<T, H, F>>,
+                   WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, HeaderFooterFieldWrapper<T, H, F>>,
                    WithIndexMixin<HeaderFooterFieldWrapper<T, H, F>> {
 
     private final HasValue<?, T> field;
@@ -46,13 +50,26 @@ public class HeaderFooterFieldWrapper<T,
     private boolean disablingHeaderOnReadOnly = true;
     private boolean disablingFooterOnReadOnly = true;
 
+    /**
+     * Creates the wrapper with given root layout, header, footer and field.
+     * @param rootSupplier A provider for the root layout.
+     * @param header Header to use. If not {@code null}, it will be added to whatever {@code rootSupplier} produces as first component.
+     * @param field Field to wrap. Must not be {@code null}. It will be added to whatever {@code rootSupplier}.
+     * @param footer Footer to use. If not {@code null}, it will be added to whatever {@code rootSupplier} produces after the field.
+     * @param <R> Generic type to enforce root layout is a {@link Component} that {@link HasComponents}.
+     * @param <V> Generic type to enforce field is a {@link Component} that {@link HasValue} of type {@code T}.
+     */
     public <R extends Component & HasComponents, V extends Component & HasValue<?, T>> HeaderFooterFieldWrapper(Supplier<R> rootSupplier, H header, V field, F footer) {
         this.field = field;
         this.header = header;
         this.footer = footer;
 
         final R root = rootSupplier.get();
-        root.add(header, field, footer);
+        if(header != null)
+            root.add(header);
+        root.add(field);
+        if(footer != null)
+            root.add(footer);
         this.add(root);
     }
 
@@ -66,6 +83,20 @@ public class HeaderFooterFieldWrapper<T,
     @Override
     public String getLabel() {
         return this.field instanceof HasLabel ? ((HasLabel) this.field).getLabel() : super.getLabel();
+    }
+
+    @Override
+    public void setHelperComponent(Component component) {
+        if(this.field instanceof HasHelper)
+            ((HasHelper) this.field).setHelperComponent(component);
+        else super.setHelperComponent(component);
+    }
+
+    @Override
+    public void setHelperText(String helperText) {
+        if(this.field instanceof HasHelper)
+            ((HasHelper) this.field).setHelperText(helperText);
+        else super.setHelperText(helperText);
     }
 
     @Override

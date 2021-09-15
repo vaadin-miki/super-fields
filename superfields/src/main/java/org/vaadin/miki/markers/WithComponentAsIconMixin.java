@@ -14,6 +14,7 @@ public interface WithComponentAsIconMixin<SELF extends HasComponentAsIcon> exten
      * Chains {@link #setIcon(Component)} and returns itself.
      * @param icon Icon to set. Can be {@code null}.
      * @return This.
+     * @see #setIcon(Component)
      */
     @SuppressWarnings("unchecked")
     default SELF withIcon(Component icon) {

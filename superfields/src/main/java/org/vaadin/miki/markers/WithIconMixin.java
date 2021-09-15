@@ -14,6 +14,7 @@ public interface WithIconMixin<SELF extends HasIcon> extends HasIcon {
      * Chains {@link #setIcon(Icon)} and returns itself.
      * @param icon Icon to set.
      * @return This.
+     * @see #setIcon(Icon)
      */
     @SuppressWarnings("unchecked")
     default SELF withIcon(Icon icon) {

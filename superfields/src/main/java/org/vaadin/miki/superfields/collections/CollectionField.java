@@ -11,6 +11,7 @@ import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.markers.HasIndex;
 import org.vaadin.miki.markers.HasReadOnly;
+import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
@@ -30,7 +31,8 @@ import java.util.stream.Collectors;
  */
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         implements CollectionController, WithIdMixin<CollectionField<T, C>>,
-        WithCollectionValueComponentProvider<T, CollectionField<T, C>>,
+        WithCollectionValueComponentProviderMixin<T, CollectionField<T, C>>,
+        WithHelperMixin<CollectionField<T, C>>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<C>, C>, C, CollectionField<T, C>> {
 
     /**

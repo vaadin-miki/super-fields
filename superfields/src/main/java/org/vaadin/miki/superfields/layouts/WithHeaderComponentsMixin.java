@@ -7,6 +7,8 @@ import com.vaadin.flow.component.HasComponents;
  * Mixin for adding components to a header.
  * @param <H> Header type.
  * @param <SELF> Self type.
+ * @author miki
+ * @since 2021-09-15
  */
 public interface WithHeaderComponentsMixin<H extends Component & HasComponents, SELF extends HasHeader<H>> extends HasHeader<H> {
 

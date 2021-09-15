@@ -10,7 +10,7 @@ import org.vaadin.miki.superfields.collections.CollectionComponentProvider;
 import org.vaadin.miki.superfields.collections.CollectionController;
 import org.vaadin.miki.superfields.collections.CollectionLayoutProvider;
 import org.vaadin.miki.superfields.collections.CollectionValueComponentProvider;
-import org.vaadin.miki.superfields.collections.IndexedButton;
+import org.vaadin.miki.superfields.buttons.IndexedButton;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
 import org.vaadin.miki.superfields.layouts.HeaderFooterFieldWrapper;
 import org.vaadin.miki.superfields.layouts.HeaderFooterLayoutWrapper;
@@ -149,12 +149,7 @@ public class CollectionComponentProviders {
     public static CollectionLayoutProvider<HeaderFooterLayoutWrapper<FlexLayout, FlexLayout, FlexLayout, FlexLayout>> columnWithHeaderAndFooterRows(
             Collection<CollectionComponentProvider<?>> headerComponents, Collection<CollectionComponentProvider<?>> footerComponents
     ) {
-        return (index, controller) -> new HeaderFooterLayoutWrapper<>(
-                FlexLayoutHelpers::column,
-                FlexLayoutHelpers.row(),
-                FlexLayoutHelpers.column(),
-                FlexLayoutHelpers.row()
-        )
+        return (index, controller) -> FlexLayoutHelpers.columnWithHeaderRowAndFooterRow()
                 .withHeaderComponents(headerComponents.stream().map(h -> h.provideComponent(index, controller)).toArray(Component[]::new))
                 .withFooterComponents(footerComponents.stream().map(f -> f.provideComponent(index, controller)).toArray(Component[]::new));
     }
