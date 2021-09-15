@@ -50,13 +50,26 @@ public class HeaderFooterFieldWrapper<T,
     private boolean disablingHeaderOnReadOnly = true;
     private boolean disablingFooterOnReadOnly = true;
 
+    /**
+     * Creates the wrapper with given root layout, header, footer and field.
+     * @param rootSupplier A provider for the root layout.
+     * @param header Header to use. If not {@code null}, it will be added to whatever {@code rootSupplier} produces as first component.
+     * @param field Field to wrap. Must not be {@code null}. It will be added to whatever {@code rootSupplier}.
+     * @param footer Footer to use. If not {@code null}, it will be added to whatever {@code rootSupplier} produces after the field.
+     * @param <R> Generic type to enforce root layout is a {@link Component} that {@link HasComponents}.
+     * @param <V> Generic type to enforce field is a {@link Component} that {@link HasValue} of type {@code T}.
+     */
     public <R extends Component & HasComponents, V extends Component & HasValue<?, T>> HeaderFooterFieldWrapper(Supplier<R> rootSupplier, H header, V field, F footer) {
         this.field = field;
         this.header = header;
         this.footer = footer;
 
         final R root = rootSupplier.get();
-        root.add(header, field, footer);
+        if(header != null)
+            root.add(header);
+        root.add(field);
+        if(footer != null)
+            root.add(footer);
         this.add(root);
     }
 

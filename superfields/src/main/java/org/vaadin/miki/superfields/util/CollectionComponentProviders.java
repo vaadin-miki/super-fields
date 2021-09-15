@@ -149,12 +149,7 @@ public class CollectionComponentProviders {
     public static CollectionLayoutProvider<HeaderFooterLayoutWrapper<FlexLayout, FlexLayout, FlexLayout, FlexLayout>> columnWithHeaderAndFooterRows(
             Collection<CollectionComponentProvider<?>> headerComponents, Collection<CollectionComponentProvider<?>> footerComponents
     ) {
-        return (index, controller) -> new HeaderFooterLayoutWrapper<>(
-                FlexLayoutHelpers::column,
-                FlexLayoutHelpers.row(),
-                FlexLayoutHelpers.column(),
-                FlexLayoutHelpers.row()
-        )
+        return (index, controller) -> FlexLayoutHelpers.columnWithHeaderRowAndFooterRow()
                 .withHeaderComponents(headerComponents.stream().map(h -> h.provideComponent(index, controller)).toArray(Component[]::new))
                 .withFooterComponents(footerComponents.stream().map(f -> f.provideComponent(index, controller)).toArray(Component[]::new));
     }
