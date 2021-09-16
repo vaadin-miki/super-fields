@@ -12,11 +12,12 @@ import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanModifyText;
 import org.vaadin.miki.markers.CanSelectText;
-import org.vaadin.miki.markers.WithHelper;
+import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
+import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.text.TextModificationDelegate;
 
@@ -30,9 +31,9 @@ import org.vaadin.miki.shared.text.TextModificationDelegate;
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextField extends TextField implements CanSelectText, TextSelectionNotifier<SuperTextField>,
         CanModifyText,
-        WithIdMixin<SuperTextField>,  WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,
+        WithIdMixin<SuperTextField>, WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
-        WithHelper<SuperTextField>,
+        WithHelperMixin<SuperTextField>, WithTitleMixin<SuperTextField>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextField> {
 
     private final TextModificationDelegate<SuperTextField> delegate = new TextModificationDelegate<>(this, this.getEventBus(), this::getValue);

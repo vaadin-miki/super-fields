@@ -1,10 +1,18 @@
+# 0.11.0 - CollectionField and Vaadin 14.7
+## New features and enhancements
+* \#303 - [Collection Field](https://github.com/vaadin-miki/super-fields/issues/303)
+* \#304 - [Allow omitting leading 0 in floating-point number fields](https://github.com/vaadin-miki/super-fields/issues/304)
+## Changes to API
+* \#313 - [Clean-up mixin interface names and usage](https://github.com/vaadin-miki/super-fields/issues/313)
+* \#314 - [Bump Vaadin to 14.7](https://github.com/vaadin-miki/super-fields/issues/314)
+## Bug fixes
+* \#305 - [Cannot read property 'parseDate' of undefined](https://github.com/vaadin-miki/super-fields/issues/305)
 # 0.10.2 - CanModifyText and Vaadin 14.6
 ## New features and enhancements
 * \#290 - [Add text at caret position](https://github.com/vaadin-miki/super-fields/issues/290)
 ## Changes to API
 * \#299 - [Update to Vaadin 14.6](https://github.com/vaadin-miki/super-fields/issues/299)
 ## Bug fixes
-(nothing reported)
 # 0.10.1 - Vaadin 14.5
 ## New features and enhancements
 (nothing reported)

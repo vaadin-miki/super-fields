@@ -150,4 +150,26 @@ class BaseTestsForFloatingPointNumbers<T extends Number> extends BaseTestsForInt
         });
     }
 
+    @Test
+    public void testIntegerPartRequired() {
+        final String[] onlyWhenNotRequired = new String[] {
+                ",", ",2", ",25", "-,", "-,2", "-,27"
+        };
+        this.getField().setMaximumFractionDigits(3);
+        this.getField().setMinimumFractionDigits(0);
+        Arrays.asList(2, 3, 5, 7, 9, 11).forEach(maxDigits -> {
+                    this.getField().setMaximumIntegerDigits(maxDigits);
+                    this.getField().setIntegerPartOptional(false);
+                    // integer part is required by default, so ALL entries should be incorrect
+                    String regexp = this.getField().getRegexp();
+                    for (String s : onlyWhenNotRequired)
+                        Assert.assertFalse(String.format("input %s must not match %s when integer part (max size %d) is required", s, regexp, maxDigits), s.matches(regexp));
+
+                    this.getField().setIntegerPartOptional(true);
+                    regexp = this.getField().getRegexp();
+                    for (String s : onlyWhenNotRequired)
+                        Assert.assertTrue(String.format("input %s must match %s when integer part (max size %d) is optional", s, regexp, maxDigits), s.matches(regexp));
+                }
+        );
+    }
 }

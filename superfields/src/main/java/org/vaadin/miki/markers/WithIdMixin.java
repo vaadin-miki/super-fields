@@ -12,6 +12,7 @@ public interface WithIdMixin<SELF extends HasId> extends HasId {
      * Chains setting id.
      * @param id Id to set.
      * @return This.
+     * @see #setId(String)
      */
     @SuppressWarnings("unchecked")
     default SELF withId(String id) {

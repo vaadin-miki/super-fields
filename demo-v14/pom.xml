@@ -4,11 +4,11 @@
     <parent>
         <artifactId>superfields-parent</artifactId>
         <groupId>org.vaadin.miki</groupId>
-        <version>0.10.2</version>
+        <version>0.11.0</version>
     </parent>
 
     <artifactId>superfields-demo-v14</artifactId>
-    <version>0.10.2</version>
+    <version>0.11.0</version>
     <name>V14 demo app for SuperFields</name>
     <description>Showcase application for V14 and SuperFields.</description>
     <packaging>war</packaging>
@@ -16,14 +16,14 @@
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <node.version>v12.14.0</node.version>
-        <jetty.plugin.version>9.4.15.v20190215</jetty.plugin.version>
+        <jetty.plugin.version>9.4.36.v20210114</jetty.plugin.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.vaadin.miki</groupId>
             <artifactId>superfields</artifactId>
-            <version>0.10.2</version>
+            <version>0.11.0</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
