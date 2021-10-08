@@ -1,0 +1,1 @@
+Value-selection component that is a spiritual descendant of `TabSheet` from Vaadin 8. Supports custom generated tab contents, value change events and even multiline tabs. 
