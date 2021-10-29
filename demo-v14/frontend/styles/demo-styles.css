@@ -41,8 +41,8 @@ div.item-grid-cell>span {
     width: 20%;
     max-width: 400px;
     float: left;
-    padding: 5px;
-    margin: 5px;
+    margin: 0.5em;
+    padding: 1em;
     display: block;
     border: 2px solid black;
     cursor: pointer;
