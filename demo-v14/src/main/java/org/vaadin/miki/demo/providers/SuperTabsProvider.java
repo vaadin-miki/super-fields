@@ -20,6 +20,7 @@ public class SuperTabsProvider implements ComponentProvider<SuperTabs<String>> {
     public SuperTabs<String> getComponent() {
 
         return new SuperTabs<String>((Supplier<HorizontalLayout>) HorizontalLayout::new)
+                .withHelperText("(go ahead, click around!)")
                 .withTabContentGenerator(s -> new Paragraph("Did you know? All SuperFields are "+s))
                 .withItems(
                         "Java friendly", "Super-configurable", "Open source",
