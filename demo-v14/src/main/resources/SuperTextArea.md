@@ -1,0 +1,1 @@
+An extension of `TextArea` that supports server-side text selection and modification. And tooltips.

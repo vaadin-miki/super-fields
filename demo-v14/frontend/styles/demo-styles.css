@@ -33,6 +33,40 @@ div.item-grid-cell>span {
     text-align: center;
 }
 
+#presentation-grid .item-grid-row {
+    clear: left;
+}
+
+#presentation-grid .presentation-cell {
+    width: 20%;
+    max-width: 400px;
+    float: left;
+    margin: 0.5em;
+    padding: 1em;
+    display: block;
+    border: 2px solid black;
+    cursor: pointer;
+    text-align: center;
+}
+
+.presentation-cell h3 {
+    margin: 3px;
+    padding: 3px;
+}
+
+#presentation-grid .presentation-cell:hover {
+    background: silver;
+    border: 2px solid dodgerblue;
+}
+
+#presentation-grid .presentation-cell .presentation-description {
+    color: silver;
+}
+
+#presentation-grid .presentation-cell:hover .presentation-description {
+    color: black;
+}
+
 lazy-load.selected {
     background: lightgreen;
 }

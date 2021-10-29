@@ -1,0 +1,1 @@
+A field to work with any `Collection<X>` (sets and lists), allowing each element to be shown or removed individually.

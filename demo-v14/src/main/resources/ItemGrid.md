@@ -1,0 +1,1 @@
+A grid-like selection component where each value is rendered as a separate cell. Supports variable column count, row padding (aka "calendar cells") and custom cell rendering.

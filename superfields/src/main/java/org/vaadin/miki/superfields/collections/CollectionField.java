@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * All-purpose Vaadin for editing and maintaining values that are {@link Collection}s.
+ * All-purpose field for editing and maintaining values that are {@link Collection}s.
  *
  * @param <T> Type of the element in the collection.
  * @param <C> Type of the collection.
