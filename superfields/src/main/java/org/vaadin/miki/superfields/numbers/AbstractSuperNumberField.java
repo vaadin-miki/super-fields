@@ -20,6 +20,7 @@ import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.markers.WithHelperMixin;
+import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
@@ -51,7 +52,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
-        WithHelperMixin<SELF> {
+                   WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -724,6 +725,26 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public String getHelperText() {
         return this.field.getHelperText();
+    }
+
+    @Override
+    public void setHelperAbove() {
+        this.field.setHelperAbove();
+    }
+
+    @Override
+    public void setHelperBelow() {
+        this.field.setHelperBelow();
+    }
+
+    @Override
+    public void setHelperAbove(boolean above) {
+        this.field.setHelperAbove(above);
+    }
+
+    @Override
+    public boolean isHelperAbove() {
+        return this.field.isHelperAbove();
     }
 
     /**

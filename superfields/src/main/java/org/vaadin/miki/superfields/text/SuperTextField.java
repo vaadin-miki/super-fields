@@ -13,6 +13,7 @@ import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanModifyText;
 import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.markers.WithHelperMixin;
+import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
@@ -33,7 +34,7 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
         CanModifyText,
         WithIdMixin<SuperTextField>, WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
-        WithHelperMixin<SuperTextField>, WithTitleMixin<SuperTextField>,
+        WithHelperMixin<SuperTextField>, WithTitleMixin<SuperTextField>, WithHelperPositionableMixin<SuperTextField>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextField> {
 
     private final TextModificationDelegate<SuperTextField> delegate = new TextModificationDelegate<>(this, this.getEventBus(), this::getValue);
