@@ -29,7 +29,7 @@ import org.vaadin.miki.markers.WithIdMixin;
  */
 @JsModule("./unload-observer.js")
 @Tag("unload-observer")
-public final class UnloadObserver extends PolymerTemplate<TemplateModel> implements WithIdMixin<UnloadObserver> {
+public class UnloadObserver extends PolymerTemplate<TemplateModel> implements WithIdMixin<UnloadObserver> {
 
     /**
      * Returns or creates an instance for current UI.
@@ -82,7 +82,7 @@ public final class UnloadObserver extends PolymerTemplate<TemplateModel> impleme
     public static <C extends Component & HasComponents> UnloadObserver getAttached(C parent) {
         if(parent == null)
             throw new NullPointerException("parent component to attach UnloadObserver to must not be null");
-        if(!parent.getUI().isPresent())
+        if(parent.getUI().isEmpty())
             throw new IllegalArgumentException("parent component is not attached to any UI, hence UnloadObserver cannot be added to it");
 
         @SuppressWarnings("squid:S3655") // the check is done just a few lines above
