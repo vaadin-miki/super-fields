@@ -10,6 +10,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.VaadinService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
 
 import java.io.IOException;
@@ -24,6 +26,8 @@ import java.util.Locale;
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("SuperFields - Demo App")
 public class InfoPage extends VerticalLayout {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(InfoPage.class);
 
     public InfoPage() {
         super(
@@ -61,20 +65,21 @@ public class InfoPage extends VerticalLayout {
         final Div result = new Div();
         result.add(new H3(type.getSimpleName()));
 
-        final InputStream resource = this.getClass().getClassLoader().getResourceAsStream(type.getSimpleName().toLowerCase(Locale.ROOT) + ".md");
-        if(resource != null) {
-            try {
-                final Span desc = new Span(new String(resource.readAllBytes()));
-                desc.addClassName("presentation-description");
-                result.add(desc);
-            } catch (IOException e) {
-                // silently ignore
+        try (InputStream resource = this.getClass().getClassLoader().getResourceAsStream(type.getSimpleName().toLowerCase(Locale.ROOT) + ".md")) {
+            if (resource != null) {
+                try {
+                    final Span desc = new Span(new String(resource.readAllBytes()));
+                    desc.addClassName("presentation-description");
+                    result.add(desc);
+                } catch (IOException e) {
+                    LOGGER.error("could not read description for component {}", type.getSimpleName(), e);
+                }
             }
-
+        } catch (IOException e) {
+            LOGGER.error("could not open description for component {}", type.getSimpleName(), e);
         }
         result.addClassName("presentation-cell");
         return result;
-
     }
 
 }
