@@ -1,3 +1,12 @@
+# 0.11.1 - Focus fixes and reworked demo app
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#324 - [Methods to control helper text/component position](https://github.com/vaadin-miki/super-fields/issues/324)
+* \#326 - [Bump Vaadin to 14.7.3](https://github.com/vaadin-miki/super-fields/issues/326)
+* \#330 - [Vaadin 14.7.5 and Java8 Support for the new super-fields version](https://github.com/vaadin-miki/super-fields/issues/330)
+## Bug fixes
+* \#329 - [Number fields do not receive focus from code](https://github.com/vaadin-miki/super-fields/issues/329)
 # 0.11.0 - CollectionField and Vaadin 14.7
 ## New features and enhancements
 * \#303 - [Collection Field](https://github.com/vaadin-miki/super-fields/issues/303)
