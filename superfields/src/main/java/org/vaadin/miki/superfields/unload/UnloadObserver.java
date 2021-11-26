@@ -82,7 +82,7 @@ public class UnloadObserver extends PolymerTemplate<TemplateModel> implements Wi
     public static <C extends Component & HasComponents> UnloadObserver getAttached(C parent) {
         if(parent == null)
             throw new NullPointerException("parent component to attach UnloadObserver to must not be null");
-        if(parent.getUI().isEmpty())
+        if(!parent.getUI().isPresent())
             throw new IllegalArgumentException("parent component is not attached to any UI, hence UnloadObserver cannot be added to it");
 
         @SuppressWarnings("squid:S3655") // the check is done just a few lines above

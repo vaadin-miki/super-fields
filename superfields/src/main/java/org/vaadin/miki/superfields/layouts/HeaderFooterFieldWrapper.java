@@ -15,7 +15,6 @@ import org.vaadin.miki.markers.WithIndexMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -108,7 +107,7 @@ public class HeaderFooterFieldWrapper<T,
 
     @Override
     protected void setPresentationValue(T t) {
-        this.field.setValue(Objects.requireNonNullElse(t, this.field.getEmptyValue()));
+        this.field.setValue(t == null ? this.field.getEmptyValue() : t);
     }
 
     @Override

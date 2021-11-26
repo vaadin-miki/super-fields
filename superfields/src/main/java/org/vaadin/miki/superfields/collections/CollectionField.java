@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -127,7 +126,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
      * @param collectionLayoutProvider A provider to use. Defaults to {@link #DEFAULT_LAYOUT_PROVIDER}.
      */
     public final void setCollectionLayoutProvider(CollectionLayoutProvider<?> collectionLayoutProvider) {
-        this.updateLayout(Objects.requireNonNullElse(collectionLayoutProvider, DEFAULT_LAYOUT_PROVIDER).provideComponent(NO_ITEM_INDEX, this));
+        this.updateLayout((collectionLayoutProvider == null ? DEFAULT_LAYOUT_PROVIDER : collectionLayoutProvider).provideComponent(NO_ITEM_INDEX, this));
         this.repaintFields(this.getValue());
     }
 

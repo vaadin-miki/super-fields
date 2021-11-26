@@ -12,8 +12,6 @@ import org.vaadin.miki.markers.WithIndexMixin;
 import org.vaadin.miki.markers.WithTextMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
 
-import java.util.Objects;
-
 /**
  * An indexed {@link Button}, i.e. one that implements {@link HasIndex}.
  *
@@ -151,12 +149,13 @@ public class IndexedButton extends Button
 
     @Override
     public void setTitle(String title) {
-        this.getElement().setProperty("title", Objects.requireNonNullElse(title, ""));
+        this.getElement().setProperty("title", title == null ? "" : title);
     }
 
     @Override
     public String getTitle() {
-        return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
+        final String result = this.getElement().getProperty("title");
+        return result == null ? "" : result;
     }
 
 }

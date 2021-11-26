@@ -22,8 +22,6 @@ import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.text.TextModificationDelegate;
 
-import java.util.Objects;
-
 /**
  * An extension of {@link TextArea} with some useful features.
  * @author miki
@@ -125,11 +123,12 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
 
     @Override
     public void setTitle(String title) {
-        this.getElement().setProperty("title", Objects.requireNonNullElse(title, ""));
+        this.getElement().setProperty("title", title == null ? "" : title);
     }
 
     @Override
     public String getTitle() {
-        return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
+        final String result = this.getElement().getProperty("title");
+        return result == null ? "" : result;
     }
 }

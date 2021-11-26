@@ -29,7 +29,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * An extension of {@link DatePicker} that handles I18N also on the client side.
@@ -198,12 +197,13 @@ public class SuperDatePicker extends DatePicker
 
     @Override
     public void setTitle(String title) {
-        this.getElement().setProperty("title", Objects.requireNonNullElse(title, ""));
+        this.getElement().setProperty("title", title == null ? "" : title);
     }
 
     @Override
     public String getTitle() {
-        return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
+        final String result = this.getElement().getProperty("title");
+        return result == null ? "" : result;
     }
 
 }
