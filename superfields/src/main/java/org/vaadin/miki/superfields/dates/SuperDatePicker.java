@@ -14,6 +14,7 @@ import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.markers.WithDatePatternMixin;
 import org.vaadin.miki.markers.WithHelperMixin;
+import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
@@ -44,7 +45,7 @@ public class SuperDatePicker extends DatePicker
                    WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>, WithTitleMixin<SuperDatePicker>,
                    WithPlaceholderMixin<SuperDatePicker>, WithDatePatternMixin<SuperDatePicker>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<DatePicker, LocalDate>, LocalDate, SuperDatePicker>,
-                   WithIdMixin<SuperDatePicker>, WithHelperMixin<SuperDatePicker> {
+                   WithIdMixin<SuperDatePicker>, WithHelperMixin<SuperDatePicker>, WithHelperPositionableMixin<SuperDatePicker> {
 
     private final DatePatternDelegate<SuperDatePicker> datePatternDelegate = new DatePatternDelegate<>(this);
 

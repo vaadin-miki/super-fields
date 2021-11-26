@@ -12,6 +12,7 @@ import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.markers.HasIndex;
 import org.vaadin.miki.markers.HasReadOnly;
 import org.vaadin.miki.markers.WithHelperMixin;
+import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
@@ -24,7 +25,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * All-purpose Vaadin for editing and maintaining values that are {@link Collection}s.
+ * All-purpose field for editing and maintaining values that are {@link Collection}s.
  *
  * @param <T> Type of the element in the collection.
  * @param <C> Type of the collection.
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         implements CollectionController, WithIdMixin<CollectionField<T, C>>,
         WithCollectionValueComponentProviderMixin<T, CollectionField<T, C>>,
-        WithHelperMixin<CollectionField<T, C>>,
+        WithHelperMixin<CollectionField<T, C>>, WithHelperPositionableMixin<CollectionField<T, C>>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<C>, C>, C, CollectionField<T, C>> {
 
     /**

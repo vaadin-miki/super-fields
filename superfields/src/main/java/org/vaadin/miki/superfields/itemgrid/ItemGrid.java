@@ -10,6 +10,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.data.binder.HasItems;
 import org.vaadin.miki.markers.WithHelperMixin;
+import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithItemsMixin;
 import org.vaadin.miki.markers.WithValueMixin;
@@ -39,7 +40,7 @@ import java.util.stream.Stream;
 public class ItemGrid<T>
         extends CustomField<T>
         implements HasItems<T>, HasStyle, WithItemsMixin<T, ItemGrid<T>>, WithIdMixin<ItemGrid<T>>,
-                   WithHelperMixin<ItemGrid<T>>,
+                   WithHelperMixin<ItemGrid<T>>, WithHelperPositionableMixin<ItemGrid<T>>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, ItemGrid<T>> {
 
     /**

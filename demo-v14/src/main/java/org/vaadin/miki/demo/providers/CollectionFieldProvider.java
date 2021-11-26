@@ -23,7 +23,7 @@ import java.util.List;
 public class CollectionFieldProvider implements ComponentProvider<CollectionField<String, List<String>>>, Validator<List<String>> {
     @Override
     public CollectionField<String, List<String>> getComponent() {
-        return new CollectionField<>(
+        return new CollectionField<String, List<String>>(
                 ArrayList::new,
                 CollectionComponentProviders.columnWithHeaderAndFooterRows(
                         Arrays.asList(
@@ -32,7 +32,7 @@ public class CollectionFieldProvider implements ComponentProvider<CollectionFiel
                         ),
                         Collections.singletonList(CollectionComponentProviders.addLastButton("Add as last"))),
                 CollectionComponentProviders.rowWithRemoveButtonFirst(CollectionComponentProviders.labelledField(SuperTextField::new, "Value"), "Remove")
-        );
+        ).withHelperText("(validator requires precisely three elements)");
     }
 
     @Override

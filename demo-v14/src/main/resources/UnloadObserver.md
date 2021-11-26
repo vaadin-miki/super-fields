@@ -1,0 +1,1 @@
+Allows the application to be notified before the current window (tab) is closed by displaying browser-native window. 

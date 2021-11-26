@@ -9,6 +9,7 @@ import com.vaadin.flow.component.customfield.CustomField;
 import org.vaadin.miki.markers.HasIndex;
 import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.WithHelperMixin;
+import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithIndexMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
@@ -38,6 +39,7 @@ public class HeaderFooterFieldWrapper<T,
         implements WithLabelMixin<HeaderFooterFieldWrapper<T, H, F>>,
                    WithIdMixin<HeaderFooterFieldWrapper<T, H, F>>,
                    WithHelperMixin<HeaderFooterFieldWrapper<T, H, F>>,
+                   WithHelperPositionableMixin<HeaderFooterFieldWrapper<T, H, F>>,
                    WithHeaderComponentsMixin<H, HeaderFooterFieldWrapper<T, H, F>>,
                    WithFooterComponentsMixin<F, HeaderFooterFieldWrapper<T, H, F>>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, HeaderFooterFieldWrapper<T, H, F>>,

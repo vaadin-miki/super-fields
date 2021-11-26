@@ -1,0 +1,1 @@
+A `CustomField` with a `Grid` that sends value change events upon grid selection. Basically allows using `Grid` as a value component.

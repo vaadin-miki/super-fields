@@ -1,0 +1,1 @@
+A component that is notified whenever some other component (previously registered) is shown on screen.
