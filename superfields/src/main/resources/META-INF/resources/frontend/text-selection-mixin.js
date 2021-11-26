@@ -44,6 +44,23 @@ export class TextSelectionMixin {
                 }
             }
 
+            replaceText(src, text, from, to) {
+                console.log('TSM: replacing text '+text+' from '+from+' to '+to);
+                if (from < 0) {
+                    from = src.selectionMixin.input.selectionStart;
+                }
+                if (to < 0) {
+                    to = src.selectionMixin.input.selectionEnd;
+                }
+                src.selectionMixin.input.setRangeText(text, from, to);
+                // the above code does not trigger value changes
+                // so using the trick from clear-button handler
+                const inputEvent = new Event('input', { bubbles: true, composed: true });
+                const changeEvent = new Event('change', { bubbles: !src._slottedInput });
+                src.selectionMixin.input.dispatchEvent(inputEvent);
+                src.selectionMixin.input.dispatchEvent(changeEvent);
+            }
+
             listenToEvents(inputComponent, webComponent, notifyServer) {
                 console.log('TSM: setting up text selection for component <'+webComponent.tagName+'>');
                 if (inputComponent === undefined) {

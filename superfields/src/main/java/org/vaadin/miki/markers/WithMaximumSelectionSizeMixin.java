@@ -6,7 +6,7 @@ package org.vaadin.miki.markers;
  * @author miki
  * @since 2020-12-09
  */
-public interface WithMaximumSelectionSize<SELF extends HasMaximumSelectionSize> extends HasMaximumSelectionSize {
+public interface WithMaximumSelectionSizeMixin<SELF extends HasMaximumSelectionSize> extends HasMaximumSelectionSize {
 
     /**
      * Chains {@link #setMaximumSelectionSize(int)} and returns itself.

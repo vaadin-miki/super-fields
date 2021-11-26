@@ -10,14 +10,19 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
+import org.vaadin.miki.markers.CanModifyText;
 import org.vaadin.miki.markers.CanSelectText;
-import org.vaadin.miki.markers.WithHelper;
+import org.vaadin.miki.markers.WithHelperMixin;
+import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
+import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
-import org.vaadin.miki.shared.text.TextSelectionDelegate;
+import org.vaadin.miki.shared.text.TextModificationDelegate;
+
+import java.util.Objects;
 
 /**
  * An extension of {@link TextArea} with some useful features.
@@ -28,12 +33,13 @@ import org.vaadin.miki.shared.text.TextSelectionDelegate;
 @JsModule("./super-text-area.js")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextArea extends TextArea implements CanSelectText, TextSelectionNotifier<SuperTextArea>,
+        CanModifyText,
         WithIdMixin<SuperTextArea>, WithLabelMixin<SuperTextArea>, WithPlaceholderMixin<SuperTextArea>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextArea>,
-        WithHelper<SuperTextArea>,
+        WithHelperMixin<SuperTextArea>, WithHelperPositionableMixin<SuperTextArea>, WithTitleMixin<SuperTextArea>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextArea, String>, String, SuperTextArea> {
 
-    private final TextSelectionDelegate<SuperTextArea> delegate = new TextSelectionDelegate<>(this, this.getEventBus(), this::getValue);
+    private final TextModificationDelegate<SuperTextArea> delegate = new TextModificationDelegate<>(this, this.getEventBus(), this::getValue);
 
     public SuperTextArea() {
     }
@@ -98,6 +104,11 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
     }
 
     @Override
+    public void modifyText(String replacement, int from, int to) {
+        this.delegate.modifyText(replacement, from, to);
+    }
+
+    @Override
     public Registration addTextSelectionListener(TextSelectionListener<SuperTextArea> listener) {
         return this.delegate.addTextSelectionListener(listener);
     }
@@ -112,4 +123,13 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
         this.delegate.reinitialiseListeners();
     }
 
+    @Override
+    public void setTitle(String title) {
+        this.getElement().setProperty("title", Objects.requireNonNullElse(title, ""));
+    }
+
+    @Override
+    public String getTitle() {
+        return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
+    }
 }

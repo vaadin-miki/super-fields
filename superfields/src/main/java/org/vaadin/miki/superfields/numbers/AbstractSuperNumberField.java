@@ -19,11 +19,12 @@ import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
-import org.vaadin.miki.markers.WithHelper;
+import org.vaadin.miki.markers.WithHelperMixin;
+import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
-import org.vaadin.miki.markers.WithNullValueOptionallyAllowed;
+import org.vaadin.miki.markers.WithNullValueOptionallyAllowedMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
@@ -43,15 +44,15 @@ import java.util.Optional;
  * @author miki
  * @since 2020-04-07
  */
-@CssImport(value = "./styles/form-layout-number-field-styles.css")
+@CssImport("./styles/form-layout-number-field-styles.css")
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SELF>,
                    TextSelectionNotifier<SELF>, HasPrefixAndSuffix,
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
-                   WithIdMixin<SELF>, WithNullValueOptionallyAllowed<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
-                   WithHelper<SELF> {
+                   WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
+                   WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -59,6 +60,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      * Predefined class/id prefix for the inner text field.
      */
     private static final String TEXT_FIELD_STYLE_PREFIX = "belongs-to-";
+
+    /**
+     * Start of a regular expression to match at least one digit.
+     */
+    private static final String REGEXP_START_AT_LEAST_ONE_DIGIT = "\\d{1,";
+
+    /**
+     * Start of a regular expression to match any number of digits.
+     */
+    private static final String REGEXP_START_ANY_DIGITS = "\\d{0,";
 
     /**
      * Some grouping separators are non-breaking spaces - impossible to type.
@@ -109,6 +120,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     private boolean nullValueAllowed = false;
 
     private Locale locale;
+
+    private boolean integerPartOptional = false;
 
     /**
      * Creates the field.
@@ -200,6 +213,24 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     /**
+     * Checks whether the integer part of a floating-point number is optional.
+     * @return Whether the integer part is optional ({@code false} by default - integer part is required).
+     */
+    protected boolean isIntegerPartOptional() {
+        return this.integerPartOptional;
+    }
+
+    /**
+     * Sets whether the integer part of a floating-point number is optional.
+     * If it is set as optional, numbers can be entered without the integer part, which will be defaulted to zero.
+     * @param optional Whether the integer part is optional.
+     */
+    protected void setIntegerPartOptional(boolean optional) {
+        this.integerPartOptional = optional;
+        this.updateRegularExpression();
+    }
+
+    /**
      * Sets the minimum number of fraction digits displayed. Overwrites the value in the underlying {@link DecimalFormat}.
      * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
      * @param digits Number of digits to use.
@@ -284,9 +315,11 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         // everything after the negative sign can be optional, meaning that empty string is ok
         builder.append("(");
 
+        final String startingGroup = this.isIntegerPartOptional() ? REGEXP_START_ANY_DIGITS : REGEXP_START_AT_LEAST_ONE_DIGIT;
+
         // if the maximum number of digits allowed is less than a single group:
         if(this.format.getMaximumIntegerDigits() <= this.format.getGroupingSize())
-            builder.append("\\d{0,").append(format.getMaximumIntegerDigits()).append("}");
+            builder.append(startingGroup).append(format.getMaximumIntegerDigits()).append("}");
             // or, there will be at least one group of digits in the formatted number
         else {
             int leftmostGroupMaxSize = format.getMaximumIntegerDigits() % format.getGroupingSize();
@@ -298,27 +331,27 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
             // if there are no middle groups, things are simple
             if(middleGroupCount == 0) {
-                builder.append("\\d{0,").append(leftmostGroupMaxSize).append("}")
-                        .append(groupSeparatorRegexp).append("?\\d{0,").append(format.getGroupingSize()).append("}");
+                builder.append(startingGroup).append(leftmostGroupMaxSize).append("}")
+                        .append(groupSeparatorRegexp).append("?").append(REGEXP_START_ANY_DIGITS).append(format.getGroupingSize()).append("}");
             }
             else {
                 builder.append("(");
                 // two cases to check against, if middle groups are present,
                 builder.append("(");
                 // case 1. the leftmost group is present...
-                builder.append("\\d{1,").append(leftmostGroupMaxSize).append("}");
+                builder.append(startingGroup).append(leftmostGroupMaxSize).append("}");
                 //         ...followed by (optionally) separated middle groups
                 builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(format.getGroupingSize()).append("}){0,").append(middleGroupCount).append("}");
                 //         ...followed by (optionally) separated last group
-                builder.append("(").append(groupSeparatorRegexp).append("?\\d{0,").append(format.getGroupingSize()).append("}").append(")?");
+                builder.append("(").append(groupSeparatorRegexp).append("?").append(REGEXP_START_ANY_DIGITS).append(format.getGroupingSize()).append("}").append(")?");
                 builder.append(")|(");
                 // case 2. the number is less than maximum allowed, so it starts with full size or less than full size group...
-                builder.append("\\d{1,").append(format.getGroupingSize()).append("}");
+                builder.append(startingGroup).append(format.getGroupingSize()).append("}");
                 //         ...followed by (optionally) separated one less middle groups, if any
                 if (middleGroupCount > 1)
                     builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(format.getGroupingSize()).append("}){0,").append(middleGroupCount - 1).append("}");
                 //         ...followed by (optionally) separated last group
-                builder.append("(").append(groupSeparatorRegexp).append("?\\d{0,").append(format.getGroupingSize()).append("}").append(")?");
+                builder.append("(").append(groupSeparatorRegexp).append("?").append(REGEXP_START_ANY_DIGITS).append(format.getGroupingSize()).append("}").append(")?");
                 builder.append(")");
                 builder.append(")");
             }
@@ -326,7 +359,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
         if(this.format.getMaximumFractionDigits() > 0)
             builder.append("(").append(escapeDot(format.getDecimalFormatSymbols().getDecimalSeparator()))
-                    .append("\\d{0,").append(format.getMaximumFractionDigits()).append("})?");
+                    .append(REGEXP_START_ANY_DIGITS).append(format.getMaximumFractionDigits()).append("})?");
 
         builder.append(")?$");
         return builder;
@@ -372,7 +405,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         if(number == null && !this.isNullValueAllowed())
             throw new IllegalArgumentException("null value is not allowed");
         final String formatted = number == null ? "" : this.format.format(number);
-        LOGGER.info("value {} to be presented as {} with {} decimal digits", number, formatted, this.format.getMaximumFractionDigits());
+        LOGGER.debug("value {} to be presented as {} with {} decimal digits", number, formatted, this.format.getMaximumFractionDigits());
         this.field.setValue(formatted);
         // fixes #241 caused by a Vaadin bug https://github.com/vaadin/vaadin-text-field/issues/547
         this.field.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.field, context ->
@@ -394,13 +427,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     protected T generateModelValue() {
         try {
             String fromEvent = this.field.getValue();
-            if (fromEvent == null)
-                fromEvent = "";
-            if (fromEvent.isEmpty() && this.isNullValueAllowed())
-                return null;
-            if (this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE)
-                fromEvent = fromEvent.replace(SPACE, NON_BREAKING_SPACE);
-            T value = this.parseRawValue(fromEvent, this.format);
+            T value = this.parseRawValue(fromEvent);
             LOGGER.debug("received raw value {}, matching? {} - parsed as {}", fromEvent, fromEvent.matches(this.regexp), value);
             return value;
         } catch (ParseException | NullPointerException e) {
@@ -700,6 +727,36 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         return this.field.getHelperText();
     }
 
+    @Override
+    public void setHelperAbove() {
+        this.field.setHelperAbove();
+    }
+
+    @Override
+    public void setHelperBelow() {
+        this.field.setHelperBelow();
+    }
+
+    @Override
+    public void setHelperAbove(boolean above) {
+        this.field.setHelperAbove(above);
+    }
+
+    @Override
+    public boolean isHelperAbove() {
+        return this.field.isHelperAbove();
+    }
+
+    @Override
+    public void focus() {
+        this.field.focus();
+    }
+
+    @Override
+    public void blur() {
+        this.field.blur();
+    }
+
     /**
      * Explicitly invokes code that would otherwise be called when the component receives focus.
      * For testing purposes only.
@@ -745,11 +802,22 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     /**
      * Calls {@link #parseRawValue(String, DecimalFormat)} using this object's format.
+     * Does some mandatory checks as well (i.e. empty vs null value allowed).
+     * This method is called by {@link #generateModelValue()} with the String value currently in the field.
      * @param rawValue Raw value to parse.
      * @return Parsed number.
      * @throws ParseException when parsing goes wrong.
      */
     final T parseRawValue(String rawValue) throws ParseException {
+        if (rawValue == null)
+            rawValue = "";
+        if (rawValue.isEmpty()) {
+            if (this.isNullValueAllowed())
+                return null;
+            else return this.getEmptyValue();
+        }
+        if (this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE)
+            rawValue = rawValue.replace(SPACE, NON_BREAKING_SPACE);
         return this.parseRawValue(rawValue, this.format);
     }
 

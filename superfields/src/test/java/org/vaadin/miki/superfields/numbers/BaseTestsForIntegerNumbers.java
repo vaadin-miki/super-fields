@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -361,6 +362,21 @@ class BaseTestsForIntegerNumbers<T extends Number> {
         this.field.setValue(this.baseTestNumber);
         Assert.assertTrue("validator must be ok", binder.isValid());
 
+    }
+
+    // checks for regressions of #284
+    @Test
+    public void testEmptyStringParsesProperlyWhenNullAllowed() throws ParseException {
+        this.field.setNullValueAllowed(true);
+        final T value = this.field.parseRawValue("");
+        Assert.assertNull(value);
+    }
+
+    @Test
+    public void testEmptyStringParsesProperlyWhenNullNotAllowed() throws ParseException {
+        this.field.setNullValueAllowed(false);
+        final T value = this.field.parseRawValue("");
+        Assert.assertNotNull(value);
     }
 
 }

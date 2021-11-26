@@ -26,6 +26,10 @@ Some components contain server-side methods to control text selection in their w
 
 The web components listen to each key press and mouse click. If text selection changes as a result of that action, they send an event to the server-side component. This may happen quite often and increase server load, so the feature is turned off by default. To turn it on simply call `setReceivingSelectionEventsFromClient(true)` (or `withReceivingSelectionEventsFromClient(true)`).  
 
+#### Log messages
+
+Quite a few components log their state using [SLF4J](https://www.slf4j.org). Critical information is logged as error or warning, debugging messages are, well, debug or trace. Information about [how to configure which log messages get displayed can be found e.g. on Stack Overflow](https://stackoverflow.com/questions/45997759/how-to-change-slf4j-logging-level).
+
 ## Number fields
 
 None of the number fields support range checking, so if you allow too many digits, overflows will occur.
@@ -35,6 +39,8 @@ All number fields support text selection API.
 ### `SuperDoubleField` and `SuperBigDecimalField`
 
 An input field for entering localised `Double` and `BigDecimal` numbers. Supports thousands (grouping) separators for the integer part and optional decimal separator.
+
+Both fields allow the integer part of the number to be optional (thus omitted and defaulted to zero - `.27` parsed as `0.27`). This feature is turned off by default (meaning the integer part is required).
 
 In addition to that `SuperBigDecimalField` supports (optionally) entering numbers with scientific notation, e.g. `12.34e-1`.
 
@@ -48,6 +54,8 @@ An input field for entering localised `Integer` and `Long` numbers. Supports tho
 
 These are the same components as their Vaadin counterparts, except they fully support text selection API. This means that the text contained in the components can be selected from server-side code and that changes to selection in the browser are sent to the server as events.
 
+In addition to that, both components allow server-side initiated text change at caret position (or any selected range).
+
 ## Date fields
 
 ### `SuperDatePicker` and `SuperDateTimePicker`
@@ -59,6 +67,26 @@ In addition to the above, both components allow setting custom date display patt
 Both components behave funky when changing locale at runtime if their calendars were already shown. That is mostly due to some weird caching on the client side and is also a Vaadin bug.
 
 **Please note:** only `SuperDatePicker` has support for text selection API. 
+
+## `CollectionField` and related helpers
+
+### `CollectionField`
+
+Almost out-of-the-box, fully configurable `CustomField` for data of type `List<X>`. Supports custom layouts, fields, removing individual or all elements and adding at specified indices.
+
+To help navigate around functional interfaces `CollectionComponentProviders` contains some common use cases, like buttons for removing, clearing or adding elements.
+
+### `HasIndex` and `IndexedButton`
+
+While intended to work with `CollectionField`, here is a general interface for anything that needs an index (an integer number). `IndexedButton` does nothing by itself, but it is a `Button` that implements `HasIndex`. It is used e.g. to represent a button that removes an element from a collection.
+
+## `HasHeader`, `HasFooter` and layout helpers
+
+A three-part layout, with header, content and footer, is quite common in UX design. Two helper classes are offered:
+* `HeaderFooterFieldWrapper` - a fully functional `CustomField` that has a header and a footer, and the content is just the field;
+* `HeaderFooterLayoutWrapper` - a fully functional layout (`HasComponents`) that has a header and a footer, and the content is a layout to which `HasComponents` method calls are delegated.
+
+Both wrappers attempt to be API-transparent and can replace already existing layouts or fields (for example, replacing a `SuperTextField` with a `HeaderFooterFieldWrapper` should just result in a header and footer around the text field, and no other changes should be needed).
 
 ## Select fields
 

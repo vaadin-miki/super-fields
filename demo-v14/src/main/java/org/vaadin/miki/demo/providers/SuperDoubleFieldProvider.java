@@ -21,6 +21,6 @@ public class SuperDoubleFieldProvider implements ComponentProvider<SuperDoubleFi
 
     @Override
     public ValidationResult apply(Double number, ValueContext valueContext) {
-        return number != null && number > 50 ? ValidationResult.ok() : ValidationResult.error("only even above 50 are accepted");
+        return number != null && number > 50 ? ValidationResult.ok() : ValidationResult.error("only even values above 50 are accepted");
     }
 }

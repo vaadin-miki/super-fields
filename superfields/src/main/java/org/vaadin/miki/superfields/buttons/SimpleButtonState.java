@@ -105,7 +105,7 @@ public class SimpleButtonState implements ButtonState, WithComponentAsIconMixin<
      * @param classNames Style class names to be removed from this state. If a style class name is not present, nothing happens.
      */
     public void removeClassName(String... classNames) {
-        this.classNames.removeAll(Arrays.asList(classNames));
+        Arrays.asList(classNames).forEach(this.classNames::remove);
     }
 
     @Override
@@ -146,7 +146,7 @@ public class SimpleButtonState implements ButtonState, WithComponentAsIconMixin<
      * @param themeNames Theme names to be removed from this state. If a theme name is not present, nothing happens.
      */
     public void removeThemeName(String... themeNames) {
-        this.themeNames.removeAll(Arrays.asList(themeNames));
+        Arrays.asList(themeNames).forEach(this.themeNames::remove);
     }
 
     @Override
@@ -187,7 +187,7 @@ public class SimpleButtonState implements ButtonState, WithComponentAsIconMixin<
      * @param variants Theme variants to be removed from this state. If a variant is not present, nothing happens.
      */
     public void removeThemeVariant(ButtonVariant... variants) {
-        this.themeVariants.removeAll(Arrays.asList(variants));
+        Arrays.asList(variants).forEach(this.themeVariants::remove);
     }
 
     @Override

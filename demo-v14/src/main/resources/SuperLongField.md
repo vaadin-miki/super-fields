@@ -1,0 +1,1 @@
+Highly customisable field for entering integer numbers (type `Long`), with locale-specific group separator, tooltip, server-side text selection and more.

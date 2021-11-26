@@ -1,0 +1,1 @@
+A `CustomField` with a `Grid` configured to multi-selection mode that sends value change events upon grid selection. Basically allows using `Grid` as a value component for sets of whatever is displayed in the grid - with an optional maximum selection size.

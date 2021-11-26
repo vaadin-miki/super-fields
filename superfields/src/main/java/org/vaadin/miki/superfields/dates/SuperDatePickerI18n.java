@@ -89,7 +89,7 @@ public final class SuperDatePickerI18n extends DatePicker.DatePickerI18n impleme
     @Override
     public void setLocale(Locale locale) {
         this.locale = locale == null ? Locale.getDefault() : locale;
-        DateFormatSymbols symbols = new DateFormatSymbols(locale);
+        final DateFormatSymbols symbols = new DateFormatSymbols(locale);
         this.setMonthNames(Arrays.asList(symbols.getMonths()).subList(0, 12));
         this.setDisplayMonthNames(Arrays.asList(symbols.getMonths()).subList(0, 12));
         this.setFirstDayOfWeek(Calendar.getInstance(this.locale).getFirstDayOfWeek() == Calendar.MONDAY ? 1 : 0);
@@ -114,7 +114,7 @@ public final class SuperDatePickerI18n extends DatePicker.DatePickerI18n impleme
                     .forEach(entry -> entry.getValue().apply(Arrays.asList(bundle.getString(entry.getKey()).split("\\s*,\\s*"))));
             if(bundleKeys.contains("first-day-of-week"))
                 this.setFirstDayOfWeek(Integer.parseInt(bundle.getString("first-day-of-week")));
-            LOGGER.info("resource overwritten properties: {}", bundleKeys);
+            LOGGER.info("these properties were overwritten by resource bundle: {}", bundleKeys);
         }
         catch(MissingResourceException mre) {
             LOGGER.warn("resource bundle {} for locale {} not found, some texts may display incorrectly or not at all", RESOURCE_BUNDLE_NAME, locale);

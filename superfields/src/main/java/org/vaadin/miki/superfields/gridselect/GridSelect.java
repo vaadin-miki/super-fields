@@ -3,6 +3,8 @@ package org.vaadin.miki.superfields.gridselect;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.grid.Grid;
+import org.vaadin.miki.markers.WithHelperMixin;
+import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithItemsMixin;
 import org.vaadin.miki.markers.WithValueMixin;
@@ -17,7 +19,8 @@ import java.util.Set;
  * @since 2020-08-07
  */
 public class GridSelect<V> extends AbstractGridSelect<V, V>
-        implements WithIdMixin<GridSelect<V>>, WithItemsMixin<V, GridSelect<V>>,
+        implements WithIdMixin<GridSelect<V>>, WithItemsMixin<V, GridSelect<V>>, WithHelperMixin<GridSelect<V>>,
+                   WithHelperPositionableMixin<GridSelect<V>>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<V>, V>, V, GridSelect<V>> {
 
     /**

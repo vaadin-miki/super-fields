@@ -94,7 +94,7 @@ final class DatePatternDelegate<C extends Component & HasDatePattern & HasSuperD
      * Class client-side method {@code initPatternSetting()} that, well, inits pattern setting.
      * In general, client-side code overrides a few methods to make sure pattern displaying and parsing works properly with custom patterns.
      */
-    protected void initPatternSetting() {
+    void initPatternSetting() {
         this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
                 this.source.getElement().callJsFunction("initPatternSetting", this.source)
         ));
@@ -104,7 +104,7 @@ final class DatePatternDelegate<C extends Component & HasDatePattern & HasSuperD
      * Callback when onAttach() is called.
      * @param event An {@link AttachEvent}.
      */
-    protected void onAttached(AttachEvent event) {
+    void onAttached(AttachEvent event) {
         this.initPatternSetting();
         this.updateClientSidePattern();
     }
@@ -113,7 +113,7 @@ final class DatePatternDelegate<C extends Component & HasDatePattern & HasSuperD
      * Does magic and sets the display pattern on the client side.
      * Requires the client-side connector to have a {@code setDisplayPattern} method.
      */
-    protected void updateClientSidePattern() {
+    void updateClientSidePattern() {
         this.source.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.source, context ->
                 this.source.getElement().callJsFunction(
                         "setDisplayPattern",
