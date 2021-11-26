@@ -747,6 +747,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         return this.field.isHelperAbove();
     }
 
+    @Override
+    public void focus() {
+        this.field.focus();
+    }
+
+    @Override
+    public void blur() {
+        this.field.blur();
+    }
+
     /**
      * Explicitly invokes code that would otherwise be called when the component receives focus.
      * For testing purposes only.
