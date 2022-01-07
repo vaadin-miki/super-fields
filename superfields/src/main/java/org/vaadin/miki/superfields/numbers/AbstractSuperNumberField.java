@@ -9,6 +9,8 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.value.HasValueChangeMode;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.shared.Registration;
@@ -48,7 +50,7 @@ import java.util.Optional;
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SELF>,
-                   TextSelectionNotifier<SELF>, HasPrefixAndSuffix,
+                   TextSelectionNotifier<SELF>, HasPrefixAndSuffix, HasValueChangeMode,
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
@@ -745,6 +747,26 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public boolean isHelperAbove() {
         return this.field.isHelperAbove();
+    }
+
+    @Override
+    public void setValueChangeMode(ValueChangeMode valueChangeMode) {
+        this.field.setValueChangeMode(valueChangeMode);
+    }
+
+    @Override
+    public ValueChangeMode getValueChangeMode() {
+        return this.field.getValueChangeMode();
+    }
+
+    @Override
+    public void setValueChangeTimeout(int valueChangeTimeout) {
+        this.field.setValueChangeTimeout(valueChangeTimeout);
+    }
+
+    @Override
+    public int getValueChangeTimeout() {
+        return this.field.getValueChangeTimeout();
     }
 
     @Override
