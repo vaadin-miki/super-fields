@@ -21,6 +21,7 @@ import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
+import org.vaadin.miki.markers.WithClearButtonMixin;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
@@ -54,7 +55,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
-                   WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF> {
+                   WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF>, WithClearButtonMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -798,6 +799,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public void blur() {
         this.field.blur();
+    }
+
+    @Override
+    public void setClearButtonVisible(boolean state) {
+        this.field.setClearButtonVisible(state);
+    }
+
+    @Override
+    public boolean isClearButtonVisible() {
+        return this.field.isClearButtonVisible();
     }
 
     /**
