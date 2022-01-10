@@ -125,6 +125,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     private boolean integerPartOptional = false;
 
+    private boolean focused = false;
+
     /**
      * Creates the field.
      * @param defaultValue Default value to use on startup and when there are errors.
@@ -159,6 +161,10 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.field.addFocusListener(this::onFieldSelected);
         this.field.addBlurListener(this::onFieldBlurred);
         this.field.addTextSelectionListener(this::onTextSelected);
+        // the following line allows for ValueChangeMode to be effective (#337)
+        // at the same time, it makes setting fraction/integer digits destructive
+        // (because without it the value would be updated on blur, and not on every change)
+        this.field.addValueChangeListener(event -> this.updateValue());
     }
 
     /**
@@ -235,6 +241,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Sets the minimum number of fraction digits displayed. Overwrites the value in the underlying {@link DecimalFormat}.
      * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
+     * This will change the value if it no longer fits the bounds.
      * @param digits Number of digits to use.
      */
     protected void setMinimumFractionDigits(int digits) {
@@ -245,7 +252,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Sets the maximum number of fraction digits displayed and allowed. Overwrites the value in the underlying {@link DecimalFormat}.
      * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
-     * Note: this has no effect on {@link #setValue(Object)}. If the value is set with more digits, it will stay there until input changes, even though the component shows less digits.
+     * This will change the value if it no longer fits the bounds.
      * @param digits Number of digits to use.
      */
     protected void setMaximumFractionDigits(int digits) {
@@ -256,7 +263,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Sets the maximum number of integer digits (before decimal point) displayed and allowed. Overwrites the value in the underlying {@link DecimalFormat}.
      * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
-     * Note: this has no effect on {@link #setValue(Object)}. If the value is set with more digits, it will stay there until input changes, even though the component shows less digits.
+     * This will change the value if it no longer fits the bounds.
      * @param digits Number of digits to use.
      */
     public void setMaximumIntegerDigits(int digits) {
@@ -281,7 +288,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      */
     protected final void updateRegularExpression() {
         // updating the expression may change formatting
-        T value = this.getValue();
+        final T value = this.getValue();
 
         this.regexp = this.buildRegularExpression(new StringBuilder(), this.format).toString();
 
@@ -376,12 +383,14 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     private void onFieldBlurred(BlurNotifier.BlurEvent<TextField> event) {
+        this.focused = false;
         this.updateFieldValue();
         // fire event
         this.getEventBus().fireEvent(new BlurEvent<>(this, event.isFromClient()));
     }
 
     private void onFieldSelected(FocusNotifier.FocusEvent<TextField> event) {
+        this.focused = true;
         if(this.isGroupingSeparatorHiddenOnFocus()) {
             String withThousandsRemoved = this.field.getValue().replace(String.valueOf(this.format.getDecimalFormatSymbols().getGroupingSeparator()), "");
             LOGGER.debug("selected field with value {}, setting to {}", this.field.getValue(), withThousandsRemoved);
@@ -406,13 +415,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     protected final void setPresentationValue(T number) {
         if(number == null && !this.isNullValueAllowed())
             throw new IllegalArgumentException("null value is not allowed");
-        final String formatted = number == null ? "" : this.format.format(number);
-        LOGGER.debug("value {} to be presented as {} with {} decimal digits", number, formatted, this.format.getMaximumFractionDigits());
-        this.field.setValue(formatted);
-        // fixes #241 caused by a Vaadin bug https://github.com/vaadin/vaadin-text-field/issues/547
-        this.field.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.field, context ->
-                this.field.getElement().setProperty("invalid", super.isInvalid())
-        ));
+
+        if(!this.isFocused()) {
+            final String formatted = number == null ? "" : this.format.format(number);
+            LOGGER.debug("value {} to be presented as {} with {} decimal digits", number, formatted, this.format.getMaximumFractionDigits());
+            this.field.setValue(formatted);
+            // fixes #241 caused by a Vaadin bug https://github.com/vaadin/vaadin-text-field/issues/547
+            this.field.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.field, context ->
+                    this.field.getElement().setProperty("invalid", super.isInvalid())
+            ));
+        }
     }
 
     /**
@@ -767,6 +779,15 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public int getValueChangeTimeout() {
         return this.field.getValueChangeTimeout();
+    }
+
+    /**
+     * Checks if the field is currently focused (underlying field received a focus event).
+     * Blurring the field causes it to lose focus.
+     * @return {@code true} when the field has focus.
+     */
+    protected final boolean isFocused() {
+        return this.focused;
     }
 
     @Override

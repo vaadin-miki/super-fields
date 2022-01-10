@@ -20,7 +20,11 @@ public class HasValueChangeModeBuilder implements ContentBuilder<HasValueChangeM
     @Override
     public void buildContent(HasValueChangeMode component, Consumer<Component[]> callback) {
         final ComboBox<ValueChangeMode> options = new ComboBox<>("Value change mode", ValueChangeMode.values());
-        options.addValueChangeListener(event -> component.setValueChangeMode(event.getValue()));
+        options.addValueChangeListener(event -> {
+            component.setValueChangeMode(event.getValue());
+            if(event.getValue() == ValueChangeMode.TIMEOUT)
+                component.setValueChangeTimeout(HasValueChangeMode.DEFAULT_CHANGE_TIMEOUT*5);
+        });
         callback.accept(new Component[]{options});
     }
 }
