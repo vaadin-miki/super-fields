@@ -12,6 +12,7 @@ import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanModifyText;
 import org.vaadin.miki.markers.CanSelectText;
+import org.vaadin.miki.markers.WithClearButtonMixin;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
@@ -35,7 +36,7 @@ import java.util.Objects;
 public class SuperTextArea extends TextArea implements CanSelectText, TextSelectionNotifier<SuperTextArea>,
         CanModifyText,
         WithIdMixin<SuperTextArea>, WithLabelMixin<SuperTextArea>, WithPlaceholderMixin<SuperTextArea>,
-        WithReceivingSelectionEventsFromClientMixin<SuperTextArea>,
+        WithReceivingSelectionEventsFromClientMixin<SuperTextArea>, WithClearButtonMixin<SuperTextArea>,
         WithHelperMixin<SuperTextArea>, WithHelperPositionableMixin<SuperTextArea>, WithTitleMixin<SuperTextArea>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextArea, String>, String, SuperTextArea> {
 
