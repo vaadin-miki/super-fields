@@ -4,6 +4,7 @@ import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.FocusNotifier;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
@@ -39,6 +40,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Base class for super number fields.
@@ -128,6 +130,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     private boolean focused = false;
 
+    private Registration innerFieldValueChangeRegistration;
+
     /**
      * Creates the field.
      * @param defaultValue Default value to use on startup and when there are errors.
@@ -163,9 +167,32 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.field.addBlurListener(this::onFieldBlurred);
         this.field.addTextSelectionListener(this::onTextSelected);
         // the following line allows for ValueChangeMode to be effective (#337)
-        // at the same time, it makes setting fraction/integer digits destructive
+        // at the same time, it makes setting fraction/integer digits destructive (see #339)
         // (because without it the value would be updated on blur, and not on every change)
-        this.field.addValueChangeListener(event -> this.updateValue());
+        this.listenToValueChangesFromInnerField();
+    }
+
+    private void listenToValueChangesFromInnerField() {
+        if(this.innerFieldValueChangeRegistration == null)
+            this.innerFieldValueChangeRegistration = this.field.addValueChangeListener(this::onFieldChanged);
+    }
+
+    /**
+     * Runs the given consumer and ignores any value change effects that happen during that time.
+     * @param consumer An action to perform. Will receive {@code this} as a parameter.
+     */
+    private void ignoreValueChangesFromInnerField(Consumer<AbstractSuperNumberField<T, SELF>> consumer) {
+        final boolean restore = this.innerFieldValueChangeRegistration != null;
+        if(restore)
+            this.innerFieldValueChangeRegistration.remove();
+        this.innerFieldValueChangeRegistration = null;
+        consumer.accept(this);
+        if(restore)
+            this.listenToValueChangesFromInnerField();
+    }
+
+    private void onFieldChanged(HasValue.ValueChangeEvent<String> event) {
+        this.updateValue();
     }
 
     /**
@@ -247,7 +274,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      */
     protected void setMinimumFractionDigits(int digits) {
         this.format.setMinimumFractionDigits(digits);
-        this.updateRegularExpression();
+        this.updateRegularExpression(true);
     }
 
     /**
@@ -258,7 +285,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      */
     protected void setMaximumFractionDigits(int digits) {
         this.format.setMaximumFractionDigits(digits);
-        this.updateRegularExpression();
+        this.updateRegularExpression(true);
     }
 
     /**
@@ -269,7 +296,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      */
     public void setMaximumIntegerDigits(int digits) {
         this.format.setMaximumIntegerDigits(digits);
-        this.updateRegularExpression();
+        this.updateRegularExpression(true);
     }
 
     /**
@@ -282,6 +309,18 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     public final SELF withMaximumIntegerDigits(int digits) {
         this.setMaximumIntegerDigits(digits);
         return (SELF)this;
+    }
+
+    /**
+     * Builds the regular expression and optionally ignores value change events from the underlying field.
+     * Basically allows the representation of the value to be changed, but not the value itself.
+     * @param ignoreValueChangeFromField Whether to ignore value change events coming from the underlying field.
+     */
+    protected final void updateRegularExpression(boolean ignoreValueChangeFromField) {
+        // hopefully fixes #339
+        if(ignoreValueChangeFromField)
+            this.ignoreValueChangesFromInnerField(AbstractSuperNumberField::updateRegularExpression);
+        else this.updateRegularExpression();
     }
 
     /**
