@@ -269,7 +269,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Sets the minimum number of fraction digits displayed. Overwrites the value in the underlying {@link DecimalFormat}.
      * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
-     * This will change the value if it no longer fits the bounds.
+     * Note: this is non-destructive, the underlying value of the field will not change (even though the representation will).
      * @param digits Number of digits to use.
      */
     protected void setMinimumFractionDigits(int digits) {
@@ -280,7 +280,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Sets the maximum number of fraction digits displayed and allowed. Overwrites the value in the underlying {@link DecimalFormat}.
      * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
-     * This will change the value if it no longer fits the bounds.
+     * Note: this is non-destructive, the underlying value of the field will not change (even though the representation will).
      * @param digits Number of digits to use.
      */
     protected void setMaximumFractionDigits(int digits) {
@@ -291,7 +291,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Sets the maximum number of integer digits (before decimal point) displayed and allowed. Overwrites the value in the underlying {@link DecimalFormat}.
      * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
-     * This will change the value if it no longer fits the bounds.
+     * Note: this is non-destructive, the underlying value of the field will not change (even though the representation will).
      * @param digits Number of digits to use.
      */
     public void setMaximumIntegerDigits(int digits) {
