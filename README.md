@@ -39,9 +39,9 @@ All releases are available:
 
 ### Java 8
 
-Some versions compatible with Java 8 are available in the Vaadin Directory. They are marked with `.java8` suffix in the version, e.g. `0.6.0.java8`. Their functionality is identical to the official release.
+Some versions compatible with Java 8 are available in the Vaadin Directory. They are marked with `-java8` suffix in the version, e.g. `0.6.0-java8`. Their functionality is identical to the official release.
 
-This repository has a branch `java-8` which contains the most recent release compatible with Java 8. 
+This repository has a branch `java-8` which contains the most recent release compatible with Java 8. Please note that Java 8 has been released in 2014.  
 
 ## Contribution guidelines
 
