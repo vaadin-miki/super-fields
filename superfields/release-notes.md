@@ -1,3 +1,10 @@
+# 0.11.2 - HasValueChangeMode
+## New features and enhancements
+* \#337 - [ValueChangeMode and clear button](https://github.com/vaadin-miki/super-fields/issues/337)
+## Changes to API
+* \#337 - [ValueChangeMode and clear button](https://github.com/vaadin-miki/super-fields/issues/337)
+## Bug fixes
+* \#339 - [Setting fraction/integer digits should not be destructive](https://github.com/vaadin-miki/super-fields/issues/339)
 # 0.11.1 - Focus fixes and reworked demo app
 ## New features and enhancements
 (nothing reported)
