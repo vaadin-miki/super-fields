@@ -7,7 +7,7 @@ import org.vaadin.miki.shared.dates.DatePattern;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
@@ -25,23 +25,26 @@ final class DatePatternDelegate<C extends Component & HasDatePattern & HasSuperD
     /**
      * Stores month display mode patterns that are understood by client side.
      */
-    private static final Map<DatePattern.MonthDisplayMode, String> MONTH_DISPLAY_PATTERNS = new HashMap<DatePattern.MonthDisplayMode, String>() {
-        {
-            this.put(DatePattern.MonthDisplayMode.NAME, "mM");
-            this.put(DatePattern.MonthDisplayMode.NUMBER, "_M");
-            this.put(DatePattern.MonthDisplayMode.ZERO_PREFIXED_NUMBER, "0M");
-        }
-    };
+    private static final Map<DatePattern.MonthDisplayMode, String> MONTH_DISPLAY_PATTERNS = initMonthPatterns();
+    private static Map<DatePattern.MonthDisplayMode, String> initMonthPatterns() {
+        final Map<DatePattern.MonthDisplayMode, String> result = new EnumMap<>(DatePattern.MonthDisplayMode.class);
+        result.put(DatePattern.MonthDisplayMode.NAME, "mM");
+        result.put(DatePattern.MonthDisplayMode.NUMBER, "_M");
+        result.put(DatePattern.MonthDisplayMode.ZERO_PREFIXED_NUMBER, "0M");
+        return result;
+    }
 
     /**
      * Builds pattern according to the defined order.
      */
-    private static final Map<DatePattern.Order, BiConsumer<StringBuilder, String[]>> ORDER_BUILDERS = new HashMap<DatePattern.Order, BiConsumer<StringBuilder, String[]>>() {
-        {
-            this.put(DatePattern.Order.DAY_MONTH_YEAR, (builder, strings) -> builder.append(strings[2]).append(strings[1]).append(strings[0]));
-            this.put(DatePattern.Order.MONTH_DAY_YEAR, (builder, strings) -> builder.append(strings[1]).append(strings[2]).append(strings[0]));
-            this.put(DatePattern.Order.YEAR_MONTH_DAY, (builder, strings) -> builder.append(strings[0]).append(strings[1]).append(strings[2]));
-    }};
+    private static final Map<DatePattern.Order, BiConsumer<StringBuilder, String[]>> ORDER_BUILDERS = initOrderBuilders();
+    private static Map<DatePattern.Order, BiConsumer<StringBuilder, String[]>> initOrderBuilders() {
+        final Map<DatePattern.Order, BiConsumer<StringBuilder, String[]>> result = new EnumMap<>(DatePattern.Order.class);
+        result.put(DatePattern.Order.DAY_MONTH_YEAR, (builder, strings) -> builder.append(strings[2]).append(strings[1]).append(strings[0]));
+        result.put(DatePattern.Order.MONTH_DAY_YEAR, (builder, strings) -> builder.append(strings[1]).append(strings[2]).append(strings[0]));
+        result.put(DatePattern.Order.YEAR_MONTH_DAY, (builder, strings) -> builder.append(strings[0]).append(strings[1]).append(strings[2]));
+        return result;
+    }
 
     /**
      * Returns the pattern descriptor string expected by the client-side code.
