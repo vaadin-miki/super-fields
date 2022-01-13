@@ -33,7 +33,7 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
         this.getField().setValue(1.234d);
         this.getField().setMaximumFractionDigits(1);
         Assert.assertEquals("1,2", this.getField().getRawValue());
-        Assert.assertEquals(1.234, this.getField().getValue(), 0);
+        Assert.assertEquals(1.234d, this.getField().getValue(), 0);
     }
 
 }

@@ -4,11 +4,14 @@ import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.FocusNotifier;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.value.HasValueChangeMode;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.shared.Registration;
@@ -19,6 +22,7 @@ import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
+import org.vaadin.miki.markers.WithClearButtonMixin;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
@@ -36,6 +40,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Base class for super number fields.
@@ -48,11 +53,11 @@ import java.util.Optional;
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SELF>,
-                   TextSelectionNotifier<SELF>, HasPrefixAndSuffix,
+                   TextSelectionNotifier<SELF>, HasPrefixAndSuffix, HasValueChangeMode,
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
-                   WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF> {
+                   WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF>, WithClearButtonMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -123,6 +128,10 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     private boolean integerPartOptional = false;
 
+    private boolean focused = false;
+
+    private Registration innerFieldValueChangeRegistration;
+
     /**
      * Creates the field.
      * @param defaultValue Default value to use on startup and when there are errors.
@@ -157,6 +166,33 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.field.addFocusListener(this::onFieldSelected);
         this.field.addBlurListener(this::onFieldBlurred);
         this.field.addTextSelectionListener(this::onTextSelected);
+        // the following line allows for ValueChangeMode to be effective (#337)
+        // at the same time, it makes setting fraction/integer digits destructive (see #339)
+        // (because without it the value would be updated on blur, and not on every change)
+        this.listenToValueChangesFromInnerField();
+    }
+
+    private void listenToValueChangesFromInnerField() {
+        if(this.innerFieldValueChangeRegistration == null)
+            this.innerFieldValueChangeRegistration = this.field.addValueChangeListener(this::onFieldChanged);
+    }
+
+    /**
+     * Runs the given consumer and ignores any value change effects that happen during that time.
+     * @param consumer An action to perform. Will receive {@code this} as a parameter.
+     */
+    private void ignoreValueChangesFromInnerField(Consumer<AbstractSuperNumberField<T, SELF>> consumer) {
+        final boolean restore = this.innerFieldValueChangeRegistration != null;
+        if(restore)
+            this.innerFieldValueChangeRegistration.remove();
+        this.innerFieldValueChangeRegistration = null;
+        consumer.accept(this);
+        if(restore)
+            this.listenToValueChangesFromInnerField();
+    }
+
+    private void onFieldChanged(HasValue.ValueChangeEvent<String> event) {
+        this.updateValue();
     }
 
     /**
@@ -233,33 +269,34 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Sets the minimum number of fraction digits displayed. Overwrites the value in the underlying {@link DecimalFormat}.
      * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
+     * Note: this is non-destructive, the underlying value of the field will not change (even though the representation will).
      * @param digits Number of digits to use.
      */
     protected void setMinimumFractionDigits(int digits) {
         this.format.setMinimumFractionDigits(digits);
-        this.updateRegularExpression();
+        this.updateRegularExpression(true);
     }
 
     /**
      * Sets the maximum number of fraction digits displayed and allowed. Overwrites the value in the underlying {@link DecimalFormat}.
      * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
-     * Note: this has no effect on {@link #setValue(Object)}. If the value is set with more digits, it will stay there until input changes, even though the component shows less digits.
+     * Note: this is non-destructive, the underlying value of the field will not change (even though the representation will).
      * @param digits Number of digits to use.
      */
     protected void setMaximumFractionDigits(int digits) {
         this.format.setMaximumFractionDigits(digits);
-        this.updateRegularExpression();
+        this.updateRegularExpression(true);
     }
 
     /**
      * Sets the maximum number of integer digits (before decimal point) displayed and allowed. Overwrites the value in the underlying {@link DecimalFormat}.
      * Will be overwritten by calls to {@link #setDecimalFormat(DecimalFormat)}. Calls to {@link #setLocale(Locale)} will preserve this value.
-     * Note: this has no effect on {@link #setValue(Object)}. If the value is set with more digits, it will stay there until input changes, even though the component shows less digits.
+     * Note: this is non-destructive, the underlying value of the field will not change (even though the representation will).
      * @param digits Number of digits to use.
      */
     public void setMaximumIntegerDigits(int digits) {
         this.format.setMaximumIntegerDigits(digits);
-        this.updateRegularExpression();
+        this.updateRegularExpression(true);
     }
 
     /**
@@ -275,11 +312,23 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     /**
+     * Builds the regular expression and optionally ignores value change events from the underlying field.
+     * Basically allows the representation of the value to be changed, but not the value itself.
+     * @param ignoreValueChangeFromField Whether to ignore value change events coming from the underlying field.
+     */
+    protected final void updateRegularExpression(boolean ignoreValueChangeFromField) {
+        // hopefully fixes #339
+        if(ignoreValueChangeFromField)
+            this.ignoreValueChangesFromInnerField(AbstractSuperNumberField::updateRegularExpression);
+        else this.updateRegularExpression();
+    }
+
+    /**
      * Builds the regular expression for matching the input.
      */
     protected final void updateRegularExpression() {
         // updating the expression may change formatting
-        T value = this.getValue();
+        final T value = this.getValue();
 
         this.regexp = this.buildRegularExpression(new StringBuilder(), this.format).toString();
 
@@ -374,12 +423,14 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     private void onFieldBlurred(BlurNotifier.BlurEvent<TextField> event) {
+        this.focused = false;
         this.updateFieldValue();
         // fire event
         this.getEventBus().fireEvent(new BlurEvent<>(this, event.isFromClient()));
     }
 
     private void onFieldSelected(FocusNotifier.FocusEvent<TextField> event) {
+        this.focused = true;
         if(this.isGroupingSeparatorHiddenOnFocus()) {
             String withThousandsRemoved = this.field.getValue().replace(String.valueOf(this.format.getDecimalFormatSymbols().getGroupingSeparator()), "");
             LOGGER.debug("selected field with value {}, setting to {}", this.field.getValue(), withThousandsRemoved);
@@ -404,13 +455,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     protected final void setPresentationValue(T number) {
         if(number == null && !this.isNullValueAllowed())
             throw new IllegalArgumentException("null value is not allowed");
-        final String formatted = number == null ? "" : this.format.format(number);
-        LOGGER.debug("value {} to be presented as {} with {} decimal digits", number, formatted, this.format.getMaximumFractionDigits());
-        this.field.setValue(formatted);
-        // fixes #241 caused by a Vaadin bug https://github.com/vaadin/vaadin-text-field/issues/547
-        this.field.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.field, context ->
-                this.field.getElement().setProperty("invalid", super.isInvalid())
-        ));
+
+        if(!this.isFocused()) {
+            final String formatted = number == null ? "" : this.format.format(number);
+            LOGGER.debug("value {} to be presented as {} with {} decimal digits", number, formatted, this.format.getMaximumFractionDigits());
+            this.field.setValue(formatted);
+            // fixes #241 caused by a Vaadin bug https://github.com/vaadin/vaadin-text-field/issues/547
+            this.field.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this.field, context ->
+                    this.field.getElement().setProperty("invalid", super.isInvalid())
+            ));
+        }
     }
 
     /**
@@ -748,6 +802,35 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     @Override
+    public void setValueChangeMode(ValueChangeMode valueChangeMode) {
+        this.field.setValueChangeMode(valueChangeMode);
+    }
+
+    @Override
+    public ValueChangeMode getValueChangeMode() {
+        return this.field.getValueChangeMode();
+    }
+
+    @Override
+    public void setValueChangeTimeout(int valueChangeTimeout) {
+        this.field.setValueChangeTimeout(valueChangeTimeout);
+    }
+
+    @Override
+    public int getValueChangeTimeout() {
+        return this.field.getValueChangeTimeout();
+    }
+
+    /**
+     * Checks if the field is currently focused (underlying field received a focus event).
+     * Blurring the field causes it to lose focus.
+     * @return {@code true} when the field has focus.
+     */
+    protected final boolean isFocused() {
+        return this.focused;
+    }
+
+    @Override
     public void focus() {
         this.field.focus();
     }
@@ -755,6 +838,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public void blur() {
         this.field.blur();
+    }
+
+    @Override
+    public void setClearButtonVisible(boolean state) {
+        this.field.setClearButtonVisible(state);
+    }
+
+    @Override
+    public boolean isClearButtonVisible() {
+        return this.field.isClearButtonVisible();
     }
 
     /**

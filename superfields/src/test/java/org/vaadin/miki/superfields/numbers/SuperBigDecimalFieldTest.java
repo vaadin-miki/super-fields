@@ -45,6 +45,9 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
         this.getField().setMaximumFractionDigits(1);
         Assert.assertEquals("1 234 567 890,1", this.getField().getRawValue());
         Assert.assertEquals(TEN_DIGITS_PLUS_TWO, this.getField().getValue());
+        this.getField().setMaximumFractionDigits(2);
+        Assert.assertEquals(FORMATTED_TEN_DIGITS_PLUS_TWO, this.getField().getRawValue());
+        Assert.assertEquals(TEN_DIGITS_PLUS_TWO, this.getField().getValue());
     }
 
     @Override
