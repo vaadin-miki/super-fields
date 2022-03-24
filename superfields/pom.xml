@@ -14,7 +14,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>14.8.1</vaadin.version>
+        <vaadin.version>23.0.2</vaadin.version>
         <maven.jar.plugin.version>3.1.2</maven.jar.plugin.version>
     </properties>
 
@@ -125,7 +125,12 @@
         <dependency>
             <groupId>com.github.mvysny.kaributesting</groupId>
             <artifactId>karibu-testing-v10</artifactId>
-            <version>1.3.8</version>
+            <version>1.3.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-dev-server</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
