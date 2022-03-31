@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.superfields.itemgrid.ItemGrid;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
@@ -61,6 +62,20 @@ public class InfoPage extends VerticalLayout {
         );
     }
 
+    private static byte[] readAllBytes(InputStream resource) throws IOException {
+        // courtesy of https://stackoverflow.com/questions/59049358/java-1-8-and-below-equivalent-for-inputstream-readallbytes
+        final int bufLen = 1024;
+        final byte[] buf = new byte[bufLen];
+        int readLen;
+
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        while ((readLen = resource.read(buf, 0, bufLen)) != -1)
+            outputStream.write(buf, 0, readLen);
+
+        return outputStream.toByteArray();
+    }
+
     private Component buildDisplayCell(Class<? extends Component> type, int row, int column) {
         final Div result = new Div();
         result.add(new H3(type.getSimpleName()));
@@ -68,7 +83,7 @@ public class InfoPage extends VerticalLayout {
         try (InputStream resource = this.getClass().getClassLoader().getResourceAsStream(type.getSimpleName().toLowerCase(Locale.ROOT) + ".md")) {
             if (resource != null) {
                 try {
-                    final Span desc = new Span(new String(resource.readAllBytes()));
+                    final Span desc = new Span(new String(readAllBytes(resource)));
                     desc.addClassName("presentation-description");
                     result.add(desc);
                 } catch (IOException e) {

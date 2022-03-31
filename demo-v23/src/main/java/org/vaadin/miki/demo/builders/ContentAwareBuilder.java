@@ -42,7 +42,7 @@ public class ContentAwareBuilder implements ContentBuilder<ContentAware> {
         final Button addDivAndText = new Button("Add text and div", event -> ((HasComponents)getRandomChild(component)).add(new Div(new Text("epoch day is "+ LocalDate.now().toEpochDay()))));
         final Button removeRandom = new Button("Remove random", event -> {
             final HasComponents randomChild = (HasComponents) getRandomChild(component);
-            if (((Component) randomChild).getChildren().findAny().isEmpty())
+            if (!((Component) randomChild).getChildren().findAny().isPresent())
                 Notification.show("Randomly selected empty layout; nothing to remove. Please try again.", NotificationConstants.NOTIFICATION_TIME, Notification.Position.BOTTOM_END);
             else
                 randomChild.remove(getRandomChild(randomChild));
