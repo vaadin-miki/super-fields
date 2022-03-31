@@ -7,15 +7,15 @@
         <version>0.6.66-SNAPSHOT</version>
     </parent>
 
-    <artifactId>superfields-demo-v14</artifactId>
+    <artifactId>superfields-demo-v23</artifactId>
     <version>0.6.66-SNAPSHOT</version>
-    <name>V14 demo app for SuperFields</name>
-    <description>Showcase application for V14 and SuperFields.</description>
+    <name>V23+ demo app for SuperFields</name>
+    <description>Showcase application for V23+ and SuperFields.</description>
     <packaging>war</packaging>
 
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <node.version>v12.14.0</node.version>
+        <node.version>v16.14.0</node.version>
         <jetty.plugin.version>9.4.36.v20210114</jetty.plugin.version>
     </properties>
 

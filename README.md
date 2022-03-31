@@ -2,17 +2,21 @@
 
 ## Overview
 
-This is a collection of hopefully useful Vaadin 14 components, grouped into several sub-projects:
+This is a collection of hopefully useful Vaadin 14 and 23+ components, grouped into several sub-projects:
 * `superfields` are various input components;
-* `demo-v14` contains an app for Vaadin 14 that shows all components - [see the demo online](https://superfields.herokuapp.com/) on Heroku
+* `demo-v23` contains an app for Vaadin 23+ that shows all components - [see the demo online](https://superfields.herokuapp.com/) on Heroku
 
 ## Installation
 
 [SuperFields are also available in Vaadin Directory](https://vaadin.com/directory/component/superfields). If you find this library useful, consider rating it there or leaving a review. Thanks :)
 
-SuperFields require **Java 11** or newer and work with the latest Vaadin 14 LTS version.
+SuperFields work with Vaadin 23 (and above) and Vaadin 14 LTS.
 
-### Maven setup
+### Vaadin 23+ and Java 11
+
+Starting with **version 0.12** SuperFields work with the latest major Vaadin version. **Java 11** or newer is required. 
+
+#### Maven setup
 
 This is the relevant dependency:
 ```
@@ -37,11 +41,13 @@ All releases are available:
 * as binaries under [project's releases](https://github.com/vaadin-miki/super-fields/releases)
 * as Maven packages from [GitHub packages](https://github.com/vaadin-miki/super-fields/packages/177670)
 
-### Java 8
+### Vaadin 14 LTS and Java 8
 
-Some versions compatible with Java 8 are available in the Vaadin Directory. They are marked with `-java8` suffix in the version, e.g. `0.6.0-java8`. Their functionality is identical to the official release.
+Versions below **0.12** work only with Vaadin 14 LTS.
 
-This repository has a branch `java-8` which contains the most recent release compatible with Java 8. Please note that Java 8 has been released in 2014.  
+SuperFields in general **should** be compatible with Vaadin 14 LTS and with Java 8. These versions are released in the Vaadin Directory marked with `-vaadin14` suffix in the version, e.g. `0.12.0-vaadin14`. Their functionality is identical to the official release.
+
+This repository has a branch `java-8` which contains the most recent release compatible with Java 8 and Vaadin 14 LTS. Please note that Java 8 has been released in 2014. Also, versions compatible with Vaadin 14 LTS will be maintained only as long as Vaadin 14 LTS is.  
 
 ## Contribution guidelines
 
