@@ -29,8 +29,6 @@ public class MainLayout extends VerticalLayout implements RouterLayout, AfterNav
 
     private final Map<String, Tab> tabs = new HashMap<>();
 
-    private final DemoComponentFactory demoComponentFactory = DemoComponentFactory.get();
-
     public MainLayout() {
         // set up tabs
         this.navigationTabs.setWidthFull();
@@ -42,8 +40,9 @@ public class MainLayout extends VerticalLayout implements RouterLayout, AfterNav
         icon.addClassName("tab-icon");
         infoLink.add(icon, new Span("SuperFields demo"));
         this.navigationTabs.add(new Tab(infoLink));
-        this.demoComponentFactory.getDemoableComponentTypes().stream().map(type -> {
-            Tab tab = new Tab(new RouterLink(type.getSimpleName(), DemoPage.class, type.getSimpleName().toLowerCase()));
+        final DemoComponentFactory demoComponentFactory = DemoComponentFactory.get();
+        demoComponentFactory.getDemoableComponentTypes().stream().map(type -> {
+            final Tab tab = new Tab(new RouterLink(type.getSimpleName(), DemoPage.class, type.getSimpleName().toLowerCase()));
             this.tabs.put(type.getSimpleName().toLowerCase(), tab);
             return tab;
         }).forEach(this.navigationTabs::add);
