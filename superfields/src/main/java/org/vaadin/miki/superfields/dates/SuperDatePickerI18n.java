@@ -33,6 +33,8 @@ public final class SuperDatePickerI18n extends DatePicker.DatePickerI18n impleme
 
     private static final String RESOURCE_BUNDLE_NAME = SuperDatePickerI18n.class.getSimpleName().toLowerCase();
 
+    private static final String FORMAT_WARNING_MESSAGE = "this component has its own format setting method, please use it instead or switch to a framework component (DatePicker / DateTimePicker)";
+
     private final Map<String, Function<String, DatePicker.DatePickerI18n>> keysToStringMethods = new HashMap<>();
 
     private final Map<String, Function<List<String>, DatePicker.DatePickerI18n>> keysToListStringMethods = new HashMap<>();
@@ -125,5 +127,17 @@ public final class SuperDatePickerI18n extends DatePicker.DatePickerI18n impleme
     @Override
     public Locale getLocale() {
         return this.locale;
+    }
+
+    @Override
+    public DatePicker.DatePickerI18n setDateFormat(String dateFormat) {
+        LOGGER.warn(FORMAT_WARNING_MESSAGE);
+        return super.setDateFormat(dateFormat);
+    }
+
+    @Override
+    public DatePicker.DatePickerI18n setDateFormats(String primaryFormat, String... additionalParsingFormats) {
+        LOGGER.warn(FORMAT_WARNING_MESSAGE);
+        return super.setDateFormats(primaryFormat, additionalParsingFormats);
     }
 }

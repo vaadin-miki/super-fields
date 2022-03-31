@@ -4,13 +4,13 @@
     <parent>
         <artifactId>superfields-parent</artifactId>
         <groupId>org.vaadin.miki</groupId>
-        <version>0.11.2-java.8</version>
+        <version>0.12.0-vaadin14</version>
     </parent>
 
-    <artifactId>superfields-demo-v14</artifactId>
-    <version>0.11.2-java.8</version>
-    <name>V14 demo app for SuperFields</name>
-    <description>Showcase application for V14 and SuperFields.</description>
+    <artifactId>superfields-demo-v23</artifactId>
+    <version>0.12.0-vaadin14</version>
+    <name>V23+ demo app for SuperFields</name>
+    <description>Showcase application for V23+ and SuperFields.</description>
     <packaging>war</packaging>
 
     <properties>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.vaadin.miki</groupId>
             <artifactId>superfields</artifactId>
-            <version>0.11.2-java.8</version>
+            <version>0.12.0-vaadin14</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -36,12 +36,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.30</version>
+            <version>1.7.32</version>
         </dependency>
         <dependency>
             <groupId>org.atteo.classindex</groupId>
             <artifactId>classindex</artifactId>
-            <version>3.10</version>
+            <version>3.11</version>
         </dependency>
 
         <dependency>

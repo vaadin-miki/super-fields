@@ -8,7 +8,15 @@ class SuperDatePicker extends TextSelectionMixin.to(DatePatternMixin.to(DatePick
 
     setCallingServer(callingServer) {
         console.log('SDP: configuring text selection listeners; callingServer flag is '+callingServer);
-        this.listenToEvents(this.shadowRoot.querySelector('vaadin-date-picker-text-field').inputElement, this, callingServer);
+        const version = customElements.get('vaadin-date-picker').version;
+        if (version && parseInt(version.split('.')[0]) >= 23) {
+            // date picker has changed since v14
+            this.listenToEvents(this.querySelector('input[slot="input"]'), this, callingServer);
+        }
+        else {
+            // old Vaadin versions
+            this.listenToEvents(this.shadowRoot.querySelector('vaadin-date-picker-text-field').inputElement, this, callingServer);
+        }
     }
 
 }

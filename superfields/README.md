@@ -64,6 +64,8 @@ Fully localised `DatePicker` and `DateTimePicker` that fetch month names and wee
 
 In addition to the above, both components allow setting custom date display pattern. This pattern should survive setting locale or i18n object, so keep that in mind.
 
+**Please note:** Vaadin's `DatePicker` and `DateTimePicker` allow setting custom date display patterns since version 14.8. It is achieved through `DatePickerI18n.setDateFormat`. That method executes in `SuperDatePickerI18n`, but it logs a warning message. If you intend to set formatting through i18n, please use default Vaadin's components.
+
 Both components behave funky when changing locale at runtime if their calendars were already shown. That is mostly due to some weird caching on the client side and is also a Vaadin bug.
 
 **Please note:** only `SuperDatePicker` has support for text selection API. 
@@ -72,9 +74,9 @@ Both components behave funky when changing locale at runtime if their calendars 
 
 ### `CollectionField`
 
-Almost out-of-the-box, fully configurable `CustomField` for data of type `List<X>`. Supports custom layouts, fields, removing individual or all elements and adding at specified indices.
+Almost out-of-the-box, fully configurable `CustomField` for data of type `List<X>` (or `Set<X>`). Supports custom layouts, fields, removing individual or all elements and adding at specified indices.
 
-To help navigate around functional interfaces `CollectionComponentProviders` contains some common use cases, like buttons for removing, clearing or adding elements.
+To help navigate around functional interfaces `CollectionComponentProviders` contains some common use cases, like buttons for removing, clearing or adding elements. Please check the demo app (`CollectionFieldProvider`) for an example.
 
 ### `HasIndex` and `IndexedButton`
 
