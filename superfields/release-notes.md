@@ -1,3 +1,9 @@
+# 0.12.0 - Support for Vaadin 23
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#345 - [Upgrade to Vaadin 14.8.1](https://github.com/vaadin-miki/super-fields/issues/345)
+## Bug fixes
 # 0.11.2 - HasValueChangeMode
 ## New features and enhancements
 * \#337 - [ValueChangeMode and clear button](https://github.com/vaadin-miki/super-fields/issues/337)
