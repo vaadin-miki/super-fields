@@ -2,14 +2,12 @@ package org.vaadin.miki.superfields.variant;
 
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.function.SerializableSupplier;
-import org.vaadin.miki.markers.HasIcon;
-import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.WithHelperMixin;
-import org.vaadin.miki.markers.WithIconMixin;
+import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithValueMixin;
@@ -27,18 +25,47 @@ import java.util.Optional;
  * @author miki
  * @since 2022-04-11
  */
-public class VariantField extends CustomField<Object> implements WithLabelMixin<VariantField>, WithHelperMixin<VariantField>,
-        WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<Object>, Object>, Object, VariantField>, WithIdMixin<VariantField>,
-        WithIconMixin<VariantField> {
+public class VariantField extends CustomField<Object> implements HasStyle, WithLabelMixin<VariantField>,
+        WithHelperMixin<VariantField>, WithHelperPositionableMixin<VariantField>,
+        WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<Object>, Object>, Object, VariantField>,
+        WithIdMixin<VariantField> {
+
+    public static final SerializableSupplier<Component> DEFAULT_NULL_COMPONENT_PROVIDER = LabelField::new;
 
     private final List<TypedFieldProvider<?, ?>> fieldProviders = new ArrayList<>();
 
-    private SerializableSupplier<Component> nullComponentProvider = LabelField::new;
+    private SerializableSupplier<Component> nullComponentProvider = DEFAULT_NULL_COMPONENT_PROVIDER;
 
     private Component field = new LabelField<>();
 
     private Class<?> currentType;
 
+    /**
+     * Creates a {@link VariantField} with a given label, null component provider and given {@link TypedFieldProvider}s.
+     *
+     * @param label Label.
+     * @param nullComponentProvider A component provider when value is {@code null}.
+     * @param providers Providers to use.
+     */
+    public VariantField(String label, SerializableSupplier<Component> nullComponentProvider, TypedFieldProvider<?, ?>... providers) {
+        this();
+        this.withTypedFieldProvider(providers).withNullComponentProvider(nullComponentProvider).setLabel(label);
+    }
+
+    /**
+     * Creates a {@link VariantField} with a given label and given {@link TypedFieldProvider}s.
+     * Uses {@link #DEFAULT_NULL_COMPONENT_PROVIDER} as {@link #setNullComponentProvider(SerializableSupplier)}.
+     *
+     * @param label Label.
+     * @param providers Providers to use.
+     */
+    public VariantField(String label, TypedFieldProvider<?, ?>... providers) {
+        this(label, DEFAULT_NULL_COMPONENT_PROVIDER, providers);
+    }
+
+    /**
+     * Creates a {@link VariantField}.
+     */
     public VariantField() {
         this.add(this.field);
     }
@@ -75,6 +102,7 @@ public class VariantField extends CustomField<Object> implements WithLabelMixin<
             if(this.field instanceof HasValue) {
                 ((HasValue<?, Object>) this.field).setValue(o);
                 ((HasValue<?, ?>) this.field).addValueChangeListener(event -> this.updateValue());
+                ((HasValue<?, ?>) this.field).setReadOnly(this.isReadOnly());
             }
             // make sure the new component looks similar enough to the old one (label, icon, helper, etc. - all declared in interfaces)
             ComponentTools.copyProperties(oldField, this.field);
@@ -82,23 +110,47 @@ public class VariantField extends CustomField<Object> implements WithLabelMixin<
         }
     }
 
+    /**
+     * Adds one or more {@link TypedFieldProvider}s to this component.
+     * Has no effect on the currently used value component.
+     * @param fieldProviders Providers to use.
+     */
     public void addTypedFieldProvider(TypedFieldProvider<?, ?>... fieldProviders) {
         this.fieldProviders.addAll(Arrays.asList(fieldProviders));
     }
 
+    /**
+     * Removes a given {@link TypedFieldProvider} if it was registered.
+     * Has no effect on the currently used value component, even if the removed provider was used to create it.
+     * @param provider Provider to remove.
+     */
     public void removeTypeFieldProvider(TypedFieldProvider<?, ?> provider) {
         this.fieldProviders.remove(provider);
     }
 
+    /**
+     * Chains {@link #addTypedFieldProvider(TypedFieldProvider[])} and returns itself.
+     * @param fieldProviders Providers to use.
+     * @return This.
+     */
     public final VariantField withTypedFieldProvider(TypedFieldProvider<?, ?>... fieldProviders) {
         this.addTypedFieldProvider(fieldProviders);
         return this;
     }
 
+    /**
+     * Returns current provider of components used to show {@code null}.
+     * @return A supplier of a component that is used to display {@code null}.
+     */
     public SerializableSupplier<Component> getNullComponentProvider() {
         return nullComponentProvider;
     }
 
+    /**
+     * Sets a provider of a component used to show {@code null}.
+     * When the current value is {@code null} the provider will be invoked to replace the currently shown component.
+     * @param nullComponentProvider Provider.
+     */
     public void setNullComponentProvider(SerializableSupplier<Component> nullComponentProvider) {
         this.nullComponentProvider = nullComponentProvider;
         // ensure that if the value is null, the component is repainted
@@ -106,41 +158,37 @@ public class VariantField extends CustomField<Object> implements WithLabelMixin<
             this.setPresentationValue(null);
     }
 
+    /**
+     * Chains {@link #setNullComponentProvider(SerializableSupplier)} and returns itself.
+     * @param nullComponentProvider Provider.
+     * @return This.
+     */
     public final VariantField withNullComponentProvider(SerializableSupplier<Component> nullComponentProvider) {
         this.setNullComponentProvider(nullComponentProvider);
         return this;
     }
 
     @Override
-    public void setIcon(Icon icon) {
-        if(this.field instanceof HasIcon)
-            ((HasIcon) this.field).setIcon(icon);
-    }
-
-    @Override
-    public Icon getIcon() {
-        return this.field instanceof HasIcon ? ((HasIcon) this.field).getIcon() : null;
-    }
-
-    @Override
-    public void setLabel(String label) {
-        if(this.field instanceof HasLabel)
-            ((HasLabel) this.field).setLabel(label);
-        super.setLabel(label);
-    }
-
-    @Override
     public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
         if(this.field instanceof HasValue)
             ((HasValue<?, ?>) this.field).setReadOnly(readOnly);
-
-        super.setReadOnly(readOnly);
     }
 
+    /**
+     * Returns the type of the current value.
+     * Used for tests.
+     * @return Type of current value, or {@code null} if the value is {@code null}.
+     */
     Class<?> getCurrentType() {
         return currentType;
     }
 
+    /**
+     * Returns the field that is currently displaying the value.
+     * Used for tests.
+     * @return A component that is currently showing the value of this object.
+     */
     Component getField() {
         return field;
     }

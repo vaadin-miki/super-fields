@@ -35,6 +35,7 @@ public class VariantFieldProvider implements ComponentProvider<VariantField>, Va
                         TypedFieldProvider.of(String.class, SuperTextField::new),
                         TypedFieldProvider.of(LocalDate.class, SuperDatePicker::new))
                 .withNullComponentProvider(() -> new LabelField<>().withNullRepresentation("(no value specified)"))
+                .withHelperText("(this is a CustomField<Object>)")
                 .withLabel("Choose a value type below, then edit it here:");
     }
 }

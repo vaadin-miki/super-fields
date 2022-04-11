@@ -98,12 +98,22 @@ public class VariantFieldTest {
 
     @Test
     public void testSettingNullProviderChangesComponentIfValueNull() {
-        final VariantField field = new VariantField().withNullComponentProvider(() -> new Text(STRING_VALUE));
+        final VariantField field = new VariantField()
+                .withNullComponentProvider(() -> new Text(STRING_VALUE));
         field.addValueChangeListener(event -> this.eventCounter++);
         Assert.assertTrue(field.getField() instanceof Text);
         Assert.assertEquals(STRING_VALUE, ((Text) field.getField()).getText());
         Assert.assertNull(field.getValue());
         Assert.assertEquals(0, this.eventCounter);
+    }
+
+    @Test
+    public void testReadOnlyPropagates() {
+        final VariantField field = new VariantField().withTypedFieldProvider(TypedFieldProvider.of(Integer.class, SuperIntegerField::new));
+        field.setValue(INT_VALUE);
+        field.setReadOnly(true);
+        Assert.assertTrue(field.isReadOnly());
+        Assert.assertTrue(((SuperIntegerField)field.getField()).isReadOnly());
     }
 
 }

@@ -50,11 +50,13 @@ public class LabelField<V> extends CustomField<V> implements HasStyle, WithLabel
     }
 
     public String getNullRepresentation() {
-        return nullRepresentation == null ? DEFAULT_NULL_REPRESENTATION : "";
+        return nullRepresentation;
     }
 
     public void setNullRepresentation(String nullRepresentation) {
-        this.nullRepresentation = nullRepresentation;
+        this.nullRepresentation = nullRepresentation == null ? DEFAULT_NULL_REPRESENTATION : nullRepresentation;
+        if(this.value == null)
+            this.label.setText(nullRepresentation);
     }
 
     public final LabelField<V> withNullRepresentation(String nullRepresentation) {
