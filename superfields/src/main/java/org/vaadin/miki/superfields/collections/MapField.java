@@ -1,19 +1,18 @@
 package org.vaadin.miki.superfields.collections;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.function.SerializableSupplier;
-import org.vaadin.miki.superfields.util.CollectionComponentProviders;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 /**
+ * Basic field to support values that are {@link Map}s.
+ *
+ * This basically forwards everything to a {@link CollectionField} and wraps the value in a {@link Map}.
+ *
  * @author miki
  * @since 2022-04-08
  */
@@ -23,24 +22,14 @@ public class MapField<K, V> extends CustomField<Map<K, V>> {
 
     private final CollectionField<Map.Entry<K, V>, List<Map.Entry<K, V>>> collectionField;
 
-    @SuppressWarnings("squid:S2293") // with method references it is impossible to use <>, as the compiler complains
-    public <KC extends Component & HasValue<?, K>, VC extends Component & HasValue<?, V>> MapField(SerializableSupplier<Map<K, V>> emptyMapSupplier, SerializableSupplier<KC> keyComponentSupplier, SerializableSupplier<VC> valueComponentSupplier) {
+    public MapField(SerializableSupplier<Map<K, V>> emptyMapSupplier, CollectionLayoutProvider<?> mainLayoutProvider, CollectionValueComponentProvider<Map.Entry<K, V>, ?> entryValueComponentProvider) {
         super(emptyMapSupplier.get());
         this.emptyMapSupplier = emptyMapSupplier;
 
-        this.collectionField = new CollectionField<>(ArrayList::new,
-                CollectionComponentProviders.columnWithHeaderAndFooterRows(
-                        Arrays.asList(
-                                CollectionComponentProviders.removeAllButton("Clear"),
-                                CollectionComponentProviders.addFirstButton("Add as first")
-                        ),
-                        Collections.singletonList(CollectionComponentProviders.addLastButton("Add as last"))),
-                CollectionComponentProviders.rowWithRemoveButtonFirst((i, c) -> new MapEntryField<>(
-                        keyComponentSupplier, valueComponentSupplier
-                ), "Remove")
-        );
+        this.collectionField = new CollectionField<>(ArrayList::new, mainLayoutProvider, entryValueComponentProvider);
         this.collectionField.addClassName("map-field-entry-collection");
         this.collectionField.addValueChangeListener(event -> this.updateValue());
+
         this.add(this.collectionField);
     }
 
@@ -58,4 +47,14 @@ public class MapField<K, V> extends CustomField<Map<K, V>> {
         this.collectionField.setValue(new ArrayList<>(map.entrySet()));
     }
 
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+        this.collectionField.setReadOnly(readOnly);
+    }
+
+    @Override
+    public void focus() {
+        this.collectionField.focus();
+    }
 }
