@@ -2,6 +2,7 @@ package org.vaadin.miki.superfields.collections;
 
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
  * @param <C> Type of the collection.
  */
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
-        implements CollectionController, WithIdMixin<CollectionField<T, C>>,
+        implements CollectionController, WithIdMixin<CollectionField<T, C>>, HasStyle,
         WithCollectionValueComponentProviderMixin<T, CollectionField<T, C>>,
         WithHelperMixin<CollectionField<T, C>>, WithHelperPositionableMixin<CollectionField<T, C>>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<C>, C>, C, CollectionField<T, C>> {
@@ -256,6 +257,13 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
     @Override
     public CollectionValueComponentProvider<T, ?> getCollectionValueComponentProvider() {
         return collectionValueComponentProvider;
+    }
+
+    @Override
+    public void focus() {
+        if(!this.fields.isEmpty() && this.fields.get(0) instanceof Focusable<?>)
+            ((Focusable<?>) this.fields.get(0)).focus(); // fixes #360 by forwarding focusing to the first component in the list if available
+        super.focus();
     }
 
     /**
