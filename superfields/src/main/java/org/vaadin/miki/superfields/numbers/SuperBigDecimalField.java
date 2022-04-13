@@ -97,6 +97,13 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
         super(defaultValue, d -> d.compareTo(BigDecimal.ZERO) < 0, BigDecimal::abs, label, locale, maxFractionDigits);
     }
 
+    // found during #358 - DecimalFormat may specify the exponent
+    @Override
+    public void setDecimalFormat(DecimalFormat format) {
+        super.setDecimalFormat(format);
+        this.setExponentSeparator(format.toLocalizedPattern().indexOf('E') == -1 ? 0 : 'e');
+    }
+
     @Override
     protected StringBuilder buildRegularExpression(StringBuilder builder, DecimalFormat format) {
         builder = super.buildRegularExpression(builder.append("("), format).append(")");

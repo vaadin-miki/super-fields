@@ -50,6 +50,7 @@ import java.util.function.Consumer;
  * @since 2020-04-07
  */
 @CssImport("./styles/form-layout-number-field-styles.css")
+@SuppressWarnings("squid:S119") // SELF is a perfectly fine generic name that indicates its purpose
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SELF>,
@@ -352,36 +353,41 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      */
     protected StringBuilder buildRegularExpression(StringBuilder builder, DecimalFormat format) {
         final String groupSeparatorRegexp =
-                this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE
-                        ? "[ "+this.format.getDecimalFormatSymbols().getGroupingSeparator()+"]"
-                        : escapeDot(this.format.getDecimalFormatSymbols().getGroupingSeparator());
+                format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE
+                        ? "[ "+format.getDecimalFormatSymbols().getGroupingSeparator()+"]"
+                        : escapeDot(format.getDecimalFormatSymbols().getGroupingSeparator());
 
         builder.append("^");
 
         if(this.isNegativeValueAllowed())
-            builder.append(this.format.getDecimalFormatSymbols().getMinusSign()).append("?");
+            builder.append(format.getDecimalFormatSymbols().getMinusSign()).append("?");
 
         // everything after the negative sign can be optional, meaning that empty string is ok
         builder.append("(");
 
         final String startingGroup = this.isIntegerPartOptional() ? REGEXP_START_ANY_DIGITS : REGEXP_START_AT_LEAST_ONE_DIGIT;
 
+        // fixes #358 - manually created DecimalFormat may have 0 in both methods
+        final int groupingSize = Math.max(1, format.getGroupingSize());
+        final int maxIntegerDigits = format.getMaximumIntegerDigits();
+
         // if the maximum number of digits allowed is less than a single group:
-        if(this.format.getMaximumIntegerDigits() <= this.format.getGroupingSize())
-            builder.append(startingGroup).append(format.getMaximumIntegerDigits()).append("}");
+        if(maxIntegerDigits <= groupingSize)
+            builder.append(startingGroup).append(maxIntegerDigits).append("}");
             // or, there will be at least one group of digits in the formatted number
         else {
-            int leftmostGroupMaxSize = format.getMaximumIntegerDigits() % format.getGroupingSize();
-            int middleGroupCount = format.getMaximumIntegerDigits() / format.getGroupingSize() - 1;
+
+            int leftmostGroupMaxSize = maxIntegerDigits % groupingSize;
+            int middleGroupCount = maxIntegerDigits / groupingSize - 1;
             if (leftmostGroupMaxSize == 0) {
-                leftmostGroupMaxSize = format.getGroupingSize();
+                leftmostGroupMaxSize = groupingSize;
                 middleGroupCount-=1; // the left-most group is full size, so there will be one less middle group; fixes https://github.com/vaadin-miki/super-fields/issues/10
             }
 
             // if there are no middle groups, things are simple
             if(middleGroupCount == 0) {
                 builder.append(startingGroup).append(leftmostGroupMaxSize).append("}")
-                        .append(groupSeparatorRegexp).append("?").append(REGEXP_START_ANY_DIGITS).append(format.getGroupingSize()).append("}");
+                        .append(groupSeparatorRegexp).append("?").append(REGEXP_START_ANY_DIGITS).append(groupingSize).append("}");
             }
             else {
                 builder.append("(");
@@ -390,17 +396,17 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                 // case 1. the leftmost group is present...
                 builder.append(startingGroup).append(leftmostGroupMaxSize).append("}");
                 //         ...followed by (optionally) separated middle groups
-                builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(format.getGroupingSize()).append("}){0,").append(middleGroupCount).append("}");
+                builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(groupingSize).append("}){0,").append(middleGroupCount).append("}");
                 //         ...followed by (optionally) separated last group
-                builder.append("(").append(groupSeparatorRegexp).append("?").append(REGEXP_START_ANY_DIGITS).append(format.getGroupingSize()).append("}").append(")?");
+                builder.append("(").append(groupSeparatorRegexp).append("?").append(REGEXP_START_ANY_DIGITS).append(groupingSize).append("}").append(")?");
                 builder.append(")|(");
                 // case 2. the number is less than maximum allowed, so it starts with full size or less than full size group...
-                builder.append(startingGroup).append(format.getGroupingSize()).append("}");
+                builder.append(startingGroup).append(groupingSize).append("}");
                 //         ...followed by (optionally) separated one less middle groups, if any
                 if (middleGroupCount > 1)
-                    builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(format.getGroupingSize()).append("}){0,").append(middleGroupCount - 1).append("}");
+                    builder.append("(").append(groupSeparatorRegexp).append("?\\d{").append(groupingSize).append("}){0,").append(middleGroupCount - 1).append("}");
                 //         ...followed by (optionally) separated last group
-                builder.append("(").append(groupSeparatorRegexp).append("?").append(REGEXP_START_ANY_DIGITS).append(format.getGroupingSize()).append("}").append(")?");
+                builder.append("(").append(groupSeparatorRegexp).append("?").append(REGEXP_START_ANY_DIGITS).append(groupingSize).append("}").append(")?");
                 builder.append(")");
                 builder.append(")");
             }

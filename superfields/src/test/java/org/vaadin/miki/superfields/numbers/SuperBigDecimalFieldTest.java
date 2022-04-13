@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.Map;
@@ -98,6 +99,17 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
         Assert.assertFalse(this.getField().isScientificNotationEnabled());
         this.getField().setMaximumExponentDigits(2);
         Assert.assertTrue(this.getField().isScientificNotationEnabled());
+    }
+
+    // reported in #358
+    @Test
+    public void testDecimalFormatError() {
+        this.getField().setDecimalFormat(new DecimalFormat("0.####E0"));
+        final BigDecimal value = BigDecimal.valueOf(123400);
+        this.getField().setValue(value);
+        // need to compare values as they are (123400 is different that 1.234E+5)
+        Assert.assertEquals(value.intValue(), this.getField().getValue().intValue());
+        Assert.assertEquals("1,234E5", this.getField().getRawValue());
     }
 
 }
