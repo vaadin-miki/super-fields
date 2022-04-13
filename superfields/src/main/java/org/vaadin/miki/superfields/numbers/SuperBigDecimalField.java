@@ -101,7 +101,12 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
     @Override
     public void setDecimalFormat(DecimalFormat format) {
         super.setDecimalFormat(format);
-        this.setExponentSeparator(format.toLocalizedPattern().indexOf('E') == -1 ? 0 : 'e');
+        if(format.toLocalizedPattern().indexOf('E') == -1)
+            this.setExponentSeparator('\0');
+        else {
+            this.setExponentSeparator('e');
+            this.setMaximumExponentDigits(format.getMaximumIntegerDigits());
+        }
     }
 
     @Override
@@ -133,7 +138,7 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
     }
 
     /**
-     * Checker whether scientific notation input is supported (by default it is not).
+     * Checks whether scientific notation input is supported (by default it is not).
      *
      * @return {@code true} when {@link #getExponentSeparator()} is defined and {@link #getMaximumExponentDigits()} is greater than zero, {@code false} otherwise.
      */
