@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  * @since 2021-09-10
  */
 @Order(5)
-public class HasCollectionValueComponentProviderBuilder implements ContentBuilder<CollectionField<String, List<String>>> {
+public class CollectionFieldBuilder implements ContentBuilder<CollectionField<String, List<String>>> {
 
     @Override
     public void buildContent(CollectionField<String, List<String>> component, Consumer<Component[]> callback) {

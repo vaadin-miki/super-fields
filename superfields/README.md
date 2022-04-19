@@ -68,9 +68,9 @@ In addition to the above, both components allow setting custom date display patt
 
 Both components behave funky when changing locale at runtime if their calendars were already shown. That is mostly due to some weird caching on the client side and is also a Vaadin bug.
 
-**Please note:** only `SuperDatePicker` has support for text selection API. 
+**Please note:** only `SuperDatePicker` has support for text selection API.
 
-## `CollectionField` and related helpers
+## `CollectionField`, `MapField` and related helpers
 
 ### `CollectionField`
 
@@ -82,6 +82,12 @@ To help navigate around functional interfaces `CollectionComponentProviders` con
 
 While intended to work with `CollectionField`, here is a general interface for anything that needs an index (an integer number). `IndexedButton` does nothing by itself, but it is a `Button` that implements `HasIndex`. It is used e.g. to represent a button that removes an element from a collection.
 
+### `MapField` and `MapEntryField`
+
+`MapField` is a customisable `CustomField` for data of type `Map<K, V>`. It is based on `CollectionField` and works with any field capable of displaying value of type `Map.Entry<K, V>`. 
+
+`MapEntryField` is a component that is a `CustomField` for `Map.Entry<K, V>`. It allows custom layout and dedicated components for keys and values of the map.   
+
 ## `HasHeader`, `HasFooter` and layout helpers
 
 A three-part layout, with header, content and footer, is quite common in UX design. Two helper classes are offered:
@@ -89,6 +95,16 @@ A three-part layout, with header, content and footer, is quite common in UX desi
 * `HeaderFooterLayoutWrapper` - a fully functional layout (`HasComponents`) that has a header and a footer, and the content is a layout to which `HasComponents` method calls are delegated.
 
 Both wrappers attempt to be API-transparent and can replace already existing layouts or fields (for example, replacing a `SuperTextField` with a `HeaderFooterFieldWrapper` should just result in a header and footer around the text field, and no other changes should be needed).
+
+## Other fields
+
+### `LabelField`
+
+This is an always read-only field. Basically, it is a `CustomField` that uses a `Text` to display `String` representation of the value. It is possible to customise how that representation is created and what text to show when the value is `null`. Note that the *readonlyness* of this component applies only to the UI.
+
+### `VariantField`
+
+A `CustomField<Object>`. It checks the type of the value passed to it and attempts to display it using a known mapping to a field (e.g. by registering `SuperIntegerField` and `SuperDatePicker` it will be able to show integers and dates). No events or details - other than value change - are propagated or exposed from the inner field.
 
 ## Select fields
 
@@ -98,9 +114,9 @@ A highly configurable grid that allows single selection. Each cell in the grid c
 
 ### `GridSelect` and `GridMultiSelect`
 
-A single- and multi-selection `Grid`s that are value components, meaning it broadcast value change events (rather than selection events). Both allow access to the underlying `Grid`, except changing selection mode.
+A single- and multi-selection `Grid`s that are value components, meaning they broadcast value change events (rather than selection events). Both allow access to the underlying `Grid`, except changing selection mode.
 
-`GridMultiSelect` operates on `Set` and it has an option to limit the size of the selection.
+`GridMultiSelect` operates on `Set` and has an option to limit the size of the selection.
 
 ### `SuperTabs`
 
