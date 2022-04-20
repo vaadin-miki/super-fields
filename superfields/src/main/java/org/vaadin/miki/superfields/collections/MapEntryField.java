@@ -9,6 +9,7 @@ import com.vaadin.flow.function.SerializableSupplier;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
 import org.vaadin.miki.superfields.text.LabelField;
 
+import java.util.AbstractMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -92,7 +93,7 @@ public class MapEntryField<K, V> extends CustomField<Map.Entry<K, V>> {
     @Override
     protected Map.Entry<K, V> generateModelValue() {
         if(this.keyComponent != null && this.valueComponent != null)
-            return Map.entry(this.keyComponent.getValue(), this.valueComponent.getValue());
+            return new AbstractMap.SimpleEntry<>(this.keyComponent.getValue(), this.valueComponent.getValue());
         else return null;
     }
 
