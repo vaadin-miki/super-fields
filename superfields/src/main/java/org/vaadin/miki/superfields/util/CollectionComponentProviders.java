@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.function.SerializableSupplier;
 import org.vaadin.miki.markers.HasIndex;
 import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.superfields.collections.CollectionComponentProvider;
@@ -11,6 +12,7 @@ import org.vaadin.miki.superfields.collections.CollectionController;
 import org.vaadin.miki.superfields.collections.CollectionLayoutProvider;
 import org.vaadin.miki.superfields.collections.CollectionValueComponentProvider;
 import org.vaadin.miki.superfields.buttons.IndexedButton;
+import org.vaadin.miki.superfields.collections.MapEntryField;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
 import org.vaadin.miki.superfields.layouts.HeaderFooterFieldWrapper;
 import org.vaadin.miki.superfields.layouts.HeaderFooterLayoutWrapper;
@@ -19,6 +21,7 @@ import org.vaadin.miki.superfields.text.SuperTextField;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -188,6 +191,44 @@ public class CollectionComponentProviders {
      */
     public static CollectionComponentProvider<IndexedButton> removeButton(String text) {
         return (index, controller) -> new IndexedButton(text, index, event -> controller.remove(((HasIndex)event.getSource()).getIndex()));
+    }
+
+    /**
+     * A {@link CollectionValueComponentProvider} that produces a {@link MapEntryField} with given key and value suppliers.
+     * @param keyComponentSupplier Supplier of components capable of displaying keys.
+     * @param valueComponentSupplier Supplier of components capable of displaying values.
+     * @param <K> Key type.
+     * @param <V> Value type.
+     * @param <C> Ensures key component supplier is a {@link Component} that {@link HasValue} of type {@code K}.
+     * @param <W> Ensures value component supplier is a {@link Component} that {@link HasValue} of type {@code V}.
+     * @return A {@link CollectionValueComponentProvider} of {@link MapEntryField}s.
+     */
+    public static <K, V, C extends Component & HasValue<?, K>, W extends Component & HasValue<?, V>> CollectionValueComponentProvider<Map.Entry<K, V>, MapEntryField<K, V>> mapEntryField(SerializableSupplier<C> keyComponentSupplier, SerializableSupplier<W> valueComponentSupplier) {
+        return (index, controller) -> new MapEntryField<>(keyComponentSupplier, valueComponentSupplier);
+    }
+
+    /**
+     * A {@link CollectionValueComponentProvider} that produces a {@link MapEntryField} with given key and value suppliers, but also sets labels to both produced components..
+     * @param keyLabel Label for the key component. It is applied as is.
+     * @param keyComponentSupplier Supplier of components capable of displaying keys.
+     * @param valueLabel Label for the value component. It is applied as is.
+     * @param valueComponentSupplier Supplier of components capable of displaying values.
+     * @param <K> Key type.
+     * @param <V> Value type.
+     * @param <C> Ensures key component supplier is a {@link Component} that {@link HasLabel} and {@link HasValue} of type {@code K}.
+     * @param <W> Ensures value component supplier is a {@link Component} that {@link HasLabel} and {@link HasValue} of type {@code V}.
+     * @return A {@link CollectionValueComponentProvider} of {@link MapEntryField}s.
+     */
+    public static <K, V, C extends Component & HasLabel & HasValue<?, K>, W extends Component & HasLabel & HasValue<?, V>> CollectionValueComponentProvider<Map.Entry<K, V>, MapEntryField<K, V>> mapEntryField(String keyLabel, SerializableSupplier<C> keyComponentSupplier, String valueLabel, SerializableSupplier<W> valueComponentSupplier) {
+        return (index, controller) -> new MapEntryField<>(() -> {
+              final C result = keyComponentSupplier.get();
+              result.setLabel(keyLabel);
+              return result;
+            }, () -> {
+              final W result = valueComponentSupplier.get();
+              result.setLabel(valueLabel);
+              return result;
+        });
     }
 
     private CollectionComponentProviders() {

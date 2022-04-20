@@ -1,3 +1,13 @@
+# 0.13.0 - MapField, VariantField and LabelField
+## New features and enhancements
+* \#356 - [MapField](https://github.com/vaadin-miki/super-fields/issues/356)
+* \#359 - [VariantField](https://github.com/vaadin-miki/super-fields/issues/359)
+* \#361 - [LabelField](https://github.com/vaadin-miki/super-fields/issues/361)
+## Changes to API
+* \#357 - [CollectionField should implement HasStyle](https://github.com/vaadin-miki/super-fields/issues/357)
+## Bug fixes
+* \#358 - [DecimalFormat divide /0 - SuperBigDecimalField](https://github.com/vaadin-miki/super-fields/issues/358)
+* \#360 - [CollectionField does not focus()](https://github.com/vaadin-miki/super-fields/issues/360)
 # 0.12.0 - Support for Vaadin 23
 ## New features and enhancements
 * \#349 - [Support for Vaadin 23](https://github.com/vaadin-miki/super-fields/issues/349)
