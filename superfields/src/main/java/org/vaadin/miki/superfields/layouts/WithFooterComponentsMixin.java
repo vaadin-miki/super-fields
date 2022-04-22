@@ -5,11 +5,14 @@ import com.vaadin.flow.component.HasComponents;
 
 /**
  * Mixin for adding components to a footer.
+ *
  * @param <F> Footer type.
  * @param <SELF> Self type.
+ *
  * @author miki
  * @since 2021-09-15
  */
+@SuppressWarnings("squid:S119") // SELF is a fine generic name that is more descriptive than S
 public interface WithFooterComponentsMixin<F extends Component & HasComponents, SELF extends HasFooter<F>> extends HasFooter<F> {
 
     /**

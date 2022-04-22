@@ -8,6 +8,7 @@ import org.vaadin.miki.shared.dates.DatePattern;
  * @author miki
  * @since 2020-04-24
  */
+@SuppressWarnings("squid:S119") // SELF is a fine generic name that is more descriptive than S
 public interface WithDatePatternMixin<SELF extends WithDatePatternMixin<SELF>> extends HasDatePattern {
 
     /**

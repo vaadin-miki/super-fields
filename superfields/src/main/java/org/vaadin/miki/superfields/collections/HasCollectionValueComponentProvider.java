@@ -1,5 +1,8 @@
 package org.vaadin.miki.superfields.collections;
 
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
+
 /**
  * Marker interface for objects that have a {@link CollectionValueComponentProvider}.
  * @param <T> Type of the element in the collection.
@@ -16,8 +19,9 @@ public interface HasCollectionValueComponentProvider<T> {
 
     /**
      * Returns the current provider used to generate components.
+     * @param <W> Generic type of the actual component.
      * @return A non-{@code null} provider.
      */
-    CollectionValueComponentProvider<T, ?> getCollectionValueComponentProvider();
+    <W extends Component & HasValue<?, T>> CollectionValueComponentProvider<T, W> getCollectionValueComponentProvider();
 
 }
