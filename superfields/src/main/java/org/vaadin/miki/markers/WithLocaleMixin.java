@@ -8,6 +8,7 @@ import java.util.Locale;
  * @author miki
  * @since 2020-04-12
  */
+@SuppressWarnings("squid:S119") // SELF is a fine generic name that is more descriptive than S
 public interface WithLocaleMixin<SELF extends WithLocaleMixin<SELF>> extends HasLocale {
 
     /**

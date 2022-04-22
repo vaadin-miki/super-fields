@@ -6,6 +6,7 @@ package org.vaadin.miki.markers;
  * @author miki
  * @since 2020-04-12
  */
+@SuppressWarnings("squid:S119") // SELF is a fine generic name that is more descriptive than S
 public interface WithTitleMixin<SELF extends WithTitleMixin<SELF>> extends HasTitle {
 
     /**

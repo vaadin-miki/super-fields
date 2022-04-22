@@ -255,8 +255,9 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
     }
 
     @Override
-    public CollectionValueComponentProvider<T, ?> getCollectionValueComponentProvider() {
-        return collectionValueComponentProvider;
+    @SuppressWarnings("unchecked")
+    public <W extends Component & HasValue<?, T>> CollectionValueComponentProvider<T, W> getCollectionValueComponentProvider() {
+        return (CollectionValueComponentProvider<T, W>) collectionValueComponentProvider;
     }
 
     @Override
@@ -272,6 +273,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
      * @param index Index to get a component at.
      * @return A non-{@code null} component at a given index.
      */
+    @SuppressWarnings("squid:S1452") // only the type is relevant here, could not find a way to narrow down the event type
     final HasValue<?, T> getField(int index) {
         return this.fields.get(index);
     }

@@ -7,11 +7,15 @@ import java.util.Locale;
 
 /**
  * Base class for implementations of {@link AbstractSuperNumberField} that allow modifications to minimum and maximum number of fraction digits.
- * THose methods by default are hidden from public access.
+ * Those methods by default are hidden from public access.
+ *
  * @param <T> Type of number.
+ * @param <SELF> Self type.
+ *
  * @author miki
  * @since 2020-04-08
  */
+@SuppressWarnings("squid:S119") // SELF is a fine generic name that is more descriptive than S
 public abstract class AbstractSuperFloatingPointField<T extends Number, SELF extends AbstractSuperFloatingPointField<T, SELF>> extends AbstractSuperNumberField<T, SELF> {
 
     /**

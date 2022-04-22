@@ -6,12 +6,13 @@ package org.vaadin.miki.markers;
  * @author miki
  * @since 2020-06-01
  */
+@SuppressWarnings("squid:S119") // SELF is a fine generic name that is more descriptive than S
 public interface WithReceivingSelectionEventsFromClientMixin<SELF extends CanReceiveSelectionEventsFromClient> extends CanReceiveSelectionEventsFromClient {
 
     /**
      * Chains {@link #setReceivingSelectionEventsFromClient(boolean)} and returns itself.
      * Note: this feature is by default turned off.
-     * @param receivingSelectionEventsFromClient Whether or not the client should send events about text selection changes.
+     * @param receivingSelectionEventsFromClient Whether the client should send events about text selection changes.
      * @return This.
      * @see #setReceivingSelectionEventsFromClient(boolean)
      */

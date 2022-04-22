@@ -12,6 +12,7 @@ import java.util.stream.Stream;
  * @author miki
  * @since 2020-04-30
  */
+@SuppressWarnings("squid:S119") // SELF is a fine generic name that is more descriptive than S
 public interface WithItemsMixin<T, SELF extends HasItems<T>> extends HasItems<T> {
 
     /**

@@ -5,6 +5,7 @@ package org.vaadin.miki.markers;
  * @author miki
  * @since 2021-10-29
  */
+@SuppressWarnings("squid:S119") // SELF is a fine generic name that is more descriptive than S
 public interface WithHelperPositionableMixin<SELF extends HasHelperPositionable> extends HasHelperPositionable {
 
     /**
