@@ -40,7 +40,7 @@ public class CollectionComponentProviders {
      */
     @SuppressWarnings("squid:S1172") // parameters present to follow method signature
     public static SuperTextField textField(int index, CollectionController controller) {
-        return new SuperTextField("", "", "");
+        return new SuperTextField();
     }
 
     /**
@@ -51,7 +51,7 @@ public class CollectionComponentProviders {
      */
     @SuppressWarnings("squid:S1172") // parameters present to follow method signature
     public static SuperTextArea textArea(int index, CollectionController controller) {
-        return new SuperTextArea("", "", "");
+        return new SuperTextArea();
     }
 
     /**

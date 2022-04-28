@@ -137,7 +137,8 @@ public class StringListCollectionFieldTest {
     @Test
     public void testReindexing() {
         // wrapper is needed, as it HasIndex
-        this.collectionField.setCollectionValueComponentProvider(CollectionComponentProviders.rowWithRemoveButtonFirst(CollectionComponentProviders::textField, "remove"));
+        this.collectionField.withCollectionElementFilter(null)
+                .setCollectionValueComponentProvider(CollectionComponentProviders.rowWithRemoveButtonFirst(CollectionComponentProviders::textField, "remove"));
         this.collectionField.setValue(Arrays.asList("this", "is", "an", "elaborate", "test"));
         Assert.assertEquals(5, this.collectionField.size());
         // each field needs to have the same index as its position
@@ -155,13 +156,14 @@ public class StringListCollectionFieldTest {
 
     @Test
     public void testChangingRenderNoValueChangeTriggered() {
-        this.collectionField.setValue(Arrays.asList("hello", "world"));
+        this.collectionField.withCollectionElementFilter(null)
+                .setValue(Arrays.asList("hello", "world"));
         this.eventCounter = 0;
         // changing renderer should not trigger value change - none needed
         this.collectionField.setCollectionValueComponentProvider(CollectionComponentProviders.rowWithRemoveButtonFirst(CollectionComponentProviders::textField, "remove"));
         Assert.assertEquals(0, this.eventCounter);
 
-        // now this should trigger a value change
+        // now this should not trigger a value change
         this.controller.add();
         Assert.assertEquals(1, this.eventCounter);
     }
