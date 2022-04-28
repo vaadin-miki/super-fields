@@ -8,6 +8,7 @@ import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.markers.HasIndex;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 /**
  * All-purpose field for editing and maintaining values that are {@link Collection}s.
+ * Allows filtering individual elements through {@link #setCollectionElementFilter(SerializablePredicate)} (by default filters out all {@code null}s).
  *
  * @param <T> Type of the element in the collection.
  * @param <C> Type of the collection.
@@ -35,7 +37,8 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         implements CollectionController, WithIdMixin<CollectionField<T, C>>, HasStyle,
         WithCollectionValueComponentProviderMixin<T, CollectionField<T, C>>,
         WithHelperMixin<CollectionField<T, C>>, WithHelperPositionableMixin<CollectionField<T, C>>,
-        WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<C>, C>, C, CollectionField<T, C>> {
+        WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<C>, C>, C, CollectionField<T, C>>,
+        WithCollectionElementFilterMixin<T, CollectionField<T, C>> {
 
     /**
      * CSS class name that will be added to the main layout of this component.
@@ -67,6 +70,8 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
     private CollectionValueComponentProvider<T, ?> collectionValueComponentProvider;
 
     private boolean valueUpdateInProgress = false;
+
+    private SerializablePredicate<T> collectionElementFilter = Objects::nonNull;
 
     /**
      * Creates new field using {@link #DEFAULT_LAYOUT_PROVIDER} as root layout provider.
@@ -158,7 +163,10 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
 
     @Override
     protected C generateModelValue() {
-        return this.fields.stream().map(HasValue::getValue).collect(Collectors.toCollection(this.emptyCollectionSupplier));
+        return this.fields.stream()
+                .map(HasValue::getValue)
+                .filter(this.getCollectionElementFilter()) // fixes #374
+                .collect(Collectors.toCollection(this.emptyCollectionSupplier));
     }
 
     @Override
@@ -258,6 +266,16 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
     @SuppressWarnings("unchecked")
     public <W extends Component & HasValue<?, T>> CollectionValueComponentProvider<T, W> getCollectionValueComponentProvider() {
         return (CollectionValueComponentProvider<T, W>) collectionValueComponentProvider;
+    }
+
+    @Override
+    public void setCollectionElementFilter(SerializablePredicate<T> collectionElementFilter) {
+        this.collectionElementFilter = collectionElementFilter == null ? t -> true : collectionElementFilter;
+    }
+
+    @Override
+    public SerializablePredicate<T> getCollectionElementFilter() {
+        return collectionElementFilter;
     }
 
     @Override
