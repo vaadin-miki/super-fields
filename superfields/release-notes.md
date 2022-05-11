@@ -1,3 +1,11 @@
+# 0.13.1 - Bugfixes
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#374 - [CollectionField should filter out empty values when saving the collection](https://github.com/vaadin-miki/super-fields/issues/374)
+## Bug fixes
+* \#374 - [CollectionField should filter out empty values when saving the collection](https://github.com/vaadin-miki/super-fields/issues/374)
+* \#375 - [HeaderFooterFieldWrapper does not get default value from wrapped field](https://github.com/vaadin-miki/super-fields/issues/375)
 # 0.13.0 - MapField, VariantField and LabelField
 ## New features and enhancements
 * \#356 - [MapField](https://github.com/vaadin-miki/super-fields/issues/356)

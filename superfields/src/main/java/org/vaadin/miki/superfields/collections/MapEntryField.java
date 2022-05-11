@@ -151,11 +151,12 @@ public class MapEntryField<K, V> extends CustomField<Map.Entry<K, V>> {
 
     /**
      * Returns the current supplier of key components.
+     * @param <C> Ensures the result provides a {@link Component} that {@link HasValue} of type {@code K}.
      * @return A {@link Supplier}.
      */
-    @SuppressWarnings("squid:S1452")
-    public Supplier<HasValue<?, K>> getKeyComponentSupplier() {
-        return keyComponentSupplier;
+    @SuppressWarnings("unchecked") // setter ensures types are ok
+    public <C extends Component & HasValue<?, K>> Supplier<C> getKeyComponentSupplier() {
+        return (Supplier<C>) (Supplier<?>) keyComponentSupplier;
     }
 
     /**
@@ -171,10 +172,12 @@ public class MapEntryField<K, V> extends CustomField<Map.Entry<K, V>> {
 
     /**
      * Returns the current supplier of value components.
+     * @param <C> Ensures the result supplies a {@link Component} that {@link HasValue} of type {@code V}.
      * @return A {@link Supplier}.
      */
-    public Supplier<HasValue<?, V>> getValueComponentSupplier() {
-        return valueComponentSupplier;
+    @SuppressWarnings("unchecked") // setter ensures types are valid
+    public <C extends Component & HasValue<?, V>> Supplier<C> getValueComponentSupplier() {
+        return (Supplier<C>) (Supplier<?>) valueComponentSupplier;
     }
 
     /**
@@ -190,10 +193,12 @@ public class MapEntryField<K, V> extends CustomField<Map.Entry<K, V>> {
 
     /**
      * Returns the current supplier of layout.
+     * @param <C> Ensures the result provides a {@link Component} that {@link HasComponents}.
      * @return A {@link Supplier}
      */
-    public Supplier<HasComponents> getLayoutSupplier() {
-        return layoutSupplier;
+    @SuppressWarnings("unchecked") // setter forces the cast to be ok
+    public <C extends Component & HasComponents> Supplier<C> getLayoutSupplier() {
+        return (Supplier<C>) (Supplier<?>) layoutSupplier;
     }
 
     /**

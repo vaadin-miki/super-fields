@@ -4,6 +4,7 @@ import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,11 @@ public class StringListCollectionFieldTest {
            return result;
         }, (CollectionValueComponentProvider<String, TextField>)(index, controller) -> new TextField("element at index "+index));
         this.collectionField.addValueChangeListener(event -> this.eventCounter++);
+    }
+
+    @After
+    public void tearDown() {
+        MockVaadin.tearDown();
     }
 
     @Test
@@ -143,8 +149,8 @@ public class StringListCollectionFieldTest {
         for (int zmp1=0; zmp1 < this.collectionField.size(); zmp1++)
             Assert.assertEquals(zmp1, ((HasIndex)this.collectionField.getField(zmp1)).getIndex());
 
-        // this extra added field should be null
-        Assert.assertNull(this.collectionField.getField(2).getValue());
+        // this extra added field should be the default value of it
+        Assert.assertEquals(this.collectionField.getField(2).getEmptyValue(), this.collectionField.getField(2).getValue());
     }
 
     @Test
@@ -155,7 +161,7 @@ public class StringListCollectionFieldTest {
         this.collectionField.setCollectionValueComponentProvider(CollectionComponentProviders.rowWithRemoveButtonFirst(CollectionComponentProviders::textField, "remove"));
         Assert.assertEquals(0, this.eventCounter);
 
-        // now this should trigger a value change
+        // now this should not trigger a value change
         this.controller.add();
         Assert.assertEquals(1, this.eventCounter);
     }

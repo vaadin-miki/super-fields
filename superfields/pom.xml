@@ -8,7 +8,7 @@
     <artifactId>superfields</artifactId>
     <name>SuperFields</name>
     <description>Code for various V14+ fields and other components.</description>
-    <version>0.13.0-vaadin14</version>
+    <version>0.13.1-vaadin14</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -185,6 +185,27 @@
                         </plugin>
                     </plugins>
                 </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.8</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
         <!-- for preparing a zip to Vaadin Directory (has to be done manually, currently) -->

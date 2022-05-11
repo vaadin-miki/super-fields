@@ -5,6 +5,7 @@ import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.function.SerializableSupplier;
 import org.vaadin.miki.markers.WithIdMixin;
 
 import java.util.Optional;
@@ -37,7 +38,7 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
      */
     public static final String LOADED_CLASS_NAME = "lazy-loaded";
 
-    private final Supplier<C> componentProvider;
+    private final SerializableSupplier<C> componentProvider;
 
     private final ComponentObserver observer = new ComponentObserver();
 
@@ -57,14 +58,14 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
      * Creates lazy load wrapper for given component supplier. It will be called exactly once, the first time this component becomes shown on screen.
      * @param supplier {@link Supplier} that will be called when the component gets into view.
      */
-    public LazyLoad(Supplier<C> supplier) {
+    public LazyLoad(SerializableSupplier<C> supplier) {
         this(supplier, false);
     }
 
     /**
      * Creates lazy load wrapper for given contents.
      * @param contents Contents to wrap for lazy loading.
-     * @param removeOnHide Whether or not to remove the component when this object gets hidden.
+     * @param removeOnHide Whether to remove the component when this object gets hidden.
      */
     public LazyLoad(C contents, boolean removeOnHide) {
         this(() -> contents, removeOnHide);
@@ -73,9 +74,9 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
     /**
      * Creates lazy load wrapper for given component supplier.
      * @param supplier {@link Supplier} that will be called when the component gets into view.
-     * @param removeOnHide Whether or not to remove the component when this object gets hidden.
+     * @param removeOnHide Whether to remove the component when this object gets hidden.
      */
-    public LazyLoad(Supplier<C> supplier, boolean removeOnHide) {
+    public LazyLoad(SerializableSupplier<C> supplier, boolean removeOnHide) {
         super();
         this.componentProvider = supplier;
         this.onlyLoadedOnce = !removeOnHide;

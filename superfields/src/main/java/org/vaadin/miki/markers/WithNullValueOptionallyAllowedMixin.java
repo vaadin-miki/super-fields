@@ -8,6 +8,7 @@ import com.vaadin.flow.component.HasValue;
  * @author miki
  * @since 2020-06-09
  */
+@SuppressWarnings("squid:S119") // SELF is a fine generic name that is more descriptive than S
 public interface WithNullValueOptionallyAllowedMixin<SELF extends HasNullValueOptionallyAllowed<E, V>, E extends HasValue.ValueChangeEvent<V>, V> extends HasNullValueOptionallyAllowed<E, V> {
 
     /**

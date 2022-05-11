@@ -120,4 +120,25 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
         Assert.assertTrue(this.getField().isScientificNotationEnabled());
     }
 
+    // reported in #369
+    @Test
+    public void testNoDecimalFormatMoreExponentDigits() {
+        final BigDecimal value = BigDecimal.valueOf(1, 15);
+        this.getField().setMaximumFractionDigits(20);
+        this.getField().setValue(value);
+        Assert.assertEquals("0,000000000000001", this.getField().getRawValue());
+    }
+
+    // reported in #369
+    @Test
+    public void testDecimalFormatMoreExponentDigits() {
+        final BigDecimal value = BigDecimal.valueOf(13, 12);
+        final DecimalFormat format = new DecimalFormat("0.0##E0");
+        format.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        this.getField().setDecimalFormat(format);
+        this.getField().setValue(value);
+        Assert.assertEquals("1.3E-11", this.getField().getRawValue());
+    }
+
+
 }

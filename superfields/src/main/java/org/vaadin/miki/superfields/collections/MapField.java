@@ -6,6 +6,7 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -36,11 +36,24 @@ import java.util.function.Supplier;
 public class MapField<K, V> extends CustomField<Map<K, V>> implements HasStyle,
         WithIdMixin<MapField<K, V>>, WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<Map<K, V>>, Map<K, V>>, Map<K, V>, MapField<K, V>>,
         WithHelperPositionableMixin<MapField<K, V>>, WithHelperMixin<MapField<K, V>>,
-        WithLabelMixin<MapField<K, V>>, WithCollectionValueComponentProviderMixin<Map.Entry<K, V>, MapField<K, V>> {
+        WithLabelMixin<MapField<K, V>>, WithCollectionValueComponentProviderMixin<Map.Entry<K, V>, MapField<K, V>>,
+        WithCollectionElementFilterMixin<Map.Entry<K, V>, MapField<K, V>> {
+
+    /**
+     * Produces a non-null entry filter (entry, its key and its value must be non-{@code null}).
+     * @param <X> Key type.
+     * @param <Y> Value type.
+     * @return Predicate.
+     */
+    public static <X, Y> SerializablePredicate<Map.Entry<X, Y>> nonNullEntryFilter() {
+        return e -> e != null && e.getKey() != null && e.getValue() != null;
+    }
 
     private final SerializableSupplier<Map<K, V>> emptyMapSupplier;
 
     private final CollectionField<Map.Entry<K, V>, List<Map.Entry<K, V>>> collectionField;
+
+    private SerializablePredicate<Map.Entry<K, V>> entryFilter = nonNullEntryFilter();
 
     /**
      * Creates a new {@link MapField} with given empty map supplier, layout provider and entry component provider.
@@ -97,7 +110,7 @@ public class MapField<K, V> extends CustomField<Map<K, V>> implements HasStyle,
     protected Map<K, V> generateModelValue() {
         final Map<K, V> result = this.emptyMapSupplier.get();
         this.collectionField.getValue().stream()
-                .filter(Objects::nonNull)
+                .filter(this.getCollectionElementFilter())
                 .forEach(entry -> result.put(entry.getKey(), entry.getValue()));
         return result;
     }
@@ -124,7 +137,17 @@ public class MapField<K, V> extends CustomField<Map<K, V>> implements HasStyle,
     }
 
     @Override
-    public CollectionValueComponentProvider<Map.Entry<K, V>, ?> getCollectionValueComponentProvider() {
+    public <W extends Component & HasValue<?, Map.Entry<K, V>>> CollectionValueComponentProvider<Map.Entry<K, V>, W> getCollectionValueComponentProvider() {
         return this.collectionField.getCollectionValueComponentProvider();
+    }
+
+    @Override
+    public void setCollectionElementFilter(SerializablePredicate<Map.Entry<K, V>> collectionElementFilter) {
+        this.entryFilter = collectionElementFilter == null ? e -> true : collectionElementFilter;
+    }
+
+    @Override
+    public SerializablePredicate<Map.Entry<K, V>> getCollectionElementFilter() {
+        return this.entryFilter;
     }
 }

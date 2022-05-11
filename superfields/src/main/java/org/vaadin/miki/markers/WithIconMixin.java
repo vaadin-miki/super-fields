@@ -8,6 +8,7 @@ import com.vaadin.flow.component.icon.Icon;
  * @author miki
  * @since 2020-07-07
  */
+@SuppressWarnings("squid:S119") // SELF is a fine generic name that is more descriptive than S
 public interface WithIconMixin<SELF extends HasIcon> extends HasIcon {
 
     /**

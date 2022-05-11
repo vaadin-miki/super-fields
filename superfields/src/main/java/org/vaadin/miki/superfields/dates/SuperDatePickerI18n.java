@@ -113,7 +113,8 @@ public final class SuperDatePickerI18n extends DatePicker.DatePickerI18n impleme
                     .forEach(entry -> entry.getValue().apply(bundle.getString(entry.getKey())));
             this.keysToListStringMethods.entrySet().stream()
                     .filter(entry -> bundleKeys.contains(entry.getKey()))
-                    .forEach(entry -> entry.getValue().apply(Arrays.asList(bundle.getString(entry.getKey()).split("\\s*,\\s*"))));
+                    // originally the line below used \\s*,\\s* which is prone to catastrophic backtracking - split on , and then trimming should work equally fine
+                    .forEach(entry -> entry.getValue().apply(Arrays.stream(bundle.getString(entry.getKey()).split(",")).map(String::trim).collect(Collectors.toList())));
             if(bundleKeys.contains("first-day-of-week"))
                 this.setFirstDayOfWeek(Integer.parseInt(bundle.getString("first-day-of-week")));
             LOGGER.info("these properties were overwritten by resource bundle: {}", bundleKeys);
