@@ -8,13 +8,13 @@
     <artifactId>superfields</artifactId>
     <name>SuperFields</name>
     <description>Code for various V14+ fields and other components.</description>
-    <version>0.13.0</version>
+    <version>0.13.1</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>23.0.3</vaadin.version>
+        <vaadin.version>23.0.6</vaadin.version>
         <maven.jar.plugin.version>3.1.2</maven.jar.plugin.version>
     </properties>
 
@@ -133,12 +133,6 @@
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-dev-server</artifactId>
-            <version>${vaadin.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <distributionManagement>
@@ -191,6 +185,27 @@
                         </plugin>
                     </plugins>
                 </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.8</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
         <!-- for preparing a zip to Vaadin Directory (has to be done manually, currently) -->

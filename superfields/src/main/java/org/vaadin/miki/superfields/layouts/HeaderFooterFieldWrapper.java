@@ -62,6 +62,8 @@ public class HeaderFooterFieldWrapper<T,
      * @param <V> Generic type to enforce field is a {@link Component} that {@link HasValue} of type {@code T}.
      */
     public <R extends Component & HasComponents, V extends Component & HasValue<?, T>> HeaderFooterFieldWrapper(Supplier<R> rootSupplier, H header, V field, F footer) {
+        super(field.getEmptyValue()); // fixes #375
+
         this.field = field;
         this.header = header;
         this.footer = footer;

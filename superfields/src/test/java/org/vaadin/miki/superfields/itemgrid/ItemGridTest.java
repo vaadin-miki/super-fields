@@ -45,6 +45,13 @@ public class ItemGridTest {
         Assert.assertEquals(0, this.eventCounter);
     }
 
+    private void assertCellSelectionAndStyles(String value) {
+        Assert.assertEquals(value, this.grid.getValue());
+        Assert.assertTrue("no cell found for value", this.grid.getCellInformation(value).isPresent());
+        Assert.assertTrue(this.grid.getCellInformation(value).get().getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME));
+        Assert.assertTrue(this.grid.getCellInformation().stream().filter(info -> !value.equals(info.getValue())).noneMatch(info -> info.getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)));
+    }
+
     @Test
     public void testOneFullRowOfItemsServerSide() {
         final String one = "one", two = "two", three = "three";
@@ -62,26 +69,17 @@ public class ItemGridTest {
         // select something
         this.grid.setValue(two);
         Assert.assertEquals(1, this.eventCounter);
-        Assert.assertEquals(two, this.grid.getValue());
-        Assert.assertTrue("no cell found for value", this.grid.getCellInformation(two).isPresent());
-        Assert.assertTrue(this.grid.getCellInformation(two).get().getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME));
-        Assert.assertTrue(this.grid.getCellInformation().stream().filter(info -> !two.equals(info.getValue())).noneMatch(info -> info.getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)));
+        this.assertCellSelectionAndStyles(two);
 
         // select that same something again
         this.grid.setValue(two);
         Assert.assertEquals("value was not changed, so event should not fire", 1, this.eventCounter);
-        Assert.assertEquals(two, this.grid.getValue());
-        Assert.assertTrue("no cell found for value", this.grid.getCellInformation(two).isPresent());
-        Assert.assertTrue(this.grid.getCellInformation(two).get().getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME));
-        Assert.assertTrue(this.grid.getCellInformation().stream().filter(info -> !two.equals(info.getValue())).noneMatch(info -> info.getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)));
+        this.assertCellSelectionAndStyles(two);
 
         // select some other value
         this.grid.setValue(one);
         Assert.assertEquals("value was changed, so event should fire", 2, this.eventCounter);
-        Assert.assertEquals(one, this.grid.getValue());
-        Assert.assertTrue("no cell found for value", this.grid.getCellInformation(one).isPresent());
-        Assert.assertTrue(this.grid.getCellInformation(one).get().getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME));
-        Assert.assertTrue(this.grid.getCellInformation().stream().filter(info -> !one.equals(info.getValue())).noneMatch(info -> info.getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)));
+        this.assertCellSelectionAndStyles(one);
 
         // select nothing
         this.grid.setValue(null);

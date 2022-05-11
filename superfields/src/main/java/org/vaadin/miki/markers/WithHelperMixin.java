@@ -9,6 +9,7 @@ import com.vaadin.flow.component.HasHelper;
  * @author miki
  * @since 2020-10-12
  */
+@SuppressWarnings("squid:S119") // SELF is a fine generic name that is more descriptive than S
 public interface WithHelperMixin<SELF extends HasHelper> extends HasHelper {
 
     /**

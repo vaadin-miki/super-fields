@@ -4,6 +4,7 @@ import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,11 @@ public class StringSetCollectionFieldTest {
         },
                 (CollectionValueComponentProvider<String, TextField>)(index, controller) -> new TextField("element at index "+index));
         this.collectionField.addValueChangeListener(event -> this.eventCounter++);
+    }
+
+    @After
+    public void tearDown() {
+        MockVaadin.tearDown();
     }
 
     @Test

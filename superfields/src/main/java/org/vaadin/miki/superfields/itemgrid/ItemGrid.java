@@ -527,6 +527,7 @@ public class ItemGrid<T>
      * Returns current {@link RowComponentGenerator}.
      * @return A {@link RowComponentGenerator}. Never {@code null}.
      */
+    @SuppressWarnings("squid:S1452") // the result is Component that HasComponents, should be no need to worry about it
     public RowComponentGenerator<?> getRowComponentGenerator() {
         return rowComponentGenerator;
     }
