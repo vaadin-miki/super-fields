@@ -19,8 +19,14 @@ public class ObjectField<T> extends CustomField<T> {
 
     private final Map<ObjectPropertyDefinition<T, ?>, HasValue<?, ?>> properties = new HashMap<>();
 
-    public ObjectField(SerializableSupplier<T> emptyObjectSupplier) {
+    private final Class<T> dataType;
+
+    private ObjectPropertyDefinitionProvider<T> definitionProvider;
+    private ObjectPropertyFieldBuilder<T> fieldBuilder;
+
+    public ObjectField(Class<T> dataType, SerializableSupplier<T> emptyObjectSupplier) {
         this.emptyObjectSupplier = emptyObjectSupplier;
+        this.dataType = dataType;
     }
 
     @SuppressWarnings("unchecked") // should be safe
@@ -42,6 +48,23 @@ public class ObjectField<T> extends CustomField<T> {
 
     @Override
     protected void setPresentationValue(T t) {
+        this.getDefinitionProvider().getObjectPropertyDefinitions(this.dataType, t)
+                .forEach(definition -> {
+                    this.fieldBuilder.buildPropertyField(definition)
+                });
+
         this.properties.forEach((def, field) -> this.showPropertyOfObject(t, def, field));
+    }
+
+    public Class<T> getDataType() {
+        return dataType;
+    }
+
+    public ObjectPropertyDefinitionProvider<T> getDefinitionProvider() {
+        return definitionProvider;
+    }
+
+    public void setDefinitionProvider(ObjectPropertyDefinitionProvider<T> definitionProvider) {
+        this.definitionProvider = definitionProvider;
     }
 }
