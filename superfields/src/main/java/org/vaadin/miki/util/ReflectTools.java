@@ -1,6 +1,9 @@
 package org.vaadin.miki.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -10,11 +13,14 @@ import java.util.Optional;
  */
 public final class ReflectTools {
 
+    public static final int GETTER_INDEX = 0;
+    public static final int SETTER_INDEX = 1;
+
     /**
      * Attempts to get the value of a {@link Field} of a given name that is declared in given class. {@link Field#trySetAccessible()} will be used.
      * This method will attempt to find a field in the class of the given object and then it will go up the hierarchy until the field of given name and compatible type is found.
      * When a field is found, an attempt to {@code trySetAccessible} will be made, followed by casting it to the provided value type.
-     * When all of the above is successful, an optional with the value of the field for the given object will be returned.
+     * When all the above is successful, an optional with the value of the field for the given object will be returned.
      *
      * @param instance Instance of an object to get the field from.
      * @param valueType Type of value to expect from the field. Type of the field, if found, will be passed to this type's {@link Class#isAssignableFrom(Class)} for type checking.
@@ -45,6 +51,18 @@ public final class ReflectTools {
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * Scans a class using reflection and associates fields with getters (first) and setters (second).
+     *
+     * @param type Type to scan.
+     * @param ignoreSuperclasses Whether to ignore superclasses (all the way until {@link Object}.
+     * @return A non-{@code null} {@link Map} that associates a {@link Field} with a corresponding getter method and a setter method (either can be {@code null}).
+     */
+    public static Map<Field, Method[]> extractProperties(Class<?> type, boolean ignoreSuperclasses) {
+        final Map<Field, Method[]> result = new HashMap<>();
+        return result;
     }
 
     private ReflectTools() {

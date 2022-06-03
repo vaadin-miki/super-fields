@@ -1,10 +1,13 @@
 package org.vaadin.miki.superfields.variant;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.function.SerializableSupplier;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,58 +16,70 @@ import java.util.Map;
  * @author miki
  * @since 2022-05-16
  */
-public class ObjectField<T> extends CustomField<T> {
+public class ObjectField extends CustomField<Object> {
 
-    private final SerializableSupplier<T> emptyObjectSupplier;
+    private final SerializableSupplier<?> emptyObjectSupplier;
 
-    private final Map<ObjectPropertyDefinition<T, ?>, HasValue<?, ?>> properties = new HashMap<>();
+    private final Map<ObjectPropertyDefinition<Object, ?>, HasValue<?, ?>> properties = new HashMap<>();
+    private final List<ObjectPropertyDefinition<Object, ?>> definitions = new ArrayList<>();
 
-    private final Class<T> dataType;
+    private final Class<?> dataType;
 
-    private ObjectPropertyDefinitionProvider<T> definitionProvider;
-    private ObjectPropertyFieldBuilder<T> fieldBuilder;
+    private ObjectPropertyDefinitionProvider definitionProvider;
+    private ObjectPropertyComponentBuilder fieldBuilder;
 
-    public ObjectField(Class<T> dataType, SerializableSupplier<T> emptyObjectSupplier) {
+    public <T> ObjectField(Class<T> dataType, SerializableSupplier<T> emptyObjectSupplier) {
         this.emptyObjectSupplier = emptyObjectSupplier;
         this.dataType = dataType;
     }
 
     @SuppressWarnings("unchecked") // should be safe
-    private <P> void setPropertyOfObject(T object, ObjectPropertyDefinition<T, P> definition, HasValue<?, ?> component) {
+    private <P> void setPropertyOfObject(Object object, ObjectPropertyDefinition<Object, P> definition, HasValue<?, ?> component) {
         definition.getSetter().accept(object, (P) component.getValue());
     }
 
     @SuppressWarnings("unchecked") // should be safe
-    private <P> void showPropertyOfObject(T object, ObjectPropertyDefinition<T, P> definition, HasValue<?, ?> component) {
+    private <P> void showPropertyOfObject(Object object, ObjectPropertyDefinition<Object, P> definition, HasValue<?, ?> component) {
         ((HasValue<?, P>)component).setValue(definition.getGetter().apply(object));
     }
 
     @Override
-    protected T generateModelValue() {
+    protected Object generateModelValue() {
         final var result = this.emptyObjectSupplier.get();
         this.properties.forEach((def, field) -> this.setPropertyOfObject(result, def, field));
         return result;
     }
 
     @Override
-    protected void setPresentationValue(T t) {
-        this.getDefinitionProvider().getObjectPropertyDefinitions(this.dataType, t)
-                .forEach(definition -> {
-                    this.fieldBuilder.buildPropertyField(definition)
-                });
+    protected void setPresentationValue(Object t) {
 
+        // get definitions for the object
+        final var newDefinitions = this.getDefinitionProvider().getObjectPropertyDefinitions((Class<? super Object>) this.dataType, t);
+        // if the definitions are different from the last used ones, repaint the whole component
+        if(!this.definitions.equals(newDefinitions)) {
+            this.remove(this.properties.values().stream().map(Component.class::cast).toArray(Component[]::new));
+            this.properties.clear();
+            this.definitions.clear();
+            this.definitions.addAll(newDefinitions);
+            this.definitions.forEach(def -> {
+                final var component = this.fieldBuilder.buildPropertyField(def);
+                this.properties.put(def, component);
+                this.add(component);
+            });
+        }
+        // set the values of each property
         this.properties.forEach((def, field) -> this.showPropertyOfObject(t, def, field));
     }
 
-    public Class<T> getDataType() {
+    public Class<?> getDataType() {
         return dataType;
     }
 
-    public ObjectPropertyDefinitionProvider<T> getDefinitionProvider() {
+    public ObjectPropertyDefinitionProvider getDefinitionProvider() {
         return definitionProvider;
     }
 
-    public void setDefinitionProvider(ObjectPropertyDefinitionProvider<T> definitionProvider) {
+    public void setDefinitionProvider(ObjectPropertyDefinitionProvider definitionProvider) {
         this.definitionProvider = definitionProvider;
     }
 }
