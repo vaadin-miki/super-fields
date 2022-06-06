@@ -1,6 +1,7 @@
 package org.vaadin.miki.superfields.variant;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.function.SerializableSupplier;
@@ -25,12 +26,18 @@ public class ObjectField extends CustomField<Object> {
 
     private final Class<?> dataType;
 
+    private final HasComponents layout;
+
     private ObjectPropertyDefinitionProvider definitionProvider;
     private ObjectPropertyComponentBuilder fieldBuilder;
 
-    public <T> ObjectField(Class<T> dataType, SerializableSupplier<T> emptyObjectSupplier) {
+    public <T, L extends Component & HasComponents> ObjectField(Class<T> dataType, SerializableSupplier<T> emptyObjectSupplier, SerializableSupplier<L> layoutSupplier) {
         this.emptyObjectSupplier = emptyObjectSupplier;
         this.dataType = dataType;
+
+        final var mainLayout = layoutSupplier.get();
+        this.layout = mainLayout;
+        this.add(mainLayout);
     }
 
     @SuppressWarnings("unchecked") // should be safe
@@ -52,19 +59,19 @@ public class ObjectField extends CustomField<Object> {
 
     @Override
     protected void setPresentationValue(Object t) {
-
         // get definitions for the object
+        @SuppressWarnings("unchecked") // it should be fine, generics are removed at runtime anyway
         final var newDefinitions = this.getDefinitionProvider().getObjectPropertyDefinitions((Class<? super Object>) this.dataType, t);
         // if the definitions are different from the last used ones, repaint the whole component
         if(!this.definitions.equals(newDefinitions)) {
-            this.remove(this.properties.values().stream().map(Component.class::cast).toArray(Component[]::new));
+            this.layout.remove(this.properties.values().stream().map(Component.class::cast).toArray(Component[]::new));
             this.properties.clear();
             this.definitions.clear();
             this.definitions.addAll(newDefinitions);
             this.definitions.forEach(def -> {
                 final var component = this.fieldBuilder.buildPropertyField(def);
                 this.properties.put(def, component);
-                this.add(component);
+                this.layout.add(component);
             });
         }
         // set the values of each property

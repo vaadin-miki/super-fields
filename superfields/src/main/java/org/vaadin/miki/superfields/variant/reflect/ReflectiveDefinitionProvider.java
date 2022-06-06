@@ -5,6 +5,7 @@ import org.vaadin.miki.superfields.variant.ObjectPropertyDefinitionProvider;
 import org.vaadin.miki.util.ReflectTools;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -33,11 +34,29 @@ public class ReflectiveDefinitionProvider implements ObjectPropertyDefinitionPro
         return ReflectTools.extractProperties(type, type.isAnnotationPresent(DoNotScanSuperclasses.class)).entrySet()
                 .stream()
                 .filter(fieldEntry -> !fieldEntry.getKey().isAnnotationPresent(Ignore.class))
-                .map(fieldEntry -> this.buildDefinition(type, fieldEntry.getKey(), fieldEntry.getValue()[ReflectTools.GETTER_INDEX], fieldEntry.getValue()[ReflectTools.SETTER_INDEX] ))
+                .map(fieldEntry -> this.buildDefinition(type, fieldEntry.getKey(), fieldEntry.getKey().getType(), fieldEntry.getValue()[ReflectTools.GETTER_INDEX], fieldEntry.getValue()[ReflectTools.SETTER_INDEX] ))
                 .collect(Collectors.toList());
     }
 
-    private <T> ObjectPropertyDefinition<T, ?> buildDefinition(Class<T> type, Field field, Method getter, Method setter) {
-
+    @SuppressWarnings("unchecked") // P is the type of field, so all well here
+    private <T, P> ObjectPropertyDefinition<T, P> buildDefinition(Class<T> type, Field field, Class<P> fieldType, Method getter, Method setter) {
+        return new ObjectPropertyDefinition<>(type, field.getName(), fieldType,
+                setter == null ? (t, p) -> {} :
+                (t, o) -> {
+                    try {
+                        setter.invoke(t, o);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        throw new IllegalStateException();
+                    }
+                },
+                getter == null ? t -> null :
+                t -> {
+                    try {
+                        return (P) getter.invoke(t);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        throw new IllegalStateException();
+                    }
+                }
+                );
     }
 }
