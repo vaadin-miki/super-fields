@@ -22,12 +22,11 @@ public class SimplePropertyComponentBuilder implements ObjectPropertyComponentBu
 
     private final Supplier<? extends Component> defaultBuilder = LabelField::new;
 
+    @SuppressWarnings("unchecked") // fine, I guess?
     @Override
     public <T, P, C extends Component & HasValue<?, P>> C buildPropertyField(ObjectPropertyDefinition<T, P> property) {
         if(this.typeBuilders.containsKey(property.getType()))
             return this.typeBuilders.get(property.getType()).buildPropertyField(property);
-        else if (this.defaultBuilder != null)
-            return (C) this.defaultBuilder.get();
-        else throw new IllegalStateException(String.format("cannot produce component for property %s", property.toString()));
+        else return (C) this.defaultBuilder.get();
     }
 }
