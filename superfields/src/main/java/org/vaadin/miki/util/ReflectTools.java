@@ -2,9 +2,14 @@ package org.vaadin.miki.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * A collection of static methods to access things through reflection.
@@ -53,15 +58,67 @@ public final class ReflectTools {
         return Optional.empty();
     }
 
+    private static Optional<Method> findGetter(Field field, Class<?> type) {
+        for(String prefix: Objects.equals(boolean.class, field.getType()) || Objects.equals(Boolean.class, field.getType()) ? new String[]{"is", "get", "are"} : new String[]{"get"}) {
+            try {
+                final Method method = type.getMethod(prefix + field.getName().substring(0, 1).toUpperCase(Locale.ROOT) + field.getName().substring(1));
+                // compatible type, public and not static
+                if(method.getReturnType().isAssignableFrom(field.getType()) && Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers()))
+                    return Optional.of(method);
+            } catch (NoSuchMethodException e) {
+                // method not found, ignore and carry on
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static Optional<Method> findSetter(Field field, Class<?> type) {
+        final String setterName = "set" + field.getName().substring(0, 1).toUpperCase(Locale.ROOT) + field.getName().substring(1);
+        for(Method method: type.getMethods()) {
+            if(setterName.equals(method.getName()) && method.getParameterCount() == 1 && field.getType().isAssignableFrom(method.getParameterTypes()[0]) && Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers()))
+                return Optional.of(method);
+        }
+        return Optional.empty();
+    }
+
     /**
      * Scans a class using reflection and associates fields with getters (first) and setters (second).
+     * First, it scans all the fields in the given class, then moves up the hierarchy if told to and scans fields on the way.
+     * Then, it attempts to find matching {@code public}, non-{@code static} getters/setters in {@code type}, and returns those.
+     * Setters must start with {@code set}, getters with {@code get} ({@code is} and {@code are} supported for booleans).
+     * Return type of the getter must be the same as the field's type or one of its superclasses or superinterfaces.
+     * The only parameter of the setter must either be the same type as the field's type or one of its subclasses.
+     * Fields that have no setter and no getter are stripped from the result.
+     * In case of duplicate names of fields only the first occurrence is kept.
      *
      * @param type Type to scan.
      * @param ignoreSuperclasses Whether to ignore superclasses (all the way until {@link Object}.
      * @return A non-{@code null} {@link Map} that associates a {@link Field} with a corresponding getter method and a setter method (either can be {@code null}).
      */
-    public static Map<Field, Method[]> extractProperties(Class<?> type, boolean ignoreSuperclasses) {
+    public static Map<Field, Method[]> extractFieldsWithMethods(Class<?> type, boolean ignoreSuperclasses) {
         final Map<Field, Method[]> result = new HashMap<>();
+
+        Class<?> toScan = type;
+        // 1. scan all declared fields
+        while (!Objects.equals(toScan, Object.class)) {
+            for (Field declaredField : toScan.getDeclaredFields())
+                result.putIfAbsent(declaredField, new Method[2]);
+            toScan = ignoreSuperclasses ? Object.class : toScan.getSuperclass();
+        }
+
+        final Set<Field> fieldsWithoutAccessors = new HashSet<>();
+
+        result.forEach((field, methods) -> {
+            // 2. find getter and setter
+            findGetter(field, type).ifPresent(method -> methods[GETTER_INDEX] = method);
+            findSetter(field, type).ifPresent(method -> methods[SETTER_INDEX] = method);
+            // 3. mark for removal if no accessors
+            if(methods[GETTER_INDEX] == null && methods[SETTER_INDEX] == null)
+                fieldsWithoutAccessors.add(field);
+        });
+
+        fieldsWithoutAccessors.forEach(result::remove);
+
         return result;
     }
 

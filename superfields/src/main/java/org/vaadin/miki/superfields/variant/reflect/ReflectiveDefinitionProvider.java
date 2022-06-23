@@ -31,7 +31,7 @@ public class ReflectiveDefinitionProvider implements ObjectPropertyDefinitionPro
     }
 
     private <T> List<ObjectPropertyDefinition<T, ?>> buildProperties(Class<T> type) {
-        return ReflectTools.extractProperties(type, type.isAnnotationPresent(DoNotScanSuperclasses.class)).entrySet()
+        return ReflectTools.extractFieldsWithMethods(type, type.isAnnotationPresent(DoNotScanSuperclasses.class)).entrySet()
                 .stream()
                 .filter(fieldEntry -> !fieldEntry.getKey().isAnnotationPresent(Ignore.class))
                 .map(fieldEntry -> this.buildDefinition(type, fieldEntry.getKey(), fieldEntry.getKey().getType(), fieldEntry.getValue()[ReflectTools.GETTER_INDEX], fieldEntry.getValue()[ReflectTools.SETTER_INDEX] ))

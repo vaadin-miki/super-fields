@@ -112,4 +112,13 @@ public class ObjectField<T> extends CustomField<T> {
     public ObjectPropertyComponentBuilder getObjectPropertyComponentBuilder() {
         return this.fieldBuilder;
     }
+
+    /**
+     * Returns current map of definitions and components.
+     * For testing purposes only.
+     * @return A non-{@code null} map.
+     */
+    Map<ObjectPropertyDefinition<T, ?>, HasValue<?, ?>> getPropertiesAndComponents() {
+        return properties;
+    }
 }
