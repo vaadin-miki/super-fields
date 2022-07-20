@@ -122,4 +122,14 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     public void modifyText(String replacement, int from, int to) {
         this.delegate.modifyText(replacement, from, to);
     }
+
+    @Override
+    public void setClearButtonVisible(boolean clearButtonVisible) {
+        super.setClearButtonVisible(clearButtonVisible);
+    }
+
+    @Override
+    public boolean isClearButtonVisible() {
+        return super.isClearButtonVisible();
+    }
 }

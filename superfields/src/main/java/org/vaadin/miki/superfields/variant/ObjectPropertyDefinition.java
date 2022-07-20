@@ -4,6 +4,7 @@ import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.function.SerializableFunction;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Defines a property of an object.
@@ -38,12 +39,12 @@ public class ObjectPropertyDefinition<T, P> {
         return owner;
     }
 
-    public SerializableBiConsumer<T, P> getSetter() {
-        return setter;
+    public Optional<SerializableBiConsumer<T, P>> getSetter() {
+        return Optional.ofNullable(setter);
     }
 
-    public SerializableFunction<T, P> getGetter() {
-        return getter;
+    public Optional<SerializableFunction<T, P>> getGetter() {
+        return Optional.ofNullable(getter);
     }
 
     public Class<P> getType() {

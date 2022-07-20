@@ -1,5 +1,8 @@
 package org.vaadin.miki.superfields.variant.reflect;
 
+import com.vaadin.flow.data.binder.Setter;
+import com.vaadin.flow.function.SerializableBiConsumer;
+import com.vaadin.flow.function.SerializableFunction;
 import org.vaadin.miki.superfields.variant.ObjectPropertyDefinition;
 import org.vaadin.miki.superfields.variant.ObjectPropertyDefinitionProvider;
 import org.vaadin.miki.util.ReflectTools;
@@ -24,6 +27,9 @@ public class ReflectiveDefinitionProvider implements ObjectPropertyDefinitionPro
 
     private final Map<Class<?>, List<ObjectPropertyDefinition<?, ?>>> cache = new HashMap<>();
 
+    private boolean usingFakeSettersWhenNotPresent = false;
+    private boolean usingFakeGettersWhenNotPresent = false;
+
     @Override
     @SuppressWarnings("unchecked") // should be fine
     public <T> List<ObjectPropertyDefinition<T, ?>> getObjectPropertyDefinitions(Class<T> type, T instance) {
@@ -38,25 +44,65 @@ public class ReflectiveDefinitionProvider implements ObjectPropertyDefinitionPro
                 .collect(Collectors.toList());
     }
 
+    private <T, P> SerializableBiConsumer<T, P> getSetterFromMethod(Method method) {
+        if(method != null)
+            return (t, o) -> {
+                try {
+                    method.invoke(t, o);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new IllegalStateException("cannot access method "+method.getName(), e);
+                }
+            };
+        else if(this.isUsingFakeSettersWhenNotPresent())
+            return (t, p) -> {};
+        else return null;
+    }
+
     @SuppressWarnings("unchecked") // P is the type of field, so all well here
+    private <T, P> SerializableFunction<T, P> getGetterFromMethod(Method method) {
+        if(method != null)
+            return t -> {
+                try {
+                    return (P) method.invoke(t);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new IllegalStateException();
+                }
+            };
+        else if(this.isUsingFakeGettersWhenNotPresent())
+            return t -> null;
+        else return null;
+    }
+
     private <T, P> ObjectPropertyDefinition<T, P> buildDefinition(Class<T> type, Field field, Class<P> fieldType, Method getter, Method setter) {
         return new ObjectPropertyDefinition<>(type, field.getName(), fieldType,
-                setter == null ? (t, p) -> {} :
-                (t, o) -> {
-                    try {
-                        setter.invoke(t, o);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new IllegalStateException();
-                    }
-                },
-                getter == null ? t -> null :
-                t -> {
-                    try {
-                        return (P) getter.invoke(t);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new IllegalStateException();
-                    }
-                }
-                );
+                this.getSetterFromMethod(setter),
+                this.getGetterFromMethod(getter)
+        );
+    }
+
+    public boolean isUsingFakeSettersWhenNotPresent() {
+        return usingFakeSettersWhenNotPresent;
+    }
+
+    public void setUsingFakeSettersWhenNotPresent(boolean usingFakeSettersWhenNotPresent) {
+        this.usingFakeSettersWhenNotPresent = usingFakeSettersWhenNotPresent;
+    }
+
+    public final ReflectiveDefinitionProvider withUsingFakeSettersWhenNotPresent(boolean setting) {
+        this.setUsingFakeSettersWhenNotPresent(setting);
+        return this;
+    }
+
+    public boolean isUsingFakeGettersWhenNotPresent() {
+        return usingFakeGettersWhenNotPresent;
+    }
+
+    public void setUsingFakeGettersWhenNotPresent(boolean usingFakeGettersWhenNotPresent) {
+        this.usingFakeGettersWhenNotPresent = usingFakeGettersWhenNotPresent;
+    }
+
+    public final ReflectiveDefinitionProvider withUsingFakeGettersWhenNotPresent(boolean setting) {
+        this.setUsingFakeGettersWhenNotPresent(setting);
+        return this;
     }
 }

@@ -51,12 +51,12 @@ public class ObjectField<T> extends CustomField<T> {
 
     @SuppressWarnings("unchecked") // should be safe
     private <P> void setPropertyOfObject(T object, ObjectPropertyDefinition<T, P> definition, HasValue<?, ?> component) {
-        definition.getSetter().accept(object, (P) component.getValue());
+        definition.getSetter().ifPresent(s -> s.accept(object, (P) component.getValue()));
     }
 
     @SuppressWarnings("unchecked") // should be safe
     private <P> void showPropertyOfObject(T object, ObjectPropertyDefinition<T, P> definition, HasValue<?, ?> component) {
-        ((HasValue<?, P>)component).setValue(definition.getGetter().apply(object));
+        definition.getGetter().ifPresent(getter -> ((HasValue<?, P>)component).setValue(getter.apply(object)));
     }
 
     @Override
@@ -77,10 +77,12 @@ public class ObjectField<T> extends CustomField<T> {
             this.properties.clear();
             this.definitions.clear();
             this.definitions.addAll(newDefinitions);
+            LOGGER.info("there are {} properties", this.definitions.size());
             this.definitions.forEach(def -> {
                 final var component = this.fieldBuilder.buildPropertyField(def);
                 this.properties.put(def, component);
                 this.layout.add(component);
+                LOGGER.info("added component {} for definition {}", component.getClass().getSimpleName(), def.getName());
             });
         }
     }

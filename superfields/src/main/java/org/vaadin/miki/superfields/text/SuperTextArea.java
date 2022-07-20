@@ -133,4 +133,14 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
     public String getTitle() {
         return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
     }
+
+    @Override
+    public void setClearButtonVisible(boolean clearButtonVisible) {
+        super.setClearButtonVisible(clearButtonVisible);
+    }
+
+    @Override
+    public boolean isClearButtonVisible() {
+        return super.isClearButtonVisible();
+    }
 }

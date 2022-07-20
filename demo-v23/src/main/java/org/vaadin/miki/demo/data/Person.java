@@ -9,6 +9,14 @@ import java.util.Objects;
  */
 public class Person {
 
+    public static Person of(String name, LocalDate dateOfBirth, boolean nobelPrize) {
+        final Person result = new Person();
+        result.setName(name);
+        result.setDateOfBirth(dateOfBirth);
+        result.setNobelPrize(nobelPrize);
+        return result;
+    }
+
     private String name;
     private LocalDate dateOfBirth;
     private boolean nobelPrize;

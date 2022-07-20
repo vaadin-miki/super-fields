@@ -6,6 +6,7 @@ import org.vaadin.miki.superfields.variant.DataObject;
 import org.vaadin.miki.superfields.variant.ObjectPropertyDefinition;
 import org.vaadin.miki.superfields.variant.ObjectPropertyDefinitionProvider;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -25,12 +26,14 @@ public class ReflectiveDefinitionProviderTest {
 
         definitions.forEach((name, def) -> {
             Assert.assertEquals(name, def.getName());
-            Assert.assertNotNull(def.getGetter());
+            Assert.assertTrue(def.getGetter().isPresent());
+            Assert.assertSame(DataObject.class, def.getOwner());
         });
 
         // this method is final
-        Assert.assertNull(definitions.get("fixed").getSetter());
+        Assert.assertTrue(definitions.get("fixed").getSetter().isEmpty());
 
+        Assert.assertSame(BigDecimal.class, definitions.get("currency").getType());
     }
 
 }
