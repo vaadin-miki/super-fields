@@ -2,9 +2,9 @@ package org.vaadin.miki.demo.builders;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.shared.HasClearButton;
 import org.vaadin.miki.demo.ContentBuilder;
 import org.vaadin.miki.demo.Order;
-import org.vaadin.miki.markers.HasClearButton;
 
 import java.util.function.Consumer;
 
