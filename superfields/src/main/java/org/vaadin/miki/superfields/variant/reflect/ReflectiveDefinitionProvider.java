@@ -1,6 +1,5 @@
 package org.vaadin.miki.superfields.variant.reflect;
 
-import com.vaadin.flow.data.binder.Setter;
 import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.function.SerializableFunction;
 import org.vaadin.miki.superfields.variant.ObjectPropertyDefinition;
@@ -10,9 +9,11 @@ import org.vaadin.miki.util.ReflectTools;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -25,7 +26,11 @@ import java.util.stream.Collectors;
  */
 public class ReflectiveDefinitionProvider implements ObjectPropertyDefinitionProvider {
 
+    public static final MetadataProvider EMPTY_METADATA_PROVIDER = (name, field, setter, getter) -> Collections.emptySet();
+
     private final Map<Class<?>, List<ObjectPropertyDefinition<?, ?>>> cache = new HashMap<>();
+
+    private MetadataProvider metadataProvider = EMPTY_METADATA_PROVIDER;
 
     private boolean usingFakeSettersWhenNotPresent = false;
     private boolean usingFakeGettersWhenNotPresent = false;
@@ -76,8 +81,22 @@ public class ReflectiveDefinitionProvider implements ObjectPropertyDefinitionPro
     private <T, P> ObjectPropertyDefinition<T, P> buildDefinition(Class<T> type, Field field, Class<P> fieldType, Method getter, Method setter) {
         return new ObjectPropertyDefinition<>(type, field.getName(), fieldType,
                 this.getSetterFromMethod(setter),
-                this.getGetterFromMethod(getter)
+                this.getGetterFromMethod(getter),
+                this.getMetadataProvider().getMetadata(field.getName(), field, setter, getter)
         );
+    }
+
+    public final MetadataProvider getMetadataProvider() {
+        return metadataProvider;
+    }
+
+    public void setMetadataProvider(MetadataProvider metadataProvider) {
+        this.metadataProvider = Objects.requireNonNullElse(metadataProvider, EMPTY_METADATA_PROVIDER);
+    }
+
+    public final ReflectiveDefinitionProvider withMetadataProvider(MetadataProvider provider) {
+        this.setMetadataProvider(provider);
+        return this;
     }
 
     public boolean isUsingFakeSettersWhenNotPresent() {
