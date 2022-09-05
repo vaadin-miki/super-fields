@@ -25,6 +25,7 @@ public class DataObjectConfiguration {
     public static final String GROUP_METADATA_PROPERTY = "group";
     public static final String ORDER_METADATA_PROPERTY = "order";
     public static final String CAPTION_METADATA_PROPERTY = "caption";
+    public static final String READ_ONLY_METADATA_PROPERTY = "read-only";
 
     private static final Set<Class<?>> EXPECTED_BOOLEAN_TYPES = Set.of(Boolean.class, boolean.class);
 

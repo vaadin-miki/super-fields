@@ -9,7 +9,8 @@ import org.vaadin.miki.util.ReflectTools;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +27,9 @@ import java.util.stream.Collectors;
  */
 public class ReflectiveDefinitionProvider implements ObjectPropertyDefinitionProvider {
 
-    public static final MetadataProvider EMPTY_METADATA_PROVIDER = (name, field, setter, getter) -> Collections.emptySet();
-
     private final Map<Class<?>, List<ObjectPropertyDefinition<?, ?>>> cache = new HashMap<>();
 
-    private MetadataProvider metadataProvider = EMPTY_METADATA_PROVIDER;
+    private final List<MetadataProvider> metadataProviders = new ArrayList<>();
 
     private boolean usingFakeSettersWhenNotPresent = false;
     private boolean usingFakeGettersWhenNotPresent = false;
@@ -82,20 +81,16 @@ public class ReflectiveDefinitionProvider implements ObjectPropertyDefinitionPro
         return new ObjectPropertyDefinition<>(type, field.getName(), fieldType,
                 this.getSetterFromMethod(setter),
                 this.getGetterFromMethod(getter),
-                this.getMetadataProvider().getMetadata(field.getName(), field, setter, getter)
+                this.metadataProviders.stream().flatMap(provider -> provider.getMetadata(field.getName(), field, setter, getter).stream()).collect(Collectors.toList())
         );
     }
 
-    public final MetadataProvider getMetadataProvider() {
-        return metadataProvider;
+    public final void addMetadataProvider(MetadataProvider... providers) {
+        this.metadataProviders.addAll(Arrays.stream(providers).filter(Objects::nonNull).collect(Collectors.toList()));
     }
 
-    public void setMetadataProvider(MetadataProvider metadataProvider) {
-        this.metadataProvider = Objects.requireNonNullElse(metadataProvider, EMPTY_METADATA_PROVIDER);
-    }
-
-    public final ReflectiveDefinitionProvider withMetadataProvider(MetadataProvider provider) {
-        this.setMetadataProvider(provider);
+    public final ReflectiveDefinitionProvider withMetadataProvider(MetadataProvider... providers) {
+        this.addMetadataProvider(providers);
         return this;
     }
 
