@@ -10,8 +10,8 @@ import com.vaadin.flow.component.HasValue;
  * @since 2022-05-19
  */
 @FunctionalInterface
-public interface ObjectPropertyComponentBuilder {
+public interface ObjectPropertyComponentFactory {
 
-    <T, P, C extends Component & HasValue<?, P>> C buildPropertyField(ObjectPropertyDefinition<T, P> property);
+    <P, C extends Component & HasValue<?, P>> C buildPropertyField(ObjectPropertyDefinition<?, P> property);
 
 }

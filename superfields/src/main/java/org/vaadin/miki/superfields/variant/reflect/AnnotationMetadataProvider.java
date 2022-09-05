@@ -4,7 +4,6 @@ import com.vaadin.flow.function.SerializableFunction;
 import org.vaadin.miki.superfields.variant.ObjectPropertyMetadata;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -28,10 +27,12 @@ public class AnnotationMetadataProvider implements MetadataProvider {
     public Collection<ObjectPropertyMetadata> getMetadata(String name, Field field, Method setter, Method getter) {
         return Stream.of(field, setter, getter)
                 .filter(Objects::nonNull)
-                .map(AccessibleObject::getDeclaredAnnotations)
+                .map(obj -> this.registeredAnnotations.keySet().stream().map(type -> {
+                    final Annotation annotation = obj.getAnnotation(type);
+                    if(annotation == null) return null;
+                    else return this.registeredAnnotations.get(type).apply(annotation);
+                }).toArray(ObjectPropertyMetadata[]::new))
                 .flatMap(Stream::of)
-                .filter(a -> this.registeredAnnotations.containsKey(a.getClass()))
-                .map(a -> this.registeredAnnotations.get(a.getClass()).apply(a))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
@@ -40,8 +41,18 @@ public class AnnotationMetadataProvider implements MetadataProvider {
         this.registeredAnnotations.put(annotation, a -> new ObjectPropertyMetadata(name, type, valueFunction.apply(annotation.cast(a))));
     }
 
+    public final <A extends Annotation, V> AnnotationMetadataProvider withRegisteredAnnotation(String name, Class<A> annotation, Class<V> type, SerializableFunction<A, V> valueFunction) {
+        this.registerAnnotation(name, annotation, type, valueFunction);
+        return this;
+    }
+
     public void registerAnnotation(String name, Class<? extends Annotation> annotation) {
         this.registeredAnnotations.put(annotation, a -> new ObjectPropertyMetadata(name, boolean.class, true));
+    }
+
+    public final AnnotationMetadataProvider withRegisteredAnnotation(String name, Class<? extends Annotation> annotation) {
+        this.registerAnnotation(name, annotation);
+        return this;
     }
 
 }

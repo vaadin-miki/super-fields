@@ -7,11 +7,10 @@ import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.miki.superfields.variant.builder.SimplePropertyComponentBuilder;
+import org.vaadin.miki.superfields.variant.builder.SimplePropertyComponentFactory;
 import org.vaadin.miki.superfields.variant.reflect.ReflectiveDefinitionProvider;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -32,19 +31,21 @@ public class ObjectField<T> extends CustomField<T> {
 
     private final SerializableSupplier<T> emptyObjectSupplier;
 
-    private final Map<ObjectPropertyDefinition<T, ?>, HasValue<?, ?>> properties = new HashMap<>();
+    private final Map<ObjectPropertyDefinition<T, ?>, HasValue<?, ?>> properties = new LinkedHashMap<>();
     private final Map<String, Component> groupLayouts = new LinkedHashMap<>();
     private final Set<Component> componentsNotInGroups = new LinkedHashSet<>();
     private final List<ObjectPropertyDefinition<T, ?>> definitions = new ArrayList<>();
-    private final List<ObjectPropertyComponentConfigurator> configurators = new ArrayList<>();
+    private final List<ObjectPropertyComponentConfigurator<T>> configurators = new ArrayList<>();
     private final List<ObjectPropertyComponentGroupConfigurator> groupConfigurators = new ArrayList<>();
 
     private final Class<T> dataType;
 
     private final HasComponents layout;
 
+    private boolean reloadNeeded = true;
+
     private ObjectPropertyDefinitionProvider definitionProvider = new ReflectiveDefinitionProvider();
-    private ObjectPropertyComponentBuilder fieldBuilder = new SimplePropertyComponentBuilder();
+    private ObjectPropertyComponentFactory componentFactory = new SimplePropertyComponentFactory();
     private ObjectPropertyDefinitionGroupingProvider definitionGroupingProvider = new DefaultObjectPropertyDefinitionGroupingProvider();
     private ObjectPropertyGroupLayoutProvider groupLayoutProvider = new DefaultObjectPropertyGroupLayoutProvider();
 
@@ -56,7 +57,6 @@ public class ObjectField<T> extends CustomField<T> {
         final var mainLayout = layoutSupplier.get();
         this.layout = mainLayout;
         this.add(mainLayout);
-        this.prepareComponents(emptyObjectSupplier.get());
     }
 
     @SuppressWarnings("unchecked") // should be safe
@@ -79,9 +79,10 @@ public class ObjectField<T> extends CustomField<T> {
     private void prepareComponents(T t) {
         // get definitions for the object
         final var newDefinitions = this.getDefinitionProvider().getObjectPropertyDefinitions(this.dataType, t);
+        LOGGER.info("> obtained {} definitions for {}", newDefinitions.size(), this.dataType);
         // if the definitions are different from the last used ones, repaint the whole component
         if(!this.definitions.equals(newDefinitions)) {
-            LOGGER.info("refreshing properties to {}", newDefinitions);
+            LOGGER.debug("refreshing properties to {}", newDefinitions);
             // remove group layouts
             this.groupLayouts.values().forEach(this.layout::remove);
             // remove components not in layouts
@@ -102,7 +103,7 @@ public class ObjectField<T> extends CustomField<T> {
                         final var component = this.buildAndConfigureComponentForDefinition(t, definition);
                         groupLayout.add(component);
                         this.properties.put(definition, component);
-                        LOGGER.info("field {} belongs to group {}, added to group layout", definition.getName(), groupName);
+                        LOGGER.debug("field {} belongs to group {}, added to group layout", definition.getName(), groupName);
                         return component;
                     }).collect(Collectors.toList());
                     // configure an entire group
@@ -114,7 +115,8 @@ public class ObjectField<T> extends CustomField<T> {
                         final var component = this.buildAndConfigureComponentForDefinition(t, definition);
                         this.layout.add(component);
                         this.properties.put(definition, component);
-                        LOGGER.info("field {} belongs to main layout", definition.getName());
+                        this.componentsNotInGroups.add(component);
+                        LOGGER.debug("field {} belongs to main layout", definition.getName());
                     })
                 )
             );
@@ -124,20 +126,32 @@ public class ObjectField<T> extends CustomField<T> {
                 this.groupConfigurators.forEach(configurator -> configurator.configureComponentGroup(t, null, this.definitions, allComponents));
             }
 
-            LOGGER.info("there are {} properties", this.definitions.size());
         }
     }
 
     private <P, C extends Component & HasValue<?, P>> C buildAndConfigureComponentForDefinition(T t, ObjectPropertyDefinition<T, P> definition) {
-        final C result = this.getObjectPropertyComponentBuilder().buildPropertyField(definition);
+        final C result = this.getObjectPropertyComponentFactory().buildPropertyField(definition);
+        LOGGER.info("> running component {} ({}) through {} configurator(s)", definition.getName(), result.getClass().getSimpleName(), this.configurators.size());
         this.configurators.forEach(configurator -> configurator.configureComponent(t, definition, result));
         return result;
     }
 
+    public void reload() {
+        this.reloadNeeded = false;
+        this.definitions.clear();
+    }
+
+    public void repaint() {
+        this.prepareComponents(this.getValue());
+    }
+
     @Override
     protected void setPresentationValue(T t) {
+        LOGGER.info("> setting presentation value; reload needed? {}", this.isReloadNeeded());
+        // clean up previous information if needed
+        if(this.isReloadNeeded())
+            this.reload();
         this.prepareComponents(t);
-        LOGGER.info("updating {} components", this.properties.size());
         // set the values of each property
         this.properties.forEach((def, field) -> this.showPropertyOfObject(t, def, field));
     }
@@ -146,24 +160,35 @@ public class ObjectField<T> extends CustomField<T> {
         return dataType;
     }
 
+    protected void markReloadNeeded() {
+        this.reloadNeeded = true;
+    }
+
+    protected boolean isReloadNeeded() {
+        return this.reloadNeeded;
+    }
+
     public ObjectPropertyDefinitionProvider getDefinitionProvider() {
         return definitionProvider;
     }
 
     public void setDefinitionProvider(ObjectPropertyDefinitionProvider definitionProvider) {
         this.definitionProvider = definitionProvider;
+        this.markReloadNeeded();
     }
 
-    public void setObjectPropertyComponentBuilder(ObjectPropertyComponentBuilder builder) {
-        this.fieldBuilder = Objects.requireNonNullElseGet(builder, SimplePropertyComponentBuilder::new);
+    public void setObjectPropertyComponentFactory(ObjectPropertyComponentFactory builder) {
+        this.componentFactory = Objects.requireNonNullElseGet(builder, SimplePropertyComponentFactory::new);
+        this.markReloadNeeded();
     }
 
-    public ObjectPropertyComponentBuilder getObjectPropertyComponentBuilder() {
-        return this.fieldBuilder;
+    public ObjectPropertyComponentFactory getObjectPropertyComponentFactory() {
+        return this.componentFactory;
     }
 
     public void setDefinitionGroupingProvider(ObjectPropertyDefinitionGroupingProvider definitionGroupingProvider) {
         this.definitionGroupingProvider = definitionGroupingProvider;
+        this.markReloadNeeded();
     }
 
     public ObjectPropertyDefinitionGroupingProvider getDefinitionGroupingProvider() {
@@ -176,38 +201,63 @@ public class ObjectField<T> extends CustomField<T> {
 
     public void setGroupLayoutProvider(ObjectPropertyGroupLayoutProvider groupLayoutProvider) {
         this.groupLayoutProvider = groupLayoutProvider;
+        this.markReloadNeeded();
     }
 
-    public void addComponentConfigurator(ObjectPropertyComponentConfigurator configurator) {
+    public void addComponentConfigurator(ObjectPropertyComponentConfigurator<T> configurator) {
         this.configurators.add(configurator);
+        this.markReloadNeeded();
     }
 
-    public void removeComponentConfigurator(ObjectPropertyComponentConfigurator configurator) {
+    public void removeComponentConfigurator(ObjectPropertyComponentConfigurator<T> configurator) {
         this.configurators.remove(configurator);
+        this.markReloadNeeded();
     }
 
     public void clearComponentConfigurators() {
         this.configurators.clear();
+        this.markReloadNeeded();
     }
 
     public void addComponentGroupConfigurator(ObjectPropertyComponentGroupConfigurator configurator) {
         this.groupConfigurators.add(configurator);
+        this.markReloadNeeded();
     }
 
     public void removeComponentGroupConfigurator(ObjectPropertyComponentGroupConfigurator configurator) {
         this.groupConfigurators.remove(configurator);
+        this.markReloadNeeded();
     }
 
     public void clearComponentGroupConfigurators() {
         this.groupConfigurators.clear();
+        this.markReloadNeeded();
     }
 
     /**
      * Returns current map of definitions and components.
      * For testing purposes only.
-     * @return A non-{@code null} map.
+     * @return A non-{@code null} map, matching a definition with a corresponding component.
      */
     Map<ObjectPropertyDefinition<T, ?>, HasValue<?, ?>> getPropertiesAndComponents() {
         return properties;
+    }
+
+    /**
+     * Returns the map of group layouts. Even though values are declared as {@link Component}, each should implement {@link HasComponents}.
+     * For testing purposes only.
+     * @return A non-{@code null} map matching a group name with its layout.
+     */
+    Map<String, Component> getGroupLayouts() {
+        return groupLayouts;
+    }
+
+    /**
+     * Returns the set of components not put in groups. Each should implement {@link HasValue} in addition to being a {@link Component}.
+     * For testing purposes only.
+     * @return A non-{@code null} set.
+     */
+    Set<Component> getComponentsNotInGroups() {
+        return componentsNotInGroups;
     }
 }

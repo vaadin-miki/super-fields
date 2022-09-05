@@ -1,6 +1,10 @@
 package org.vaadin.miki.superfields.variant;
 
+import org.vaadin.miki.superfields.variant.reflect.Ignore;
+
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -12,28 +16,64 @@ import java.util.Objects;
  */
 public class DataObject {
 
+    public static DataObject build() {
+        try {
+            final SecureRandom random = SecureRandom.getInstanceStrong();
+            final DataObject result = new DataObject();
+            result.setTimestamp(LocalDateTime.now());
+            result.setDate(LocalDate.now());
+            result.setText("most data is random");
+            result.setDescription("even this description has this random number: " + random.nextLong());
+            result.setNumber(random.nextInt(256));
+            result.setCurrency(BigDecimal.valueOf(random.nextDouble()));
+            result.setCheck(random.nextBoolean());
+            result.setHidden(random.nextFloat());
+            return result;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // field order annotation on the setter
     private String text;
 
+    @FieldOrder(11)
+    @FieldGroup("random-group")
     private LocalDate date;
 
+    @FieldOrder(10)
+    // caption annotation on setter
     private LocalDateTime timestamp;
 
+    @FieldOrder(3)
+    @FieldGroup("currency-check")
     private boolean check;
 
+    @FieldOrder(120)
+    // group annotation on getter
+    // caption annotation on getter
     private int number;
 
+    @FieldOrder(4)
+    @FieldGroup("currency-check")
     private BigDecimal currency;
 
+    @FieldOrder(2)
+    @BigField
     private String description;
 
+    @Ignore
     private float hidden;
 
+    // no field order - should be placed last
+    // caption annotation on getter
     private final long fixed = 20220623L;
 
     public String getText() {
         return text;
     }
 
+    @FieldOrder(1)
     public void setText(String text) {
         this.text = text;
     }
@@ -50,6 +90,7 @@ public class DataObject {
         return timestamp;
     }
 
+    @FieldCaption("Date and time")
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
@@ -62,6 +103,8 @@ public class DataObject {
         this.check = check;
     }
 
+    @FieldGroup("random-group")
+    @FieldCaption("Amount")
     public int getNumber() {
         return number;
     }
@@ -86,6 +129,7 @@ public class DataObject {
         this.description = description;
     }
 
+    @FieldCaption("Internal information")
     public long getFixed() {
         return fixed;
     }
@@ -103,7 +147,7 @@ public class DataObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DataObject that = (DataObject) o;
-        return check == that.check && number == that.number && fixed == that.fixed && Objects.equals(text, that.text) && Objects.equals(date, that.date) && Objects.equals(timestamp, that.timestamp) && Objects.equals(currency, that.currency) && Objects.equals(description, that.description);
+        return check == that.check && number == that.number && Objects.equals(text, that.text) && Objects.equals(date, that.date) && Objects.equals(timestamp, that.timestamp) && Objects.equals(currency, that.currency) && Objects.equals(description, that.description);
     }
 
     @Override

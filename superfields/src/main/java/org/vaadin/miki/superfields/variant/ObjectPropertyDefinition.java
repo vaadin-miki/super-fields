@@ -5,9 +5,12 @@ import com.vaadin.flow.function.SerializableFunction;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Defines a property of an object.
@@ -25,7 +28,7 @@ public class ObjectPropertyDefinition<T, P> {
     private final Class<P> type;
     private final SerializableBiConsumer<T, P> setter;
     private final SerializableFunction<T, P> getter;
-    private final Set<ObjectPropertyMetadata> metadata;
+    private final Map<String, ObjectPropertyMetadata> metadata;
 
     public ObjectPropertyDefinition(Class<T> owner, String name, Class<P> type, SerializableBiConsumer<T, P> setter, SerializableFunction<T, P> getter, ObjectPropertyMetadata... metadata) {
         this(owner, name, type, setter, getter, metadata.length == 0 ? Collections.emptySet() : Set.of(metadata));
@@ -37,7 +40,7 @@ public class ObjectPropertyDefinition<T, P> {
         this.type = type;
         this.setter = setter;
         this.getter = getter;
-        this.metadata = Set.copyOf(metadata);
+        this.metadata = metadata.stream().collect(Collectors.toMap(ObjectPropertyMetadata::getName, Function.identity()));
     }
 
     public String getName() {
@@ -60,7 +63,7 @@ public class ObjectPropertyDefinition<T, P> {
         return type;
     }
 
-    public Set<ObjectPropertyMetadata> getMetadata() {
+    public Map<String, ObjectPropertyMetadata> getMetadata() {
         return metadata;
     }
 
