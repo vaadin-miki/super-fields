@@ -61,12 +61,14 @@ public class ObjectField<T> extends CustomField<T> {
 
     @SuppressWarnings("unchecked") // should be safe
     private <P> void setPropertyOfObject(T object, ObjectPropertyDefinition<T, P> definition, HasValue<?, ?> component) {
-        definition.getSetter().ifPresent(s -> s.accept(object, (P) component.getValue()));
+        if(object != null)
+            definition.getSetter().ifPresent(s -> s.accept(object, (P) component.getValue()));
     }
 
     @SuppressWarnings("unchecked") // should be safe
     private <P> void showPropertyOfObject(T object, ObjectPropertyDefinition<T, P> definition, HasValue<?, ?> component) {
-        definition.getGetter().ifPresent(getter -> ((HasValue<?, P>)component).setValue(getter.apply(object)));
+        if(object != null)
+            definition.getGetter().ifPresent(getter -> ((HasValue<?, P>)component).setValue(getter.apply(object)));
     }
 
     @Override

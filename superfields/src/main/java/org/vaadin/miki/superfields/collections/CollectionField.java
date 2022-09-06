@@ -174,7 +174,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         if(!this.valueUpdateInProgress) {
             super.updateValue();
             // when using sets, it is possible for duplicates to appear, and they should not be possible
-            if (this.fields.size() != super.getValue().size())
+            if ((super.getValue() != null && this.fields.size() != super.getValue().size()) || (super.getValue() == null && !this.fields.isEmpty()))
                 this.repaintFields(super.getValue());
         }
     }

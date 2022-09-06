@@ -1,8 +1,11 @@
 package org.vaadin.miki.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -23,7 +26,7 @@ public final class ReflectTools {
 
     /**
      * Attempts to get the value of a {@link Field} of a given name that is declared in given class. {@link Field#trySetAccessible()} will be used.
-     * This method will attempt to find a field in the class of the given object and then it will go up the hierarchy until the field of given name and compatible type is found.
+     * This method will attempt to find a field in the class of the given object, and then it will go up the hierarchy until the field of given name and a compatible type is found.
      * When a field is found, an attempt to {@code trySetAccessible} will be made, followed by casting it to the provided value type.
      * When all the above is successful, an optional with the value of the field for the given object will be returned.
      *
@@ -120,6 +123,37 @@ public final class ReflectTools {
         fieldsWithoutAccessors.forEach(result::remove);
 
         return result;
+    }
+
+    /**
+     * Extracts the class present as the given parameter in the generic definition of the type in the given field.
+     * For example, if field is of type {@code List<String>}, the generic type at index {@code zero} will be {@code String.class}.
+     * @param field Field to check.
+     * @param genericIndex Index of the type to return.
+     * @return The type, if present or found.
+     */
+    public static Optional<Class<?>> extractGenericType(Field field, int genericIndex) {
+        if(field.getGenericType() instanceof ParameterizedType) {
+            final Type[] params = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+            return (genericIndex < 0 || genericIndex >= params.length) ? Optional.empty() : Optional.of((Class<?>) params[genericIndex]);
+        }
+        else return Optional.empty();
+    }
+
+    /**
+     * Creates an instance of a given type through a publicly accessible no-arg constructor.
+     *
+     * @param type Type to create.
+     * @return An instance of a given type.
+     * @param <T> Type of object to create.
+     * @throws IllegalArgumentException when the object cannot be created for any reason
+     */
+    public static <T> T newInstance(Class<T> type) {
+        try {
+            return type.getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new IllegalArgumentException("cannot create an instance of "+type.getName(), e);
+        }
     }
 
     private ReflectTools() {

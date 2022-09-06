@@ -9,15 +9,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
-import org.vaadin.miki.superfields.variant.reflect.AnnotationMetadataProvider;
-import org.vaadin.miki.superfields.variant.reflect.ReflectiveDefinitionProvider;
-import org.vaadin.miki.superfields.variant.util.MetadataBasedGroupingProvider;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,38 +35,13 @@ public class ObjectFieldTest {
         else return null;
     }
 
-    private static void setLabel(Object component, String label) {
-        if(component instanceof HasLabel)
-            ((HasLabel) component).setLabel(label);
-        else if(component instanceof org.vaadin.miki.markers.HasLabel)
-            ((org.vaadin.miki.markers.HasLabel) component).setLabel(label);
-    }
-
     private ObjectField<DataObject> field;
 
     @Before
     public void setup() {
         MockVaadin.setup();
         this.field = new ObjectField<>(DataObject.class, DataObject::new, FlexLayoutHelpers::column);
-        this.field.setDefinitionProvider(new ReflectiveDefinitionProvider().withMetadataProvider(new AnnotationMetadataProvider()
-                .withRegisteredAnnotation(DataObjectConfiguration.GROUP_METADATA_PROPERTY, FieldGroup.class, String.class, FieldGroup::value)
-                .withRegisteredAnnotation(DataObjectConfiguration.ORDER_METADATA_PROPERTY, FieldOrder.class, int.class, FieldOrder::value)
-                .withRegisteredAnnotation(DataObjectConfiguration.MULTILINE_METADATA_PROPERTY, BigField.class)
-                .withRegisteredAnnotation(DataObjectConfiguration.CAPTION_METADATA_PROPERTY, FieldCaption.class, String.class, FieldCaption::value)
-        , (name, field, setter, getter) -> setter == null ? Collections.singleton(new ObjectPropertyMetadata(DataObjectConfiguration.READ_ONLY_METADATA_PROPERTY, boolean.class, true)) : Collections.emptySet()
-        ));
-        this.field.setDefinitionGroupingProvider(new MetadataBasedGroupingProvider().withGroupingMetadataName(DataObjectConfiguration.GROUP_METADATA_PROPERTY).withSortingMetadataName(DataObjectConfiguration.ORDER_METADATA_PROPERTY));
-        this.field.setObjectPropertyComponentFactory(DataObjectConfiguration.SUPERFIELDS_DEFAULT_FACTORY);
-        this.field.addComponentConfigurator((object, definition, component) -> {
-            final Map<String, ObjectPropertyMetadata> metadataMap = definition.getMetadata();
-            if(metadataMap.containsKey(DataObjectConfiguration.CAPTION_METADATA_PROPERTY) && metadataMap.get(DataObjectConfiguration.CAPTION_METADATA_PROPERTY).getValue() != null)
-                setLabel(component, metadataMap.get(DataObjectConfiguration.CAPTION_METADATA_PROPERTY).getValue().toString());
-        });
-        this.field.addComponentConfigurator((object, definition, component) -> {
-            if(definition.getMetadata().containsKey(DataObjectConfiguration.READ_ONLY_METADATA_PROPERTY) && definition.getMetadata().get(DataObjectConfiguration.READ_ONLY_METADATA_PROPERTY).getValueType() == boolean.class)
-                component.setReadOnly((boolean) definition.getMetadata().get(DataObjectConfiguration.READ_ONLY_METADATA_PROPERTY).getValue());
-        });
-
+        ObjectFieldConfigurator.INSTANCE.configureObjectField(this.field);
     }
 
     @After

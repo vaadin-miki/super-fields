@@ -2,6 +2,7 @@ package org.vaadin.miki.superfields.variant.reflect;
 
 import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.function.SerializableFunction;
+import org.slf4j.LoggerFactory;
 import org.vaadin.miki.superfields.variant.ObjectPropertyDefinition;
 import org.vaadin.miki.superfields.variant.ObjectPropertyDefinitionProvider;
 import org.vaadin.miki.util.ReflectTools;
@@ -67,9 +68,10 @@ public class ReflectiveDefinitionProvider implements ObjectPropertyDefinitionPro
         if(method != null)
             return t -> {
                 try {
+                    LoggerFactory.getLogger(this.getClass()).info("getter {} for t {}", method.getName(), t);
                     return (P) method.invoke(t);
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new IllegalStateException();
+                    throw new IllegalStateException(e);
                 }
             };
         else if(this.isUsingFakeGettersWhenNotPresent())

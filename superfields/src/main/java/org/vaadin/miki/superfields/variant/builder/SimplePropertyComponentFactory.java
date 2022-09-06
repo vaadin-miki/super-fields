@@ -9,10 +9,11 @@ import org.vaadin.miki.superfields.text.LabelField;
 import org.vaadin.miki.superfields.variant.ObjectPropertyComponentFactory;
 import org.vaadin.miki.superfields.variant.ObjectPropertyDefinition;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * Reference implementation of {@link ObjectPropertyComponentFactory}.
@@ -22,9 +23,19 @@ import java.util.function.Supplier;
  */
 public class SimplePropertyComponentFactory implements ObjectPropertyComponentFactory {
 
-    private final Map<Class<?>, ComponentBuilder<?>> typeBuilders = new HashMap<>();
+    public static final ComponentBuilder<?> DEFAULT_BUILDER = property -> new LabelField<>();
 
-    private final Supplier<? extends Component> defaultBuilder = LabelField::new;
+    public static Predicate<ObjectPropertyDefinition<?, ?>> isExactlyType(Class<?> type) {
+        return def -> Objects.equals(type, def.getType());
+    }
+
+    public static Predicate<ObjectPropertyDefinition<?, ?>> isOfType(Class<?> type) {
+        return def -> type.isAssignableFrom(def.getType());
+    }
+
+    private final Map<Predicate<ObjectPropertyDefinition<?, ?>>, ComponentBuilder<?>> registeredBuilders = new LinkedHashMap<>();
+
+    private ComponentBuilder<?> defaultBuilder = DEFAULT_BUILDER;
 
     private boolean defaultLabel = true;
 
@@ -32,9 +43,9 @@ public class SimplePropertyComponentFactory implements ObjectPropertyComponentFa
     @Override
     public <P, C extends Component & HasValue<?, P>> C buildPropertyField(ObjectPropertyDefinition<?, P> property) {
         final C result;
-        if(this.typeBuilders.containsKey(property.getType()))
-            result = (C) ((ComponentBuilder<P>) this.typeBuilders.get(property.getType())).buildPropertyField(property);
-        else result = (C) this.defaultBuilder.get();
+
+        final ComponentBuilder<P> componentBuilder = this.registeredBuilders.keySet().stream().filter(predicate -> predicate.test(property)).findFirst().map(this.registeredBuilders::get).map(builder -> (ComponentBuilder<P>) builder).orElse((ComponentBuilder<P>) this.defaultBuilder);
+        result = (C) componentBuilder.buildPropertyField(property);
 
         if((result instanceof HasLabel || result instanceof com.vaadin.flow.component.HasLabel) && this.isDefaultLabel()) {
             // regexp by polygenelubricants (what a username!) https://stackoverflow.com/a/2560017/384484
@@ -48,8 +59,12 @@ public class SimplePropertyComponentFactory implements ObjectPropertyComponentFa
         return result;
     }
 
+    public Map<Predicate<ObjectPropertyDefinition<?, ?>>, ComponentBuilder<?>> getRegisteredBuilders() {
+        return registeredBuilders;
+    }
+
     public <P, C extends Component & HasValue<?, P>> void registerType(Class<P> valueType, SerializableSupplier<C> componentSupplier) {
-        this.typeBuilders.put(valueType, (ComponentBuilder<P>) def -> componentSupplier.get());
+        this.registerBuilder(isExactlyType(valueType), (ComponentBuilder<P>) def -> componentSupplier.get());
     }
 
     public final <P, C extends Component & HasValue<?, P>> SimplePropertyComponentFactory withRegisteredType(Class<P> valueType, SerializableSupplier<C> componentSupplier) {
@@ -58,7 +73,11 @@ public class SimplePropertyComponentFactory implements ObjectPropertyComponentFa
     }
 
     public <P> void registerBuilder(Class<P> valueType, ComponentBuilder<P> builder) {
-        this.typeBuilders.put(valueType, builder);
+        this.registerBuilder(isOfType(valueType), builder);
+    }
+
+    public void registerBuilder(Predicate<ObjectPropertyDefinition<?, ?>> predicate, ComponentBuilder<?> builder) {
+        this.registeredBuilders.put(predicate, builder);
     }
 
     public final <P> SimplePropertyComponentFactory withRegisteredBuilder(Class<P> valueType, ComponentBuilder<P> builder) {
@@ -66,8 +85,9 @@ public class SimplePropertyComponentFactory implements ObjectPropertyComponentFa
         return this;
     }
 
-    public void unregisterType(Class<?> valueType) {
-        this.typeBuilders.remove(valueType);
+    public final SimplePropertyComponentFactory withRegisteredBuilder(Predicate<ObjectPropertyDefinition<?, ?>> predicate, ComponentBuilder<?> builder) {
+        this.registerBuilder(predicate, builder);
+        return this;
     }
 
     public boolean isDefaultLabel() {
@@ -91,4 +111,16 @@ public class SimplePropertyComponentFactory implements ObjectPropertyComponentFa
         return this;
     }
 
+    public void setDefaultBuilder(ComponentBuilder<?> defaultBuilder) {
+        this.defaultBuilder = defaultBuilder;
+    }
+
+    public ComponentBuilder<?> getDefaultBuilder() {
+        return defaultBuilder;
+    }
+
+    public final SimplePropertyComponentFactory withDefaultBuilder(ComponentBuilder<?> builder) {
+        this.setDefaultBuilder(builder);
+        return this;
+    }
 }
