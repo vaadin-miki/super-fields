@@ -5,7 +5,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import org.vaadin.miki.demo.ContentBuilder;
 import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.demo.data.Person;
-import org.vaadin.miki.superfields.variant.ObjectField;
+import org.vaadin.miki.superfields.object.ObjectField;
 
 import java.time.LocalDate;
 import java.util.function.Consumer;

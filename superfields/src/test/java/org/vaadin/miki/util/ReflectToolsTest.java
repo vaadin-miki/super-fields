@@ -7,7 +7,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.vaadin.miki.superfields.variant.DataObject;
+import org.vaadin.miki.superfields.object.DataObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
