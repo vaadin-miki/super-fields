@@ -14,6 +14,7 @@ import org.vaadin.miki.superfields.object.reflect.ReflectivePropertyProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -352,8 +353,17 @@ public class ObjectField<T> extends CustomField<T> {
      * @param configurators Configurators to add.
      */
     @SafeVarargs
-    public final void addComponentConfigurator(ComponentConfigurator<T>... configurators) {
-        this.configurators.addAll(Arrays.asList(configurators));
+    public final void addComponentConfigurators(ComponentConfigurator<T>... configurators) {
+        this.addComponentConfigurators(Arrays.asList(configurators));
+    }
+
+    /**
+     * Adds given {@link ComponentConfigurator}s. Each configurator receives every component for each property. Configurators are run in the order of adding.
+     * Note that changes will not be reflected until the component is {@link #repaint()}ed or a new value is set.
+     * @param configurators Configurators to add.
+     */
+    public void addComponentConfigurators(Collection<ComponentConfigurator<T>> configurators) {
+        this.configurators.addAll(configurators);
         this.markReloadNeeded();
     }
 
@@ -367,14 +377,25 @@ public class ObjectField<T> extends CustomField<T> {
     }
 
     /**
-     * Chains {@link #addComponentConfigurator(ComponentConfigurator[])} and returns itself.
+     * Chains {@link #addComponentConfigurators(ComponentConfigurator[])} and returns itself.
      * @param configurators Configurators to add.
      * @return This.
-     * @see #addComponentConfigurator(ComponentConfigurator[])
+     * @see #addComponentConfigurators(ComponentConfigurator[])
      */
     @SafeVarargs
-    public final ObjectField<T> withComponentConfigurator(ComponentConfigurator<T>... configurators) {
-        this.addComponentConfigurator(configurators);
+    public final ObjectField<T> withComponentConfigurators(ComponentConfigurator<T>... configurators) {
+        this.addComponentConfigurators(configurators);
+        return this;
+    }
+
+    /**
+     * Chains {@link #addComponentConfigurators(Collection)} and returns itself.
+     * @param configurators Configurators to add.
+     * @return This.
+     * @see #addComponentConfigurators(Collection)
+     */
+    public final ObjectField<T> withComponentConfigurators(Collection<ComponentConfigurator<T>> configurators) {
+        this.addComponentConfigurators(configurators);
         return this;
     }
 
@@ -392,8 +413,17 @@ public class ObjectField<T> extends CustomField<T> {
      * Note that changes will not be reflected until the component is {@link #repaint()}ed or a new value is set.
      * @param configurators Configurators to add.
      */
-    public void addComponentGroupConfigurator(ComponentGroupConfigurator... configurators) {
-        this.groupConfigurators.addAll(Arrays.asList(configurators));
+    public void addComponentGroupConfigurators(ComponentGroupConfigurator... configurators) {
+        this.addComponentGroupConfigurators(Arrays.asList(configurators));
+    }
+
+    /**
+     * Adds given {@link ComponentGroupConfigurator}s. Each configurator receives every group of components after basic {@link ComponentConfigurator}s are executed. Configurators are run in the order of adding.
+     * Note that changes will not be reflected until the component is {@link #repaint()}ed or a new value is set.
+     * @param configurators Configurators to add.
+     */
+    public void addComponentGroupConfigurators(Collection<ComponentGroupConfigurator> configurators) {
+        this.groupConfigurators.addAll(configurators);
         this.markReloadNeeded();
     }
 
@@ -408,12 +438,24 @@ public class ObjectField<T> extends CustomField<T> {
     }
 
     /**
-     * Chains {@link #addComponentGroupConfigurator(ComponentGroupConfigurator...)} and returns itself.
+     * Chains {@link #addComponentGroupConfigurators(ComponentGroupConfigurator...)} and returns itself.
      * @param configurators Configurators to add.
      * @return This.
+     * @see #addComponentGroupConfigurators(ComponentGroupConfigurator...)
      */
-    public final ObjectField<T> withComponentGroupConfigurator(ComponentGroupConfigurator... configurators) {
-        this.addComponentGroupConfigurator(configurators);
+    public final ObjectField<T> withComponentGroupConfigurators(ComponentGroupConfigurator... configurators) {
+        this.addComponentGroupConfigurators(configurators);
+        return this;
+    }
+
+    /**
+     * Chains {@link #addComponentGroupConfigurators(Collection)} and returns itself.
+     * @param configurators Configurators to add.
+     * @return This.
+     * @see #addComponentGroupConfigurators(Collection)
+     */
+    public final ObjectField<T> withComponentGroupConfigurators(Collection<ComponentGroupConfigurator> configurators) {
+        this.addComponentGroupConfigurators(configurators);
         return this;
     }
 

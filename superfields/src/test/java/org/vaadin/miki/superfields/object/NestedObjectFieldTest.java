@@ -3,14 +3,18 @@ package org.vaadin.miki.superfields.object;
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.textfield.TextField;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.vaadin.miki.superfields.collections.CollectionField;
 import org.vaadin.miki.superfields.collections.MapField;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
+import org.vaadin.miki.superfields.text.LabelField;
 import org.vaadin.miki.superfields.text.SuperTextField;
+import org.vaadin.miki.superfields.util.factory.ObjectFieldFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,14 +26,20 @@ import java.util.stream.Stream;
 
 public class NestedObjectFieldTest {
 
+    private static final ObjectFieldFactory FACTORY = new ObjectFieldFactory();
+
+    @BeforeClass
+    public static void setupFactory() {
+        FACTORY.registerInstanceProvider(DataObject.class, DataObject::new);
+    }
+
     private ObjectField<NestedObject> field;
 
     @Before
     public void setup() {
         MockVaadin.setup();
 
-        this.field = new ObjectField<>(NestedObject.class, NestedObject::new);
-        ObjectFieldConfigurator.INSTANCE.configureObjectField(this.field);
+        this.field = FACTORY.buildAndConfigureObjectField(NestedObject.class, NestedObject::new);
     }
 
     @After
@@ -85,6 +95,29 @@ public class NestedObjectFieldTest {
         Assert.assertNotNull(mapField);
         Assert.assertTrue("MapField should be returned, not "+mapField.getClass().getSimpleName(), mapField instanceof MapField);
         Assert.assertEquals(dataObjectMap, mapField.getValue());
+    }
+
+    @Test
+    public void testFieldsRenderedAsExplicitlyRequested() {
+        final NestedObject nestedObject = new NestedObject();
+        nestedObject.setNumber(123);
+        nestedObject.setText("hello, world");
+
+        this.field.setValue(nestedObject);
+
+        final Map<Property<NestedObject, ?>, HasValue<?, ?>> map = this.field.getPropertiesAndComponents();
+        final HasValue<?, ?> numberField = map.keySet().stream().filter(def -> "number".equals(def.getName())).map(map::get).findFirst().orElse(null);
+
+        Assert.assertNotNull(numberField);
+        Assert.assertTrue("LabelField should be returned, not "+numberField.getClass().getSimpleName(), numberField instanceof LabelField);
+        Assert.assertEquals(nestedObject.getNumber(), numberField.getValue());
+
+        final HasValue<?, ?> textField = map.keySet().stream().filter(def -> "text".equals(def.getName())).map(map::get).findFirst().orElse(null);
+
+        Assert.assertNotNull(textField);
+        Assert.assertSame("TextField should be returned, not "+textField.getClass().getSimpleName(), TextField.class, textField.getClass());
+        Assert.assertEquals(nestedObject.getText(), textField.getValue());
+        Assert.assertEquals(TextFieldBuilder.TITLE_TEXT, ((TextField)textField).getTitle());
     }
 
 }

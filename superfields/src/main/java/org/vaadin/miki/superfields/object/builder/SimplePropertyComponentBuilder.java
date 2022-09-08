@@ -60,7 +60,12 @@ public class SimplePropertyComponentBuilder implements PropertyComponentBuilder 
     public <P, C extends Component & HasValue<?, P>> Optional<C> buildPropertyField(Property<?, P> property) {
         final C result;
 
-        final FieldBuilder<P> fieldBuilder = this.registeredBuilders.keySet().stream().filter(predicate -> predicate.test(property)).findFirst().map(this.registeredBuilders::get).map(builder -> (FieldBuilder<P>) builder).orElse((FieldBuilder<P>) this.defaultBuilder);
+        final FieldBuilder<P> fieldBuilder = this.registeredBuilders.keySet().stream()
+                .filter(predicate -> predicate.test(property))
+                .findFirst()
+                .map(this.registeredBuilders::get)
+                .map(builder -> (FieldBuilder<P>) builder)
+                .orElse((FieldBuilder<P>) this.defaultBuilder);
         result = (C) fieldBuilder.buildPropertyField(property);
 
         if((result instanceof HasLabel || result instanceof com.vaadin.flow.component.HasLabel) && this.isDefaultLabel()) {

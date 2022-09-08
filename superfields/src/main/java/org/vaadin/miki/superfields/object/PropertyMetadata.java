@@ -51,6 +51,15 @@ public class PropertyMetadata {
         return value;
     }
 
+    /**
+     * Checks if the value of the metadata is an instance of the given type.
+     * @param type Type to check.
+     * @return Same as {@code type.isInstance(this.getValue)}
+     */
+    public boolean hasValueOfType(Class<?> type) {
+        return type.isInstance(this.getValue());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

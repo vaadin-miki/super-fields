@@ -1,6 +1,10 @@
 package org.vaadin.miki.superfields.object;
 
 import org.vaadin.miki.superfields.object.reflect.Ignore;
+import org.vaadin.miki.superfields.util.factory.BigField;
+import org.vaadin.miki.superfields.util.factory.FieldCaption;
+import org.vaadin.miki.superfields.util.factory.FieldGroup;
+import org.vaadin.miki.superfields.util.factory.FieldOrder;
 
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;

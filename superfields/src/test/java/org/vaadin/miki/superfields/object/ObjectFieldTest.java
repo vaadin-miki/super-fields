@@ -8,6 +8,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.vaadin.miki.superfields.util.factory.ObjectFieldFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,6 +27,8 @@ import java.util.stream.Stream;
  */
 public class ObjectFieldTest {
 
+    private static final ObjectFieldFactory FACTORY = new ObjectFieldFactory();
+
     private static String extractLabel(Object component) {
         if(component instanceof HasLabel)
             return ((HasLabel) component).getLabel();
@@ -39,8 +42,7 @@ public class ObjectFieldTest {
     @Before
     public void setup() {
         MockVaadin.setup();
-        this.field = new ObjectField<>(DataObject.class, DataObject::new);
-        ObjectFieldConfigurator.INSTANCE.configureObjectField(this.field);
+        this.field = FACTORY.buildAndConfigureObjectField(DataObject.class, DataObject::new);
     }
 
     @After

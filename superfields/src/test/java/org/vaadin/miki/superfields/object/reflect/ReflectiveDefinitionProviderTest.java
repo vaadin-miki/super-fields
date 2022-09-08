@@ -3,8 +3,8 @@ package org.vaadin.miki.superfields.object.reflect;
 import org.junit.Assert;
 import org.junit.Test;
 import org.vaadin.miki.superfields.object.DataObject;
-import org.vaadin.miki.superfields.object.FieldGroup;
-import org.vaadin.miki.superfields.object.FieldOrder;
+import org.vaadin.miki.superfields.util.factory.FieldGroup;
+import org.vaadin.miki.superfields.util.factory.FieldOrder;
 import org.vaadin.miki.superfields.object.Property;
 import org.vaadin.miki.superfields.object.PropertyProvider;
 

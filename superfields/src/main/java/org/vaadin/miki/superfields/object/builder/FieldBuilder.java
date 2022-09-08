@@ -3,12 +3,14 @@ package org.vaadin.miki.superfields.object.builder;
 import com.vaadin.flow.component.HasValue;
 import org.vaadin.miki.superfields.object.Property;
 
+import java.io.Serializable;
+
 /**
  * Marker interface for {@link SimplePropertyComponentBuilder} for objects that build individual components.
  * @param <P> Value type of the property.
  */
 @FunctionalInterface
-public interface FieldBuilder<P> {
+public interface FieldBuilder<P> extends Serializable {
 
     /**
      * Builds a field for a given property.
