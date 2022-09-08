@@ -5,12 +5,12 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.markers.HasLabel;
-import org.vaadin.miki.superfields.text.LabelField;
-import org.vaadin.miki.superfields.object.PropertyComponentBuilder;
 import org.vaadin.miki.superfields.object.Property;
+import org.vaadin.miki.superfields.object.PropertyComponentBuilder;
+import org.vaadin.miki.superfields.text.LabelField;
+import org.vaadin.miki.util.StringTools;
 
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -69,9 +69,7 @@ public class SimplePropertyComponentBuilder implements PropertyComponentBuilder 
         result = (C) fieldBuilder.buildPropertyField(property);
 
         if((result instanceof HasLabel || result instanceof com.vaadin.flow.component.HasLabel) && this.isDefaultLabel()) {
-            // regexp by polygenelubricants (what a username!) https://stackoverflow.com/a/2560017/384484
-            String fieldLabel = property.getName().replaceAll("(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])", " ");
-            fieldLabel = fieldLabel.substring(0, 1).toUpperCase(Locale.ROOT) + fieldLabel.substring(1);
+            final String fieldLabel = StringTools.humanReadable(property.getName());
             if(result instanceof HasLabel)
                 ((HasLabel) result).setLabel(fieldLabel);
             else ((com.vaadin.flow.component.HasLabel) result).setLabel(fieldLabel);

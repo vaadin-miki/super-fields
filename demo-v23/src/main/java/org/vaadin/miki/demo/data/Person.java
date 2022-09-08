@@ -1,5 +1,8 @@
 package org.vaadin.miki.demo.data;
 
+import org.vaadin.miki.superfields.util.factory.FieldGroup;
+import org.vaadin.miki.superfields.util.factory.FieldOrder;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -17,8 +20,16 @@ public class Person {
         return result;
     }
 
+    @FieldOrder(1)
+    @FieldGroup("person")
     private String name;
+
+    @FieldOrder(2)
+    @FieldGroup("person")
     private LocalDate dateOfBirth;
+
+    @FieldOrder(3)
+    @FieldGroup("person")
     private boolean nobelPrize;
 
     public String getName() {

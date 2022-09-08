@@ -40,6 +40,7 @@ import org.vaadin.miki.superfields.text.LabelField;
 import org.vaadin.miki.superfields.text.SuperTextArea;
 import org.vaadin.miki.superfields.text.SuperTextField;
 import org.vaadin.miki.util.ReflectTools;
+import org.vaadin.miki.util.StringTools;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -182,6 +183,7 @@ public class ObjectFieldFactory {
     @SuppressWarnings("unchecked")
     protected SimplePropertyComponentBuilder buildAndConfigureComponentBuilder() {
         final SimplePropertyComponentBuilder result = new SimplePropertyComponentBuilder()
+                .withoutDefaultLabel()
                 .withRegisteredBuilder(
                         // value of metadata must be a class that implements HasValue
                         property -> property.getMetadata().containsKey(SHOW_AS_COMPONENT_METADATA_PROPERTY) && property.getMetadata().get(SHOW_AS_COMPONENT_METADATA_PROPERTY).hasValueOfType(Class.class) && HasValue.class.isAssignableFrom((Class<?>) property.getMetadata().get(SHOW_AS_COMPONENT_METADATA_PROPERTY).getValue()),
@@ -225,6 +227,7 @@ public class ObjectFieldFactory {
                 final Object instance = this.getInstanceProvider(def.getType()).get();
                 final ObjectField<Object> field = new ObjectField<>(def.getType(), () -> instance, this.getObjectFieldLayoutProvider());
                 configureObjectField(field);
+                field.repaint();
                 return field;
             }
             catch(IllegalArgumentException iae) {
@@ -261,15 +264,15 @@ public class ObjectFieldFactory {
                 // metadata for collections
                 (name, field, setter, getter) -> {
                     if(Collection.class.isAssignableFrom(field.getType()))
-                        return ReflectTools.extractGenericType(field, 0).map(type -> new PropertyMetadata(COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name + ".element", type, null, null))).map(Collections::singleton).orElse(Collections.emptySet());
+                        return ReflectTools.extractGenericType(field, 0).map(type -> new PropertyMetadata(COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null))).map(Collections::singleton).orElse(Collections.emptySet());
                     else return Collections.emptySet();
                 },
                 // metadata for maps
                 (name, field, setter, getter) -> {
                     if(Map.class.isAssignableFrom(field.getType())) {
                         final List<PropertyMetadata> metadata = new ArrayList<>();
-                        ReflectTools.extractGenericType(field, 0).map(type -> new PropertyMetadata(MAP_KEY_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name + ".key", type, null, null))).ifPresent(metadata::add);
-                        ReflectTools.extractGenericType(field, 1).map(type -> new PropertyMetadata(MAP_VALUE_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name + ".value", type, null, null))).ifPresent(metadata::add);
+                        ReflectTools.extractGenericType(field, 0).map(type -> new PropertyMetadata(MAP_KEY_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null))).ifPresent(metadata::add);
+                        ReflectTools.extractGenericType(field, 1).map(type -> new PropertyMetadata(MAP_VALUE_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null))).ifPresent(metadata::add);
                         return metadata.size() == 2 ? metadata : Collections.emptySet();
                     }
                     else return Collections.emptySet();
@@ -289,7 +292,7 @@ public class ObjectFieldFactory {
 
     /**
      * Builds {@link ComponentConfigurator}s for a given data type:<ul>
-     *     <li>components have their label set up according to {@link #CAPTION_METADATA_PROPERTY}</li>
+     *     <li>components have their label set up according to {@link #CAPTION_METADATA_PROPERTY} or the field name</li>
      *     <li>components are set to read only based on {@link #READ_ONLY_METADATA_PROPERTY}</li>
      * </ul>
      *
@@ -303,6 +306,7 @@ public class ObjectFieldFactory {
                     final Map<String, PropertyMetadata> metadataMap = definition.getMetadata();
                     if(metadataMap.containsKey(CAPTION_METADATA_PROPERTY) && metadataMap.get(CAPTION_METADATA_PROPERTY).getValue() != null)
                         setLabel(component, metadataMap.get(CAPTION_METADATA_PROPERTY).getValue().toString());
+                    else setLabel(component, StringTools.humanReadable(definition.getName()));
                 },
                 (object, definition, component) -> {
                     if(definition.getMetadata().containsKey(READ_ONLY_METADATA_PROPERTY) && definition.getMetadata().get(READ_ONLY_METADATA_PROPERTY).getValueType() == boolean.class)

@@ -1,5 +1,13 @@
 package org.vaadin.miki.demo.data;
 
+import org.vaadin.miki.superfields.util.factory.BigField;
+import org.vaadin.miki.superfields.util.factory.FieldCaption;
+import org.vaadin.miki.superfields.util.factory.FieldGroup;
+import org.vaadin.miki.superfields.util.factory.FieldOrder;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -8,10 +16,33 @@ import java.util.Objects;
  */
 public class Book {
 
-    private String title;
-    private Person author;
+    public static Book of(String title, int firstPublished, String language, Person... authors) {
+        final Book result = new Book();
+        result.setAuthors(Arrays.asList(authors));
+        result.setTitle(title);
+        result.setFirstPublished(firstPublished);
+        result.setLanguage(language);
+        return result;
+    }
+
+    @FieldOrder(1)
+    private String title = "";
+
+    @FieldOrder(2)
+    private List<Person> authors = new ArrayList<>();
+
+    @FieldOrder(3)
+    @FieldGroup("publication")
     private int firstPublished;
-    private String summary;
+
+    @FieldOrder(4)
+    @FieldGroup("publication")
+    @FieldCaption("Original language")
+    private String language;
+
+    @BigField
+    @FieldOrder(5)
+    private String summary = "";
 
     public String getTitle() {
         return title;
@@ -21,12 +52,12 @@ public class Book {
         this.title = title;
     }
 
-    public Person getAuthor() {
-        return author;
+    public List<Person> getAuthors() {
+        return authors;
     }
 
-    public void setAuthor(Person author) {
-        this.author = author;
+    public void setAuthors(List<Person> authors) {
+        this.authors = authors;
     }
 
     public int getFirstPublished() {
@@ -35,6 +66,14 @@ public class Book {
 
     public void setFirstPublished(int firstPublished) {
         this.firstPublished = firstPublished;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public String getSummary() {
@@ -50,20 +89,21 @@ public class Book {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return firstPublished == book.firstPublished && Objects.equals(title, book.title) && Objects.equals(author, book.author) && Objects.equals(summary, book.summary);
+        return getFirstPublished() == book.getFirstPublished() && Objects.equals(getTitle(), book.getTitle()) && Objects.equals(getAuthors(), book.getAuthors()) && Objects.equals(getLanguage(), book.getLanguage()) && Objects.equals(getSummary(), book.getSummary());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, author, firstPublished, summary);
+        return Objects.hash(getTitle(), getAuthors(), getFirstPublished(), getLanguage(), getSummary());
     }
 
     @Override
     public String toString() {
         return "Book{" +
                 "title='" + title + '\'' +
-                ", author=" + author +
+                ", authors=" + authors +
                 ", firstPublished=" + firstPublished +
+                ", language='" + language + '\'' +
                 ", summary='" + summary + '\'' +
                 '}';
     }

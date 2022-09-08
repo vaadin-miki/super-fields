@@ -2,8 +2,14 @@ package org.vaadin.miki.demo.providers;
 
 import org.vaadin.miki.demo.ComponentProvider;
 import org.vaadin.miki.demo.Order;
+import org.vaadin.miki.demo.data.Book;
 import org.vaadin.miki.demo.data.Person;
+import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
 import org.vaadin.miki.superfields.object.ObjectField;
+import org.vaadin.miki.superfields.util.CollectionComponentProviders;
+import org.vaadin.miki.superfields.util.factory.ObjectFieldFactory;
+
+import java.util.Collections;
 
 /**
  * Provides an {@link ObjectField}.
@@ -12,9 +18,23 @@ import org.vaadin.miki.superfields.object.ObjectField;
  * @since 2022-06-16
  */
 @Order(95)
-public class ObjectFieldProvider implements ComponentProvider<ObjectField<Person>> {
+public class ObjectFieldProvider implements ComponentProvider<ObjectField<Book>> {
+
+    private final ObjectFieldFactory factory = new ObjectFieldFactory();
+
+    public ObjectFieldProvider() {
+        this.factory.registerInstanceProvider(Book.class, Book::new);
+        this.factory.registerInstanceProvider(Person.class, Person::new);
+        this.factory.setObjectFieldGroupLayoutProvider(FlexLayoutHelpers::row);
+
+        this.factory.setCollectionFieldLayoutProvider(CollectionComponentProviders.columnWithHeaderAndFooterRows(
+                Collections.singletonList(CollectionComponentProviders.removeAllButton("Clear list")),
+                Collections.singletonList(CollectionComponentProviders.addLastButton("Add new"))
+        ));
+    }
+
     @Override
-    public ObjectField<Person> getComponent() {
-        return new ObjectField<>(Person.class, Person::new);
+    public ObjectField<Book> getComponent() {
+        return this.factory.buildAndConfigureObjectField(Book.class);
     }
 }
