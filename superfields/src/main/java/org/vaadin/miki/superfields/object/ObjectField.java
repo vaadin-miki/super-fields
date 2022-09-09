@@ -1,6 +1,7 @@
 package org.vaadin.miki.superfields.object;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
@@ -8,6 +9,7 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.miki.markers.HasReadOnly;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
 import org.vaadin.miki.superfields.object.builder.SimplePropertyComponentBuilder;
 import org.vaadin.miki.superfields.object.reflect.ReflectivePropertyProvider;
@@ -481,8 +483,21 @@ public class ObjectField<T> extends CustomField<T> {
     }
 
     @Override
-    protected void updateValue() {
-        super.updateValue();
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+        HasReadOnly.setReadOnly(readOnly, (Component) this.layout);
+    }
+
+    @Override
+    public void focus() {
+        // forwards the focus to the first focusable component
+        if(!this.getPropertiesAndComponents().isEmpty())
+            this.getPropertiesAndComponents().values().stream()
+                    .filter(Focusable.class::isInstance)
+                    .findFirst()
+                    .map(Focusable.class::cast)
+                    .ifPresent(Focusable::focus);
+        super.focus();
     }
 
     /**

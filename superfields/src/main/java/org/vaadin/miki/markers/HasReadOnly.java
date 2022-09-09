@@ -38,6 +38,8 @@ public interface HasReadOnly {
             ((HasValue<?, ?>) component).setReadOnly(readOnly);
         else if(component instanceof HasEnabled)
             ((HasEnabled) component).setEnabled(!readOnly);
+        // delegate to children
+        component.getChildren().forEach(child -> setReadOnly(readOnly, child));
     }
 
 }
