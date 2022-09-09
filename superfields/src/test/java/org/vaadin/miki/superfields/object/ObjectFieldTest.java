@@ -42,7 +42,7 @@ public class ObjectFieldTest {
     @Before
     public void setup() {
         MockVaadin.setup();
-        this.field = FACTORY.buildAndConfigureObjectField(DataObject.class, DataObject::new);
+        this.field = FACTORY.buildAndConfigureObjectField(DataObject.class, DataObject::new, false);
     }
 
     @After
@@ -53,6 +53,7 @@ public class ObjectFieldTest {
     @Test
     public void testInitialisedWithAllProperties() {
         // before setting a value there should be nothing
+        // note that this field is not repainted when built
         Assert.assertTrue(this.field.getPropertiesAndComponents().isEmpty());
         Assert.assertTrue(this.field.getGroupLayouts().isEmpty());
         Assert.assertTrue(this.field.getComponentsNotInGroups().isEmpty());

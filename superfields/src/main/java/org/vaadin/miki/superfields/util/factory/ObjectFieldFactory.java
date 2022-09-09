@@ -224,13 +224,12 @@ public class ObjectFieldFactory {
                 });
         result.setDefaultBuilder(def -> {
             try {
-                final Object instance = this.getInstanceProvider(def.getType()).get();
-                final ObjectField<Object> field = new ObjectField<>(def.getType(), () -> instance, this.getObjectFieldLayoutProvider());
+                final ObjectField<Object> field = new ObjectField<>(def.getType(), () -> this.getInstanceProvider(def.getType()).get(), this.getObjectFieldLayoutProvider());
                 configureObjectField(field);
                 field.repaint();
                 return field;
             }
-            catch(IllegalArgumentException iae) {
+            catch(RuntimeException iae) {
                 LOGGER.info("could not construct an instance of {} due to {}; as a result LabelField is created instead of ObjectField", def.getType().getSimpleName(), iae.getMessage());
                 return new LabelField<>();
             }
@@ -357,25 +356,49 @@ public class ObjectFieldFactory {
     }
 
     /**
-     * Builds and configures an {@link ObjectField} for a given type, using instance provider from {@link #getInstanceProvider(Class)}.
+     * Builds, configures, and repaints an {@link ObjectField} for a given type, using instance provider from {@link #getInstanceProvider(Class)}.
      * @param type Type to build an {@link ObjectField} for.
      * @return An {@link ObjectField}.
      * @param <T> Type of object to display.
      */
     public <T> ObjectField<T> buildAndConfigureObjectField(Class<T> type) {
-        return this.buildAndConfigureObjectField(type, this.getInstanceProvider(type));
+        return this.buildAndConfigureObjectField(type, true);
     }
 
     /**
-     * Builds and configures an {@link ObjectField} for a given type using given instance provider.
+     * Builds, configures, and optionally repaints an {@link ObjectField} for a given type, using instance provider from {@link #getInstanceProvider(Class)}.
+     * @param type Type to build an {@link ObjectField} for.
+     * @param repaint Whether to repaint the created object field. Note that a not-repainted field will basically be empty until it is repainted or a new value is set.
+     * @return An {@link ObjectField}.
+     * @param <T> Type of object to display.
+     */
+    public <T> ObjectField<T> buildAndConfigureObjectField(Class<T> type, boolean repaint) {
+        return this.buildAndConfigureObjectField(type, this.getInstanceProvider(type), repaint);
+    }
+
+    /**
+     * Builds, configures, and repaints an {@link ObjectField} for a given type using given instance provider.
      * @param type Type to build an {@link ObjectField} for.
      * @param newInstanceProvider A way to produce new instances of the object.
      * @return An {@link ObjectField}.
      * @param <T> Type of object to display.
      */
     public <T> ObjectField<T> buildAndConfigureObjectField(Class<T> type, SerializableSupplier<T> newInstanceProvider) {
+        return this.buildAndConfigureObjectField(type, newInstanceProvider, true);
+    }
+
+    /**
+     * Builds, configures and optionally repaints an {@link ObjectField} for a given type using given instance provider.
+     * @param type Type to build an {@link ObjectField} for.
+     * @param newInstanceProvider A way to produce new instances of the object.
+     * @param repaint Whether to repaint the created object field. Note that a not-repainted field will basically be empty until it is repainted or a new value is set.
+     * @return An {@link ObjectField}.
+     * @param <T> Type of object to display.
+     */
+    public <T> ObjectField<T> buildAndConfigureObjectField(Class<T> type, SerializableSupplier<T> newInstanceProvider, boolean repaint) {
         final ObjectField<T> objectField = new ObjectField<>(type, newInstanceProvider, this.getObjectFieldLayoutProvider());
         this.configureObjectField(objectField);
+        if(repaint) objectField.repaint();
         return objectField;
     }
 

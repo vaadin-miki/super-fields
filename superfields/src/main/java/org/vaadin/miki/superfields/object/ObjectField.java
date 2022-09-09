@@ -69,6 +69,8 @@ public class ObjectField<T> extends CustomField<T> {
     private PropertyGroupingProvider propertyGroupingProvider = DEFAULT_GROUPING_PROVIDER.get();
     private PropertyGroupLayoutProvider groupLayoutProvider = DEFAULT_GROUP_LAYOUT_PROVIDER.get();
 
+    private boolean valueChangeInProgress = false;
+
     /**
      * Builds an {@link ObjectField} using {@link #DEFAULT_LAYOUT_PROVIDER} for the main layout.
      *
@@ -113,6 +115,7 @@ public class ObjectField<T> extends CustomField<T> {
     protected T generateModelValue() {
         final var result = this.emptyObjectSupplier.get();
         this.properties.forEach((def, field) -> this.setPropertyOfObject(result, def, field));
+        LOGGER.debug("ObjectField<{}> - generated model value: {}", this.getDataType().getSimpleName(), result);
         return result;
     }
 
@@ -125,7 +128,7 @@ public class ObjectField<T> extends CustomField<T> {
     private void prepareComponents(T t) {
         // get definitions for the object
         final var newDefinitions = this.getPropertyProvider().getObjectPropertyDefinitions(this.dataType, t);
-        LOGGER.info("> obtained {} definitions for {}", newDefinitions.size(), this.dataType);
+        LOGGER.debug("> obtained {} definitions for {}", newDefinitions.size(), this.dataType);
         // if the definitions are different from the last used ones, repaint the whole component
         if(!this.definitions.equals(newDefinitions)) {
             LOGGER.debug("refreshing properties to {}", newDefinitions);
@@ -177,9 +180,17 @@ public class ObjectField<T> extends CustomField<T> {
 
     private <P, C extends Component & HasValue<?, P>> C buildAndConfigureComponentForDefinition(T t, Property<T, P> definition) {
         final C result = (C) this.getPropertyComponentBuilder().buildPropertyField(definition).orElseThrow(() -> new IllegalArgumentException(String.format("could not construct a component for property %s (of object %s) using %s", definition.getName(), t, this.getPropertyComponentBuilder().getClass().getSimpleName())));
-        LOGGER.info("> running component {} ({}) through {} configurator(s)", definition.getName(), result.getClass().getSimpleName(), this.configurators.size());
+        result.addValueChangeListener(this::valueChangedInSubComponent);
+        LOGGER.debug("> running component {} ({}) through {} configurator(s)", definition.getName(), result.getClass().getSimpleName(), this.configurators.size());
         this.configurators.forEach(configurator -> configurator.configureComponent(t, definition, result));
         return result;
+    }
+
+    private void valueChangedInSubComponent(ValueChangeEvent<?> event) {
+        if(!this.valueChangeInProgress) {
+            this.updateValue();
+            LOGGER.debug("ObjectField<{}> - current value after update: {}", this.getDataType().getSimpleName(), this.getValue());
+        }
     }
 
     private void reload() {
@@ -199,13 +210,14 @@ public class ObjectField<T> extends CustomField<T> {
 
     @Override
     protected void setPresentationValue(T t) {
-        LOGGER.info("> setting presentation value; reload needed? {}", this.isReloadNeeded());
+        this.valueChangeInProgress = true;
         // clean up previous information if needed
         if(this.isReloadNeeded())
             this.reload();
         this.prepareComponents(t);
         // set the values of each property
         this.properties.forEach((def, field) -> this.showPropertyOfObject(t, def, field));
+        this.valueChangeInProgress = false;
     }
 
     /**
@@ -466,6 +478,11 @@ public class ObjectField<T> extends CustomField<T> {
     public void clearComponentGroupConfigurators() {
         this.groupConfigurators.clear();
         this.markReloadNeeded();
+    }
+
+    @Override
+    protected void updateValue() {
+        super.updateValue();
     }
 
     /**
