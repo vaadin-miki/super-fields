@@ -17,7 +17,7 @@ import java.util.Collections;
  * @author miki
  * @since 2022-06-16
  */
-@Order(95)
+@Order(87)
 public class ObjectFieldProvider implements ComponentProvider<ObjectField<Book>> {
 
     private final ObjectFieldFactory factory = new ObjectFieldFactory();

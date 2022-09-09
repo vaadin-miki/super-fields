@@ -106,6 +106,12 @@ This is an always read-only field. Basically, it is a `CustomField` that uses a 
 
 A `CustomField<Object>`. It checks the type of the value passed to it and attempts to display it using a known mapping to a field (e.g. by registering `SuperIntegerField` and `SuperDatePicker` it will be able to show integers and dates). No events or details - other than value change - are propagated or exposed from the inner field.
 
+### `ObjectField`
+
+A `CustomField<T>` capable of building components and matching them with object's properties. Once configured it is basically an automated form generator. This component is highly configurable and details on how to use it are present in [the project's wiki](https://github.com/vaadin-miki/super-fields/wiki).
+
+In most common cases one would use `ObjectFieldFactory` to create and configure `ObjectField`, and then annotate data model class with the additional information. Please consult the demo application or the tests (`ObjectFieldTest` and `NestedObjectFieldTest`) for details. 
+
 ## Select fields
 
 ### `ItemGrid`

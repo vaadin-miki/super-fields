@@ -24,7 +24,7 @@ import org.vaadin.miki.superfields.unload.UnloadObserver;
  * @author miki
  * @since 2020-11-18
  */
-@Order(150)
+@Order(97)
 public class ItemGridProvider implements ComponentProvider<ItemGrid<Class<? extends Component>>> {
 
     @Override

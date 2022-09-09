@@ -19,7 +19,7 @@ import java.util.List;
  * @author miki
  * @since 2021-08-25
  */
-@Order(145)
+@Order(93)
 public class CollectionFieldProvider implements ComponentProvider<CollectionField<String, List<String>>>, Validator<List<String>> {
     @Override
     public CollectionField<String, List<String>> getComponent() {

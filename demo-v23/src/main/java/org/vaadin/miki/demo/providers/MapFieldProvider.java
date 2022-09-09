@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
  * @author miki
  * @since 2022-04-08
  */
-@Order(147)
+@Order(95)
 public class MapFieldProvider implements ComponentProvider<MapField<String, Integer>> {
 
     @Override
