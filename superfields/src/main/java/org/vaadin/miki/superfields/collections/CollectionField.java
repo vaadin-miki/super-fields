@@ -151,14 +151,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
     @Override
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
-        // if the layout itself can be in read-only, just call the layout
-        if(this.layout instanceof HasReadOnly)
-            ((HasReadOnly) this.layout).setReadOnly(readOnly);
-        // otherwise, figure out which components can be read-only and set those
-        else ((Component)this.layout).getChildren()
-                .forEach(component -> HasReadOnly.setReadOnly(readOnly, component));
-        // finally, pass that to every field
-        this.fields.forEach(field -> field.setReadOnly(readOnly));
+        HasReadOnly.setReadOnly(readOnly, (Component) this.layout);
     }
 
     @Override
@@ -174,7 +167,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         if(!this.valueUpdateInProgress) {
             super.updateValue();
             // when using sets, it is possible for duplicates to appear, and they should not be possible
-            if (this.fields.size() != super.getValue().size())
+            if ((super.getValue() != null && this.fields.size() != super.getValue().size()) || (super.getValue() == null && !this.fields.isEmpty()))
                 this.repaintFields(super.getValue());
         }
     }

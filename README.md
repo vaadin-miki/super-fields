@@ -23,7 +23,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>org.vaadin.miki</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.13.1</version>
+   <version>0.14.0</version>
 </dependency>
 ```
 

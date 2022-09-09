@@ -25,6 +25,7 @@ public interface HasReadOnly {
 
     /**
      * Helper method to update read-only state of a component if it supports the method.
+     * This method is recursive, as it applies itself to the contents of {@link Component#getChildren()}.
      * @param readOnly New state.
      * @param component Component.
      *                 If it implements {@link HasReadOnly} or {@link HasValue}, the state will be updated.
@@ -38,6 +39,8 @@ public interface HasReadOnly {
             ((HasValue<?, ?>) component).setReadOnly(readOnly);
         else if(component instanceof HasEnabled)
             ((HasEnabled) component).setEnabled(!readOnly);
+        // delegate to children
+        component.getChildren().forEach(child -> setReadOnly(readOnly, child));
     }
 
 }
