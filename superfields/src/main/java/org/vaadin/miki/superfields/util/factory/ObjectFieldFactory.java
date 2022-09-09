@@ -476,8 +476,9 @@ public class ObjectFieldFactory {
      * Returns a supplier for an empty map. Used in {@link #buildMapField(Property, Property, PropertyComponentBuilder)}.
      * @return A way to get an empty map.
      */
-    public SerializableSupplier<Map<?, ?>> getEmptyMapSupplier() {
-        return emptyMapSupplier;
+    @SuppressWarnings("unchecked") // should be fine
+    public <K, V> SerializableSupplier<Map<K, V>> getEmptyMapSupplier() {
+        return (SerializableSupplier<Map<K,V>>) (SerializableSupplier<?>) emptyMapSupplier;
     }
 
     /**
@@ -492,6 +493,7 @@ public class ObjectFieldFactory {
      * Returns a {@link CollectionLayoutProvider} to be used in new {@link CollectionField}s.
      * @return A {@link CollectionLayoutProvider}. Used in {@link #buildCollectionField(Property, Class, PropertyComponentBuilder)}.
      */
+    @SuppressWarnings("squid:S1452") // not really sure how to properly remove <?> in return types and allow type safety at the same time; any help appreciated
     public CollectionLayoutProvider<?> getCollectionFieldLayoutProvider() {
         return collectionFieldLayoutProvider;
     }

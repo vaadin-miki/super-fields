@@ -23,6 +23,7 @@ import java.util.function.Predicate;
  * @author miki
  * @since 2022-06-06
  */
+@SuppressWarnings("squid:S1452") // not really sure how to properly remove <?> in return types and allow type safety at the same time; any help appreciated
 public class SimplePropertyComponentBuilder implements PropertyComponentBuilder {
 
     /**

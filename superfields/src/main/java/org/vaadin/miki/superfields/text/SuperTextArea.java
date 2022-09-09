@@ -134,11 +134,13 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
         return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
     }
 
+    @SuppressWarnings("squid:S1185") // removing this method makes the class impossible to compile due to missing methods
     @Override
     public void setClearButtonVisible(boolean clearButtonVisible) {
         super.setClearButtonVisible(clearButtonVisible);
     }
 
+    @SuppressWarnings("squid:S1185") // same comment as above
     @Override
     public boolean isClearButtonVisible() {
         return super.isClearButtonVisible();

@@ -515,6 +515,7 @@ public class ObjectField<T> extends CustomField<T>
      * For testing purposes only.
      * @return A non-{@code null} map, matching a definition with a corresponding component.
      */
+    @SuppressWarnings("squid:S1452") // this is for testing purposes anyway
     Map<Property<T, ?>, HasValue<?, ?>> getPropertiesAndComponents() {
         return properties;
     }
