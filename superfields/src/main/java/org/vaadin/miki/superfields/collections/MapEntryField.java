@@ -54,6 +54,7 @@ public class MapEntryField<K, V> extends CustomField<Map.Entry<K, V>> {
         this.valueComponentSupplier = (SerializableSupplier<HasValue<?,V>>) (SerializableSupplier<?>) valueComponentSupplier;
         this.repaintLayout();
         this.repaintComponents();
+        this.updateValue();
     }
 
     /**

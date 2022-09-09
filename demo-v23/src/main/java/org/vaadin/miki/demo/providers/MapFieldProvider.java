@@ -29,8 +29,10 @@ public class MapFieldProvider implements ComponentProvider<MapField<String, Inte
                                 CollectionComponentProviders.addFirstButton("Add as first")
                         ),
                         Collections.singletonList(CollectionComponentProviders.addLastButton("Add as last"))),
-                CollectionComponentProviders.rowWithRemoveButtonFirst((i, c) -> new MapEntryField<>(
-                        () -> new SuperTextField("Any text:"), () -> new SuperIntegerField("Any integer:")
+                CollectionComponentProviders.rowWithRemoveButtonFirst(
+                        (i, c) -> new MapEntryField<>(
+                            () -> new SuperTextField("Any text:"),
+                                () -> new SuperIntegerField("Any integer:")
                 ), "Remove"))
                 .withHelperText("(this is a Map<String, Integer>)");
     }
