@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -106,7 +106,7 @@ public class ObjectField<T> extends CustomField<T>
         this.emptyObjectSupplier = emptyObjectSupplier;
         this.dataType = dataType;
 
-        final var mainLayout = layoutSupplier.get();
+        final L mainLayout = layoutSupplier.get();
         this.layout = mainLayout;
         this.add(mainLayout);
     }
@@ -125,7 +125,7 @@ public class ObjectField<T> extends CustomField<T>
 
     @Override
     protected T generateModelValue() {
-        final var result = this.emptyObjectSupplier.get();
+        final T result = this.emptyObjectSupplier.get();
         this.properties.forEach((def, field) -> this.setPropertyOfObject(result, def, field));
         LOGGER.debug("ObjectField<{}> - generated model value: {}", this.getDataType().getSimpleName(), result);
         return result;
@@ -137,9 +137,10 @@ public class ObjectField<T> extends CustomField<T>
      *
      * @param t Value to be shown.
      */
+    @SuppressWarnings("unchecked") // should be fine; Java 11 is actually much nicer here with "var"
     private void prepareComponents(T t) {
         // get definitions for the object
-        final var newDefinitions = this.getPropertyProvider().getObjectPropertyDefinitions(this.dataType, t);
+        final List<Property<T, ?>> newDefinitions = this.getPropertyProvider().getObjectPropertyDefinitions(this.dataType, t);
         LOGGER.debug("> obtained {} definitions for {}", newDefinitions.size(), this.dataType);
         // if the definitions are different from the last used ones, repaint the whole component
         if(!this.definitions.equals(newDefinitions)) {
@@ -157,33 +158,33 @@ public class ObjectField<T> extends CustomField<T>
             // make groups
             final Map<String, List<Property<T, ?>>> groupDefinitions = this.getPropertyGroupingProvider().groupDefinitions(this.definitions);
             // build layouts
-            groupDefinitions.forEach((groupName, groupContents) ->
-                this.getGroupLayoutProvider().buildGroupLayout(groupName, groupContents).ifPresentOrElse(groupLayout -> {
-                    this.groupLayouts.put(groupName, groupLayout);
-                    final var groupComponents = groupContents.stream().map(definition -> {
-                        final var component = this.buildAndConfigureComponentForDefinition(t, definition);
+            groupDefinitions.forEach((groupName, groupContents) -> {
+                final Optional<HasComponents> perhapsLayout = this.getGroupLayoutProvider().buildGroupLayout(groupName, groupContents).map(HasComponents.class::cast);
+                if (perhapsLayout.isPresent()) {
+                    final HasComponents groupLayout = perhapsLayout.get();
+                    this.groupLayouts.put(groupName, (Component) groupLayout);
+                    final List<Component> groupComponents = groupContents.stream().map(definition -> {
+                        final Component component = this.buildAndConfigureComponentForDefinition(t, definition);
                         groupLayout.add(component);
-                        this.properties.put(definition, component);
+                        this.properties.put(definition, (HasValue<?, ?>) component);
                         LOGGER.debug("field {} belongs to group {}, added to group layout", definition.getName(), groupName);
                         return component;
                     }).collect(Collectors.toList());
                     // configure an entire group
-                    this.groupConfigurators.forEach(configurator -> configurator.configureComponentGroup(t, groupName, groupContents, groupComponents));
+                    this.groupConfigurators.forEach(configurator -> configurator.configureComponentGroup(t, groupName, groupContents, (List<HasValue<?,?>>) (List<?>) groupComponents));
                     // add group layout to layout
-                    this.layout.add(groupLayout);
-                }, () ->
-                    groupContents.forEach(definition -> {
-                        final var component = this.buildAndConfigureComponentForDefinition(t, definition);
-                        this.layout.add(component);
-                        this.properties.put(definition, component);
-                        this.componentsNotInGroups.add(component);
-                        LOGGER.debug("field {} belongs to main layout", definition.getName());
-                    })
-                )
-            );
+                    this.layout.add((Component) groupLayout);
+                } else groupContents.forEach(definition -> {
+                    final Component component = this.buildAndConfigureComponentForDefinition(t, definition);
+                    this.layout.add(component);
+                    this.properties.put(definition, (HasValue<?, ?>) component);
+                    this.componentsNotInGroups.add(component);
+                    LOGGER.debug("field {} belongs to main layout", definition.getName());
+                });
+            });
             // configure all components
             if(!this.groupConfigurators.isEmpty()) {
-                final var allComponents = this.definitions.stream().map(this.properties::get).collect(Collectors.toList());
+                final List<HasValue<?, ?>> allComponents = this.definitions.stream().map(this.properties::get).collect(Collectors.toList());
                 this.groupConfigurators.forEach(configurator -> configurator.configureComponentGroup(t, null, this.definitions, allComponents));
             }
 
@@ -269,7 +270,7 @@ public class ObjectField<T> extends CustomField<T>
      * @param propertyProvider A {@link PropertyProvider} to use. If {@code null} is passed, one provided by {@link #DEFAULT_PROPERTY_PROVIDER} will be used.
      */
     public void setPropertyProvider(PropertyProvider propertyProvider) {
-        this.definitionProvider = Objects.requireNonNullElseGet(propertyProvider, DEFAULT_PROPERTY_PROVIDER);
+        this.definitionProvider = propertyProvider == null ? DEFAULT_PROPERTY_PROVIDER.get() : propertyProvider;
         this.markReloadNeeded();
     }
 
@@ -290,7 +291,7 @@ public class ObjectField<T> extends CustomField<T>
      * @param builder A {@link PropertyComponentBuilder} to use. If {@code null} is passed, one provided by {@link #DEFAULT_COMPONENT_BUILDER} will be used.
      */
     public void setPropertyComponentBuilder(PropertyComponentBuilder builder) {
-        this.componentBuilder = Objects.requireNonNullElseGet(builder, DEFAULT_COMPONENT_BUILDER);
+        this.componentBuilder = builder == null ? DEFAULT_COMPONENT_BUILDER.get() : builder;
         this.markReloadNeeded();
     }
 
@@ -319,7 +320,7 @@ public class ObjectField<T> extends CustomField<T>
      * @param propertyGroupingProvider A {@link PropertyGroupingProvider} to use. If {@code null} is passed, one provided by {@link #DEFAULT_GROUPING_PROVIDER} will be used.
      */
     public void setPropertyGroupingProvider(PropertyGroupingProvider propertyGroupingProvider) {
-        this.propertyGroupingProvider = Objects.requireNonNullElseGet(propertyGroupingProvider, DEFAULT_GROUPING_PROVIDER);
+        this.propertyGroupingProvider = propertyGroupingProvider == null ? DEFAULT_GROUPING_PROVIDER.get() : propertyGroupingProvider;
         this.markReloadNeeded();
     }
 
@@ -356,7 +357,7 @@ public class ObjectField<T> extends CustomField<T>
      * @param groupLayoutProvider A {@link PropertyGroupLayoutProvider} to use. If {@code null} is passed, one provided by {@link #DEFAULT_GROUP_LAYOUT_PROVIDER} will be used.
      */
     public void setGroupLayoutProvider(PropertyGroupLayoutProvider groupLayoutProvider) {
-        this.groupLayoutProvider = Objects.requireNonNullElseGet(groupLayoutProvider, DEFAULT_GROUP_LAYOUT_PROVIDER);
+        this.groupLayoutProvider = groupLayoutProvider == null ? DEFAULT_GROUP_LAYOUT_PROVIDER.get() : groupLayoutProvider;
         this.markReloadNeeded();
     }
 

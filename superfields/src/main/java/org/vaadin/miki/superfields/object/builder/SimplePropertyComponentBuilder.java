@@ -69,11 +69,9 @@ public class SimplePropertyComponentBuilder implements PropertyComponentBuilder 
                 .orElse((FieldBuilder<P>) this.defaultBuilder);
         result = (C) fieldBuilder.buildPropertyField(property);
 
-        if((result instanceof HasLabel || result instanceof com.vaadin.flow.component.HasLabel) && this.isDefaultLabel()) {
+        if(result instanceof HasLabel && this.isDefaultLabel()) {
             final String fieldLabel = StringTools.humanReadable(property.getName());
-            if(result instanceof HasLabel)
-                ((HasLabel) result).setLabel(fieldLabel);
-            else ((com.vaadin.flow.component.HasLabel) result).setLabel(fieldLabel);
+            ((HasLabel) result).setLabel(fieldLabel);
             LoggerFactory.getLogger(this.getClass()).info("default label for {} ({}): {}", property.getName(), result.getClass().getSimpleName(), fieldLabel);
         }
         return Optional.ofNullable(result);
@@ -214,7 +212,7 @@ public class SimplePropertyComponentBuilder implements PropertyComponentBuilder 
      * @param defaultBuilder New builder. When {@code null} is passed, {@link #DEFAULT_BUILDER} will be used instead.
      */
     public void setDefaultBuilder(FieldBuilder<?> defaultBuilder) {
-        this.defaultBuilder = Objects.requireNonNullElse(defaultBuilder, DEFAULT_BUILDER);
+        this.defaultBuilder = defaultBuilder == null ? DEFAULT_BUILDER : defaultBuilder;
     }
 
     /**

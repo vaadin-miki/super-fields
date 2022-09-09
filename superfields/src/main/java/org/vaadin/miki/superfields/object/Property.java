@@ -3,12 +3,12 @@ package org.vaadin.miki.superfields.object;
 import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.function.SerializableFunction;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -41,7 +41,7 @@ public class Property<T, P> {
      * @param metadata Any {@link PropertyMetadata} this {@link Property} should have.
      */
     public Property(Class<T> owner, String name, Class<P> type, SerializableBiConsumer<T, P> setter, SerializableFunction<T, P> getter, PropertyMetadata... metadata) {
-        this(owner, name, type, setter, getter, metadata.length == 0 ? Collections.emptySet() : Set.of(metadata));
+        this(owner, name, type, setter, getter, metadata.length == 0 ? Collections.emptySet() : Arrays.asList(metadata));
     }
 
     /**

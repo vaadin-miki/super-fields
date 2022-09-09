@@ -2,13 +2,13 @@ package org.vaadin.miki.superfields.util.factory;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.superfields.collections.CollectionController;
 import org.vaadin.miki.superfields.collections.CollectionField;
 import org.vaadin.miki.superfields.collections.CollectionLayoutProvider;
@@ -50,6 +50,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -67,20 +68,24 @@ import java.util.Set;
  */
 public class ObjectFieldFactory {
 
-    private static final Set<Class<?>> EXPECTED_BOOLEAN_TYPES = Set.of(Boolean.class, boolean.class);
+    private static final Set<Class<?>> EXPECTED_BOOLEAN_TYPES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Boolean.class, boolean.class)));
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectFieldFactory.class);
 
-    private static final Map<Class<?>, SerializableSupplier<?>> REFERENCE_COLLECTION_TYPES = Map.of(
-            List.class, ArrayList::new,
-            Set.class, LinkedHashSet::new
-    );
+    private static final Map<Class<?>, SerializableSupplier<?>> REFERENCE_COLLECTION_TYPES = buildReferenceCollectionTypes();
+
+    private static Map<Class<?>, SerializableSupplier<?>> buildReferenceCollectionTypes() {
+        final Map<Class<?>, SerializableSupplier<?>> result = new HashMap<>();
+        result.put(List.class, ArrayList::new);
+        result.put(Set.class, LinkedHashSet::new);
+        return Collections.unmodifiableMap(result);
+    }
 
     private static void setLabel(Object component, String label) {
         if(component instanceof HasLabel)
             ((HasLabel) component).setLabel(label);
-        else if(component instanceof org.vaadin.miki.markers.HasLabel)
-            ((org.vaadin.miki.markers.HasLabel) component).setLabel(label);
+        else if(component instanceof Checkbox)
+            ((Checkbox) component).setLabel(label);
     }
 
     private static String[] sanitiseStyles(Collection<String> strings, String groupName) {

@@ -5,8 +5,10 @@ import org.vaadin.miki.superfields.object.PropertyGroupingProvider;
 import org.vaadin.miki.superfields.object.PropertyMetadata;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +25,7 @@ import java.util.Set;
  */
 public class MetadataBasedGroupingProvider implements PropertyGroupingProvider {
 
-    public static final Set<Class<?>> ACCEPTED_SORTING_METADATA_TYPES = Set.of(Integer.class, int.class);
+    public static final Set<Class<?>> ACCEPTED_SORTING_METADATA_TYPES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Integer.class, int.class)));
     public static final Class<String> ACCEPTED_GROUPING_METADATA_TYPE = String.class;
 
     private String groupingMetadataName;

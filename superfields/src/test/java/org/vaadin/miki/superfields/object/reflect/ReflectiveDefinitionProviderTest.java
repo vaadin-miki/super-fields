@@ -3,14 +3,14 @@ package org.vaadin.miki.superfields.object.reflect;
 import org.junit.Assert;
 import org.junit.Test;
 import org.vaadin.miki.superfields.object.DataObject;
-import org.vaadin.miki.superfields.util.factory.FieldGroup;
-import org.vaadin.miki.superfields.util.factory.FieldOrder;
 import org.vaadin.miki.superfields.object.Property;
 import org.vaadin.miki.superfields.object.PropertyProvider;
+import org.vaadin.miki.superfields.util.factory.FieldGroup;
+import org.vaadin.miki.superfields.util.factory.FieldOrder;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,7 +30,7 @@ public class ReflectiveDefinitionProviderTest {
         });
 
         // this method is final
-        Assert.assertTrue(definitions.get("fixed").getSetter().isEmpty());
+        Assert.assertFalse(definitions.get("fixed").getSetter().isPresent());
 
         Assert.assertSame(BigDecimal.class, definitions.get("currency").getType());
     }
@@ -68,7 +68,7 @@ public class ReflectiveDefinitionProviderTest {
         );
         // date and number belong to "random-group"
         definitions.values().forEach(def ->
-            Assert.assertTrue(!Set.of("date", "number").contains(def.getName()) ^ (def.getMetadata().containsKey("group") && "random-group".equals(def.getMetadata().get("group").getValue())))
+            Assert.assertTrue(!Arrays.asList("date", "number").contains(def.getName()) ^ (def.getMetadata().containsKey("group") && "random-group".equals(def.getMetadata().get("group").getValue())))
         );
     }
 

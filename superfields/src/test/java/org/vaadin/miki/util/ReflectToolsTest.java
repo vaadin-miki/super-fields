@@ -31,7 +31,7 @@ public class ReflectToolsTest {
 
     private static void checkNoType(String field, int index) throws NoSuchFieldException {
         final Optional<Class<?>> perhaps = ReflectTools.extractGenericType(ReflectToolsTest.class.getDeclaredField(field), index);
-        Assert.assertTrue(perhaps.isEmpty());
+        Assert.assertFalse(perhaps.isPresent());
     }
 
     // these fields are used for reflection tests, do not remove them

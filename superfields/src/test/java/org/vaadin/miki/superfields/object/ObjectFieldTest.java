@@ -2,13 +2,14 @@ package org.vaadin.miki.superfields.object;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.superfields.util.factory.ObjectFieldFactory;
 
 import java.math.BigDecimal;
@@ -33,8 +34,8 @@ public class ObjectFieldTest {
     private static String extractLabel(Object component) {
         if(component instanceof HasLabel)
             return ((HasLabel) component).getLabel();
-        else if(component instanceof org.vaadin.miki.markers.HasLabel)
-            return ((org.vaadin.miki.markers.HasLabel) component).getLabel();
+        else if(component instanceof Checkbox)
+            return ((Checkbox) component).getLabel();
         else return null;
     }
 
@@ -70,12 +71,12 @@ public class ObjectFieldTest {
         // grouping is also defined in annotations
         final Map<String, Component> groupLayouts = this.field.getGroupLayouts();
         Assert.assertEquals(2, groupLayouts.size());
-        Assert.assertArrayEquals(new String[]{"currency-check", "random-group"}, groupLayouts.keySet().toArray(String[]::new));
+        Assert.assertArrayEquals(new String[]{"currency-check", "random-group"}, groupLayouts.keySet().toArray(new String[0]));
         // four components belong to groups, so four should also be outside
         final Set<Component> notGrouped = this.field.getComponentsNotInGroups();
         Assert.assertEquals(4, notGrouped.size());
         final List<HasValue<?, ?>> hasValues = Stream.of("text", "description", "timestamp", "fixed")
-                .map(name -> map.keySet().stream().filter(def -> Objects.equals(name, def.getName())).findFirst().orElseThrow())
+                .map(name -> map.keySet().stream().filter(def -> Objects.equals(name, def.getName())).findFirst().orElseThrow(IllegalStateException::new))
                 .map(map::get)
                 .collect(Collectors.toList());
         Assert.assertEquals(hasValues, new ArrayList<>(notGrouped));
