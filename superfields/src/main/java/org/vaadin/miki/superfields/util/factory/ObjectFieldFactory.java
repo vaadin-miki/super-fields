@@ -67,17 +67,6 @@ import java.util.Set;
  */
 public class ObjectFieldFactory {
 
-    public static final String MULTILINE_METADATA_PROPERTY = "multiline";
-    public static final String GROUP_METADATA_PROPERTY = "group";
-    public static final String ORDER_METADATA_PROPERTY = "order";
-    public static final String CAPTION_METADATA_PROPERTY = "caption";
-    public static final String READ_ONLY_METADATA_PROPERTY = "read-only";
-    public static final String COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY = "collection-element";
-    public static final String MAP_KEY_TYPE_METADATA_PROPERTY = "map-key";
-    public static final String MAP_VALUE_TYPE_METADATA_PROPERTY = "map-value";
-    public static final String SHOW_AS_COMPONENT_METADATA_PROPERTY = "show-as";
-    public static final String COMPONENT_BUILDER_METADATA_PROPERTY = "build-with";
-
     private static final Set<Class<?>> EXPECTED_BOOLEAN_TYPES = Set.of(Boolean.class, boolean.class);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectFieldFactory.class);
@@ -165,7 +154,7 @@ public class ObjectFieldFactory {
 
     /**
      * Builds a {@link SimplePropertyComponentBuilder} and configures it for building most default components:<ul>
-     *     <li>properties marked with {@link #SHOW_AS_COMPONENT_METADATA_PROPERTY} as requested</li>
+     *     <li>properties marked with {@link MetadataProperties#SHOW_AS_COMPONENT_METADATA_PROPERTY} as requested</li>
      *     <li>boolean properties as {@link Checkbox}</li>
      *     <li>integer properties as {@link SuperIntegerField}</li>
      *     <li>long properties as {@link SuperLongField}</li>
@@ -173,7 +162,7 @@ public class ObjectFieldFactory {
      *     <li>{@link BigDecimal} properties as {@link SuperBigDecimalField}</li>
      *     <li>{@link LocalDate} properties as {@link SuperDatePicker}</li>
      *     <li>{@link LocalDateTime} properties as {@link SuperDateTimePicker}</li>
-     *     <li>{@code String} properties as either {@link SuperTextField} or {@link SuperTextArea} (depending on {@link #MULTILINE_METADATA_PROPERTY})</li>
+     *     <li>{@code String} properties as either {@link SuperTextField} or {@link SuperTextArea} (depending on {@link MetadataProperties#MULTILINE_METADATA_PROPERTY})</li>
      *     <li>registered collection (lists and sets) properties as {@link CollectionField}</li>
      *     <li>map properties as {@link MapField}</li>
      *     <li>{@link ObjectField} using this factory as default (that falls back to {@link LabelField})</li>
@@ -186,14 +175,14 @@ public class ObjectFieldFactory {
                 .withoutDefaultLabel()
                 .withRegisteredBuilder(
                         // value of metadata must be a class that implements HasValue
-                        property -> property.getMetadata().containsKey(SHOW_AS_COMPONENT_METADATA_PROPERTY) && property.getMetadata().get(SHOW_AS_COMPONENT_METADATA_PROPERTY).hasValueOfType(Class.class) && HasValue.class.isAssignableFrom((Class<?>) property.getMetadata().get(SHOW_AS_COMPONENT_METADATA_PROPERTY).getValue()),
-                        property -> (HasValue<?, Object>) ReflectTools.newInstance((Class<?>) property.getMetadata().get(SHOW_AS_COMPONENT_METADATA_PROPERTY).getValue())
+                        property -> property.getMetadata().containsKey(MetadataProperties.SHOW_AS_COMPONENT_METADATA_PROPERTY) && property.getMetadata().get(MetadataProperties.SHOW_AS_COMPONENT_METADATA_PROPERTY).hasValueOfType(Class.class) && HasValue.class.isAssignableFrom((Class<?>) property.getMetadata().get(MetadataProperties.SHOW_AS_COMPONENT_METADATA_PROPERTY).getValue()),
+                        property -> (HasValue<?, Object>) ReflectTools.newInstance((Class<?>) property.getMetadata().get(MetadataProperties.SHOW_AS_COMPONENT_METADATA_PROPERTY).getValue())
                 )
                 .withRegisteredBuilder(
                         // value of metadata must be a class that implements FieldBuilder
-                        property -> property.getMetadata().containsKey(COMPONENT_BUILDER_METADATA_PROPERTY) && property.getMetadata().get(COMPONENT_BUILDER_METADATA_PROPERTY).hasValueOfType(Class.class) && FieldBuilder.class.isAssignableFrom((Class<?>) property.getMetadata().get(COMPONENT_BUILDER_METADATA_PROPERTY).getValue()),
+                        property -> property.getMetadata().containsKey(MetadataProperties.COMPONENT_BUILDER_METADATA_PROPERTY) && property.getMetadata().get(MetadataProperties.COMPONENT_BUILDER_METADATA_PROPERTY).hasValueOfType(Class.class) && FieldBuilder.class.isAssignableFrom((Class<?>) property.getMetadata().get(MetadataProperties.COMPONENT_BUILDER_METADATA_PROPERTY).getValue()),
                         // here is a builder that delegates to another builder
-                        property -> ((FieldBuilder<Object>)ReflectTools.newInstance((Class<?>) property.getMetadata().get(COMPONENT_BUILDER_METADATA_PROPERTY).getValue())).buildPropertyField(property)
+                        property -> ((FieldBuilder<Object>)ReflectTools.newInstance((Class<?>) property.getMetadata().get(MetadataProperties.COMPONENT_BUILDER_METADATA_PROPERTY).getValue())).buildPropertyField(property)
                 )
                 .withRegisteredType(Boolean.class, Checkbox::new)
                 .withRegisteredType(boolean.class, Checkbox::new)
@@ -206,20 +195,20 @@ public class ObjectFieldFactory {
                 .withRegisteredType(BigDecimal.class, SuperBigDecimalField::new)
                 .withRegisteredType(LocalDate.class, SuperDatePicker::new)
                 .withRegisteredType(LocalDateTime.class, SuperDateTimePicker::new)
-                .withRegisteredBuilder(String.class, def -> def.getMetadata().containsKey(MULTILINE_METADATA_PROPERTY)
-                        && EXPECTED_BOOLEAN_TYPES.contains(def.getMetadata().get(MULTILINE_METADATA_PROPERTY).getValueType())
-                        && Objects.equals(Boolean.TRUE, def.getMetadata().get(MULTILINE_METADATA_PROPERTY).getValue()) ?
+                .withRegisteredBuilder(String.class, def -> def.getMetadata().containsKey(MetadataProperties.MULTILINE_METADATA_PROPERTY)
+                        && EXPECTED_BOOLEAN_TYPES.contains(def.getMetadata().get(MetadataProperties.MULTILINE_METADATA_PROPERTY).getValueType())
+                        && Objects.equals(Boolean.TRUE, def.getMetadata().get(MetadataProperties.MULTILINE_METADATA_PROPERTY).getValue()) ?
                         new SuperTextArea() :
                         new SuperTextField());
-        result.withRegisteredBuilder(def -> def.getMetadata().containsKey(COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY), def -> {
+        result.withRegisteredBuilder(def -> def.getMetadata().containsKey(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY), def -> {
                     final Class<?> collectionType = def.getType();
-                    final Property<?, ?> listDef = (Property<?, ?>) def.getMetadata().get(COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY).getValue();
+                    final Property<?, ?> listDef = (Property<?, ?>) def.getMetadata().get(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY).getValue();
                     // removing the seemingly unnecessary cast causes compilation errors
                     return (HasValue<?, Object>) (HasValue<?, ?>) buildCollectionField(listDef, (Class<? extends Collection<?>>) collectionType, result);
                 })
-                .withRegisteredBuilder(def -> def.getMetadata().containsKey(MAP_KEY_TYPE_METADATA_PROPERTY) && def.getMetadata().containsKey(MAP_VALUE_TYPE_METADATA_PROPERTY), def -> {
-                    final Property<?, ?> keyDef = (Property<?, ?>) def.getMetadata().get(MAP_KEY_TYPE_METADATA_PROPERTY).getValue();
-                    final Property<?, ?> valueDef = (Property<?, ?>) def.getMetadata().get(MAP_VALUE_TYPE_METADATA_PROPERTY).getValue();
+                .withRegisteredBuilder(def -> def.getMetadata().containsKey(MetadataProperties.MAP_KEY_TYPE_METADATA_PROPERTY) && def.getMetadata().containsKey(MetadataProperties.MAP_VALUE_TYPE_METADATA_PROPERTY), def -> {
+                    final Property<?, ?> keyDef = (Property<?, ?>) def.getMetadata().get(MetadataProperties.MAP_KEY_TYPE_METADATA_PROPERTY).getValue();
+                    final Property<?, ?> valueDef = (Property<?, ?>) def.getMetadata().get(MetadataProperties.MAP_VALUE_TYPE_METADATA_PROPERTY).getValue();
                     return (HasValue<?, Object>) (HasValue<?, ?>) buildMapField(keyDef, valueDef, result);
                 });
         result.setDefaultBuilder(def -> {
@@ -239,39 +228,41 @@ public class ObjectFieldFactory {
 
     /**
      * Builds a {@link ReflectivePropertyProvider} and configures it to a typical use case based on annotations:<ul>
-     *     <li>{@link FieldGroup} is mapped to {@link #GROUP_METADATA_PROPERTY}</li>
-     *     <li>{@link FieldOrder} is mapped to {@link #ORDER_METADATA_PROPERTY}</li>
-     *     <li>{@link BigField} is mapped to {@link #MULTILINE_METADATA_PROPERTY}</li>
-     *     <li>{@link FieldCaption} is mapped to {@link #CAPTION_METADATA_PROPERTY}</li>
-     *     <li>{@link ShowFieldAs} is mapped to {@link #SHOW_AS_COMPONENT_METADATA_PROPERTY}</li>
-     *     <li>{@link BuildFieldWith} is mapped to {@link #COMPONENT_BUILDER_METADATA_PROPERTY}</li>
+     *     <li>{@link FieldGroup} is mapped to {@link MetadataProperties#GROUP_METADATA_PROPERTY}</li>
+     *     <li>{@link FieldOrder} is mapped to {@link MetadataProperties#ORDER_METADATA_PROPERTY}</li>
+     *     <li>{@link BigField} is mapped to {@link MetadataProperties#MULTILINE_METADATA_PROPERTY}</li>
+     *     <li>{@link FieldCaption} is mapped to {@link MetadataProperties#CAPTION_METADATA_PROPERTY}</li>
+     *     <li>{@link ShowFieldAs} is mapped to {@link MetadataProperties#SHOW_AS_COMPONENT_METADATA_PROPERTY}</li>
+     *     <li>{@link BuildFieldWith} is mapped to {@link MetadataProperties#COMPONENT_BUILDER_METADATA_PROPERTY}</li>
      * </ul>
-     * In addition fields without a setter are marked with {@link #READ_ONLY_METADATA_PROPERTY}, and collections and maps using {@link #COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY}, {@link #MAP_KEY_TYPE_METADATA_PROPERTY} and {@link #MAP_VALUE_TYPE_METADATA_PROPERTY}.
+     * In addition fields without a setter are marked with {@link MetadataProperties#READ_ONLY_METADATA_PROPERTY}, and collections and maps using {@link MetadataProperties#COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY}, {@link MetadataProperties#MAP_KEY_TYPE_METADATA_PROPERTY} and {@link MetadataProperties#MAP_VALUE_TYPE_METADATA_PROPERTY}.
      * @return A {@link ReflectivePropertyProvider}.
      */
     protected ReflectivePropertyProvider buildAndConfigurePropertyProvider() {
         return new ReflectivePropertyProvider().withMetadataProvider(new AnnotationMetadataProvider()
-                        .withRegisteredAnnotation(GROUP_METADATA_PROPERTY, FieldGroup.class, String.class, FieldGroup::value)
-                        .withRegisteredAnnotation(ORDER_METADATA_PROPERTY, FieldOrder.class, int.class, FieldOrder::value)
-                        .withRegisteredAnnotation(MULTILINE_METADATA_PROPERTY, BigField.class)
-                        .withRegisteredAnnotation(CAPTION_METADATA_PROPERTY, FieldCaption.class, String.class, FieldCaption::value)
-                        .withRegisteredAnnotation(SHOW_AS_COMPONENT_METADATA_PROPERTY, ShowFieldAs.class, Class.class, ShowFieldAs::value)
-                        .withRegisteredAnnotation(COMPONENT_BUILDER_METADATA_PROPERTY, BuildFieldWith.class, Class.class, BuildFieldWith::value)
+                        .withRegisteredAnnotation(MetadataProperties.GROUP_METADATA_PROPERTY, FieldGroup.class, String.class, FieldGroup::value)
+                        .withRegisteredAnnotation(MetadataProperties.ORDER_METADATA_PROPERTY, FieldOrder.class, int.class, FieldOrder::value)
+                        .withRegisteredAnnotation(MetadataProperties.MULTILINE_METADATA_PROPERTY, BigField.class)
+                        .withRegisteredAnnotation(MetadataProperties.CAPTION_METADATA_PROPERTY, FieldCaption.class, String.class, FieldCaption::value)
+                        .withRegisteredAnnotation(MetadataProperties.SHOW_AS_COMPONENT_METADATA_PROPERTY, ShowFieldAs.class, Class.class, ShowFieldAs::value)
+                        .withRegisteredAnnotation(MetadataProperties.COMPONENT_BUILDER_METADATA_PROPERTY, BuildFieldWith.class, Class.class, BuildFieldWith::value)
+                        .withRegisteredAnnotation(MetadataProperties.COMPONENT_ID_METADATA_PROPERTY, ComponentId.class, String.class, ComponentId::value)
+                        .withRegisteredAnnotation(MetadataProperties.COMPONENT_STYLE_METADATA_PROPERTY, ComponentStyle.class, String[].class, ComponentStyle::value)
                 ,
                 // mark fields as read-only when there is no setter
-                (name, field, setter, getter) -> setter == null ? Collections.singleton(new PropertyMetadata(READ_ONLY_METADATA_PROPERTY, boolean.class, true)) : Collections.emptySet(),
+                (name, field, setter, getter) -> setter == null ? Collections.singleton(new PropertyMetadata(MetadataProperties.READ_ONLY_METADATA_PROPERTY, boolean.class, true)) : Collections.emptySet(),
                 // metadata for collections
                 (name, field, setter, getter) -> {
                     if(Collection.class.isAssignableFrom(field.getType()))
-                        return ReflectTools.extractGenericType(field, 0).map(type -> new PropertyMetadata(COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null))).map(Collections::singleton).orElse(Collections.emptySet());
+                        return ReflectTools.extractGenericType(field, 0).map(type -> new PropertyMetadata(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null))).map(Collections::singleton).orElse(Collections.emptySet());
                     else return Collections.emptySet();
                 },
                 // metadata for maps
                 (name, field, setter, getter) -> {
                     if(Map.class.isAssignableFrom(field.getType())) {
                         final List<PropertyMetadata> metadata = new ArrayList<>();
-                        ReflectTools.extractGenericType(field, 0).map(type -> new PropertyMetadata(MAP_KEY_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null))).ifPresent(metadata::add);
-                        ReflectTools.extractGenericType(field, 1).map(type -> new PropertyMetadata(MAP_VALUE_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null))).ifPresent(metadata::add);
+                        ReflectTools.extractGenericType(field, 0).map(type -> new PropertyMetadata(MetadataProperties.MAP_KEY_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null))).ifPresent(metadata::add);
+                        ReflectTools.extractGenericType(field, 1).map(type -> new PropertyMetadata(MetadataProperties.MAP_VALUE_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null))).ifPresent(metadata::add);
                         return metadata.size() == 2 ? metadata : Collections.emptySet();
                     }
                     else return Collections.emptySet();
@@ -280,19 +271,21 @@ public class ObjectFieldFactory {
     }
 
     /**
-     * Builds a {@link PropertyGroupingProvider} based on presence of {@link #GROUP_METADATA_PROPERTY} and {@link #ORDER_METADATA_PROPERTY}.
+     * Builds a {@link PropertyGroupingProvider} based on presence of {@link MetadataProperties#GROUP_METADATA_PROPERTY} and {@link MetadataProperties#ORDER_METADATA_PROPERTY}.
      * @return A {@link MetadataBasedGroupingProvider}.
      */
     protected MetadataBasedGroupingProvider buildAndConfigureGroupingProvider() {
         return new MetadataBasedGroupingProvider()
-                .withGroupingMetadataName(GROUP_METADATA_PROPERTY)
-                .withSortingMetadataName(ORDER_METADATA_PROPERTY);
+                .withGroupingMetadataName(MetadataProperties.GROUP_METADATA_PROPERTY)
+                .withSortingMetadataName(MetadataProperties.ORDER_METADATA_PROPERTY);
     }
 
     /**
      * Builds {@link ComponentConfigurator}s for a given data type:<ul>
-     *     <li>components have their label set up according to {@link #CAPTION_METADATA_PROPERTY} or the field name</li>
-     *     <li>components are set to read only based on {@link #READ_ONLY_METADATA_PROPERTY}</li>
+     *     <li>components have their label set up according to {@link MetadataProperties#CAPTION_METADATA_PROPERTY} or the field name</li>
+     *     <li>components are set to read only based on {@link MetadataProperties#READ_ONLY_METADATA_PROPERTY}</li>
+     *     <li>components have their style names set up according to {@link MetadataProperties#COMPONENT_STYLE_METADATA_PROPERTY}</li>
+     *     <li>components have their id set according to {@link MetadataProperties#COMPONENT_ID_METADATA_PROPERTY}</li>
      * </ul>
      *
      * @param dataType Type of object (the type of the {@link ObjectField} the returned configurators will be added to).
@@ -303,13 +296,19 @@ public class ObjectFieldFactory {
         return Arrays.asList(
                 (object, definition, component) -> {
                     final Map<String, PropertyMetadata> metadataMap = definition.getMetadata();
-                    if(metadataMap.containsKey(CAPTION_METADATA_PROPERTY) && metadataMap.get(CAPTION_METADATA_PROPERTY).getValue() != null)
-                        setLabel(component, metadataMap.get(CAPTION_METADATA_PROPERTY).getValue().toString());
+                    if(metadataMap.containsKey(MetadataProperties.CAPTION_METADATA_PROPERTY) && metadataMap.get(MetadataProperties.CAPTION_METADATA_PROPERTY).getValue() != null)
+                        setLabel(component, metadataMap.get(MetadataProperties.CAPTION_METADATA_PROPERTY).getValue().toString());
                     else setLabel(component, StringTools.humanReadable(definition.getName()));
                 },
                 (object, definition, component) -> {
-                    if(definition.getMetadata().containsKey(READ_ONLY_METADATA_PROPERTY) && definition.getMetadata().get(READ_ONLY_METADATA_PROPERTY).getValueType() == boolean.class)
-                        component.setReadOnly((boolean) definition.getMetadata().get(READ_ONLY_METADATA_PROPERTY).getValue());
+                    if(definition.getMetadata().containsKey(MetadataProperties.READ_ONLY_METADATA_PROPERTY) && definition.getMetadata().get(MetadataProperties.READ_ONLY_METADATA_PROPERTY).getValueType() == boolean.class)
+                        component.setReadOnly((boolean) definition.getMetadata().get(MetadataProperties.READ_ONLY_METADATA_PROPERTY).getValue());
+                },
+                (object, definition, component) -> {
+                    if(component instanceof HasStyle && definition.getMetadata().containsKey(MetadataProperties.COMPONENT_STYLE_METADATA_PROPERTY) && definition.getMetadata().get(MetadataProperties.COMPONENT_STYLE_METADATA_PROPERTY).hasValueOfType(String[].class))
+                        ((HasStyle) component).addClassNames((String[]) definition.getMetadata().get(MetadataProperties.COMPONENT_STYLE_METADATA_PROPERTY).getValue());
+                    if(definition.getMetadata().containsKey(MetadataProperties.COMPONENT_ID_METADATA_PROPERTY) && definition.getMetadata().get(MetadataProperties.COMPONENT_ID_METADATA_PROPERTY).getValue() != null)
+                        ((Component) component).setId(definition.getMetadata().get(MetadataProperties.COMPONENT_ID_METADATA_PROPERTY).getValue().toString());
                 }
         );
     }
@@ -510,6 +509,7 @@ public class ObjectFieldFactory {
      * Returns a {@link CollectionLayoutProvider} for new {@link MapField}s.
      * @return A {@link CollectionLayoutProvider}. Used in {@link #buildMapField(Property, Property, PropertyComponentBuilder)}.
      */
+    @SuppressWarnings("squid:S1452") // no idea how to improve this
     public CollectionLayoutProvider<?> getMapFieldLayoutProvider() {
         return mapFieldLayoutProvider;
     }

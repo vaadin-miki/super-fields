@@ -3,6 +3,7 @@ package org.vaadin.miki.superfields.object;
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasLabel;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import org.junit.After;
 import org.junit.Assert;
@@ -93,6 +94,11 @@ public class ObjectFieldTest {
 
         // field for "fixed" must be read-only (there is no setter for the property
         Assert.assertTrue(map.keySet().stream().filter(def -> "fixed".equals(def.getName())).findFirst().map(map::get).map(HasValue::isReadOnly).orElse(false));
+
+        // also check if id and style names are ok
+        Assert.assertTrue(map.keySet().stream().filter(def -> "currency".equals(def.getName())).findFirst().map(map::get).map(HasStyle.class::cast).map(HasStyle::getClassNames).map(list -> list.contains("stylish")).orElse(false));
+        Assert.assertEquals("something", map.keySet().stream().filter(def -> "description".equals(def.getName())).findFirst().map(map::get).map(Component.class::cast).map(Component::getId).flatMap(perhaps -> perhaps).orElse(null));
+        Assert.assertTrue(map.keySet().stream().filter(def -> "timestamp".equals(def.getName())).findFirst().map(map::get).map(HasStyle.class::cast).map(HasStyle::getClassNames).map(Set::isEmpty).orElse(false));
     }
 
     @Test

@@ -2,6 +2,8 @@ package org.vaadin.miki.superfields.object;
 
 import org.vaadin.miki.superfields.object.reflect.Ignore;
 import org.vaadin.miki.superfields.util.factory.BigField;
+import org.vaadin.miki.superfields.util.factory.ComponentId;
+import org.vaadin.miki.superfields.util.factory.ComponentStyle;
 import org.vaadin.miki.superfields.util.factory.FieldCaption;
 import org.vaadin.miki.superfields.util.factory.FieldGroup;
 import org.vaadin.miki.superfields.util.factory.FieldOrder;
@@ -60,10 +62,12 @@ public class DataObject {
 
     @FieldOrder(4)
     @FieldGroup("currency-check")
+    @ComponentStyle("stylish")
     private BigDecimal currency;
 
     @FieldOrder(2)
     @BigField
+    @ComponentId("something")
     private String description;
 
     @Ignore
