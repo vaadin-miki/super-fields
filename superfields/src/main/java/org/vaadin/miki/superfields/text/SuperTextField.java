@@ -122,4 +122,16 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     public void modifyText(String replacement, int from, int to) {
         this.delegate.modifyText(replacement, from, to);
     }
+
+    @SuppressWarnings("squid:S1185") // removing this method makes the class impossible to compile due to missing methods
+    @Override
+    public void setClearButtonVisible(boolean clearButtonVisible) {
+        super.setClearButtonVisible(clearButtonVisible);
+    }
+
+    @SuppressWarnings("squid:S1185") // see above
+    @Override
+    public boolean isClearButtonVisible() {
+        return super.isClearButtonVisible();
+    }
 }
