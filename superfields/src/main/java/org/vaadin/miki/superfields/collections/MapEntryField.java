@@ -39,6 +39,8 @@ public class MapEntryField<K, V> extends CustomField<Map.Entry<K, V>> {
     private HasValue<?, K> keyComponent;
     private HasValue<?, V> valueComponent;
 
+    private boolean valueChangeInProgress = false;
+
     /**
      * Creates a {@link MapEntryField} with given providers for layout, key component and value component.
      * @param layoutSupplier Supplier of a layout to put key and value components in, in that order.
@@ -55,6 +57,7 @@ public class MapEntryField<K, V> extends CustomField<Map.Entry<K, V>> {
         this.valueComponentSupplier = (SerializableSupplier<HasValue<?,V>>) (SerializableSupplier<?>) valueComponentSupplier;
         this.repaintLayout();
         this.repaintComponents();
+        this.updateValue();
     }
 
     /**
@@ -129,7 +132,9 @@ public class MapEntryField<K, V> extends CustomField<Map.Entry<K, V>> {
         else {
             this.removeComponentsFromLayout();
             this.keyComponent = this.keyComponentSupplier.get();
+            this.keyComponent.addValueChangeListener(this::valueChangedInSubComponent);
             this.valueComponent = this.valueComponentSupplier.get();
+            this.valueComponent.addValueChangeListener(this::valueChangedInSubComponent);
             this.layout.add((Component) this.keyComponent, (Component) this.valueComponent);
             final Map.Entry<K, V> currentValue = this.getValue();
 
@@ -140,13 +145,20 @@ public class MapEntryField<K, V> extends CustomField<Map.Entry<K, V>> {
         }
     }
 
+    private void valueChangedInSubComponent(ValueChangeEvent<?> o) {
+        if(!this.valueChangeInProgress)
+            this.updateValue();
+    }
+
     @Override
     protected void setPresentationValue(Map.Entry<K, V> entry) {
+        this.valueChangeInProgress = true;
         if(this.keyComponent == null || this.valueComponent == null)
             this.repaintComponents();
 
         this.keyComponent.setValue(entry.getKey());
         this.valueComponent.setValue(entry.getValue());
+        this.valueChangeInProgress = false;
     }
 
     /**

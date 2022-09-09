@@ -67,6 +67,8 @@ public class HeaderFooterFieldWrapper<T,
         this.header = header;
         this.footer = footer;
 
+        this.field.addValueChangeListener(event -> this.updateValue());
+
         final R root = rootSupplier.get();
         if(header != null)
             root.add(header);

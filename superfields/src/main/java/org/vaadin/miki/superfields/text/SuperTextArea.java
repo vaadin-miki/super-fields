@@ -19,6 +19,7 @@ import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
+import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.text.TextModificationDelegate;
@@ -32,7 +33,7 @@ import org.vaadin.miki.shared.text.TextModificationDelegate;
 @JsModule("./super-text-area.js")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextArea extends TextArea implements CanSelectText, TextSelectionNotifier<SuperTextArea>,
-        CanModifyText,
+        CanModifyText, WithRequiredMixin<SuperTextArea>,
         WithIdMixin<SuperTextArea>, WithLabelMixin<SuperTextArea>, WithPlaceholderMixin<SuperTextArea>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextArea>, WithClearButtonMixin<SuperTextArea>,
         WithHelperMixin<SuperTextArea>, WithHelperPositionableMixin<SuperTextArea>, WithTitleMixin<SuperTextArea>,
@@ -131,5 +132,17 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
     public String getTitle() {
         final String result = this.getElement().getProperty("title");
         return result == null ? "" : result;
+    }
+
+    @SuppressWarnings("squid:S1185") // removing this method makes the class impossible to compile due to missing methods
+    @Override
+    public void setClearButtonVisible(boolean clearButtonVisible) {
+        super.setClearButtonVisible(clearButtonVisible);
+    }
+
+    @SuppressWarnings("squid:S1185") // same comment as above
+    @Override
+    public boolean isClearButtonVisible() {
+        return super.isClearButtonVisible();
     }
 }

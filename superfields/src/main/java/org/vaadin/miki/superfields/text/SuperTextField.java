@@ -19,6 +19,7 @@ import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
+import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.text.TextModificationDelegate;
@@ -32,7 +33,7 @@ import org.vaadin.miki.shared.text.TextModificationDelegate;
 @JsModule("./super-text-field.js")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextField extends TextField implements CanSelectText, TextSelectionNotifier<SuperTextField>,
-        CanModifyText,
+        CanModifyText, WithRequiredMixin<SuperTextField>,
         WithIdMixin<SuperTextField>, WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
         WithHelperMixin<SuperTextField>, WithTitleMixin<SuperTextField>, WithHelperPositionableMixin<SuperTextField>,
@@ -121,5 +122,17 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     @Override
     public void modifyText(String replacement, int from, int to) {
         this.delegate.modifyText(replacement, from, to);
+    }
+
+    @SuppressWarnings("squid:S1185") // removing this method makes the class impossible to compile due to missing methods
+    @Override
+    public void setClearButtonVisible(boolean clearButtonVisible) {
+        super.setClearButtonVisible(clearButtonVisible);
+    }
+
+    @SuppressWarnings("squid:S1185") // see above
+    @Override
+    public boolean isClearButtonVisible() {
+        return super.isClearButtonVisible();
     }
 }

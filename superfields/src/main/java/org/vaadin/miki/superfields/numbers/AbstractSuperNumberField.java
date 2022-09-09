@@ -31,6 +31,7 @@ import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithNullValueOptionallyAllowedMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
+import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.superfields.text.SuperTextField;
@@ -58,7 +59,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
-                   WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF>, WithClearButtonMixin<SELF> {
+                   WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF>, WithClearButtonMixin<SELF>,
+                   WithRequiredMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -854,6 +856,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public boolean isClearButtonVisible() {
         return this.field.isClearButtonVisible();
+    }
+
+    @Override
+    public void setRequired(boolean required) {
+        this.field.setRequired(required);
+    }
+
+    @Override
+    public boolean isRequired() {
+        return this.field.isRequired();
     }
 
     /**

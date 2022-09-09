@@ -16,6 +16,7 @@ import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,6 @@ import java.util.function.Supplier;
 
 /**
  * Basic field to support values that are {@link Map}s.
- *
  * This basically forwards everything to a {@link CollectionField} and wraps the value in a {@link Map}. It also expects
  * a component capable of displaying values of type {@link Map.Entry}.
  *
@@ -117,7 +117,7 @@ public class MapField<K, V> extends CustomField<Map<K, V>> implements HasStyle,
 
     @Override
     protected void setPresentationValue(Map<K, V> map) {
-        this.collectionField.setValue(new ArrayList<>(map.entrySet()));
+        this.collectionField.setValue(map == null ? Collections.emptyList() : new ArrayList<>(map.entrySet()));
     }
 
     @Override
