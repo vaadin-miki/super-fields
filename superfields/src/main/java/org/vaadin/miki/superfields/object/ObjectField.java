@@ -1,8 +1,10 @@
 package org.vaadin.miki.superfields.object;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -10,6 +12,11 @@ import com.vaadin.flow.function.SerializableSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.markers.HasReadOnly;
+import org.vaadin.miki.markers.WithHelperMixin;
+import org.vaadin.miki.markers.WithHelperPositionableMixin;
+import org.vaadin.miki.markers.WithIdMixin;
+import org.vaadin.miki.markers.WithLabelMixin;
+import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
 import org.vaadin.miki.superfields.object.builder.SimplePropertyComponentBuilder;
 import org.vaadin.miki.superfields.object.reflect.ReflectivePropertyProvider;
@@ -41,7 +48,10 @@ import java.util.stream.Collectors;
  * @author miki
  * @since 2022-05-16
  */
-public class ObjectField<T> extends CustomField<T> {
+public class ObjectField<T> extends CustomField<T>
+        implements HasStyle, WithHelperMixin<ObjectField<T>>, WithHelperPositionableMixin<ObjectField<T>>,
+                   WithIdMixin<ObjectField<T>>, WithLabelMixin<ObjectField<T>>,
+                   WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, ObjectField<T>> {
 
     public static final SerializableSupplier<FlexLayout> DEFAULT_LAYOUT_PROVIDER = FlexLayoutHelpers::column;
     public static final SerializableSupplier<PropertyProvider> DEFAULT_PROPERTY_PROVIDER = ReflectivePropertyProvider::new;
@@ -526,4 +536,5 @@ public class ObjectField<T> extends CustomField<T> {
     Set<Component> getComponentsNotInGroups() {
         return componentsNotInGroups;
     }
+
 }
