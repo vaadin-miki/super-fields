@@ -9,7 +9,7 @@ import org.vaadin.miki.superfields.lazyload.ObservedField;
  * @author miki
  * @since 2020-11-17
  */
-@Order(100)
+@Order(155)
 public class ObservedFieldProvider implements ComponentProvider<ObservedField> {
 
     @Override
