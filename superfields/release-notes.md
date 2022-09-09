@@ -1,3 +1,16 @@
+# 0.14.0 - ObjectField
+## New features and enhancements
+* \#380 - [ObjectField](https://github.com/vaadin-miki/super-fields/issues/380)
+* \#386 - [Add HasRequired to control setRequired in components](https://github.com/vaadin-miki/super-fields/issues/386)
+## Changes to API
+* \#382 - [Use Vaadin's HasClearButton](https://github.com/vaadin-miki/super-fields/issues/382)
+* \#386 - [Add HasRequired to control setRequired in components](https://github.com/vaadin-miki/super-fields/issues/386)
+* \#391 - [Upgrade to Vaadin 23.2](https://github.com/vaadin-miki/super-fields/issues/391)
+## Bug fixes
+* \#387 - [ObjectField does not react to value change events from components in layouts](https://github.com/vaadin-miki/super-fields/issues/387)
+* \#388 - [MapEntryField has incorrect value after creation](https://github.com/vaadin-miki/super-fields/issues/388)
+* \#395 - [MapEntryField does not broadcast value change events properly](https://github.com/vaadin-miki/super-fields/issues/395)
+* \#396 - [HeaderFooterFieldWrapper does not fire value change events](https://github.com/vaadin-miki/super-fields/issues/396)
 # 0.13.1 - Bugfixes
 ## New features and enhancements
 (nothing reported)
