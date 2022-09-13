@@ -170,7 +170,7 @@ public class ObjectFieldFactory {
      * @return A {@link SimplePropertyComponentBuilder}.
      */
     @SuppressWarnings("unchecked")
-    protected SimplePropertyComponentBuilder buildAndConfigureComponentBuilder() {
+    protected PropertyComponentBuilder buildAndConfigureComponentBuilder() {
         final SimplePropertyComponentBuilder result = new SimplePropertyComponentBuilder()
                 .withoutDefaultLabel()
                 .withRegisteredBuilder(
@@ -238,7 +238,7 @@ public class ObjectFieldFactory {
      * In addition fields without a setter are marked with {@link MetadataProperties#READ_ONLY_METADATA_PROPERTY}, and collections and maps using {@link MetadataProperties#COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY}, {@link MetadataProperties#MAP_KEY_TYPE_METADATA_PROPERTY} and {@link MetadataProperties#MAP_VALUE_TYPE_METADATA_PROPERTY}.
      * @return A {@link ReflectivePropertyProvider}.
      */
-    protected ReflectivePropertyProvider buildAndConfigurePropertyProvider() {
+    protected PropertyProvider buildAndConfigurePropertyProvider() {
         return new ReflectivePropertyProvider().withMetadataProvider(new AnnotationMetadataProvider()
                         .withRegisteredAnnotation(MetadataProperties.GROUP_METADATA_PROPERTY, FieldGroup.class, String.class, FieldGroup::value)
                         .withRegisteredAnnotation(MetadataProperties.ORDER_METADATA_PROPERTY, FieldOrder.class, int.class, FieldOrder::value)
@@ -274,7 +274,7 @@ public class ObjectFieldFactory {
      * Builds a {@link PropertyGroupingProvider} based on presence of {@link MetadataProperties#GROUP_METADATA_PROPERTY} and {@link MetadataProperties#ORDER_METADATA_PROPERTY}.
      * @return A {@link MetadataBasedGroupingProvider}.
      */
-    protected MetadataBasedGroupingProvider buildAndConfigureGroupingProvider() {
+    protected PropertyGroupingProvider buildAndConfigureGroupingProvider() {
         return new MetadataBasedGroupingProvider()
                 .withGroupingMetadataName(MetadataProperties.GROUP_METADATA_PROPERTY)
                 .withSortingMetadataName(MetadataProperties.ORDER_METADATA_PROPERTY);
