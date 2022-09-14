@@ -1,6 +1,7 @@
 package org.vaadin.miki.markers;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasValue;
 
@@ -37,7 +38,7 @@ public interface HasReadOnly {
             ((HasReadOnly) component).setReadOnly(readOnly);
         else if(component instanceof HasValue)
             ((HasValue<?, ?>) component).setReadOnly(readOnly);
-        else if(component instanceof HasEnabled)
+        else if(component instanceof HasEnabled && !(component instanceof HasComponents)) // HasComponents implements HasEnabled, that caused #402
             ((HasEnabled) component).setEnabled(!readOnly);
         // delegate to children
         component.getChildren().forEach(child -> setReadOnly(readOnly, child));
