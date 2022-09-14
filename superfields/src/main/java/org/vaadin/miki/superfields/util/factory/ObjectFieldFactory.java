@@ -5,10 +5,10 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.miki.superfields.checkbox.SuperCheckbox;
 import org.vaadin.miki.superfields.collections.CollectionController;
 import org.vaadin.miki.superfields.collections.CollectionField;
 import org.vaadin.miki.superfields.collections.CollectionLayoutProvider;
@@ -155,7 +155,7 @@ public class ObjectFieldFactory {
     /**
      * Builds a {@link SimplePropertyComponentBuilder} and configures it for building most default components:<ul>
      *     <li>properties marked with {@link MetadataProperties#SHOW_AS_COMPONENT_METADATA_PROPERTY} as requested</li>
-     *     <li>boolean properties as {@link Checkbox}</li>
+     *     <li>boolean properties as {@link SuperCheckbox}</li>
      *     <li>integer properties as {@link SuperIntegerField}</li>
      *     <li>long properties as {@link SuperLongField}</li>
      *     <li>double properties as {@link SuperDoubleField}</li>
@@ -184,8 +184,8 @@ public class ObjectFieldFactory {
                         // here is a builder that delegates to another builder
                         property -> ((FieldBuilder<Object>)ReflectTools.newInstance((Class<?>) property.getMetadata().get(MetadataProperties.COMPONENT_BUILDER_METADATA_PROPERTY).getValue())).buildPropertyField(property)
                 )
-                .withRegisteredType(Boolean.class, Checkbox::new)
-                .withRegisteredType(boolean.class, Checkbox::new)
+                .withRegisteredType(Boolean.class, SuperCheckbox::new)
+                .withRegisteredType(boolean.class, SuperCheckbox::new)
                 .withRegisteredType(Integer.class, SuperIntegerField::new)
                 .withRegisteredType(int.class, SuperIntegerField::new)
                 .withRegisteredType(Long.class, SuperLongField::new)
