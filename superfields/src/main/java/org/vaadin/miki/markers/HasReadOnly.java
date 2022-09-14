@@ -30,7 +30,7 @@ public interface HasReadOnly {
      * @param readOnly New state.
      * @param component Component.
      *                 If it implements {@link HasReadOnly} or {@link HasValue}, the state will be updated.
-     *                 If it implements {@link HasEnabled}, read-only means disabled.
+     *                 If it implements {@link HasEnabled} and does not implement {@link HasComponents}, read-only means disabled.
      *                 Otherwise, nothing happens.
      */
     static void setReadOnly(boolean readOnly, Component component) {
