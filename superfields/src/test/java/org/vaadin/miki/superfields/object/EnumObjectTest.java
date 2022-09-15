@@ -3,15 +3,18 @@ package org.vaadin.miki.superfields.object;
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.data.provider.Query;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.vaadin.miki.superfields.collections.CollectionField;
 import org.vaadin.miki.superfields.util.factory.ObjectFieldFactory;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,24 +64,24 @@ public class EnumObjectTest {
     }
 
     @Test
+    // note: for v23+ this test uses MultiSelectComboBox, not available in V14
     public void testEnumListIsMultiselectComboBox() {
         final Map<Property<EnumObject, ?>, HasValue<?, ?>> map = this.field.getPropertiesAndComponents();
-        final HasValue<?, ?> comboBox = map.keySet().stream().filter(def -> "modes".equals(def.getName())).map(map::get).findFirst().orElse(null);
-        Assert.assertNotNull(comboBox);
-        Assert.assertTrue(String.format("field should be a multi-select combobox, not a %s", comboBox.getClass().getSimpleName()), comboBox instanceof MultiSelectComboBox);
-        Assert.assertArrayEquals(TestingMode.values(), ((MultiSelectComboBox<?>) comboBox).getDataProvider().fetch(new Query<>()).toArray(TestingMode[]::new));
+        final HasValue<?, ?> collectionField = map.keySet().stream().filter(def -> "modes".equals(def.getName())).map(map::get).findFirst().orElse(null);
+        Assert.assertNotNull(collectionField);
+        Assert.assertTrue(String.format("field should be a collection field, not a %s", collectionField.getClass().getSimpleName()), collectionField instanceof CollectionField);
         this.field.addValueChangeListener(event -> eventCounter++);
         // set a value
         final EnumObject data = new EnumObject();
-        final Set<TestingMode> testingModes = Set.of(TestingMode.MANUAL, TestingMode.AUTOMATIC);
+        final Set<TestingMode> testingModes = new HashSet<>(Arrays.asList(TestingMode.MANUAL, TestingMode.AUTOMATIC));
         data.setModes(testingModes);
         this.field.setValue(data);
         Assert.assertEquals(1, this.eventCounter);
-        Assert.assertEquals(testingModes, comboBox.getValue());
+        Assert.assertEquals(testingModes, collectionField.getValue());
         // select a value
-        ((MultiSelectComboBox<TestingMode>)comboBox).setValue(TestingMode.NONE);
+        ((CollectionField<TestingMode, Set<TestingMode>>)collectionField).setValue(Collections.singleton(TestingMode.NONE));
         Assert.assertEquals(2, this.eventCounter);
-        Assert.assertEquals(Set.of(TestingMode.NONE), field.getValue().getModes());
+        Assert.assertEquals(Collections.singleton(TestingMode.NONE), field.getValue().getModes());
     }
 
 }

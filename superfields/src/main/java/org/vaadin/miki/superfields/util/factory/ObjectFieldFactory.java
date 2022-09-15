@@ -4,8 +4,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +88,8 @@ public class ObjectFieldFactory {
             ((HasLabel) component).setLabel(label);
         else if(component instanceof Checkbox)
             ((Checkbox) component).setLabel(label);
+        else if(component instanceof ComboBox)
+            ((ComboBox<?>) component).setLabel(label);
     }
 
     private static String[] sanitiseStyles(Collection<String> strings, String groupName) {
@@ -190,15 +192,6 @@ public class ObjectFieldFactory {
                         property -> property.getMetadata().containsKey(MetadataProperties.COMPONENT_BUILDER_METADATA_PROPERTY) && property.getMetadata().get(MetadataProperties.COMPONENT_BUILDER_METADATA_PROPERTY).hasValueOfType(Class.class) && FieldBuilder.class.isAssignableFrom((Class<?>) property.getMetadata().get(MetadataProperties.COMPONENT_BUILDER_METADATA_PROPERTY).getValue()),
                         // here is a builder that delegates to another builder
                         property -> ((FieldBuilder<Object>)ReflectTools.newInstance((Class<?>) property.getMetadata().get(MetadataProperties.COMPONENT_BUILDER_METADATA_PROPERTY).getValue())).buildPropertyField(property)
-                )
-                .withRegisteredBuilder(
-                        // multi-selection combobox only works for enums
-                        property -> property.getMetadata().containsKey(MetadataProperties.AVAILABLE_ITEMS_METADATA_PROPERTY)
-                                    && property.getMetadata().get(MetadataProperties.AVAILABLE_ITEMS_METADATA_PROPERTY).hasValueOfType(Collection.class)
-                                    && property.getMetadata().containsKey(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY)
-                                    && property.getMetadata().get(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY).hasValueOfType(Property.class)
-                                    && ((Property<?, ?>) property.getMetadata().get(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY).getValue()).getType().isEnum(),
-                        property -> ((HasValue<?, Object>) (HasValue<?, ?>) new MultiSelectComboBox<>("", (List<Object>)property.getMetadata().get(MetadataProperties.AVAILABLE_ITEMS_METADATA_PROPERTY).getValue()))
                 )
                 .withRegisteredBuilder(
                         // single-selection combobox may be rendered before any other type (allowing to have a drop-down for String items, for example)

@@ -5,6 +5,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,6 +37,8 @@ public class ObjectFieldTest {
             return ((HasLabel) component).getLabel();
         else if(component instanceof Checkbox)
             return ((Checkbox) component).getLabel();
+        else if(component instanceof ComboBox)
+            return ((ComboBox<?>) component).getLabel();
         else return null;
     }
 
