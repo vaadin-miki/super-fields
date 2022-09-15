@@ -21,6 +21,7 @@ public class MetadataProperties {
     public static final String COMPONENT_BUILDER_METADATA_PROPERTY = "build-with";
     public static final String COMPONENT_STYLE_METADATA_PROPERTY = "component-style-name";
     public static final String COMPONENT_ID_METADATA_PROPERTY = "component-id";
+    public static final String AVAILABLE_ITEMS_METADATA_PROPERTY = "available-items";
 
     private MetadataProperties() {
         // no instances allowed
