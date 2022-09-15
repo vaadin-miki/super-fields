@@ -1,3 +1,13 @@
+# 0.14.1 - SuperCheckbox and bugfixes
+## New features and enhancements
+* \#400 - [ObjectField should support enums and other values presentable with ComboBox](https://github.com/vaadin-miki/super-fields/issues/400)
+* \#404 - [Checkbox that actually can be made read-only](https://github.com/vaadin-miki/super-fields/issues/404)
+## Changes to API
+* \#406 - [ObjectFieldFactory should return interface types](https://github.com/vaadin-miki/super-fields/issues/406)
+## Bug fixes
+* \#402 - [HasReadOnly disables layouts](https://github.com/vaadin-miki/super-fields/issues/402)
+* \#403 - [Component added to read-only layout is not read-only](https://github.com/vaadin-miki/super-fields/issues/403)
+* \#406 - [ObjectFieldFactory should return interface types](https://github.com/vaadin-miki/super-fields/issues/406)
 # 0.14.0 - ObjectField
 ## New features and enhancements
 * \#380 - [ObjectField](https://github.com/vaadin-miki/super-fields/issues/380)
