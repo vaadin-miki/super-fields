@@ -5,6 +5,8 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,6 +186,20 @@ public class ObjectFieldFactory {
                         // here is a builder that delegates to another builder
                         property -> ((FieldBuilder<Object>)ReflectTools.newInstance((Class<?>) property.getMetadata().get(MetadataProperties.COMPONENT_BUILDER_METADATA_PROPERTY).getValue())).buildPropertyField(property)
                 )
+                .withRegisteredBuilder(
+                        // multi-selection combobox only works for enums
+                        property -> property.getMetadata().containsKey(MetadataProperties.AVAILABLE_ITEMS_METADATA_PROPERTY)
+                                    && property.getMetadata().get(MetadataProperties.AVAILABLE_ITEMS_METADATA_PROPERTY).hasValueOfType(Collection.class)
+                                    && property.getMetadata().containsKey(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY)
+                                    && property.getMetadata().get(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY).hasValueOfType(Property.class)
+                                    && ((Property<?, ?>) property.getMetadata().get(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY).getValue()).getType().isEnum(),
+                        property -> ((HasValue<?, Object>) (HasValue<?, ?>) new MultiSelectComboBox<>("", (List<Object>)property.getMetadata().get(MetadataProperties.AVAILABLE_ITEMS_METADATA_PROPERTY).getValue()))
+                )
+                .withRegisteredBuilder(
+                        // single-selection combobox may be rendered before any other type (allowing to have a drop-down for String items, for example)
+                        property -> property.getMetadata().containsKey(MetadataProperties.AVAILABLE_ITEMS_METADATA_PROPERTY) && property.getMetadata().get(MetadataProperties.AVAILABLE_ITEMS_METADATA_PROPERTY).hasValueOfType(Collection.class) && !property.getMetadata().containsKey(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY),
+                        property -> new ComboBox<>("", (List<Object>)property.getMetadata().get(MetadataProperties.AVAILABLE_ITEMS_METADATA_PROPERTY).getValue())
+                )
                 .withRegisteredType(Boolean.class, SuperCheckbox::new)
                 .withRegisteredType(boolean.class, SuperCheckbox::new)
                 .withRegisteredType(Integer.class, SuperIntegerField::new)
@@ -226,6 +242,10 @@ public class ObjectFieldFactory {
         return result;
     }
 
+    private Set<PropertyMetadata> getEnumMetadata(Class<?> type) {
+        return type.isEnum() ? Collections.singleton(new PropertyMetadata(MetadataProperties.AVAILABLE_ITEMS_METADATA_PROPERTY, List.class, Arrays.asList(type.getEnumConstants()))) : Collections.emptySet();
+    }
+
     /**
      * Builds a {@link ReflectivePropertyProvider} and configures it to a typical use case based on annotations:<ul>
      *     <li>{@link FieldGroup} is mapped to {@link MetadataProperties#GROUP_METADATA_PROPERTY}</li>
@@ -251,18 +271,26 @@ public class ObjectFieldFactory {
                 ,
                 // mark fields as read-only when there is no setter
                 (name, field, setter, getter) -> setter == null ? Collections.singleton(new PropertyMetadata(MetadataProperties.READ_ONLY_METADATA_PROPERTY, boolean.class, true)) : Collections.emptySet(),
+                // metadata for enums
+                (name, field, setter, getter) -> this.getEnumMetadata(field.getType()),
                 // metadata for collections
                 (name, field, setter, getter) -> {
                     if(Collection.class.isAssignableFrom(field.getType()))
-                        return ReflectTools.extractGenericType(field, 0).map(type -> new PropertyMetadata(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null))).map(Collections::singleton).orElse(Collections.emptySet());
+                        return ReflectTools.extractGenericType(field, 0).map(type -> {
+                            final Set<PropertyMetadata> result = new LinkedHashSet<>();
+                            result.add(new PropertyMetadata(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null)));
+                            // if the type of the collection is an enum, prepare enum data as well
+                            result.addAll(this.getEnumMetadata(type));
+                            return result;
+                        }).orElse(Collections.emptySet());
                     else return Collections.emptySet();
                 },
                 // metadata for maps
                 (name, field, setter, getter) -> {
                     if(Map.class.isAssignableFrom(field.getType())) {
                         final List<PropertyMetadata> metadata = new ArrayList<>();
-                        ReflectTools.extractGenericType(field, 0).map(type -> new PropertyMetadata(MetadataProperties.MAP_KEY_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null))).ifPresent(metadata::add);
-                        ReflectTools.extractGenericType(field, 1).map(type -> new PropertyMetadata(MetadataProperties.MAP_VALUE_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null))).ifPresent(metadata::add);
+                        ReflectTools.extractGenericType(field, 0).map(type -> new PropertyMetadata(MetadataProperties.MAP_KEY_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null, this.getEnumMetadata(type)))).ifPresent(metadata::add);
+                        ReflectTools.extractGenericType(field, 1).map(type -> new PropertyMetadata(MetadataProperties.MAP_VALUE_TYPE_METADATA_PROPERTY, Property.class, new Property<>(field.getDeclaringClass(), name, type, null, null, this.getEnumMetadata(type)))).ifPresent(metadata::add);
                         return metadata.size() == 2 ? metadata : Collections.emptySet();
                     }
                     else return Collections.emptySet();
