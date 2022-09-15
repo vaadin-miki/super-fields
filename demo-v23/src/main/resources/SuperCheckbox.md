@@ -1,0 +1,1 @@
+A fixed version of the regular `Checkbox` - can be set to read-only and can have a title.

@@ -1,6 +1,13 @@
 package org.vaadin.miki.superfields.checkbox;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import org.vaadin.miki.markers.WithIdMixin;
+import org.vaadin.miki.markers.WithLabelMixin;
+import org.vaadin.miki.markers.WithTitleMixin;
+import org.vaadin.miki.markers.WithValueMixin;
+
+import java.util.Objects;
 
 /**
  * A regular {@link Checkbox} that has its read-only state synchronised with enabledness.
@@ -10,7 +17,9 @@ import com.vaadin.flow.component.checkbox.Checkbox;
  * @since 2022-09-14
  */
 @SuppressWarnings("squid:S110") // no way around big number of parent classes
-public class SuperCheckbox extends Checkbox {
+public class SuperCheckbox extends Checkbox implements
+        WithLabelMixin<SuperCheckbox>, WithValueMixin<AbstractField.ComponentValueChangeEvent<Checkbox, Boolean>, Boolean, SuperCheckbox>,
+        WithIdMixin<SuperCheckbox>, WithTitleMixin<SuperCheckbox> {
 
     @Override
     public void setReadOnly(boolean readOnly) {
@@ -23,4 +32,15 @@ public class SuperCheckbox extends Checkbox {
         super.setReadOnly(!enabled);
         super.setEnabled(enabled);
     }
+
+    @Override
+    public void setTitle(String title) {
+        this.getElement().setProperty("title", Objects.requireNonNullElse(title, ""));
+    }
+
+    @Override
+    public String getTitle() {
+        return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
+    }
+
 }
