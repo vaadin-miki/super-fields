@@ -13,6 +13,6 @@ import org.vaadin.miki.superfields.checkbox.SuperCheckbox;
 public class SuperCheckboxProvider implements ComponentProvider<SuperCheckbox> {
     @Override
     public SuperCheckbox getComponent() {
-        return new SuperCheckbox().withLabel("This component can be made read-only, contrary to original Checkbox.");
+        return new SuperCheckbox().withLabel("This component can be made read-only, contrary to the original Checkbox.");
     }
 }
