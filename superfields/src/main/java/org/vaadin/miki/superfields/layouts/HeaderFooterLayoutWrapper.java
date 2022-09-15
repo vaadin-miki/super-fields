@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 /**
  * A wrapper for a typical header-body-footer layout that exposes header and footer, and delegates all
  * methods from {@link HasComponents} to the body. In other words, it allows using predefined layouts.
- *
  * This component is {@link Iterable} over the {@link Component}s contained in the body.
  * Similarly, {@link #getComponents()} ()} returns {@link Component}s things put in the body.
  *
@@ -64,13 +63,21 @@ public class HeaderFooterLayoutWrapper<R extends Component & HasComponents,
         return this.root;
     }
 
+    private void ensureReadOnly(Component... components) {
+        if(this.isReadOnly())
+            for (Component component : components)
+                HasReadOnly.setReadOnly(true, component);
+    }
+
     @Override
     public void add(Component... components) {
+        this.ensureReadOnly(components);
         this.body.add(components);
     }
 
     @Override
     public void addComponentAtIndex(int index, Component component) {
+        this.ensureReadOnly(component);
         this.body.addComponentAtIndex(index, component);
     }
 

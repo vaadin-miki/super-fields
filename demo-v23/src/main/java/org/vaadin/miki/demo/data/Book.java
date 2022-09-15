@@ -16,12 +16,13 @@ import java.util.Objects;
  */
 public class Book {
 
-    public static Book of(String title, int firstPublished, String language, Person... authors) {
+    public static Book of(String title, int firstPublished, String language, Format ownedFormat, Person... authors) {
         final Book result = new Book();
         result.setAuthors(Arrays.asList(authors));
         result.setTitle(title);
         result.setFirstPublished(firstPublished);
         result.setLanguage(language);
+        result.setOwnedFormat(ownedFormat);
         return result;
     }
 
@@ -39,6 +40,10 @@ public class Book {
     @FieldGroup("publication")
     @FieldCaption("Original language")
     private String language;
+
+    @FieldOrder(6)
+    @FieldGroup("publication")
+    private Format ownedFormat;
 
     @BigField
     @FieldOrder(5)
@@ -84,17 +89,25 @@ public class Book {
         this.summary = summary;
     }
 
+    public Format getOwnedFormat() {
+        return ownedFormat;
+    }
+
+    public void setOwnedFormat(Format ownedFormat) {
+        this.ownedFormat = ownedFormat;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return getFirstPublished() == book.getFirstPublished() && Objects.equals(getTitle(), book.getTitle()) && Objects.equals(getAuthors(), book.getAuthors()) && Objects.equals(getLanguage(), book.getLanguage()) && Objects.equals(getSummary(), book.getSummary());
+        return getFirstPublished() == book.getFirstPublished() && Objects.equals(getTitle(), book.getTitle()) && Objects.equals(getAuthors(), book.getAuthors()) && Objects.equals(getLanguage(), book.getLanguage()) && getOwnedFormat() == book.getOwnedFormat() && Objects.equals(getSummary(), book.getSummary());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getTitle(), getAuthors(), getFirstPublished(), getLanguage(), getSummary());
+        return Objects.hash(getTitle(), getAuthors(), getFirstPublished(), getLanguage(), getOwnedFormat(), getSummary());
     }
 
     @Override
@@ -104,6 +117,7 @@ public class Book {
                 ", authors=" + authors +
                 ", firstPublished=" + firstPublished +
                 ", language='" + language + '\'' +
+                ", ownedFormat=" + ownedFormat +
                 ", summary='" + summary + '\'' +
                 '}';
     }
