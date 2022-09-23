@@ -24,11 +24,7 @@ import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
-import org.vaadin.miki.shared.labels.LabelPosition;
 import org.vaadin.miki.shared.text.TextModificationDelegate;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * An extension of {@link TextField} with some useful (hopefully) features.
@@ -143,22 +139,4 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
         return super.isClearButtonVisible();
     }
 
-    @Override
-    public void setLabelPosition(LabelPosition position) {
-        if(position == null) {
-            this.getElement().removeAttribute("data-label-position");
-            this.getElement().removeAttribute("data-label-position-details");
-        }
-        else {
-            this.getElement().setAttribute("data-label-position", position.name());
-            this.getElement().setAttribute("data-label-position-details",Arrays.stream(position.name().toLowerCase().split("_")).map(s -> "label-" + s).collect(Collectors.joining(" ")));
-        }
-    }
-
-    @Override
-    public LabelPosition getLabelPosition() {
-        if(this.getElement().hasAttribute("data-label-position"))
-            return LabelPosition.valueOf(this.getElement().getAttribute("data-label-position"));
-        else return null;
-    }
 }
