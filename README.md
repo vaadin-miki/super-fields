@@ -62,6 +62,7 @@ The author of the majority of the code is Miki, but this project would not be po
 * Jean-Christophe Gueriaud
 * Holger Hähnel
 * Matthias Hämmerle
+* Jarmo Kemppainen
 * Gerald Koch
 * Sebastian Kühnau
 * Jean-François Lamy
