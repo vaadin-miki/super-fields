@@ -5,6 +5,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.shared.Registration;
@@ -18,11 +19,16 @@ import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
+import org.vaadin.miki.markers.WithPositionableLabelMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.shared.labels.LabelPosition;
 import org.vaadin.miki.shared.text.TextModificationDelegate;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * An extension of {@link TextField} with some useful (hopefully) features.
@@ -31,9 +37,10 @@ import org.vaadin.miki.shared.text.TextModificationDelegate;
  */
 @Tag("super-text-field")
 @JsModule("./super-text-field.js")
+@CssImport(value = "./styles/label-positions.css", themeFor = "super-text-field")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextField extends TextField implements CanSelectText, TextSelectionNotifier<SuperTextField>,
-        CanModifyText, WithRequiredMixin<SuperTextField>,
+        CanModifyText, WithRequiredMixin<SuperTextField>, WithPositionableLabelMixin<SuperTextField>,
         WithIdMixin<SuperTextField>, WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
         WithHelperMixin<SuperTextField>, WithTitleMixin<SuperTextField>, WithHelperPositionableMixin<SuperTextField>,
@@ -134,5 +141,33 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     @Override
     public boolean isClearButtonVisible() {
         return super.isClearButtonVisible();
+    }
+
+    @Override
+    public void setLabelPosition(LabelPosition position) {
+        if(position == null) {
+            this.getElement().removeAttribute("data-label-position");
+            this.getElement().removeAttribute("data-label-position-details");
+        }
+        else {
+            this.getElement().setAttribute("data-label-position", position.name());
+            this.getElement().setAttribute("data-label-position-details",Arrays.stream(position.name().toLowerCase().split("_")).map(s -> "label-" + s).collect(Collectors.joining(" ")));
+        }
+
+        this.getThemeNames().stream()
+                .filter(theme -> theme.startsWith("label-"))
+                .forEach(this::removeThemeName);
+
+        if(position != null) {
+            final String[] themes = Arrays.stream(position.name().toLowerCase().split("_")).map(s -> "label-" + s).toArray(String[]::new);
+            this.addThemeNames(themes);
+        }
+    }
+
+    @Override
+    public LabelPosition getLabelPosition() {
+        if(this.getElement().hasAttribute("data-label-position"))
+            return LabelPosition.valueOf(this.getElement().getAttribute("data-label-position"));
+        else return null;
     }
 }

@@ -1,0 +1,40 @@
+/* css magic by Jarmo Kemppainen */
+
+:host([theme~="label-before"])::before{
+    height: 100%;
+}
+
+:host([theme~="label-before"]) .vaadin-field-container {
+    width: 100%;
+    flex-wrap: wrap;
+    flex-direction: initial !important;
+    align-items: center;
+}
+
+:host([theme~="label-before"]) .vaadin-field-container [part="label"] {
+    width: auto;
+    height: var(--lumo-text-field-size);
+}
+
+:host([theme~="label-middle"]) .vaadin-field-container [part="label"] {
+    display: flex;
+    align-self: center;
+    align-items: center;
+    padding-bottom: 0;
+}
+
+:host([theme~="label-end"]) .vaadin-field-container [part="label"] {
+    display: flex;
+    align-self: end;
+    align-items: end;
+    padding-bottom: 0;
+}
+
+:host([theme~="label-before"]) .vaadin-field-container [part="input-field"] {
+    flex: 1;
+}
+
+:host([theme~="label-before"]) .vaadin-field-container [part="helper-text"],
+:host([theme~="label-before"]) .vaadin-field-container [part="error-message"] {
+    width: 100%;
+}
