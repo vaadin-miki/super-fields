@@ -3,12 +3,12 @@ package org.vaadin.miki.markers;
 import org.vaadin.miki.shared.labels.LabelPosition;
 
 /**
- * A mixin for {@link HasPositionableLabel}.
+ * A mixin for {@link HasLabelPositionable}.
  *
  * @author miki
  * @since 2022-09-23
  */
-public interface WithPositionableLabelMixin<SELF extends HasPositionableLabel> extends HasPositionableLabel {
+public interface WithLabelPositionableMixin<SELF extends HasLabelPositionable> extends HasLabelPositionable {
 
     /**
      * Chains {@link #setLabelPosition(LabelPosition)} and returns itself.

@@ -5,11 +5,13 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.superfields.text.LabelField;
 import org.vaadin.miki.util.ComponentTools;
@@ -25,10 +27,12 @@ import java.util.Optional;
  * @author miki
  * @since 2022-04-11
  */
-public class VariantField extends CustomField<Object> implements HasStyle, WithLabelMixin<VariantField>,
+@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-custom-field")
+public class VariantField extends CustomField<Object> implements HasStyle,
+        WithLabelMixin<VariantField>,
         WithHelperMixin<VariantField>, WithHelperPositionableMixin<VariantField>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<Object>, Object>, Object, VariantField>,
-        WithIdMixin<VariantField> {
+        WithIdMixin<VariantField>, WithLabelPositionableMixin<VariantField> {
 
     public static final SerializableSupplier<Component> DEFAULT_NULL_COMPONENT_PROVIDER = LabelField::new;
 

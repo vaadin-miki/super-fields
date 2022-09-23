@@ -15,7 +15,8 @@ public class GridSelectProvider implements ComponentProvider<GridSelect<SuperFie
     @Override
     public GridSelect<SuperFieldsGridItem> getComponent() {
         final GridSelect<SuperFieldsGridItem> gridSelect = new GridSelect<>(SuperFieldsGridItem.class, true, SuperFieldsGridItem.getAllRegisteredProviders())
-                .withHelperText("(at most one row can be selected)");
+                .withHelperText("(at most one row can be selected)")
+                .withLabel("Please select your favourite component:");
         gridSelect.getGrid().getColumnByKey("nameLength").setAutoWidth(true);
         return gridSelect;
     }

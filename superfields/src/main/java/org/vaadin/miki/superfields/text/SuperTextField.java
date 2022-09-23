@@ -19,7 +19,7 @@ import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
-import org.vaadin.miki.markers.WithPositionableLabelMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
@@ -36,7 +36,7 @@ import org.vaadin.miki.shared.text.TextModificationDelegate;
 @CssImport(value = "./styles/label-positions.css", themeFor = "super-text-field")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextField extends TextField implements CanSelectText, TextSelectionNotifier<SuperTextField>,
-        CanModifyText, WithRequiredMixin<SuperTextField>, WithPositionableLabelMixin<SuperTextField>,
+        CanModifyText, WithRequiredMixin<SuperTextField>, WithLabelPositionableMixin<SuperTextField>,
         WithIdMixin<SuperTextField>, WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
         WithHelperMixin<SuperTextField>, WithTitleMixin<SuperTextField>, WithHelperPositionableMixin<SuperTextField>,

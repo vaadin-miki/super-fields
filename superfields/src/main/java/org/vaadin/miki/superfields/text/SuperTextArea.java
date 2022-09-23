@@ -19,7 +19,7 @@ import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
-import org.vaadin.miki.markers.WithPositionableLabelMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
@@ -38,7 +38,7 @@ import java.util.Objects;
 @CssImport(value = "./styles/label-positions.css", themeFor = "super-text-area")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextArea extends TextArea implements CanSelectText, TextSelectionNotifier<SuperTextArea>,
-        CanModifyText, WithRequiredMixin<SuperTextArea>, WithPositionableLabelMixin<SuperTextArea>,
+        CanModifyText, WithRequiredMixin<SuperTextArea>, WithLabelPositionableMixin<SuperTextArea>,
         WithIdMixin<SuperTextArea>, WithLabelMixin<SuperTextArea>, WithPlaceholderMixin<SuperTextArea>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextArea>, WithClearButtonMixin<SuperTextArea>,
         WithHelperMixin<SuperTextArea>, WithHelperPositionableMixin<SuperTextArea>, WithTitleMixin<SuperTextArea>,

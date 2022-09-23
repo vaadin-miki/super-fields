@@ -36,7 +36,8 @@ public class ObjectFieldProvider implements ComponentProvider<ObjectField<Book>>
     @Override
     public ObjectField<Book> getComponent() {
         return this.factory.buildAndConfigureObjectField(Book.class)
-                .withHelperText("(this field with all its components is automatically generated from a model class)")
-                .withHelperAbove();
+                .withHelperText("(this entire form with all its components is automatically generated from a model class)")
+                .withLabel("Book details:")
+                ;
     }
 }

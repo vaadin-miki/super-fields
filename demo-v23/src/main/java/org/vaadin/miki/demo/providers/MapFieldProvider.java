@@ -34,6 +34,8 @@ public class MapFieldProvider implements ComponentProvider<MapField<String, Inte
                             () -> new SuperTextField("Any text:"),
                                 () -> new SuperIntegerField("Any integer:")
                 ), "Remove"))
-                .withHelperText("(this is a Map<String, Integer>)");
+                .withHelperText("(this is a Map<String, Integer>)")
+                .withLabel("Please enter key-value data:")
+                ;
     }
 }

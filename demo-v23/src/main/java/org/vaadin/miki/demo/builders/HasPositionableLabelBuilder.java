@@ -4,7 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.combobox.ComboBox;
 import org.vaadin.miki.demo.ContentBuilder;
 import org.vaadin.miki.demo.Order;
-import org.vaadin.miki.markers.HasPositionableLabel;
+import org.vaadin.miki.markers.HasLabelPositionable;
 import org.vaadin.miki.shared.labels.LabelPosition;
 
 import java.util.function.Consumer;
@@ -14,9 +14,9 @@ import java.util.function.Consumer;
  * @since 2022-09-23
  */
 @Order(33)
-public class HasPositionableLabelBuilder implements ContentBuilder<HasPositionableLabel> {
+public class HasPositionableLabelBuilder implements ContentBuilder<HasLabelPositionable> {
     @Override
-    public void buildContent(HasPositionableLabel component, Consumer<Component[]> callback) {
+    public void buildContent(HasLabelPositionable component, Consumer<Component[]> callback) {
         final ComboBox<LabelPosition> positions = new ComboBox<>("Pick label position:", LabelPosition.values());
         positions.setAllowCustomValue(false);
         positions.addValueChangeListener(event -> component.setLabelPosition(event.getValue()));

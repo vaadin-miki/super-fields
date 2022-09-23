@@ -1,0 +1,3 @@
+:host([data-label-position-details~="before"]) [class|="vaadin"] .inputs-wrapper {
+    flex: auto;
+}

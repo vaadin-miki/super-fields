@@ -3,16 +3,13 @@ package org.vaadin.miki.markers;
 import com.vaadin.flow.component.HasElement;
 import org.vaadin.miki.shared.labels.LabelPosition;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 /**
  * Marker interface for components that have a positionable label.
  *
  * @author miki
  * @since 2022-09-23
  */
-public interface HasPositionableLabel extends HasElement {
+public interface HasLabelPositionable extends HasElement {
 
     /**
      * Attribute name that contains the selected label position value.
@@ -34,7 +31,7 @@ public interface HasPositionableLabel extends HasElement {
         }
         else {
             this.getElement().setAttribute(LABEL_POSITION_ATTRIBUTE, position.name());
-            this.getElement().setAttribute(LABEL_POSITION_DETAILS_ATTRIBUTE, Arrays.stream(position.name().toLowerCase().split("_")).collect(Collectors.joining(" ")));
+            this.getElement().setAttribute(LABEL_POSITION_DETAILS_ATTRIBUTE, String.join(" ", position.name().toLowerCase().split("_")));
         }
     }
 
