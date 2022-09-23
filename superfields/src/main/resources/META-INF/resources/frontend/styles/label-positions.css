@@ -1,6 +1,6 @@
 /* css magic by Jarmo Kemppainen */
 
-:host([data-label-position-details~="before"])::before{
+:host([data-label-position-details~="before"])::before {
     height: 100%;
 }
 
