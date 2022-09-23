@@ -27,6 +27,7 @@ import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithNullValueOptionallyAllowedMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
@@ -34,6 +35,7 @@ import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.shared.labels.LabelPosition;
 import org.vaadin.miki.superfields.text.SuperTextField;
 
 import java.text.DecimalFormat;
@@ -51,6 +53,7 @@ import java.util.function.Consumer;
  * @since 2020-04-07
  */
 @CssImport("./styles/form-layout-number-field-styles.css")
+//@CssImport(value = "./styles/label-positions.css", themeFor = "super-text-field")
 @SuppressWarnings("squid:S119") // SELF is a perfectly fine generic name that indicates its purpose
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
@@ -60,7 +63,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
                    WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF>, WithClearButtonMixin<SELF>,
-                   WithRequiredMixin<SELF> {
+                   WithRequiredMixin<SELF>, WithLabelPositionableMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -866,6 +869,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public boolean isRequired() {
         return this.field.isRequired();
+    }
+
+    @Override
+    public void setLabelPosition(LabelPosition position) {
+        this.field.setLabelPosition(position);
+    }
+
+    @Override
+    public LabelPosition getLabelPosition() {
+        return this.field.getLabelPosition();
     }
 
     /**
