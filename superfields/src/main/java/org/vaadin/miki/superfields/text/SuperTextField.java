@@ -153,15 +153,6 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
             this.getElement().setAttribute("data-label-position", position.name());
             this.getElement().setAttribute("data-label-position-details",Arrays.stream(position.name().toLowerCase().split("_")).map(s -> "label-" + s).collect(Collectors.joining(" ")));
         }
-
-        this.getThemeNames().stream()
-                .filter(theme -> theme.startsWith("label-"))
-                .forEach(this::removeThemeName);
-
-        if(position != null) {
-            final String[] themes = Arrays.stream(position.name().toLowerCase().split("_")).map(s -> "label-" + s).toArray(String[]::new);
-            this.addThemeNames(themes);
-        }
     }
 
     @Override
