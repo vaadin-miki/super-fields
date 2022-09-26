@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  * @author miki
  * @since 2022-04-11
  */
-@Order(80)
+@Order(1)
 public class VariantFieldBuilder implements ContentBuilder<VariantField> {
 
     @Override

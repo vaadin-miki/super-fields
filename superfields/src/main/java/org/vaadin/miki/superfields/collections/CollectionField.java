@@ -7,6 +7,7 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.function.SerializableSupplier;
@@ -16,6 +17,8 @@ import org.vaadin.miki.markers.HasReadOnly;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
+import org.vaadin.miki.markers.WithLabelMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.ArrayList;
@@ -33,12 +36,14 @@ import java.util.stream.Collectors;
  * @param <T> Type of the element in the collection.
  * @param <C> Type of the collection.
  */
+@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-custom-field")
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         implements CollectionController, WithIdMixin<CollectionField<T, C>>, HasStyle,
         WithCollectionValueComponentProviderMixin<T, CollectionField<T, C>>,
         WithHelperMixin<CollectionField<T, C>>, WithHelperPositionableMixin<CollectionField<T, C>>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<C>, C>, C, CollectionField<T, C>>,
-        WithCollectionElementFilterMixin<T, CollectionField<T, C>> {
+        WithCollectionElementFilterMixin<T, CollectionField<T, C>>,
+        WithLabelPositionableMixin<CollectionField<T, C>>, WithLabelMixin<CollectionField<T, C>> {
 
     /**
      * CSS class name that will be added to the main layout of this component.

@@ -1,3 +1,12 @@
+# 0.15.0 - HasPositionableLabel
+## New features and enhancements
+* \#414 - [Positionable component labels](https://github.com/vaadin-miki/super-fields/issues/414)
+## Changes to API
+* \#412 - [SuperCheckbox should implement relevant marker interfaces](https://github.com/vaadin-miki/super-fields/issues/412)
+* \#415 - [CollectionField and Grid(Multi)Select should implement HasLabel](https://github.com/vaadin-miki/super-fields/issues/415)
+## Bug fixes
+* \#415 - [CollectionField and Grid(Multi)Select should implement HasLabel](https://github.com/vaadin-miki/super-fields/issues/415)
+* \#416 - [SuperCheckbox gets out of sync](https://github.com/vaadin-miki/super-fields/issues/416)
 # 0.14.1 - SuperCheckbox and bugfixes
 ## New features and enhancements
 * \#400 - [ObjectField should support enums and other values presentable with ComboBox](https://github.com/vaadin-miki/super-fields/issues/400)
