@@ -31,7 +31,7 @@ public interface HasLabelPositionable extends HasElement {
         }
         else {
             this.getElement().setAttribute(LABEL_POSITION_ATTRIBUTE, position.name());
-            this.getElement().setAttribute(LABEL_POSITION_DETAILS_ATTRIBUTE, String.join(" ", position.name().toLowerCase().split("_")));
+            this.getElement().setAttribute(LABEL_POSITION_DETAILS_ATTRIBUTE, position.getPositionData());
         }
     }
 
