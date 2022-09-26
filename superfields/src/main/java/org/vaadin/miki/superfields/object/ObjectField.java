@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  * @author miki
  * @since 2022-05-16
  */
-@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-custom-field")
+@CssImport(value = "./styles/label-positions-custom-field.css", themeFor = "vaadin-custom-field")
 public class ObjectField<T> extends CustomField<T>
         implements HasStyle, WithHelperMixin<ObjectField<T>>, WithHelperPositionableMixin<ObjectField<T>>,
                    WithIdMixin<ObjectField<T>>, WithLabelMixin<ObjectField<T>>, WithLabelPositionableMixin<ObjectField<T>>,

@@ -9,8 +9,6 @@ import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
-import java.util.Objects;
-
 /**
  * A regular {@link Checkbox} that can be made read-only (it becomes disabled when set to read-only).
  * While this exists mostly as a workaround for <a href="https://github.com/vaadin/web-components/issues/688">a known issue of Vaadin</a>,
@@ -48,12 +46,13 @@ public class SuperCheckbox extends Checkbox implements
 
     @Override
     public void setTitle(String title) {
-        this.getElement().setProperty("title", Objects.requireNonNullElse(title, ""));
+        this.getElement().setProperty("title", title == null ? "" : title);
     }
 
     @Override
     public String getTitle() {
-        return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
+        final String title = this.getElement().getProperty("title");
+        return title == null ? "" : title;
     }
 
 }

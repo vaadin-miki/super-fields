@@ -27,7 +27,7 @@ import java.util.Optional;
  * @author miki
  * @since 2022-04-11
  */
-@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-custom-field")
+@CssImport(value = "./styles/label-positions-custom-field.css", themeFor = "vaadin-custom-field")
 public class VariantField extends CustomField<Object> implements HasStyle,
         WithLabelMixin<VariantField>,
         WithHelperMixin<VariantField>, WithHelperPositionableMixin<VariantField>,

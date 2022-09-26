@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @param <T> Type of the element in the collection.
  * @param <C> Type of the collection.
  */
-@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-custom-field")
+@CssImport(value = "./styles/label-positions-custom-field.css", themeFor = "vaadin-custom-field")
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         implements CollectionController, WithIdMixin<CollectionField<T, C>>, HasStyle,
         WithCollectionValueComponentProviderMixin<T, CollectionField<T, C>>,

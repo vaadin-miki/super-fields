@@ -7,15 +7,17 @@ import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.timepicker.TimePicker;
+import org.vaadin.miki.markers.HasLabelPositionable;
 import org.vaadin.miki.markers.WithDatePatternMixin;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
-import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithLabelPositionableMixin;
+import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.dates.DatePattern;
+import org.vaadin.miki.shared.labels.LabelPosition;
 import org.vaadin.miki.util.ReflectTools;
 
 import java.time.LocalDateTime;
@@ -29,7 +31,7 @@ import java.util.Optional;
  */
 @JsModule("./super-date-time-picker.js")
 @Tag("super-date-time-picker")
-@CssImport(value = "./styles/label-positions.css", themeFor = "super-date-time-picker")
+@CssImport(value = "./styles/label-positions-custom-field.css", themeFor = "vaadin-date-time-picker-custom-field")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperDateTimePicker extends DateTimePicker
         implements HasSuperDatePickerI18N, WithLabelPositionableMixin<SuperDateTimePicker>,
@@ -145,5 +147,13 @@ public class SuperDateTimePicker extends DateTimePicker
         if(!(i18n instanceof SuperDatePickerI18n))
             i18n = SuperDatePickerI18nHelper.from(i18n, this.getLocale());
         super.setDatePickerI18n(i18n);
+    }
+
+    @Override
+    public void setLabelPosition(LabelPosition position) {
+        WithLabelPositionableMixin.super.setLabelPosition(position);
+        // shadowdom inside shadowdom is really difficult to target with css, hence this neat JS
+        // also, why is the id different from the date picker's is beyond me
+        this.getElement().executeJs("this.shadowRoot.getElementById('customField').setAttribute('"+ HasLabelPositionable.LABEL_POSITION_DETAILS_ATTRIBUTE+"', '"+position.getPositionData()+"');");
     }
 }

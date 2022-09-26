@@ -35,7 +35,7 @@ import java.util.function.Supplier;
  * @author miki
  * @since 2022-04-08
  */
-@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-custom-field")
+@CssImport(value = "./styles/label-positions-custom-field.css", themeFor = "vaadin-custom-field")
 public class MapField<K, V> extends CustomField<Map<K, V>> implements HasStyle,
         WithIdMixin<MapField<K, V>>, WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<Map<K, V>>, Map<K, V>>, Map<K, V>, MapField<K, V>>,
         WithHelperPositionableMixin<MapField<K, V>>, WithHelperMixin<MapField<K, V>>,

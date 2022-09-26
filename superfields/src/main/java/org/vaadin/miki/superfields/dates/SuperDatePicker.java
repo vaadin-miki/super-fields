@@ -13,6 +13,7 @@ import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
+import org.vaadin.miki.markers.HasLabelPositionable;
 import org.vaadin.miki.markers.WithDatePatternMixin;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
@@ -26,6 +27,7 @@ import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.dates.DatePattern;
+import org.vaadin.miki.shared.labels.LabelPosition;
 import org.vaadin.miki.shared.text.TextSelectionDelegate;
 
 import java.time.LocalDate;
@@ -40,7 +42,7 @@ import java.util.Locale;
  */
 @JsModule("./super-date-picker.js")
 @Tag("super-date-picker")
-@CssImport(value = "./styles/label-positions.css", themeFor = "super-date-picker")
+@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-date-picker-text-field")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperDatePicker extends DatePicker
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SuperDatePicker>,
@@ -211,4 +213,10 @@ public class SuperDatePicker extends DatePicker
         return result == null ? "" : result;
     }
 
+    @Override
+    public void setLabelPosition(LabelPosition position) {
+        WithLabelPositionableMixin.super.setLabelPosition(position);
+        // shadowdom inside shadowdom is really difficult to target with css, hence this neat JS
+        this.getElement().executeJs("this.shadowRoot.getElementById('input').setAttribute('"+ HasLabelPositionable.LABEL_POSITION_DETAILS_ATTRIBUTE+"', '"+position.getPositionData()+"');");
+    }
 }

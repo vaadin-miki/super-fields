@@ -1,7 +1,7 @@
-:host([data-label-position-details~="side"]) [class|="vaadin"] .inputs-wrapper {
+:host([data-label-position-details~="side"]) .container .inputs-wrapper {
     flex: auto;
 }
 
-:host([data-label-position-details~="after"]) [class|="vaadin"] .inputs-wrapper {
+:host([data-label-position-details~="after"]) .container .inputs-wrapper {
     order: -1;
 }
