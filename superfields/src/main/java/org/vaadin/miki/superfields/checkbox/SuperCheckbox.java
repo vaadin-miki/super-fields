@@ -13,7 +13,9 @@ import java.util.Objects;
 
 /**
  * A regular {@link Checkbox} that has its read-only state synchronised with enabledness.
- * This exists purely as a workaround for <a href="https://github.com/vaadin/web-components/issues/688">a known issue of Vaadin</a>.
+ * While this exists mostly as a workaround for <a href="https://github.com/vaadin/web-components/issues/688">a known issue of Vaadin</a>,
+ * it also supports label position (though only {@link org.vaadin.miki.shared.labels.LabelPosition}{@code #BEFORE_*}, thus allowing
+ * the label to be positioned on the other side of the actual checkbox).
  *
  * @author miki
  * @since 2022-09-14
