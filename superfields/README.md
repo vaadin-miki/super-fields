@@ -26,6 +26,10 @@ Some components contain server-side methods to control text selection in their w
 
 The web components listen to each key press and mouse click. If text selection changes as a result of that action, they send an event to the server-side component. This may happen quite often and increase server load, so the feature is turned off by default. To turn it on simply call `setReceivingSelectionEventsFromClient(true)` (or `withReceivingSelectionEventsFromClient(true)`).  
 
+#### Label position
+
+Most of the components that can have a label allow positioning said label through `setLabelPosition(...)` (or `withLabelPosition(...)`). This should work in most layouts, with `FormLayout` being an obvious exception. Not all components support all possible values of `LabelPosition` (`SuperCheckbox` ignores vertical alignment). In addition, things might work weird when using right-to-left languages - if that happens, please report the problem in GitHub.
+
 #### Log messages
 
 Quite a few components log their state using [SLF4J](https://www.slf4j.org). Critical information is logged as error or warning, debugging messages are, well, debug or trace. Information about [how to configure which log messages get displayed can be found e.g. on Stack Overflow](https://stackoverflow.com/questions/45997759/how-to-change-slf4j-logging-level).

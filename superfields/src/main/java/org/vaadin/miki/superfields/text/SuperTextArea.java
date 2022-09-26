@@ -5,6 +5,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.shared.Registration;
@@ -18,6 +19,7 @@ import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
@@ -33,9 +35,10 @@ import java.util.Objects;
  */
 @Tag("super-text-area")
 @JsModule("./super-text-area.js")
+@CssImport(value = "./styles/label-positions.css", themeFor = "super-text-area")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextArea extends TextArea implements CanSelectText, TextSelectionNotifier<SuperTextArea>,
-        CanModifyText, WithRequiredMixin<SuperTextArea>,
+        CanModifyText, WithRequiredMixin<SuperTextArea>, WithLabelPositionableMixin<SuperTextArea>,
         WithIdMixin<SuperTextArea>, WithLabelMixin<SuperTextArea>, WithPlaceholderMixin<SuperTextArea>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextArea>, WithClearButtonMixin<SuperTextArea>,
         WithHelperMixin<SuperTextArea>, WithHelperPositionableMixin<SuperTextArea>, WithTitleMixin<SuperTextArea>,

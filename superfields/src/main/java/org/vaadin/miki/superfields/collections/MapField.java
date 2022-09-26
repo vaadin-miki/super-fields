@@ -6,12 +6,14 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
 
@@ -33,11 +35,13 @@ import java.util.function.Supplier;
  * @author miki
  * @since 2022-04-08
  */
+@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-custom-field")
 public class MapField<K, V> extends CustomField<Map<K, V>> implements HasStyle,
         WithIdMixin<MapField<K, V>>, WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<Map<K, V>>, Map<K, V>>, Map<K, V>, MapField<K, V>>,
         WithHelperPositionableMixin<MapField<K, V>>, WithHelperMixin<MapField<K, V>>,
         WithLabelMixin<MapField<K, V>>, WithCollectionValueComponentProviderMixin<Map.Entry<K, V>, MapField<K, V>>,
-        WithCollectionElementFilterMixin<Map.Entry<K, V>, MapField<K, V>> {
+        WithCollectionElementFilterMixin<Map.Entry<K, V>, MapField<K, V>>,
+        WithLabelPositionableMixin<MapField<K, V>> {
 
     /**
      * Produces a non-null entry filter (entry, its key and its value must be non-{@code null}).
