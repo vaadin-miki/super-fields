@@ -1,0 +1,58 @@
+/* css magic by Jarmo Kemppainen */
+
+:host([data-label-position-details~="side"])::before {
+    height: 100%;
+}
+
+:host([data-label-position-details~="side"]) [class|="vaadin"] {
+    width: 100%;
+    flex-wrap: wrap;
+    flex-direction: initial !important;
+    align-items: center;
+}
+
+:host([data-label-position-details~="side"]) [class|="vaadin"] [part="label"] {
+    width: auto;
+    height: var(--lumo-text-field-size);
+}
+
+:host([data-label-position-details~="middle"]) [class|="vaadin"] [part="label"] {
+    display: flex;
+    align-self: center;
+    align-items: center;
+    padding-bottom: 0;
+}
+
+:host([data-label-position-details~="end"]) [class|="vaadin"] [part="label"] {
+    display: flex;
+    align-self: end;
+    align-items: end;
+    /* there must be default padding, otherwise the text renders incompletely */
+}
+
+:host([data-label-position-details~="side"]) [class|="vaadin"] [part="input-field"] {
+    /* flex: 1; */
+}
+
+:host([data-label-position-details~="side"]) [class|="vaadin"] [part="helper-text"],
+:host([data-label-position-details~="side"]) [class|="vaadin"] [part="error-message"] {
+    width: 100%;
+}
+
+:host([data-label-position-details~="after"]) [class|="vaadin"] [part="input-field"] {
+    order: -1;
+}
+:host([data-label-position-details~="after"][theme~="helper-above-field"]) [class|="vaadin"] [part="helper-text"] {
+    order: -2;
+}
+
+:host([data-label-position-details~="before"][theme~="helper-above-field"]) [class|="vaadin"] [part="label"] {
+    order: 1;
+}
+:host([data-label-position-details~="before"][theme~="helper-above-field"]) [class|="vaadin"] [part="helper-text"] {
+    order: 0;
+}
+
+:host([data-label-position-details~="last"]) [class|="vaadin"] [part="label"] {
+    order: 9;
+}

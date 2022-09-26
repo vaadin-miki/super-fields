@@ -32,7 +32,10 @@ public class CollectionFieldProvider implements ComponentProvider<CollectionFiel
                         ),
                         Collections.singletonList(CollectionComponentProviders.addLastButton("Add as last"))),
                 CollectionComponentProviders.rowWithRemoveButtonFirst(CollectionComponentProviders.labelledField(SuperTextField::new, "Value"), "Remove")
-        ).withHelperText("(validator requires precisely three elements)");
+        )
+                .withHelperText("(validator requires precisely three elements)")
+                .withLabel("Enter some words:")
+                ;
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.shared.Registration;
@@ -18,6 +19,7 @@ import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
@@ -31,9 +33,10 @@ import org.vaadin.miki.shared.text.TextModificationDelegate;
  */
 @Tag("super-text-field")
 @JsModule("./super-text-field.js")
+@CssImport(value = "./styles/label-positions.css", themeFor = "super-text-field")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextField extends TextField implements CanSelectText, TextSelectionNotifier<SuperTextField>,
-        CanModifyText, WithRequiredMixin<SuperTextField>,
+        CanModifyText, WithRequiredMixin<SuperTextField>, WithLabelPositionableMixin<SuperTextField>,
         WithIdMixin<SuperTextField>, WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
         WithHelperMixin<SuperTextField>, WithTitleMixin<SuperTextField>, WithHelperPositionableMixin<SuperTextField>,
@@ -135,4 +138,5 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     public boolean isClearButtonVisible() {
         return super.isClearButtonVisible();
     }
+
 }

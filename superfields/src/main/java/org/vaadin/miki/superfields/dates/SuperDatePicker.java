@@ -6,6 +6,7 @@ import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.events.text.TextSelectionListener;
@@ -19,6 +20,7 @@ import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTitleMixin;
@@ -38,10 +40,11 @@ import java.util.Locale;
  */
 @JsModule("./super-date-picker.js")
 @Tag("super-date-picker")
+@CssImport(value = "./styles/label-positions.css", themeFor = "super-date-picker")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperDatePicker extends DatePicker
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SuperDatePicker>,
-                   TextSelectionNotifier<SuperDatePicker>, HasSuperDatePickerI18N,
+                   TextSelectionNotifier<SuperDatePicker>, HasSuperDatePickerI18N, WithLabelPositionableMixin<SuperDatePicker>,
                    WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>, WithTitleMixin<SuperDatePicker>,
                    WithPlaceholderMixin<SuperDatePicker>, WithDatePatternMixin<SuperDatePicker>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<DatePicker, LocalDate>, LocalDate, SuperDatePicker>,

@@ -9,7 +9,9 @@ import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithItemsMixin;
+import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithMaximumSelectionSizeMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.Collection;
@@ -25,7 +27,8 @@ import java.util.Set;
 public class GridMultiSelect<V> extends AbstractGridSelect<V, Set<V>>
         implements WithIdMixin<GridMultiSelect<V>>, WithItemsMixin<V, GridMultiSelect<V>>,
         WithMaximumSelectionSizeMixin<GridMultiSelect<V>>, WithHelperMixin<GridMultiSelect<V>>,
-        WithHelperPositionableMixin<GridMultiSelect<V>>,
+        WithHelperPositionableMixin<GridMultiSelect<V>>, WithLabelPositionableMixin<GridMultiSelect<V>>,
+        WithLabelMixin<GridMultiSelect<V>>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<Set<V>>, Set<V>>, Set<V>, GridMultiSelect<V>> {
 
     private int maximumSelectionSize = UNLIMITED;

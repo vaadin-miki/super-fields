@@ -12,7 +12,7 @@ import org.vaadin.miki.superfields.object.ObjectField;
 import java.time.LocalDate;
 import java.util.function.Consumer;
 
-@Order(61)
+@Order(1)
 public class ObjectFieldBuilder implements ContentBuilder<ObjectField<Book>> {
     @Override
     public void buildContent(ObjectField<Book> component, Consumer<Component[]> callback) {

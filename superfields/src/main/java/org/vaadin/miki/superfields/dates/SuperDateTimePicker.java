@@ -4,6 +4,7 @@ import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import org.vaadin.miki.markers.WithDatePatternMixin;
@@ -12,6 +13,7 @@ import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.dates.DatePattern;
 import org.vaadin.miki.util.ReflectTools;
@@ -27,9 +29,10 @@ import java.util.Optional;
  */
 @JsModule("./super-date-time-picker.js")
 @Tag("super-date-time-picker")
+@CssImport(value = "./styles/label-positions.css", themeFor = "super-date-time-picker")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperDateTimePicker extends DateTimePicker
-        implements HasSuperDatePickerI18N,
+        implements HasSuperDatePickerI18N, WithLabelPositionableMixin<SuperDateTimePicker>,
                    WithLocaleMixin<SuperDateTimePicker>, WithLabelMixin<SuperDateTimePicker>,
                    WithDatePatternMixin<SuperDateTimePicker>, WithIdMixin<SuperDateTimePicker>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<DateTimePicker, LocalDateTime>, LocalDateTime, SuperDateTimePicker>,

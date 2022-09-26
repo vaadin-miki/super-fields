@@ -15,7 +15,9 @@ public class GridMultiSelectProvider implements ComponentProvider<GridMultiSelec
     @Override
     public GridMultiSelect<SuperFieldsGridItem> getComponent() {
         final GridMultiSelect<SuperFieldsGridItem> gridSelect = new GridMultiSelect<>(SuperFieldsGridItem.class, true, SuperFieldsGridItem.getAllRegisteredProviders())
-                .withHelperText("(you can select multiple rows)");
+                .withHelperText("(you can select multiple rows)")
+                .withLabel("Choose as many as you like:")
+                ;
         gridSelect.getGrid().getColumnByKey("nameLength").setAutoWidth(true);
         return gridSelect;
     }
