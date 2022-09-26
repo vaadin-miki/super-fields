@@ -4,6 +4,7 @@ import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.function.SerializableFunction;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
@@ -21,6 +22,7 @@ import org.vaadin.miki.markers.WithValueMixin;
  * @author miki
  * @since 2022-04-08
  */
+@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-custom-field")
 public class LabelField<V> extends CustomField<V> implements HasStyle, WithLabelMixin<LabelField<V>>,
         WithHelperPositionableMixin<LabelField<V>>, WithHelperMixin<LabelField<V>>,
         WithLabelPositionableMixin<LabelField<V>>, WithIdMixin<LabelField<V>>,
