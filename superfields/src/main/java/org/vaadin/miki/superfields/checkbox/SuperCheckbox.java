@@ -12,7 +12,7 @@ import org.vaadin.miki.markers.WithValueMixin;
 import java.util.Objects;
 
 /**
- * A regular {@link Checkbox} that has its read-only state synchronised with enabledness.
+ * A regular {@link Checkbox} that can be made read-only (it becomes disabled when set to read-only).
  * While this exists mostly as a workaround for <a href="https://github.com/vaadin/web-components/issues/688">a known issue of Vaadin</a>,
  * it also supports label position (though only {@link org.vaadin.miki.shared.labels.LabelPosition}{@code #BEFORE_*}, thus allowing
  * the label to be positioned on the other side of the actual checkbox).
@@ -26,16 +26,24 @@ public class SuperCheckbox extends Checkbox implements
         WithLabelMixin<SuperCheckbox>, WithValueMixin<AbstractField.ComponentValueChangeEvent<Checkbox, Boolean>, Boolean, SuperCheckbox>,
         WithIdMixin<SuperCheckbox>, WithTitleMixin<SuperCheckbox>, WithLabelPositionableMixin<SuperCheckbox> {
 
+    private boolean enabled = true;
+    private boolean readOnly = false;
+
+    protected boolean isReallyEnabled() {
+        return this.enabled && !this.readOnly;
+    }
+
     @Override
     public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
         super.setReadOnly(readOnly);
-        super.setEnabled(!readOnly);
+        super.setEnabled(this.isReallyEnabled());
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        super.setReadOnly(!enabled);
-        super.setEnabled(enabled);
+        this.enabled = enabled;
+        super.setEnabled(this.isReallyEnabled());
     }
 
     @Override
