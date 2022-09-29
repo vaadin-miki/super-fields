@@ -37,6 +37,8 @@ public class ReflectivePropertyProvider implements PropertyProvider {
     @Override
     @SuppressWarnings("unchecked") // should be fine
     public <T> List<Property<T, ?>> getObjectPropertyDefinitions(Class<T> type, T instance) {
+        if(instance != null)
+            type = (Class<T>) instance.getClass();
         return (List<Property<T,?>>)(List<?>) this.cache.computeIfAbsent(type, t -> (List<Property<?,?>>)(List<?>) this.buildProperties(t));
     }
 
