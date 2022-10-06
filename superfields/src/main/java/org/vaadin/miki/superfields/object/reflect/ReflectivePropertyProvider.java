@@ -2,6 +2,8 @@ package org.vaadin.miki.superfields.object.reflect;
 
 import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.function.SerializableFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vaadin.miki.superfields.object.Property;
 import org.vaadin.miki.superfields.object.PropertyProvider;
 import org.vaadin.miki.util.ReflectTools;
@@ -12,22 +14,32 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Simple reflection-based definition provider.
  * It scans a given type for {@code private} fields (including {@code final}) and corresponding setters and/or getters.
- * Superclasses are by default included.
+ * Delegates the scanning to {@link ReflectTools#extractFieldsWithMethods(Class, boolean)}.
+ * <br/>
+ * Superclasses are by default included, unless {@link DoNotScanSuperclasses} is used on the type.
+ * All fields are included in the results, except fields annotated with {@link Ignore}.
+ * The declared field types are used, unless {@link UseActualType} is used, in which case the actual type of the field's value is used.
+ * The results are cached, except when a type has {@link UseActualType} annotation on any of its fields.
  *
  * @author miki
  * @since 2022-06-03
  */
 public class ReflectivePropertyProvider implements PropertyProvider {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReflectivePropertyProvider.class);
+
     private final Map<Class<?>, List<Property<?, ?>>> cache = new HashMap<>();
+    private final Set<Class<?>> notCachedTypes = new HashSet<>();
 
     private final List<MetadataProvider> metadataProviders = new ArrayList<>();
 
@@ -37,14 +49,31 @@ public class ReflectivePropertyProvider implements PropertyProvider {
     @Override
     @SuppressWarnings("unchecked") // should be fine
     public <T> List<Property<T, ?>> getObjectPropertyDefinitions(Class<T> type, T instance) {
-        return (List<Property<T,?>>)(List<?>) this.cache.computeIfAbsent(type, t -> (List<Property<?,?>>)(List<?>) this.buildProperties(t));
+        if(instance != null)
+            type = (Class<T>) instance.getClass();
+        // cache will contain the type anyway, but this explicitly forces recreating the definition
+        if(this.notCachedTypes.contains(type))
+            return this.buildProperties(type, instance);
+        else return (List<Property<T,?>>)(List<?>) this.cache.computeIfAbsent(type, t -> (List<Property<?,?>>)(List<?>) this.buildProperties(t, instance));
     }
 
-    private <T> List<Property<T, ?>> buildProperties(Class<T> type) {
+    private <T> List<Property<T, ?>> buildProperties(Class<T> type, Object instance) {
         return ReflectTools.extractFieldsWithMethods(type, type.isAnnotationPresent(DoNotScanSuperclasses.class)).entrySet()
                 .stream()
                 .filter(fieldEntry -> !fieldEntry.getKey().isAnnotationPresent(Ignore.class))
-                .map(fieldEntry -> this.buildDefinition(type, fieldEntry.getKey(), fieldEntry.getKey().getType(), fieldEntry.getValue()[ReflectTools.GETTER_INDEX], fieldEntry.getValue()[ReflectTools.SETTER_INDEX] ))
+                .map(fieldEntry -> {
+                    Object fieldValue = null;
+                    if(fieldEntry.getKey().isAnnotationPresent(UseActualType.class)) {
+                        try {
+                            this.notCachedTypes.add(type); // do not cache the type
+                            fieldValue = instance == null || fieldEntry.getValue()[ReflectTools.GETTER_INDEX] == null ? null : fieldEntry.getValue()[ReflectTools.GETTER_INDEX].invoke(instance);
+
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            LOGGER.warn("could not determine the actual type for field {}.{}; using declared type {} instead", type, fieldEntry.getKey().getName(), fieldEntry.getKey().getType().getSimpleName(), e);
+                        }
+                    }
+                    return this.buildDefinition(type, fieldEntry.getKey(), fieldValue == null ? fieldEntry.getKey().getType() : fieldValue.getClass(), fieldEntry.getValue()[ReflectTools.GETTER_INDEX], fieldEntry.getValue()[ReflectTools.SETTER_INDEX]);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -77,8 +106,9 @@ public class ReflectivePropertyProvider implements PropertyProvider {
         else return null;
     }
 
-    private <T, P> Property<T, P> buildDefinition(Class<T> type, Field field, Class<P> fieldType, Method getter, Method setter) {
-        return new Property<>(type, field.getName(), fieldType,
+    @SuppressWarnings("unchecked")
+    private <T, P> Property<T, P> buildDefinition(Class<T> type, Field field, Class<?> fieldType, Method getter, Method setter) {
+        return new Property<>(type, field.getName(), (Class<P>) fieldType,
                 this.getSetterFromMethod(setter),
                 this.getGetterFromMethod(getter),
                 this.metadataProviders.stream().flatMap(provider -> provider.getMetadata(field.getName(), field, setter, getter).stream()).collect(Collectors.toList())
