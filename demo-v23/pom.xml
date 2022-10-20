@@ -206,5 +206,32 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <!-- profile for deploying to demo.unforgiven.pl -->
+            <id>deploy-demo</id>
+            <build>
+                <finalName>superfields</finalName>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.cargo</groupId>
+                        <artifactId>cargo-maven3-plugin</artifactId>
+                        <version>1.10.2</version>
+                        <configuration>
+                            <container>
+                                <containerId>tomcat9x</containerId>
+                                <type>remote</type>
+                            </container>
+                            <configuration>
+                                <type>runtime</type>
+                                <properties>
+                                    <cargo.server.settings>demo-deployment</cargo.server.settings>
+                                </properties>
+                            </configuration>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 </project>

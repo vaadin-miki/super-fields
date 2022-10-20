@@ -4,13 +4,13 @@
 
 This is a collection of hopefully useful Vaadin 14 and 23+ components, grouped into several sub-projects:
 * `superfields` are various input components;
-* `demo-v23` contains an app for Vaadin 23+ that shows all components - [see the demo online](https://superfields.herokuapp.com/) on Heroku
+* `demo-v23` contains an app for Vaadin 23+ that shows all components - [see the demo online](https://demo.unforgiven.pl/superfields/) or run it yourself with `mvn package jetty:run`
 
 ## Installation
 
 [SuperFields are also available in Vaadin Directory](https://vaadin.com/directory/component/superfields). If you find this library useful, consider rating it there or leaving a review. Thanks :)
 
-SuperFields work with Vaadin 23 (and above) and Vaadin 14 LTS.
+SuperFields work with Vaadin 23 (and above) and Vaadin 14 LTS (only as long as Vaadin 14 is officially supported).
 
 ### Vaadin 23+ and Java 11
 
