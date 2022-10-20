@@ -3,8 +3,6 @@ name: Deploy demo to demo server
 on:
   release:
     types: [created]
-  push:
-    branches: [385-deploy-elsewhere]
 
 jobs:
   deploy:
