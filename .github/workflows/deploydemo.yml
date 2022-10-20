@@ -18,7 +18,7 @@ jobs:
         with:
           java-version: 11
       - name: Install
-        run: mvn install --file pom.xml
+        run: mvn install -P production,deploy-demo --file pom.xml
       - name: Deploy .war file
         run: mvn cargo:redeploy -P production,deploy-demo --file demo-v23/pom.xml
         env:
