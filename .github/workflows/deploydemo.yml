@@ -20,10 +20,10 @@ jobs:
       - name: Install
         run: mvn install -P production,deploy-demo --file pom.xml -s .github/settings.xml
       - name: Deploy .war file
-        run: mvn cargo:redeploy -P production,deploy-demo --file demo-v23/pom.xml -s .github/settings.xml -X
+        run: mvn cargo:redeploy -P production,deploy-demo --file demo-v23/pom.xml -s .github/settings.xml
         env:
           DEMO_DEPLOY_HOST: ${{ secrets.DEMO_DEPLOY_HOST }}
           DEMO_DEPLOY_PASSWORD: ${{ secrets.DEMO_DEPLOY_PASSWORD }}
           DEMO_DEPLOY_PORT: ${{ secrets.DEMO_DEPLOY_PORT }}
           DEMO_DEPLOY_PROTOCOL: ${{ secrets.DEMO_DEPLOY_PROTOCOL }}
-          DEMO_DEPLOY_USER: ${{ secrets.DEMO_DEPLOY_USERS }}
+          DEMO_DEPLOY_USER: ${{ secrets.DEMO_DEPLOY_USER }}
