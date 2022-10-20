@@ -18,9 +18,9 @@ jobs:
         with:
           java-version: 11
       - name: Install
-        run: mvn install -P production,deploy-demo --file pom.xml
+        run: mvn install -P production,deploy-demo --file pom.xml -s .github/settings.xml
       - name: Deploy .war file
-        run: mvn cargo:redeploy -P production,deploy-demo --file demo-v23/pom.xml
+        run: mvn cargo:redeploy -P production,deploy-demo --file demo-v23/pom.xml -s .github/settings.xml
         env:
           DEMO_DEPLOY_HOST: ${{ secrets.DEMO_DEPLOY_HOST }}
           DEMO_DEPLOY_PASSWORD: ${{ secrets.DEMO_DEPLOY_PASSWORD }}
