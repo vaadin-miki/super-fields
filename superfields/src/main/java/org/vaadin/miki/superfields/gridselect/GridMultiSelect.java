@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * A multi-selection {@link GridSelect}. Holds a value that is a {@link Set}<{@code V}>.
+ * A multi-selection {@link GridSelect}. Holds a value that is a {@link Set}&lt;{@code V}&gt;.
  * @param <V> Value to store in the {@link Grid}.
  * @author miki
  * @since 2020-12-09
