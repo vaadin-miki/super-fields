@@ -6,6 +6,8 @@ name: Publish to GitHub
 on:
   release:
     types: [created]
+  push:
+    branches: [release-0.16-pom-fixes]
 
 jobs:
   publish_github:
@@ -26,6 +28,6 @@ jobs:
         run: mvn -B package --file superfields/pom.xml
 
       - name: Publish to GitHub Packages Apache Maven
-        run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml --file superfields/pom.xml
+        run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml --file superfields/pom.xml -P deploy-github
         env:
           GITHUB_TOKEN: ${{ github.token }}

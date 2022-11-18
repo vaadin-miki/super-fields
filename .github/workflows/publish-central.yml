@@ -2,6 +2,8 @@ name: Publish to Central
 on:
   release:
     type: [created]
+  push:
+    branches: [release-0.16-pom-fixes]
 
 jobs:
   publish_central:
