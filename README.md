@@ -21,7 +21,7 @@ Starting with **version 0.12** SuperFields work with the latest major Vaadin ver
 This is the relevant dependency:
 ```
 <dependency>
-   <groupId>org.vaadin.miki</groupId>
+   <groupId>pl.unforgiven</groupId>
    <artifactId>superfields</artifactId>
    <version>{VERSION}</version>
 </dependency>
