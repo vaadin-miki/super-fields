@@ -1,5 +1,6 @@
 package org.vaadin.miki.superfields.object;
 
+import org.vaadin.miki.superfields.object.reflect.UseActualType;
 import org.vaadin.miki.superfields.text.LabelField;
 import org.vaadin.miki.superfields.util.factory.BuildFieldWith;
 import org.vaadin.miki.superfields.util.factory.FieldGroup;
@@ -18,7 +19,8 @@ public class NestedObject {
 
     private List<String> texts;
 
-    private DataObject dataObject;
+    @UseActualType
+    private DataInterface dataObject;
 
     private Map<String, DataObject> objectMap;
 
@@ -44,11 +46,11 @@ public class NestedObject {
         this.texts = texts;
     }
 
-    public DataObject getDataObject() {
+    public DataInterface getDataObject() {
         return dataObject;
     }
 
-    public void setDataObject(DataObject dataObject) {
+    public void setDataObject(DataInterface dataObject) {
         this.dataObject = dataObject;
     }
 

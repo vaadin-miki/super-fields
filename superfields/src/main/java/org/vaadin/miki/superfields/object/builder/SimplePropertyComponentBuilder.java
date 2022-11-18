@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 
 /**
  * Reference implementation of {@link PropertyComponentBuilder}.
- * In general, it allows building components based on {@link Predicate}<{@link Property}> and provides some helper methods for common use cases.
+ * In general, it allows building components based on {@link Predicate}&lt;{@link Property}&gt; and provides some helper methods for common use cases.
  *
  * @author miki
  * @since 2022-06-06

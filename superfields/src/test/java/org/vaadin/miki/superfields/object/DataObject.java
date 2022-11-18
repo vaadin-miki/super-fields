@@ -20,7 +20,7 @@ import java.util.Objects;
  * @author miki
  * @since 2022-06-23
  */
-public class DataObject {
+public class DataObject implements DataInterface {
 
     public static DataObject build() {
         try {
