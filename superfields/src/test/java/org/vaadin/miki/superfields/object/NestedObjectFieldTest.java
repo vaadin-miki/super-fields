@@ -92,6 +92,8 @@ public class NestedObjectFieldTest {
         Assert.assertTrue("ObjectField should be returned, not "+objectField.getClass().getSimpleName(), objectField instanceof ObjectField);
         Assert.assertEquals(DataObject.class, ((ObjectField<?>) objectField).getDataType());
         Assert.assertEquals(dataObject, objectField.getValue());
+        // all properties from data object should be present
+        Assert.assertEquals(DataObjectConfiguration.EXPECTED_FIELDS.size(), ((ObjectField<?>) objectField).getPropertiesAndComponents().size());
     }
 
     @Test

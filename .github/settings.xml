@@ -31,5 +31,15 @@
             <username>USERNAME</username>
             <password>GITHUB_TOKEN</password>
         </server>
+        <server>
+            <id>demo-deployment</id>
+            <configuration>
+                <cargo.hostname>${DEMO_DEPLOY_HOST}</cargo.hostname>
+                <cargo.protocol>${DEMO_DEPLOY_PROTOCOL}</cargo.protocol>
+                <cargo.servlet.port>${DEMO_DEPLOY_PORT}</cargo.servlet.port>
+                <cargo.remote.username>${DEMO_DEPLOY_USER}</cargo.remote.username>
+                <cargo.remote.password>${DEMO_DEPLOY_PASSWORD}</cargo.remote.password>
+            </configuration>
+        </server>
     </servers>
 </settings>

@@ -235,7 +235,7 @@ public class ObjectFieldFactory {
                 return field;
             }
             catch(RuntimeException iae) {
-                LOGGER.info("could not construct an instance of {} due to {}; as a result LabelField is created instead of ObjectField", def.getType().getSimpleName(), iae.getMessage());
+                LOGGER.info("could not construct an instance of {} due to an error: \"{}\"; as a result LabelField is created instead of ObjectField", def.getType().getSimpleName(), iae.getMessage());
                 return new LabelField<>();
             }
         });

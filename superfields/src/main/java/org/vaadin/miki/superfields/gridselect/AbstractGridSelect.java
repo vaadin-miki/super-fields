@@ -47,7 +47,7 @@ public abstract class AbstractGridSelect<V, F> extends CustomField<F> {
 
     /**
      * This method is called when a grid cell is selected in the client.
-     * By default it calls {@link #updateValue()}.
+     * By default, it calls {@link #updateValue()}.
      * @param event Event with selection details.
      */
     protected void onGridSelected(SelectionEvent<Grid<V>, V> event) {
@@ -56,7 +56,7 @@ public abstract class AbstractGridSelect<V, F> extends CustomField<F> {
 
     /**
      * Returns the underlying {@link Grid}. Use with caution. Please do not mess with grid's selection.
-     * Note: unless a protected constructor with predefined grid - {@link GridSelect(Grid)} - is called, the returned grid will be a {@link RestrictedModeGrid}.
+     * Note: unless a protected constructor with predefined grid - {@link GridSelect#GridSelect(Grid)} - is called, the returned grid will be a {@link RestrictedModeGrid}.
      * @return The {@link Grid}. Any changes to the grid will affect this component.
      */
     public Grid<V> getGrid() {

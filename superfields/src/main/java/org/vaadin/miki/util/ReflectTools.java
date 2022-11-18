@@ -100,28 +100,28 @@ public final class ReflectTools {
      */
     public static Map<Field, Method[]> extractFieldsWithMethods(Class<?> type, boolean ignoreSuperclasses) {
         final Map<Field, Method[]> result = new HashMap<>();
+        if(type != null) {
+            Class<?> toScan = type;
+            // 1. scan all declared fields
+            while (toScan != null && !Objects.equals(toScan, Object.class)) {
+                for (Field declaredField : toScan.getDeclaredFields())
+                    result.putIfAbsent(declaredField, new Method[2]);
+                toScan = ignoreSuperclasses ? Object.class : toScan.getSuperclass();
+            }
 
-        Class<?> toScan = type;
-        // 1. scan all declared fields
-        while (!Objects.equals(toScan, Object.class)) {
-            for (Field declaredField : toScan.getDeclaredFields())
-                result.putIfAbsent(declaredField, new Method[2]);
-            toScan = ignoreSuperclasses ? Object.class : toScan.getSuperclass();
+            final Set<Field> fieldsWithoutAccessors = new HashSet<>();
+
+            result.forEach((field, methods) -> {
+                // 2. find getter and setter
+                findGetter(field, type).ifPresent(method -> methods[GETTER_INDEX] = method);
+                findSetter(field, type).ifPresent(method -> methods[SETTER_INDEX] = method);
+                // 3. mark for removal if no accessors
+                if (methods[GETTER_INDEX] == null && methods[SETTER_INDEX] == null)
+                    fieldsWithoutAccessors.add(field);
+            });
+
+            fieldsWithoutAccessors.forEach(result::remove);
         }
-
-        final Set<Field> fieldsWithoutAccessors = new HashSet<>();
-
-        result.forEach((field, methods) -> {
-            // 2. find getter and setter
-            findGetter(field, type).ifPresent(method -> methods[GETTER_INDEX] = method);
-            findSetter(field, type).ifPresent(method -> methods[SETTER_INDEX] = method);
-            // 3. mark for removal if no accessors
-            if(methods[GETTER_INDEX] == null && methods[SETTER_INDEX] == null)
-                fieldsWithoutAccessors.add(field);
-        });
-
-        fieldsWithoutAccessors.forEach(result::remove);
-
         return result;
     }
 

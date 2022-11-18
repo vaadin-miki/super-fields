@@ -1,3 +1,11 @@
+# 0.16.0 - Maven Central
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#366 - [Deploy to Maven Central](https://github.com/vaadin-miki/super-fields/issues/366)
+## Bug fixes
+* \#421 - [ObjectField should use actual object type by default](https://github.com/vaadin-miki/super-fields/issues/421)
+* \#428 - [Finnish translations for DatePicker are incorrect](https://github.com/vaadin-miki/super-fields/issues/428)
 # 0.15.0 - HasPositionableLabel
 ## New features and enhancements
 * \#414 - [Positionable component labels](https://github.com/vaadin-miki/super-fields/issues/414)
