@@ -5,6 +5,7 @@ on:
   push:
     branches: [366-maven-central]
 
+jobs:
   publish_central:
     runs-on: ubuntu-latest
     timeout-minutes: 30
