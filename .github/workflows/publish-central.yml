@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 11
-          distribution: adopt-openj9
+          distribution: temurin
           server-id: maven-central
           server-username: CENTRAL_USERNAME
           server-password: CENTRAL_PASSWORD
