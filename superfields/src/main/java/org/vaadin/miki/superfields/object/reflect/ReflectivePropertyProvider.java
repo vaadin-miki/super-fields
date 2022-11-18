@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
  * Simple reflection-based definition provider.
  * It scans a given type for {@code private} fields (including {@code final}) and corresponding setters and/or getters.
  * Delegates the scanning to {@link ReflectTools#extractFieldsWithMethods(Class, boolean)}.
- * <br/>
  * Superclasses are by default included, unless {@link DoNotScanSuperclasses} is used on the type.
  * All fields are included in the results, except fields annotated with {@link Ignore}.
  * The declared field types are used, unless {@link UseActualType} is used, in which case the actual type of the field's value is used.
