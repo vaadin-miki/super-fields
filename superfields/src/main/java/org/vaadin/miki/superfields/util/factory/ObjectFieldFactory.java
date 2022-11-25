@@ -81,8 +81,6 @@ public class ObjectFieldFactory {
     private static void setLabel(Object component, String label) {
         if(component instanceof HasLabel)
             ((HasLabel) component).setLabel(label);
-        else if(component instanceof org.vaadin.miki.markers.HasLabel)
-            ((org.vaadin.miki.markers.HasLabel) component).setLabel(label);
     }
 
     private static String[] sanitiseStyles(Collection<String> strings, String groupName) {

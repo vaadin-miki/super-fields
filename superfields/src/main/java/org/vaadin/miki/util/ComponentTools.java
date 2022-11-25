@@ -2,11 +2,11 @@ package org.vaadin.miki.util;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasHelper;
+import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import org.vaadin.miki.markers.HasDatePattern;
 import org.vaadin.miki.markers.HasHelperPositionable;
 import org.vaadin.miki.markers.HasIcon;
-import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.markers.HasPlaceholder;
 

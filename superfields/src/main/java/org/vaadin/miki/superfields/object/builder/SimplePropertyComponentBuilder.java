@@ -1,10 +1,10 @@
 package org.vaadin.miki.superfields.object.builder;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.slf4j.LoggerFactory;
-import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.superfields.object.Property;
 import org.vaadin.miki.superfields.object.PropertyComponentBuilder;
 import org.vaadin.miki.superfields.text.LabelField;
@@ -69,11 +69,9 @@ public class SimplePropertyComponentBuilder implements PropertyComponentBuilder 
                 .orElse((FieldBuilder<P>) this.defaultBuilder);
         result = (C) fieldBuilder.buildPropertyField(property);
 
-        if((result instanceof HasLabel || result instanceof com.vaadin.flow.component.HasLabel) && this.isDefaultLabel()) {
+        if(result instanceof HasLabel && this.isDefaultLabel()) {
             final String fieldLabel = StringTools.humanReadable(property.getName());
-            if(result instanceof HasLabel)
-                ((HasLabel) result).setLabel(fieldLabel);
-            else ((com.vaadin.flow.component.HasLabel) result).setLabel(fieldLabel);
+            ((HasLabel) result).setLabel(fieldLabel);
             LoggerFactory.getLogger(this.getClass()).info("default label for {} ({}): {}", property.getName(), result.getClass().getSimpleName(), fieldLabel);
         }
         return Optional.ofNullable(result);

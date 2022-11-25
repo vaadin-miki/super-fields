@@ -33,8 +33,6 @@ public class ObjectFieldTest {
     private static String extractLabel(Object component) {
         if(component instanceof HasLabel)
             return ((HasLabel) component).getLabel();
-        else if(component instanceof org.vaadin.miki.markers.HasLabel)
-            return ((org.vaadin.miki.markers.HasLabel) component).getLabel();
         else return null;
     }
 

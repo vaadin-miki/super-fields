@@ -1,12 +1,12 @@
 package org.vaadin.miki.superfields.util;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.vaadin.miki.markers.HasIndex;
-import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.superfields.collections.CollectionComponentProvider;
 import org.vaadin.miki.superfields.collections.CollectionController;
 import org.vaadin.miki.superfields.collections.CollectionLayoutProvider;
