@@ -1,4 +1,4 @@
-package org.vaadin.miki.superfields.util.factory;
+package pl.unforgiven.superfields.objectfield;
 
 import com.vaadin.flow.component.HasValue;
 

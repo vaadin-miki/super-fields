@@ -1,4 +1,4 @@
-package org.vaadin.miki.superfields.util.factory;
+package pl.unforgiven.superfields.objectfield;
 
 /**
  * Contains commonly used names for metadata.

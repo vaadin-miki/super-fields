@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>pl.unforgiven</groupId>
-    <artifactId>superfields-parent</artifactId>
+    <groupId>pl.unforgiven.superfields</groupId>
+    <artifactId>root</artifactId>
     <version>0.6.66-SNAPSHOT</version>
     <modules>
         <module>superfields</module>
         <module>demo-v23</module>
+        <module>parent-dev</module>
+        <module>object-field-utils</module>
     </modules>
     <name>SuperFields - Root project for SuperFields</name>
     <description>Root project for SuperFields. Includes basic dependencies, repositories and other configuration.</description>
@@ -16,7 +18,79 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>23.2.5</vaadin.version>
+        <vaadin.version>23.2.9</vaadin.version>
+        <maven.jar.plugin.version>3.1.2</maven.jar.plugin.version>
+        <javadoc.plugin.version>3.4.1</javadoc.plugin.version>
     </properties>
+
+    <organization>
+        <name>Unforgiven.pl</name>
+        <url>https://www.unforgiven.pl</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>Miki</name>
+            <email>miki@unforgiven.pl</email>
+            <organization>Unforgiven.pl</organization>
+            <organizationUrl>https://www.unforgiven.pl</organizationUrl>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-bom</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${vaadin.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-core</artifactId>
+            <version>${vaadin.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.vaadin.webjar</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.webjars.bowergithub.insites</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.webjars.bowergithub.polymer</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.webjars.bowergithub.polymerelements</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.webjars.bowergithub.vaadin</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.webjars.bowergithub.webcomponents</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+    </dependencies>
 
 </project>

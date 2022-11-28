@@ -1,4 +1,4 @@
-package org.vaadin.miki.superfields.util.factory;
+package pl.unforgiven.superfields.objectfield;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -62,7 +62,7 @@ import java.util.Set;
 
 /**
  * Configures {@link ObjectField} to work "out of the box" for most common use cases.
- * Allows overriding most settings either directly or by subclassing.
+ * Allows overriding almost every setting by setters.
  *
  * @author miki
  * @since 2022-09-08

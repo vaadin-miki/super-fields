@@ -1,4 +1,4 @@
-package org.vaadin.miki.superfields.util.factory;
+package pl.unforgiven.superfields.objectfield;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
