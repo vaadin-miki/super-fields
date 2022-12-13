@@ -116,7 +116,7 @@ public class ObjectFieldFactory {
      * @param <C> Type of collection.
      */
     @SuppressWarnings("unchecked") // should be fine
-    protected  <T, C extends Collection<T>> CollectionField<T, C> buildCollectionField(Property<?, T> elementProperty, Class<? extends Collection<?>> collectionType, PropertyComponentBuilder callbackFactory) {
+    protected <T, C extends Collection<T>> CollectionField<T, C> buildCollectionField(Property<?, T> elementProperty, Class<? extends Collection<?>> collectionType, PropertyComponentBuilder callbackFactory) {
         return new CollectionField<>(
                 this.getEmptyCollectionProvider((Class<C>) collectionType),
                 this.getCollectionFieldLayoutProvider(),

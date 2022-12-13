@@ -8,7 +8,6 @@ package pl.unforgiven.superfields.objectfield;
  */
 public class MetadataProperties {
 
-
     public static final String MULTILINE_METADATA_PROPERTY = "multiline";
     public static final String GROUP_METADATA_PROPERTY = "group";
     public static final String ORDER_METADATA_PROPERTY = "order";
