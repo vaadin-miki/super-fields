@@ -153,6 +153,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.add(this.field);
 
         this.field.setLabel(label);
+        this.field.setPreventInvalidInput(true);
         this.field.setWidthFull();
 
         this.field.addFocusListener(this::onFieldSelected);
@@ -324,7 +325,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
         this.regexp = this.buildRegularExpression(new StringBuilder(), this.format).toString();
 
-        this.field.setAllowedCharPattern(this.regexp);
+        this.field.setPattern(this.regexp);
 
         LOGGER.debug("pattern updated to {}", this.regexp);
         if(!this.isNegativeValueAllowed() && value != null && this.negativityPredicate.test(value)) {
