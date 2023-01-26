@@ -7,6 +7,7 @@ import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -20,21 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.vaadin.miki.events.text.TextSelectionEvent;
 import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
-import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
-import org.vaadin.miki.markers.CanSelectText;
-import org.vaadin.miki.markers.WithClearButtonMixin;
-import org.vaadin.miki.markers.WithHelperMixin;
-import org.vaadin.miki.markers.WithHelperPositionableMixin;
-import org.vaadin.miki.markers.WithIdMixin;
-import org.vaadin.miki.markers.WithLabelMixin;
-import org.vaadin.miki.markers.WithLabelPositionableMixin;
-import org.vaadin.miki.markers.WithLocaleMixin;
-import org.vaadin.miki.markers.WithNullValueOptionallyAllowedMixin;
-import org.vaadin.miki.markers.WithPlaceholderMixin;
-import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
-import org.vaadin.miki.markers.WithRequiredMixin;
-import org.vaadin.miki.markers.WithTitleMixin;
-import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.markers.*;
 import org.vaadin.miki.shared.labels.LabelPosition;
 import org.vaadin.miki.superfields.text.SuperTextField;
 
@@ -63,7 +50,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
                    WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF>, WithClearButtonMixin<SELF>,
-                   WithRequiredMixin<SELF>, WithLabelPositionableMixin<SELF> {
+                   WithRequiredMixin<SELF>, WithLabelPositionableMixin<SELF>, WithTooltipMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -338,7 +325,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
         this.regexp = this.buildRegularExpression(new StringBuilder(), this.format).toString();
 
-        this.field.setPattern(this.regexp);
+        this.field.setAllowedCharPattern(this.regexp);
 
         LOGGER.debug("pattern updated to {}", this.regexp);
         if(!this.isNegativeValueAllowed() && value != null && this.negativityPredicate.test(value)) {
@@ -812,6 +799,15 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         return this.field.isHelperAbove();
     }
 
+    @Override
+    public Tooltip setTooltipText(String text) {
+        return field.setTooltipText(text);
+    }
+
+    @Override
+    public Tooltip getTooltip() {
+        return field.getTooltip();
+    }
     @Override
     public void setValueChangeMode(ValueChangeMode valueChangeMode) {
         this.field.setValueChangeMode(valueChangeMode);

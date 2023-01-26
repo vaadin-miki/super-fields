@@ -11,19 +11,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
-import org.vaadin.miki.markers.CanModifyText;
-import org.vaadin.miki.markers.CanSelectText;
-import org.vaadin.miki.markers.WithClearButtonMixin;
-import org.vaadin.miki.markers.WithHelperMixin;
-import org.vaadin.miki.markers.WithHelperPositionableMixin;
-import org.vaadin.miki.markers.WithIdMixin;
-import org.vaadin.miki.markers.WithLabelMixin;
-import org.vaadin.miki.markers.WithPlaceholderMixin;
-import org.vaadin.miki.markers.WithLabelPositionableMixin;
-import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
-import org.vaadin.miki.markers.WithRequiredMixin;
-import org.vaadin.miki.markers.WithTitleMixin;
-import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.markers.*;
 import org.vaadin.miki.shared.text.TextModificationDelegate;
 
 import java.util.Objects;
@@ -42,7 +30,7 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
         WithIdMixin<SuperTextArea>, WithLabelMixin<SuperTextArea>, WithPlaceholderMixin<SuperTextArea>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextArea>, WithClearButtonMixin<SuperTextArea>,
         WithHelperMixin<SuperTextArea>, WithHelperPositionableMixin<SuperTextArea>, WithTitleMixin<SuperTextArea>,
-        WithValueMixin<AbstractField.ComponentValueChangeEvent<TextArea, String>, String, SuperTextArea> {
+        WithValueMixin<AbstractField.ComponentValueChangeEvent<TextArea, String>, String, SuperTextArea>, WithTooltipMixin<SuperTextArea> {
 
     private final TextModificationDelegate<SuperTextArea> delegate = new TextModificationDelegate<>(this, this.getEventBus(), this::getValue);
 
