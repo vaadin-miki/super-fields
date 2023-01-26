@@ -153,7 +153,6 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.add(this.field);
 
         this.field.setLabel(label);
-        this.field.setPreventInvalidInput(true);
         this.field.setWidthFull();
 
         this.field.addFocusListener(this::onFieldSelected);
