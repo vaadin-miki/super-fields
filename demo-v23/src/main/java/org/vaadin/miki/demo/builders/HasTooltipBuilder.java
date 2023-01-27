@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  * @author jc
  * @since 2023-01-26
  */
-@Order(119)
+@Order(118)
 public class HasTooltipBuilder implements ContentBuilder<HasTooltip> {
 
     @Override

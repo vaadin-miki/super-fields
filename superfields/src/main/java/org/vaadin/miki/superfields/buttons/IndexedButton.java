@@ -10,10 +10,7 @@ import org.vaadin.miki.markers.WithComponentAsIconMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithIndexMixin;
 import org.vaadin.miki.markers.WithTextMixin;
-import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithTooltipMixin;
-
-import java.util.Objects;
 
 /**
  * An indexed {@link Button}, i.e. one that implements {@link HasIndex}.
@@ -23,7 +20,7 @@ import java.util.Objects;
  */
 public class IndexedButton extends Button
         implements WithIndexMixin<IndexedButton>, WithIdMixin<IndexedButton>,
-        WithComponentAsIconMixin<IndexedButton>, WithTitleMixin<IndexedButton>,
+        WithComponentAsIconMixin<IndexedButton>,
         WithTextMixin<IndexedButton>, Clickable, WithTooltipMixin<IndexedButton> {
 
     public static final int DEFAULT_INDEX = -1;
@@ -148,16 +145,6 @@ public class IndexedButton extends Button
     @SuppressWarnings("squid:S1185") // without this method the code does not compile
     public String getText() {
         return super.getText();
-    }
-
-    @Override
-    public void setTitle(String title) {
-        this.getElement().setProperty("title", Objects.requireNonNullElse(title, ""));
-    }
-
-    @Override
-    public String getTitle() {
-        return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
     }
 
 }

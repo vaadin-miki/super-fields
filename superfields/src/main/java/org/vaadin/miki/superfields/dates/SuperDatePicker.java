@@ -23,7 +23,6 @@ import org.vaadin.miki.markers.WithLocaleMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
-import org.vaadin.miki.markers.WithTitleMixin;
 import org.vaadin.miki.markers.WithTooltipMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.dates.DatePattern;
@@ -33,7 +32,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * An extension of {@link DatePicker} that handles I18N also on the client side.
@@ -47,7 +45,7 @@ import java.util.Objects;
 public class SuperDatePicker extends DatePicker
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SuperDatePicker>,
                    TextSelectionNotifier<SuperDatePicker>, HasSuperDatePickerI18N, WithLabelPositionableMixin<SuperDatePicker>,
-                   WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>, WithTitleMixin<SuperDatePicker>,
+                   WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>,
                    WithPlaceholderMixin<SuperDatePicker>, WithDatePatternMixin<SuperDatePicker>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<DatePicker, LocalDate>, LocalDate, SuperDatePicker>,
                    WithIdMixin<SuperDatePicker>, WithHelperMixin<SuperDatePicker>, WithHelperPositionableMixin<SuperDatePicker>,
@@ -200,16 +198,6 @@ public class SuperDatePicker extends DatePicker
         if(!(i18n instanceof SuperDatePickerI18n))
             i18n = SuperDatePickerI18nHelper.from(i18n, this.getLocale());
         super.setI18n(i18n);
-    }
-
-    @Override
-    public void setTitle(String title) {
-        this.getElement().setProperty("title", Objects.requireNonNullElse(title, ""));
-    }
-
-    @Override
-    public String getTitle() {
-        return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
     }
 
 }
