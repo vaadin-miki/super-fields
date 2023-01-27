@@ -47,11 +47,11 @@ import java.util.Objects;
 public class SuperDatePicker extends DatePicker
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SuperDatePicker>,
                    TextSelectionNotifier<SuperDatePicker>, HasSuperDatePickerI18N, WithLabelPositionableMixin<SuperDatePicker>,
-        WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>, WithTitleMixin<SuperDatePicker>,
-        WithPlaceholderMixin<SuperDatePicker>, WithDatePatternMixin<SuperDatePicker>,
-        WithValueMixin<AbstractField.ComponentValueChangeEvent<DatePicker, LocalDate>, LocalDate, SuperDatePicker>,
-        WithIdMixin<SuperDatePicker>, WithHelperMixin<SuperDatePicker>, WithHelperPositionableMixin<SuperDatePicker>,
-        WithRequiredMixin<SuperDatePicker>, WithTooltipMixin<SuperDatePicker> {
+                   WithLocaleMixin<SuperDatePicker>, WithLabelMixin<SuperDatePicker>, WithTitleMixin<SuperDatePicker>,
+                   WithPlaceholderMixin<SuperDatePicker>, WithDatePatternMixin<SuperDatePicker>,
+                   WithValueMixin<AbstractField.ComponentValueChangeEvent<DatePicker, LocalDate>, LocalDate, SuperDatePicker>,
+                   WithIdMixin<SuperDatePicker>, WithHelperMixin<SuperDatePicker>, WithHelperPositionableMixin<SuperDatePicker>,
+                   WithRequiredMixin<SuperDatePicker>, WithTooltipMixin<SuperDatePicker> {
 
     private final DatePatternDelegate<SuperDatePicker> datePatternDelegate = new DatePatternDelegate<>(this);
 

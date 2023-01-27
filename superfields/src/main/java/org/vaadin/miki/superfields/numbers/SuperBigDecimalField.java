@@ -1,6 +1,7 @@
 package org.vaadin.miki.superfields.numbers;
 
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.dependency.JsModule;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -16,6 +17,7 @@ import java.util.Locale;
  * @author miki
  * @since 2020-04-08
  */
+@JsModule("./super-big-decimal-field.ts")
 @Tag("super-big-decimal-field")
 @SuppressWarnings("squid:S110") // yes, it has more than 5 superclasses, but what can I do?
 public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDecimal, SuperBigDecimalField> {
