@@ -11,20 +11,7 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
-import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
-import org.vaadin.miki.markers.CanSelectText;
-import org.vaadin.miki.markers.WithDatePatternMixin;
-import org.vaadin.miki.markers.WithHelperMixin;
-import org.vaadin.miki.markers.WithHelperPositionableMixin;
-import org.vaadin.miki.markers.WithIdMixin;
-import org.vaadin.miki.markers.WithLabelMixin;
-import org.vaadin.miki.markers.WithLocaleMixin;
-import org.vaadin.miki.markers.WithPlaceholderMixin;
-import org.vaadin.miki.markers.WithLabelPositionableMixin;
-import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
-import org.vaadin.miki.markers.WithRequiredMixin;
-import org.vaadin.miki.markers.WithTitleMixin;
-import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.markers.*;
 import org.vaadin.miki.shared.dates.DatePattern;
 import org.vaadin.miki.shared.text.TextSelectionDelegate;
 
@@ -50,7 +37,7 @@ public class SuperDatePicker extends DatePicker
                    WithPlaceholderMixin<SuperDatePicker>, WithDatePatternMixin<SuperDatePicker>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<DatePicker, LocalDate>, LocalDate, SuperDatePicker>,
                    WithIdMixin<SuperDatePicker>, WithHelperMixin<SuperDatePicker>, WithHelperPositionableMixin<SuperDatePicker>,
-                   WithRequiredMixin<SuperDatePicker> {
+                   WithRequiredMixin<SuperDatePicker>, WithTooltipMixin<SuperDatePicker> {
 
     private final DatePatternDelegate<SuperDatePicker> datePatternDelegate = new DatePatternDelegate<>(this);
 
