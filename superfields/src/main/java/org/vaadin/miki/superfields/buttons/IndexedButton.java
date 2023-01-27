@@ -4,7 +4,14 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
-import org.vaadin.miki.markers.*;
+import org.vaadin.miki.markers.Clickable;
+import org.vaadin.miki.markers.HasIndex;
+import org.vaadin.miki.markers.WithComponentAsIconMixin;
+import org.vaadin.miki.markers.WithIdMixin;
+import org.vaadin.miki.markers.WithIndexMixin;
+import org.vaadin.miki.markers.WithTextMixin;
+import org.vaadin.miki.markers.WithTitleMixin;
+import org.vaadin.miki.markers.WithTooltipMixin;
 
 import java.util.Objects;
 
