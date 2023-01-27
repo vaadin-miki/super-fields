@@ -61,19 +61,14 @@ final class SuperDatePickerI18nHelper {
         final Predicate<String> stringCheck = s -> s != null && !s.isEmpty();
         final Predicate<List<String>> listCheck = list -> list != null && !list.isEmpty();
 
-        processProperty(i18n::getCalendar, stringCheck, result::setCalendar);
         processProperty(i18n::getCancel, stringCheck, result::setCancel);
-        processProperty(i18n::getClear, stringCheck, result::setClear);
         processProperty(i18n::getToday, stringCheck, result::setToday);
-        processProperty(i18n::getWeek, stringCheck, result::setWeek);
         processProperty(i18n::getMonthNames, listCheck, result::setMonthNames);
         processProperty(i18n::getWeekdays, listCheck, result::setWeekdays);
         processProperty(i18n::getWeekdaysShort, listCheck, result::setWeekdaysShort);
         processProperty(i18n::getMonthNames, listCheck, result::setDisplayMonthNames);
         processProperty(i18n::getFirstDayOfWeek, x -> x > -1, result::setFirstDayOfWeek);
 
-        if(i18n.getCalendar() != null && !i18n.getCalendar().isEmpty())
-            result.setCalendar(i18n.getCalendar());
         return null;
     }
 }

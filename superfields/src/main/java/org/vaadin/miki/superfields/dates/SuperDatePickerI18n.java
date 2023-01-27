@@ -55,11 +55,8 @@ public final class SuperDatePickerI18n extends DatePicker.DatePickerI18n impleme
      * @param locale Locale to use.
      */
     public SuperDatePickerI18n(Locale locale) {
-        this.keysToStringMethods.put("calendar", this::setCalendar);
         this.keysToStringMethods.put("cancel", this::setCancel);
-        this.keysToStringMethods.put("clear", this::setClear);
         this.keysToStringMethods.put("today", this::setToday);
-        this.keysToStringMethods.put("week", this::setWeek);
         this.keysToListStringMethods.put("month-names", this::setMonthNames);
         this.keysToListStringMethods.put("weekdays", this::setWeekdays);
         this.keysToListStringMethods.put("weekdays-short", this::setWeekdaysShort);

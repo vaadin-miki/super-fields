@@ -9,9 +9,7 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.shared.Registration;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import org.vaadin.miki.markers.WithIdMixin;
 
 /**
@@ -29,7 +27,7 @@ import org.vaadin.miki.markers.WithIdMixin;
  */
 @JsModule("./unload-observer.js")
 @Tag("unload-observer")
-public class UnloadObserver extends PolymerTemplate<TemplateModel> implements WithIdMixin<UnloadObserver> {
+public class UnloadObserver extends Component implements WithIdMixin<UnloadObserver> {
 
     /**
      * Returns or creates an instance for current UI.

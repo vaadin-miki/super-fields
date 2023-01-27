@@ -1,7 +1,7 @@
-import {TextFieldElement} from '@vaadin/vaadin-text-field/src/vaadin-text-field';
+import {TextField} from '@vaadin/text-field';
 import {TextSelectionMixin} from "./text-selection-mixin";
 
-class SuperTextField extends TextSelectionMixin.to(TextFieldElement) {
+class SuperTextField extends TextSelectionMixin.to(TextField) {
 
     static get is() {return 'super-text-field'}
 

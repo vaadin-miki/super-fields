@@ -1,8 +1,8 @@
-import {DatePickerElement} from '@vaadin/vaadin-date-picker/src/vaadin-date-picker.js';
+import {DatePicker} from '@vaadin/date-picker';
 import {DatePatternMixin} from "./date-pattern-mixin";
 import {TextSelectionMixin} from "./text-selection-mixin";
 
-class SuperDatePicker extends TextSelectionMixin.to(DatePatternMixin.to(DatePickerElement)) {
+class SuperDatePicker extends TextSelectionMixin.to(DatePatternMixin.to(DatePicker)) {
 
     static get is() {return 'super-date-picker'}
 

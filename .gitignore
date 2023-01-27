@@ -17,3 +17,4 @@ build/
 stats.json
 vite*.ts
 demo-v23/frontend/generated/*.ts
+/demo-v24/frontend/generated/jar-resources/
