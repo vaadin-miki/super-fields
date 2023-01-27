@@ -16,4 +16,4 @@ node_modules
 build/
 stats.json
 vite*.ts
-demo-v23/frontend/generated/*.ts
+demo-v23/frontend/generated

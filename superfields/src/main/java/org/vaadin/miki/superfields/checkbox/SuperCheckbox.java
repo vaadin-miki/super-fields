@@ -3,7 +3,12 @@ package org.vaadin.miki.superfields.checkbox;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dependency.CssImport;
-import org.vaadin.miki.markers.*;
+import org.vaadin.miki.markers.WithIdMixin;
+import org.vaadin.miki.markers.WithLabelMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
+import org.vaadin.miki.markers.WithTitleMixin;
+import org.vaadin.miki.markers.WithTooltipMixin;
+import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.Objects;
 

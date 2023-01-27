@@ -110,17 +110,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- heroku https://devcenter.heroku.com/articles/deploying-java-applications-with-the-heroku-maven-plugin -->
-            <plugin>
-                <groupId>com.heroku.sdk</groupId>
-                <artifactId>heroku-maven-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <jdkVersion>11</jdkVersion>
-                    <appName>superfields</appName>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
