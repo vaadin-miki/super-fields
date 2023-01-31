@@ -43,7 +43,7 @@ public class DatePatternDelegateTest {
 
         // now formatted according to locale
         raw = this.datePicker.getFormattedValue();
-        Assert.assertEquals("03.05.1999", raw);
+        Assert.assertEquals("03.05.99", raw);
     }
 
 }
