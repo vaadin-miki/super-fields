@@ -4,11 +4,11 @@
     <parent>
         <artifactId>superfields-parent</artifactId>
         <groupId>pl.unforgiven</groupId>
-        <version>0.16.0-vaadin14</version>
+        <version>0.17.0-vaadin14</version>
     </parent>
 
     <artifactId>superfields-demo-v23</artifactId>
-    <version>0.16.0-vaadin14</version>
+    <version>0.17.0-vaadin14</version>
     <name>V14 demo app for SuperFields</name>
     <description>Showcase application for V14 and SuperFields.</description>
     <packaging>war</packaging>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>pl.unforgiven</groupId>
             <artifactId>superfields</artifactId>
-            <version>0.16.0-vaadin14</version>
+            <version>0.17.0-vaadin14</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -202,6 +202,9 @@
                                 <phase>compile</phase>
                             </execution>
                         </executions>
+                        <configuration>
+                            <productionMode>true</productionMode>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

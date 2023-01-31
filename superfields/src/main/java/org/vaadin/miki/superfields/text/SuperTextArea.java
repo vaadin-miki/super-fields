@@ -18,11 +18,11 @@ import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
-import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithLabelPositionableMixin;
+import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
-import org.vaadin.miki.markers.WithTitleMixin;
+import org.vaadin.miki.markers.WithTooltipMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.text.TextModificationDelegate;
 
@@ -39,8 +39,8 @@ public class SuperTextArea extends TextArea implements CanSelectText, TextSelect
         CanModifyText, WithRequiredMixin<SuperTextArea>, WithLabelPositionableMixin<SuperTextArea>,
         WithIdMixin<SuperTextArea>, WithLabelMixin<SuperTextArea>, WithPlaceholderMixin<SuperTextArea>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextArea>, WithClearButtonMixin<SuperTextArea>,
-        WithHelperMixin<SuperTextArea>, WithHelperPositionableMixin<SuperTextArea>, WithTitleMixin<SuperTextArea>,
-        WithValueMixin<AbstractField.ComponentValueChangeEvent<TextArea, String>, String, SuperTextArea> {
+        WithHelperMixin<SuperTextArea>, WithHelperPositionableMixin<SuperTextArea>,
+        WithValueMixin<AbstractField.ComponentValueChangeEvent<TextArea, String>, String, SuperTextArea>, WithTooltipMixin<SuperTextArea> {
 
     private final TextModificationDelegate<SuperTextArea> delegate = new TextModificationDelegate<>(this, this.getEventBus(), this::getValue);
 

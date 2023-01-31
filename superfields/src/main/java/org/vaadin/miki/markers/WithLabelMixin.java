@@ -1,5 +1,7 @@
 package org.vaadin.miki.markers;
 
+import com.vaadin.flow.component.HasLabel;
+
 /**
  * Mixin interface to support chaining {@link #setLabel(String)}.
  * @param <SELF> Self type.

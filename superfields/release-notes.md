@@ -1,3 +1,14 @@
+# 0.17.0 - HasTooltip, HasLabel and Vaadin 23.3
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#437 - [Use Vaadin's HasLabel](https://github.com/vaadin-miki/super-fields/issues/437)
+* \#443 - [Java 8 / Vaadin 14 releases to Central](https://github.com/vaadin-miki/super-fields/issues/443)
+* \#454 - [Replace HasTitle with HasTooltip](https://github.com/vaadin-miki/super-fields/issues/454)
+* \#456 - [Bump Vaadin to 23.3](https://github.com/vaadin-miki/super-fields/issues/456)
+## Bug fixes
+* \#440 - [Text selection mixin should not log a warning for delayed init](https://github.com/vaadin-miki/super-fields/issues/440)
+* \#448 - [Tooltip is not working in SuperLongField](https://github.com/vaadin-miki/super-fields/issues/448)
 # 0.16.0 - Maven Central
 ## New features and enhancements
 (nothing reported)

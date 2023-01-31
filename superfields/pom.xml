@@ -4,18 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.vaadin.miki</groupId>
+    <groupId>pl.unforgiven</groupId>
     <artifactId>superfields</artifactId>
     <name>SuperFields</name>
     <description>Code for various V14+ fields and other components.</description>
-    <version>0.16.0-vaadin14</version>
+    <version>0.17.0-vaadin14</version>
     <url>https://www.unforgiven.pl/superfields</url>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>14.9.1</vaadin.version>
+        <vaadin.version>14.9.5</vaadin.version>
         <maven.jar.plugin.version>3.1.2</maven.jar.plugin.version>
         <javadoc.plugin.version>3.4.1</javadoc.plugin.version>
     </properties>
@@ -48,7 +48,6 @@
     <dependencies>
         <dependency>
             <groupId>com.vaadin</groupId>
-            <!-- Replace artifactId with vaadin-core to use only free components -->
             <artifactId>vaadin-core</artifactId>
             <version>${vaadin.version}</version>
             <scope>provided</scope>
@@ -305,7 +304,7 @@
                         <version>1.6.7</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
+                            <serverId>maven-central</serverId>
                             <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
@@ -334,9 +333,9 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://github.com/vaadin-miki/superfields.git</connection>
-        <developerConnection>scm:git:git://github.com/vaadin-miki/superfields.git</developerConnection>
-        <url>https://github.com/vaadin-miki/superfields</url>
+        <connection>scm:git:git://github.com/vaadin-miki/super-fields.git</connection>
+        <developerConnection>scm:git:git://github.com/vaadin-miki/super-fields.git</developerConnection>
+        <url>https://github.com/vaadin-miki/super-fields</url>
     </scm>
 
 </project>

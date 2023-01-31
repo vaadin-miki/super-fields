@@ -10,7 +10,7 @@ import org.vaadin.miki.markers.WithComponentAsIconMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithIndexMixin;
 import org.vaadin.miki.markers.WithTextMixin;
-import org.vaadin.miki.markers.WithTitleMixin;
+import org.vaadin.miki.markers.WithTooltipMixin;
 
 /**
  * An indexed {@link Button}, i.e. one that implements {@link HasIndex}.
@@ -20,8 +20,8 @@ import org.vaadin.miki.markers.WithTitleMixin;
  */
 public class IndexedButton extends Button
         implements WithIndexMixin<IndexedButton>, WithIdMixin<IndexedButton>,
-        WithComponentAsIconMixin<IndexedButton>, WithTitleMixin<IndexedButton>,
-        WithTextMixin<IndexedButton>, Clickable {
+        WithComponentAsIconMixin<IndexedButton>,
+        WithTextMixin<IndexedButton>, Clickable, WithTooltipMixin<IndexedButton> {
 
     public static final int DEFAULT_INDEX = -1;
 

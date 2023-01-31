@@ -18,11 +18,11 @@ import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
-import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithLabelPositionableMixin;
+import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
-import org.vaadin.miki.markers.WithTitleMixin;
+import org.vaadin.miki.markers.WithTooltipMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.text.TextModificationDelegate;
 
@@ -39,8 +39,8 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
         CanModifyText, WithRequiredMixin<SuperTextField>, WithLabelPositionableMixin<SuperTextField>,
         WithIdMixin<SuperTextField>, WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
-        WithHelperMixin<SuperTextField>, WithTitleMixin<SuperTextField>, WithHelperPositionableMixin<SuperTextField>,
-        WithReceivingSelectionEventsFromClientMixin<SuperTextField>, WithClearButtonMixin<SuperTextField> {
+        WithHelperMixin<SuperTextField>, WithHelperPositionableMixin<SuperTextField>,
+        WithReceivingSelectionEventsFromClientMixin<SuperTextField>, WithClearButtonMixin<SuperTextField>, WithTooltipMixin<SuperTextField> {
 
     private final TextModificationDelegate<SuperTextField> delegate = new TextModificationDelegate<>(this, this.getEventBus(), this::getValue);
 

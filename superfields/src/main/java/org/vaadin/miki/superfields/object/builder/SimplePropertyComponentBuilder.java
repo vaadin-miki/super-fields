@@ -1,10 +1,10 @@
 package org.vaadin.miki.superfields.object.builder;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.slf4j.LoggerFactory;
-import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.superfields.object.Property;
 import org.vaadin.miki.superfields.object.PropertyComponentBuilder;
 import org.vaadin.miki.superfields.text.LabelField;

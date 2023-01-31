@@ -1,6 +1,6 @@
 # Demo app
 
-Demo application of the latest release can be found at https://superfields.herokuapp.com/.
+Demo application of the latest release can be found at https://demo.unforgiven.pl/superfields/.
 
 Source code for the app and for the components can be found at https://github.com/vaadin-miki/super-fields/.
 
