@@ -34,7 +34,7 @@ public class ContentAware extends Div implements ContentChangeNotifier, WithIdMi
                     "$0.observer = new MutationObserver((list, obs) => {" +
                     "list.forEach( (mutation) => {" +
                     "$0.$server.mutationObserved(mutation.addedNodes.length, mutation.removedNodes.length);" +
-//                    "mutation.addedNodes.forEach( (node) => {console.warn('added '+node);});" +
+//                    "mutation.addedNodes.forEach( (node) => {console.log('added '+node);});" +
                     "});" +
                             "});" +
                     "}"

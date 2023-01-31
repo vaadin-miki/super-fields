@@ -6,10 +6,8 @@ import com.vaadin.flow.component.dependency.CssImport;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLabelPositionableMixin;
-import org.vaadin.miki.markers.WithTitleMixin;
+import org.vaadin.miki.markers.WithTooltipMixin;
 import org.vaadin.miki.markers.WithValueMixin;
-
-import java.util.Objects;
 
 /**
  * A regular {@link Checkbox} that can be made read-only (it becomes disabled when set to read-only).
@@ -24,7 +22,7 @@ import java.util.Objects;
 @CssImport(value = "./styles/label-positions-checkbox.css", themeFor = "vaadin-checkbox")
 public class SuperCheckbox extends Checkbox implements
         WithLabelMixin<SuperCheckbox>, WithValueMixin<AbstractField.ComponentValueChangeEvent<Checkbox, Boolean>, Boolean, SuperCheckbox>,
-        WithIdMixin<SuperCheckbox>, WithTitleMixin<SuperCheckbox>, WithLabelPositionableMixin<SuperCheckbox> {
+        WithIdMixin<SuperCheckbox>, WithLabelPositionableMixin<SuperCheckbox>, WithTooltipMixin<SuperCheckbox> {
 
     private boolean enabled = true;
     private boolean readOnly = false;
@@ -44,16 +42,6 @@ public class SuperCheckbox extends Checkbox implements
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         super.setEnabled(this.isReallyEnabled());
-    }
-
-    @Override
-    public void setTitle(String title) {
-        this.getElement().setProperty("title", Objects.requireNonNullElse(title, ""));
-    }
-
-    @Override
-    public String getTitle() {
-        return Objects.requireNonNullElse(this.getElement().getProperty("title"), "");
     }
 
 }

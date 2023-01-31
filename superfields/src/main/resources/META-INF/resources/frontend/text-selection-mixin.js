@@ -67,7 +67,7 @@ export class TextSelectionMixin {
                     console.log('TSM: input component is undefined, attempting to find it from shadow root/input element');
                     inputComponent = webComponent.inputElement;
                     if (inputComponent === undefined) {
-                        console.warn('TSM: no input component, server will reinitialise this component shortly');
+                        console.log('TSM: no input component, server will reinitialise this component shortly (probably used inside Grid, nothing to worry about)');
                         // this trick has been suggested by the magnificent Erik Lumme, thank you!
                         webComponent.$server.reinitialiseListening();
                     }

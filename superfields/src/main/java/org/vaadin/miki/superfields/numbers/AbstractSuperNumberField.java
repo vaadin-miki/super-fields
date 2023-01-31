@@ -7,6 +7,7 @@ import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -33,7 +34,7 @@ import org.vaadin.miki.markers.WithNullValueOptionallyAllowedMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
-import org.vaadin.miki.markers.WithTitleMixin;
+import org.vaadin.miki.markers.WithTooltipMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.labels.LabelPosition;
 import org.vaadin.miki.superfields.text.SuperTextField;
@@ -59,11 +60,11 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         extends CustomField<T>
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SELF>,
                    TextSelectionNotifier<SELF>, HasPrefixAndSuffix, HasValueChangeMode,
-                   WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>, WithTitleMixin<SELF>,
+                   WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
                    WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF>, WithClearButtonMixin<SELF>,
-                   WithRequiredMixin<SELF>, WithLabelPositionableMixin<SELF> {
+                   WithRequiredMixin<SELF>, WithLabelPositionableMixin<SELF>, WithTooltipMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -633,16 +634,6 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     @Override
-    public void setTitle(String title) {
-        this.field.setTitle(title);
-    }
-
-    @Override
-    public String getTitle() {
-        return this.field.getTitle();
-    }
-
-    @Override
     public void setId(String id) {
         super.setId(id);
         this.field.setId(id == null ? null : TEXT_FIELD_STYLE_PREFIX +id);
@@ -650,7 +641,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     /**
      * Returns the raw value, as currently displayed in the underlying text field.
-     * This may depend on whether or not the component has focus, what locale is used, etc.
+     * This may depend on whether the component has focus, what locale is used, etc.
      * @return Raw value currently displayed in the underlying text field.
      */
     public String getRawValue() {
@@ -812,6 +803,15 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         return this.field.isHelperAbove();
     }
 
+    @Override
+    public Tooltip setTooltipText(String text) {
+        return this.field.setTooltipText(text);
+    }
+
+    @Override
+    public Tooltip getTooltip() {
+        return this.field.getTooltip();
+    }
     @Override
     public void setValueChangeMode(ValueChangeMode valueChangeMode) {
         this.field.setValueChangeMode(valueChangeMode);

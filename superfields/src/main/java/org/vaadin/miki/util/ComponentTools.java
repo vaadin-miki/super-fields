@@ -2,11 +2,12 @@ package org.vaadin.miki.util;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasHelper;
+import com.vaadin.flow.component.HasLabel;
+import com.vaadin.flow.component.shared.HasTooltip;
 import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import org.vaadin.miki.markers.HasDatePattern;
 import org.vaadin.miki.markers.HasHelperPositionable;
 import org.vaadin.miki.markers.HasIcon;
-import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.markers.HasLocale;
 import org.vaadin.miki.markers.HasPlaceholder;
 
@@ -26,6 +27,8 @@ public class ComponentTools {
             ((HasHelper) newComponent).setHelperText(((HasHelper) oldComponent).getHelperText());
             ((HasHelper) newComponent).setHelperComponent(((HasHelper) oldComponent).getHelperComponent());
         }
+        if(oldComponent instanceof HasTooltip && newComponent instanceof HasTooltip)
+            ((HasTooltip) newComponent).setTooltipText(((HasTooltip) oldComponent).getTooltip().getText());
         if(oldComponent instanceof HasHelperPositionable && newComponent instanceof HasHelperPositionable)
             ((HasHelperPositionable) newComponent).setHelperAbove(((HasHelperPositionable) oldComponent).isHelperAbove());
         if(oldComponent instanceof HasPrefixAndSuffix && newComponent instanceof HasPrefixAndSuffix) {

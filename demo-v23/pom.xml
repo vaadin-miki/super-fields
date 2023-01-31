@@ -4,18 +4,17 @@
     <parent>
         <artifactId>superfields-parent</artifactId>
         <groupId>pl.unforgiven</groupId>
-        <version>0.16.0</version>
+        <version>0.17.0</version>
     </parent>
 
     <artifactId>superfields-demo-v23</artifactId>
-    <version>0.16.0</version>
+    <version>0.17.0</version>
     <name>V23+ demo app for SuperFields</name>
     <description>Showcase application for V23+ and SuperFields.</description>
     <packaging>war</packaging>
 
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <node.version>v16.14.0</node.version>
         <jetty.plugin.version>9.4.36.v20210114</jetty.plugin.version>
     </properties>
 
@@ -23,7 +22,7 @@
         <dependency>
             <groupId>pl.unforgiven</groupId>
             <artifactId>superfields</artifactId>
-            <version>0.16.0</version>
+            <version>0.17.0</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -49,33 +48,6 @@
             <!-- Replace artifactId with vaadin-core to use only free components -->
             <artifactId>vaadin</artifactId>
             <version>${vaadin.version}</version>
-            <exclusions>
-                <!-- Webjars are only needed when running in Vaadin 13 compatibility mode -->
-                <exclusion>
-                    <groupId>com.vaadin.webjar</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.insites</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.polymer</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.polymerelements</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.vaadin</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.webcomponents</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
@@ -138,36 +110,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- install node/npm locally -->
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.9.1</version>
-                <executions>
-                    <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <nodeVersion>${node.version}</nodeVersion>
-                </configuration>
-            </plugin>
-
-            <!-- heroku https://devcenter.heroku.com/articles/deploying-java-applications-with-the-heroku-maven-plugin -->
-            <plugin>
-                <groupId>com.heroku.sdk</groupId>
-                <artifactId>heroku-maven-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <jdkVersion>11</jdkVersion>
-                    <appName>superfields</appName>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -175,18 +117,6 @@
         <profile>
             <!-- Production mode is activated using -Pproduction -->
             <id>production</id>
-            <properties>
-                <vaadin.productionMode>true</vaadin.productionMode>
-            </properties>
-
-            <dependencies>
-                <dependency>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>flow-server-production-mode</artifactId>
-                    <version>3.0.6</version>
-                </dependency>
-            </dependencies>
-
             <build>
                 <plugins>
                     <plugin>
@@ -196,12 +126,14 @@
                         <executions>
                             <execution>
                                 <goals>
-                                    <goal>prepare-frontend</goal>
                                     <goal>build-frontend</goal>
                                 </goals>
                                 <phase>compile</phase>
                             </execution>
                         </executions>
+                        <configuration>
+                            <productionMode>true</productionMode>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
