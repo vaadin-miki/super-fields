@@ -1,7 +1,5 @@
 package org.vaadin.miki.markers;
 
-import com.vaadin.flow.component.shared.HasTooltip;
-
 /**
  * Mixin interface to support chaining {@link #setTooltipText(String)}.
  * @param <SELF> Self type.

@@ -139,4 +139,13 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
         return super.isClearButtonVisible();
     }
 
+    @Override
+    public void setTooltipText(String tooltipText) {
+        super.setTitle(tooltipText);
+    }
+
+    @Override
+    public String getTooltipText() {
+        return super.getTitle();
+    }
 }

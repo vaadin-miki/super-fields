@@ -2,6 +2,7 @@ package org.vaadin.miki.superfields.object;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -10,7 +11,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.vaadin.miki.markers.HasLabel;
 import org.vaadin.miki.superfields.util.factory.ObjectFieldFactory;
 
 import java.math.BigDecimal;

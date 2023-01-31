@@ -148,12 +148,12 @@ public class IndexedButton extends Button
     }
 
     @Override
-    public void setTitle(String title) {
+    public void setTooltipText(String title) {
         this.getElement().setProperty("title", title == null ? "" : title);
     }
 
     @Override
-    public String getTitle() {
+    public String getTooltipText() {
         final String result = this.getElement().getProperty("title");
         return result == null ? "" : result;
     }

@@ -1,7 +1,6 @@
 package org.vaadin.miki.superfields.numbers;
 
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.dependency.JsModule;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -13,7 +12,7 @@ import java.util.Locale;
  * @author miki
  * @since 2020-04-07
  */
-@JsModule("./super-integer-field.ts")
+//@JsModule("./super-integer-field.ts")
 @Tag("super-integer-field")
 @SuppressWarnings("squid:S110") // yes, it has more than 5 superclasses, but what can I do?
 public class SuperIntegerField extends AbstractSuperNumberField<Integer, SuperIntegerField> {

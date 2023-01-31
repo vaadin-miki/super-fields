@@ -5,12 +5,9 @@ import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -19,6 +16,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.shared.Registration;
+import javafx.scene.control.Tooltip;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.events.text.TextSelectionEvent;
@@ -807,13 +805,13 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     @Override
-    public Tooltip setTooltipText(String text) {
-        return this.field.setTooltipText(text);
+    public void setTooltipText(String text) {
+        this.field.setTooltipText(text);
     }
 
     @Override
-    public Tooltip getTooltip() {
-        return this.field.getTooltip();
+    public String getTooltipText() {
+        return this.field.getTooltipText();
     }
     @Override
     public void setValueChangeMode(ValueChangeMode valueChangeMode) {

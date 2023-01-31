@@ -45,12 +45,12 @@ public class SuperCheckbox extends Checkbox implements
     }
 
     @Override
-    public void setTitle(String title) {
+    public void setTooltipText(String title) {
         this.getElement().setProperty("title", title == null ? "" : title);
     }
 
     @Override
-    public String getTitle() {
+    public String getTooltipText() {
         final String title = this.getElement().getProperty("title");
         return title == null ? "" : title;
     }

@@ -1,9 +1,9 @@
 package org.vaadin.miki.demo.builders;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.shared.HasTooltip;
 import org.vaadin.miki.demo.ContentBuilder;
 import org.vaadin.miki.demo.Order;
+import org.vaadin.miki.markers.HasTooltip;
 import org.vaadin.miki.superfields.text.SuperTextField;
 
 import java.util.function.Consumer;
