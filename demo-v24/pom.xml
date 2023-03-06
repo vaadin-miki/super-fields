@@ -90,6 +90,9 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.plugin.version}</version>
                 <configuration>
+                    <systemProperties>
+                        <vaadin.frontend.hotdeploy>true</vaadin.frontend.hotdeploy>
+                    </systemProperties>
                     <scanIntervalSeconds>1</scanIntervalSeconds>
                 </configuration>
             </plugin>
