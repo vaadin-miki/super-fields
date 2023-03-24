@@ -81,27 +81,27 @@ public class HeaderFooterFieldWrapper<T,
 
     @Override
     public void setLabel(String label) {
-        if(this.field instanceof HasLabel)
-            ((HasLabel) this.field).setLabel(label);
+        if(this.field instanceof HasLabel hasLabel)
+            hasLabel.setLabel(label);
         else super.setLabel(label);
     }
 
     @Override
     public String getLabel() {
-        return this.field instanceof HasLabel ? ((HasLabel) this.field).getLabel() : super.getLabel();
+        return this.field instanceof HasLabel hasLabel ? hasLabel.getLabel() : super.getLabel();
     }
 
     @Override
     public void setHelperComponent(Component component) {
-        if(this.field instanceof HasHelper)
-            ((HasHelper) this.field).setHelperComponent(component);
+        if(this.field instanceof HasHelper hasHelper)
+            hasHelper.setHelperComponent(component);
         else super.setHelperComponent(component);
     }
 
     @Override
     public void setHelperText(String helperText) {
-        if(this.field instanceof HasHelper)
-            ((HasHelper) this.field).setHelperText(helperText);
+        if(this.field instanceof HasHelper hasHelper)
+            hasHelper.setHelperText(helperText);
         else super.setHelperText(helperText);
     }
 
@@ -142,8 +142,8 @@ public class HeaderFooterFieldWrapper<T,
                 .map(Optional::get)
                 .map(Component::getChildren)
                 .forEach(stream -> this.propagateSetIndex(index, stream));
-        if(this.field instanceof HasIndex)
-            ((HasIndex) this.field).setIndex(index);
+        if(this.field instanceof HasIndex hasIndex)
+            hasIndex.setIndex(index);
     }
 
     public void setDisablingFooterOnReadOnly(boolean disablingFooterOnReadOnly) {

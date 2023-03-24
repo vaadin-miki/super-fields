@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A field capable of displaying any object, provided it is known how to construct various elements of it.
@@ -169,7 +168,7 @@ public class ObjectField<T> extends CustomField<T>
                         this.properties.put(definition, component);
                         LOGGER.debug("field {} belongs to group {}, added to group layout", definition.getName(), groupName);
                         return component;
-                    }).collect(Collectors.toList());
+                    }).toList();
                     // configure an entire group
                     this.groupConfigurators.forEach(configurator -> configurator.configureComponentGroup(t, groupName, groupContents, groupComponents));
                     // add group layout to layout
@@ -186,7 +185,7 @@ public class ObjectField<T> extends CustomField<T>
             );
             // configure all components
             if(!this.groupConfigurators.isEmpty()) {
-                final var allComponents = this.definitions.stream().map(this.properties::get).collect(Collectors.toList());
+                final var allComponents = this.definitions.stream().map(this.properties::get).toList();
                 this.groupConfigurators.forEach(configurator -> configurator.configureComponentGroup(t, null, this.definitions, allComponents));
             }
 
