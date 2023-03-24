@@ -54,7 +54,7 @@ public final class DemoComponentFactory implements Serializable {
 
     private final Map<Class<?>, ContentBuilder<?>> contentBuilders = new LinkedHashMap<>();
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "squid:S3740"}) // validator type should be ok
     private DemoComponentFactory() {
         final ValidatorStorage storage = new ValidatorStorage();
 
@@ -66,9 +66,8 @@ public final class DemoComponentFactory implements Serializable {
                         final ComponentProvider<?> componentProvider = type.getDeclaredConstructor().newInstance();
                         final Component component = componentProvider.getComponent();
                         this.components.put(component.getClass(), component);
-                        if (componentProvider instanceof Validator && component instanceof HasValue)
-                            //noinspection rawtypes
-                            storage.registerValidator((HasValue<?, ?>) component).accept((Validator) componentProvider);
+                        if (componentProvider instanceof Validator validator && component instanceof HasValue)
+                            storage.registerValidator((HasValue<?, ?>) component).accept(validator);
                     } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                         LOGGER.error("creating a component from {} failed due to error {} with message {}", type.getSimpleName(), e.getClass().getSimpleName(), e.getMessage());
                     }
@@ -82,8 +81,8 @@ public final class DemoComponentFactory implements Serializable {
                         final ContentBuilder<?> contentBuilder = type.getDeclaredConstructor().newInstance();
                         final Class<?> suitableType = ReflectTools.getGenericInterfaceType(contentBuilder.getClass(), ContentBuilder.class);
                         this.contentBuilders.put(suitableType, contentBuilder);
-                        if (contentBuilder instanceof NeedsValidatorStorage)
-                            ((NeedsValidatorStorage) contentBuilder).setValidatorStorage(storage);
+                        if (contentBuilder instanceof NeedsValidatorStorage nvs)
+                            nvs.setValidatorStorage(storage);
                     } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                         LOGGER.error("creating a content builder from {} failed due to error {} with message {}", type.getSimpleName(), e.getClass().getSimpleName(), e.getMessage());
                     }

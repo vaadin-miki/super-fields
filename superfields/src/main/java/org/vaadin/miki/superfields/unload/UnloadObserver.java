@@ -9,9 +9,7 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.shared.Registration;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import org.vaadin.miki.markers.WithIdMixin;
 
 /**
@@ -29,7 +27,7 @@ import org.vaadin.miki.markers.WithIdMixin;
  */
 @JsModule("./unload-observer.js")
 @Tag("unload-observer")
-public class UnloadObserver extends PolymerTemplate<TemplateModel> implements WithIdMixin<UnloadObserver> {
+public class UnloadObserver extends Component implements WithIdMixin<UnloadObserver> {
 
     /**
      * Returns or creates an instance for current UI.
@@ -92,10 +90,10 @@ public class UnloadObserver extends PolymerTemplate<TemplateModel> implements Wi
             @SuppressWarnings("squid:S3655") // the check is done just a line above
             Component currentParent = observer.getParent().get();
             if(currentParent != parent) {
-                if(!(currentParent instanceof HasComponents))
+                if(!(currentParent instanceof HasComponents hasComponents))
                     throw new IllegalStateException("UnloadObserver is currently attached to "+currentParent.getClass().getName()+" which is not HasComponents and cannot be automatically removed");
                 else {
-                    ((HasComponents) currentParent).remove(observer);
+                    hasComponents.remove(observer);
                     parent.add(observer);
                 }
             }

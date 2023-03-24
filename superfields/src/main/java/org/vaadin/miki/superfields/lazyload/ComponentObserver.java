@@ -6,11 +6,9 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.internal.JsonSerializer;
 import com.vaadin.flow.shared.Registration;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.markers.WithIdMixin;
@@ -28,7 +26,7 @@ import java.util.Optional;
  */
 @JsModule("./component-observer.js")
 @Tag("component-observer")
-public class ComponentObserver extends PolymerTemplate<TemplateModel> implements WithIdMixin<ComponentObserver> {
+public class ComponentObserver extends Component implements WithIdMixin<ComponentObserver> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ComponentObserver.class);
 

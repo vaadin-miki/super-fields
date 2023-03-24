@@ -4,32 +4,33 @@
     <parent>
         <artifactId>superfields-parent</artifactId>
         <groupId>pl.unforgiven</groupId>
-        <version>0.6.66-SNAPSHOT</version>
+        <version>0.7.77-SNAPSHOT</version>
     </parent>
 
-    <artifactId>superfields-demo-v23</artifactId>
-    <version>0.6.66-SNAPSHOT</version>
-    <name>V23+ demo app for SuperFields</name>
-    <description>Showcase application for V23+ and SuperFields.</description>
+    <artifactId>superfields-demo-v24</artifactId>
+    <version>0.7.77-SNAPSHOT</version>
+    <name>V24+ demo app for SuperFields</name>
+    <description>Showcase application for V24+ and SuperFields.</description>
     <packaging>war</packaging>
 
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <jetty.plugin.version>9.4.36.v20210114</jetty.plugin.version>
+        <jetty.plugin.version>11.0.13</jetty.plugin.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>pl.unforgiven</groupId>
             <artifactId>superfields</artifactId>
-            <version>0.6.66-SNAPSHOT</version>
+            <version>0.7.77-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
+
         <!-- Added to provide logging output as Flow uses -->
         <!-- the unbound SLF4J no-operation (NOP) logger implementation -->
         <dependency>
@@ -79,7 +80,6 @@
         </repository>
     </repositories>
 
-
     <build>
         <defaultGoal>jetty:run</defaultGoal>
         <plugins>
@@ -89,7 +89,9 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.plugin.version}</version>
                 <configuration>
-                    <scanIntervalSeconds>1</scanIntervalSeconds>
+                    <systemProperties>
+                        <vaadin.frontend.hotdeploy>true</vaadin.frontend.hotdeploy>
+                    </systemProperties>
                 </configuration>
             </plugin>
 
@@ -109,6 +111,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
             </plugin>
         </plugins>
     </build>

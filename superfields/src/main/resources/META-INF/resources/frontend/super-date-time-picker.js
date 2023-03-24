@@ -1,4 +1,4 @@
-import {DateTimePicker} from '@vaadin/vaadin-date-time-picker/src/vaadin-date-time-picker.js';
+import {DateTimePicker} from '@vaadin/date-time-picker';
 import {DatePatternMixin} from "./date-pattern-mixin";
 
 class SuperDateTimePicker extends DatePatternMixin.to(DateTimePicker) {
