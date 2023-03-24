@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * A locale-powered {@link com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n}.
@@ -55,11 +54,8 @@ public final class SuperDatePickerI18n extends DatePicker.DatePickerI18n impleme
      * @param locale Locale to use.
      */
     public SuperDatePickerI18n(Locale locale) {
-        this.keysToStringMethods.put("calendar", this::setCalendar);
         this.keysToStringMethods.put("cancel", this::setCancel);
-        this.keysToStringMethods.put("clear", this::setClear);
         this.keysToStringMethods.put("today", this::setToday);
-        this.keysToStringMethods.put("week", this::setWeek);
         this.keysToListStringMethods.put("month-names", this::setMonthNames);
         this.keysToListStringMethods.put("weekdays", this::setWeekdays);
         this.keysToListStringMethods.put("weekdays-short", this::setWeekdaysShort);
@@ -95,8 +91,8 @@ public final class SuperDatePickerI18n extends DatePicker.DatePickerI18n impleme
         this.setMonthNames(Arrays.asList(symbols.getMonths()).subList(0, 12));
         this.setDisplayMonthNames(Arrays.asList(symbols.getMonths()).subList(0, 12));
         this.setFirstDayOfWeek(Calendar.getInstance(this.locale).getFirstDayOfWeek() == Calendar.MONDAY ? 1 : 0);
-        this.setWeekdays(Arrays.stream(symbols.getWeekdays()).filter(s -> !s.isEmpty()).collect(Collectors.toList()));
-        this.setWeekdaysShort(Arrays.stream(symbols.getShortWeekdays()).filter(s -> !s.isEmpty()).collect(Collectors.toList()));
+        this.setWeekdays(Arrays.stream(symbols.getWeekdays()).filter(s -> !s.isEmpty()).toList());
+        this.setWeekdaysShort(Arrays.stream(symbols.getShortWeekdays()).filter(s -> !s.isEmpty()).toList());
 
         try {
             final ResourceBundle bundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, this.locale);
@@ -114,7 +110,7 @@ public final class SuperDatePickerI18n extends DatePicker.DatePickerI18n impleme
             this.keysToListStringMethods.entrySet().stream()
                     .filter(entry -> bundleKeys.contains(entry.getKey()))
                     // originally the line below used \\s*,\\s* which is prone to catastrophic backtracking - split on , and then trimming should work equally fine
-                    .forEach(entry -> entry.getValue().apply(Arrays.stream(bundle.getString(entry.getKey()).split(",")).map(String::trim).collect(Collectors.toList())));
+                    .forEach(entry -> entry.getValue().apply(Arrays.stream(bundle.getString(entry.getKey()).split(",")).map(String::trim).toList()));
             if(bundleKeys.contains("first-day-of-week"))
                 this.setFirstDayOfWeek(Integer.parseInt(bundle.getString("first-day-of-week")));
             LOGGER.info("these properties were overwritten by resource bundle: {}", bundleKeys);

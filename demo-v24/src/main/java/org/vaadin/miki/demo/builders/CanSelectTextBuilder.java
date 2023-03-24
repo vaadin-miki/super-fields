@@ -33,9 +33,9 @@ public class CanSelectTextBuilder implements ContentBuilder<CanSelectText> {
         callback.accept(new Component[]{
                 layout
         });
-        if(component instanceof CanReceiveSelectionEventsFromClient) {
+        if(component instanceof CanReceiveSelectionEventsFromClient canReceive) {
             final Checkbox receiveFromClient = new Checkbox("Allow selection events initiated by keyboard or mouse?",
-                    event -> ((CanReceiveSelectionEventsFromClient) component).setReceivingSelectionEventsFromClient(event.getValue()));
+                    event -> canReceive.setReceivingSelectionEventsFromClient(event.getValue()));
             callback.accept(new Component[] {receiveFromClient});
         }
         if(component instanceof TextSelectionNotifier<?>) {

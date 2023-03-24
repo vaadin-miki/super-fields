@@ -7,8 +7,10 @@ import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.shared.HasPrefix;
+import com.vaadin.flow.component.shared.HasSuffix;
+import com.vaadin.flow.component.shared.ThemeVariant;
 import com.vaadin.flow.component.shared.Tooltip;
-import com.vaadin.flow.component.textfield.HasPrefixAndSuffix;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.value.HasValueChangeMode;
@@ -59,7 +61,7 @@ import java.util.function.Consumer;
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SELF>,
-                   TextSelectionNotifier<SELF>, HasPrefixAndSuffix, HasValueChangeMode,
+                   TextSelectionNotifier<SELF>, HasPrefix, HasSuffix, HasValueChangeMode,
                    WithLocaleMixin<SELF>, WithLabelMixin<SELF>, WithPlaceholderMixin<SELF>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
@@ -167,7 +169,6 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.add(this.field);
 
         this.field.setLabel(label);
-        this.field.setPreventInvalidInput(true);
         this.field.setWidthFull();
 
         this.field.addFocusListener(this::onFieldSelected);
@@ -651,7 +652,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Allows adding theme variants to the underlying text field.
      * @param variants Theme variants to add.
-     * @see TextField#addThemeVariants(TextFieldVariant...)
+     * @see TextField#addThemeVariants(ThemeVariant[])
      */
     public void addThemeVariants(TextFieldVariant... variants) {
         this.field.addThemeVariants(variants);
@@ -660,7 +661,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     /**
      * Allows removing theme variants from the underlying text field.
      * @param variants Theme variants to remove.
-     * @see TextField#removeThemeVariants(TextFieldVariant...)
+     * @see TextField#removeThemeVariants(ThemeVariant[])
      */
     public void removeThemeVariants(TextFieldVariant... variants) {
         this.field.removeThemeVariants(variants);
