@@ -34,12 +34,12 @@ public interface HasReadOnly {
      *                 Otherwise, nothing happens.
      */
     static void setReadOnly(boolean readOnly, Component component) {
-        if(component instanceof HasReadOnly)
-            ((HasReadOnly) component).setReadOnly(readOnly);
-        else if(component instanceof HasValue)
-            ((HasValue<?, ?>) component).setReadOnly(readOnly);
-        else if(component instanceof HasEnabled && !(component instanceof HasComponents)) // HasComponents implements HasEnabled, that caused #402
-            ((HasEnabled) component).setEnabled(!readOnly);
+        if(component instanceof HasReadOnly hasReadOnly)
+            hasReadOnly.setReadOnly(readOnly);
+        else if(component instanceof HasValue<?, ?> hasValue)
+            hasValue.setReadOnly(readOnly);
+        else if(component instanceof HasEnabled hasEnabled && !(component instanceof HasComponents)) // HasComponents implements HasEnabled, that caused #402
+            hasEnabled.setEnabled(!readOnly);
         // delegate to children
         component.getChildren().forEach(child -> setReadOnly(readOnly, child));
     }

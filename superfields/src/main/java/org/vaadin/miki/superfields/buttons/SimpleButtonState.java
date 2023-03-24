@@ -21,6 +21,7 @@ public class SimpleButtonState implements ButtonState, WithComponentAsIconMixin<
      * @param texts Texts to produce {@link ButtonState}s for.
      * @return A non-null list of {@link ButtonState}s.
      */
+    @SuppressWarnings("squid:S6204") // no need to expose SimpleButtonState in the generic
     public static List<ButtonState> forTexts(String... texts) {
         return Stream.of(texts).map(SimpleButtonState::new).collect(Collectors.toList());
     }

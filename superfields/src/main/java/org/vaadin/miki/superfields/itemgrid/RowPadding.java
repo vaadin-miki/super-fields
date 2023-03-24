@@ -8,7 +8,8 @@ import java.util.Objects;
  * @author miki
  * @since 2020-12-15
  */
-// note: this would make a nice record, but those are available in Java 14
+@SuppressWarnings("squid:S6206")
+// note: this will be converted to a record once Vaadin 14 is not needed
 public final class RowPadding {
 
     /**

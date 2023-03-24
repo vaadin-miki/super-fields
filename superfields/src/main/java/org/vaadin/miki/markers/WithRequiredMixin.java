@@ -6,6 +6,7 @@ package org.vaadin.miki.markers;
  * @author miki
  * @since 2022-09-09
  */
+@SuppressWarnings("squid:S119") // SELF is a good generic name
 public interface WithRequiredMixin<SELF extends HasRequired> extends HasRequired {
 
     /**

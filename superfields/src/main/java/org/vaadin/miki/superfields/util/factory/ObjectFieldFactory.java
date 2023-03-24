@@ -79,8 +79,8 @@ public class ObjectFieldFactory {
     );
 
     private static void setLabel(Object component, String label) {
-        if(component instanceof HasLabel)
-            ((HasLabel) component).setLabel(label);
+        if(component instanceof HasLabel hasLabel)
+            hasLabel.setLabel(label);
     }
 
     private static String[] sanitiseStyles(Collection<String> strings, String groupName) {
@@ -331,8 +331,8 @@ public class ObjectFieldFactory {
                         component.setReadOnly((boolean) definition.getMetadata().get(MetadataProperties.READ_ONLY_METADATA_PROPERTY).getValue());
                 },
                 (object, definition, component) -> {
-                    if(component instanceof HasStyle && definition.getMetadata().containsKey(MetadataProperties.COMPONENT_STYLE_METADATA_PROPERTY) && definition.getMetadata().get(MetadataProperties.COMPONENT_STYLE_METADATA_PROPERTY).hasValueOfType(String[].class))
-                        ((HasStyle) component).addClassNames((String[]) definition.getMetadata().get(MetadataProperties.COMPONENT_STYLE_METADATA_PROPERTY).getValue());
+                    if(component instanceof HasStyle hasStyle && definition.getMetadata().containsKey(MetadataProperties.COMPONENT_STYLE_METADATA_PROPERTY) && definition.getMetadata().get(MetadataProperties.COMPONENT_STYLE_METADATA_PROPERTY).hasValueOfType(String[].class))
+                        hasStyle.addClassNames((String[]) definition.getMetadata().get(MetadataProperties.COMPONENT_STYLE_METADATA_PROPERTY).getValue());
                     if(definition.getMetadata().containsKey(MetadataProperties.COMPONENT_ID_METADATA_PROPERTY) && definition.getMetadata().get(MetadataProperties.COMPONENT_ID_METADATA_PROPERTY).getValue() != null)
                         ((Component) component).setId(definition.getMetadata().get(MetadataProperties.COMPONENT_ID_METADATA_PROPERTY).getValue().toString());
                 }
@@ -352,9 +352,7 @@ public class ObjectFieldFactory {
                     return Optional.empty();
                 else {
                     final C layout = (C) getObjectFieldGroupLayoutProvider().get();
-                    // apply style names if possible
-                    if(layout instanceof HasStyle)
-                        ((HasStyle) layout).addClassNames(sanitiseStyles(getGroupLayoutStyleNames(), groupName));
+                    layout.addClassNames(sanitiseStyles(getGroupLayoutStyleNames(), groupName));
                     return Optional.of(layout);
                 }
             }
