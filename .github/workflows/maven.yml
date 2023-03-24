@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Build (Java 11)
+name: Build (Java 17)
 
 on:
   push:
@@ -21,6 +21,6 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: 17
-        distribution: semeru
+        distribution: temurin
     - name: Build with Maven
       run: mvn -B package --file pom.xml
