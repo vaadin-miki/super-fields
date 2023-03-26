@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -198,7 +197,7 @@ public class ItemGrid<T>
      * Repaints all current items.
      */
     protected final void repaintAllItems() {
-        this.repaintAllItems(this.cells.stream().filter(CellInformation::isValueCell).map(CellInformation::getValue).collect(Collectors.toList()));
+        this.repaintAllItems(this.cells.stream().filter(CellInformation::isValueCell).map(CellInformation::getValue).toList());
     }
 
     protected final CellInformation<T> buildPaddingCell(int row, int column) {
@@ -491,7 +490,7 @@ public class ItemGrid<T>
      * @return An unmodifiable list. May be empty.
      */
     public List<CellInformation<T>> getRowCellInformation(int row) {
-        return this.cells.stream().filter(cell -> cell.getRow() == row).collect(Collectors.toUnmodifiableList());
+        return this.cells.stream().filter(cell -> cell.getRow() == row).toList();
     }
 
     /**
@@ -500,7 +499,7 @@ public class ItemGrid<T>
      * @return An unmodifiable list. May be empty.
      */
     public List<CellInformation<T>> getColumnCellInformation(int column) {
-        return this.cells.stream().filter(cell -> cell.getColumn() == column).collect(Collectors.toUnmodifiableList());
+        return this.cells.stream().filter(cell -> cell.getColumn() == column).toList();
     }
 
     /**

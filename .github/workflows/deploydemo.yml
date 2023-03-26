@@ -11,14 +11,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
         with:
-          java-version: 11
+          java-version: 17
+          distribution: temurin
       - name: Install
         run: mvn install -P production,deploy-demo --file pom.xml -s .github/settings.xml
       - name: Deploy .war file
-        run: mvn cargo:redeploy -P production,deploy-demo --file demo-v23/pom.xml -s .github/settings.xml
+        run: mvn cargo:redeploy -P production,deploy-demo --file demo-v24/pom.xml -s .github/settings.xml
         env:
           DEMO_DEPLOY_HOST: ${{ secrets.DEMO_DEPLOY_HOST }}
           DEMO_DEPLOY_PASSWORD: ${{ secrets.DEMO_DEPLOY_PASSWORD }}

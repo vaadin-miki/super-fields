@@ -129,8 +129,8 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
             this.remove((Component) this.layout);
         this.layout = newLayout;
         this.add(newLayout);
-        if(this.layout instanceof HasStyle)
-            ((HasStyle) this.layout).addClassName(LAYOUT_STYLE_NAME);
+        if(this.layout instanceof HasStyle hasStyle)
+            hasStyle.addClassName(LAYOUT_STYLE_NAME);
     }
 
     /**
@@ -197,8 +197,8 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
     protected void updateIndices(int fromIndex) {
         // update index of each component that has it
         for(int zmp1 = fromIndex; zmp1 < this.fields.size(); zmp1++)
-            if(this.fields.get(zmp1) instanceof HasIndex)
-                ((HasIndex) this.fields.get(zmp1)).setIndex(zmp1);
+            if(this.fields.get(zmp1) instanceof HasIndex hasIndex)
+                hasIndex.setIndex(zmp1);
     }
 
     @Override

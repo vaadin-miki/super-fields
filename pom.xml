@@ -3,20 +3,20 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>pl.unforgiven</groupId>
     <artifactId>superfields-parent</artifactId>
-    <version>0.17.0</version>
+    <version>0.18.0</version>
     <modules>
         <module>superfields</module>
-        <module>demo-v23</module>
+        <module>demo-v24</module>
     </modules>
     <name>SuperFields - Root project for SuperFields</name>
     <description>Root project for SuperFields. Includes basic dependencies, repositories and other configuration.</description>
     <packaging>pom</packaging>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>23.3.5</vaadin.version>
+        <vaadin.version>24.0.1</vaadin.version>
     </properties>
 
 </project>

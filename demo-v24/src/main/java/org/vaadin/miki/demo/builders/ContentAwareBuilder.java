@@ -19,7 +19,6 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @Order(165)
 public class ContentAwareBuilder implements ContentBuilder<ContentAware> {
@@ -27,7 +26,7 @@ public class ContentAwareBuilder implements ContentBuilder<ContentAware> {
     private static final Random RANDOM = new Random();
 
     private static Component getRandomChild(HasComponents parent) {
-        final List<Component> list = ((Component) parent).getChildren().collect(Collectors.toList());
+        final List<Component> list = ((Component) parent).getChildren().toList();
         return list.get(RANDOM.nextInt(list.size()));
     }
 

@@ -133,8 +133,8 @@ public final class ReflectTools {
      * @return The type, if present or found.
      */
     public static Optional<Class<?>> extractGenericType(Field field, int genericIndex) {
-        if(field.getGenericType() instanceof ParameterizedType) {
-            final Type[] params = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+        if(field.getGenericType() instanceof ParameterizedType type) {
+            final Type[] params = type.getActualTypeArguments();
             return (genericIndex < 0 || genericIndex >= params.length) ? Optional.empty() : Optional.of((Class<?>) params[genericIndex]);
         }
         else return Optional.empty();

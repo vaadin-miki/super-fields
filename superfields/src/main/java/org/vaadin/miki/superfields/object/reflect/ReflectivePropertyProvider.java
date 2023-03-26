@@ -56,6 +56,7 @@ public class ReflectivePropertyProvider implements PropertyProvider {
         else return (List<Property<T,?>>)(List<?>) this.cache.computeIfAbsent(type, t -> (List<Property<?,?>>)(List<?>) this.buildProperties(t, instance));
     }
 
+    @SuppressWarnings("squid:S6204") // this needs to be ? not Object (?)
     private <T> List<Property<T, ?>> buildProperties(Class<T> type, Object instance) {
         return ReflectTools.extractFieldsWithMethods(type, type.isAnnotationPresent(DoNotScanSuperclasses.class)).entrySet()
                 .stream()
@@ -73,7 +74,7 @@ public class ReflectivePropertyProvider implements PropertyProvider {
                     }
                     return this.buildDefinition(type, fieldEntry.getKey(), fieldValue == null ? fieldEntry.getKey().getType() : fieldValue.getClass(), fieldEntry.getValue()[ReflectTools.GETTER_INDEX], fieldEntry.getValue()[ReflectTools.SETTER_INDEX]);
                 })
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
     }
 
     private <T, P> SerializableBiConsumer<T, P> getSetterFromMethod(Method method) {
@@ -110,7 +111,7 @@ public class ReflectivePropertyProvider implements PropertyProvider {
         return new Property<>(type, field.getName(), (Class<P>) fieldType,
                 this.getSetterFromMethod(setter),
                 this.getGetterFromMethod(getter),
-                this.metadataProviders.stream().flatMap(provider -> provider.getMetadata(field.getName(), field, setter, getter).stream()).collect(Collectors.toList())
+                this.metadataProviders.stream().flatMap(provider -> provider.getMetadata(field.getName(), field, setter, getter).stream()).toList()
         );
     }
 
@@ -119,7 +120,7 @@ public class ReflectivePropertyProvider implements PropertyProvider {
      * @param providers An array of {@link MetadataProvider}s to add.
      */
     public final void addMetadataProvider(MetadataProvider... providers) {
-        this.metadataProviders.addAll(Arrays.stream(providers).filter(Objects::nonNull).collect(Collectors.toList()));
+        this.metadataProviders.addAll(Arrays.stream(providers).filter(Objects::nonNull).toList());
     }
 
     /**

@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Configurable tab sheet component that also is a field.
@@ -159,8 +158,8 @@ public class SuperTabs<T>
         this.tabs.setWidthFull();
         this.tabs.getElement().getClassList().add("part-of-supertabs");
         final C mainContents = mainContentSupplier.get();
-        if(mainContents instanceof HasSize)
-            ((HasSize) mainContents).setWidthFull();
+        if(mainContents instanceof HasSize hasSize)
+            hasSize.setWidthFull();
         this.add(this.tabs, mainContents);
         this.contents = mainContents;
 
@@ -326,7 +325,7 @@ public class SuperTabs<T>
      * @see #getTabContents(Object)
      */
     public List<T> getValues() {
-        return this.values.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+        return this.values.stream().map(Map.Entry::getKey).toList();
     }
 
     /**
