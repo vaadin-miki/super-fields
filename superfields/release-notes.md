@@ -1,3 +1,10 @@
+# 0.18.0 - Vaadin 24
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#439 - [Replace deprecated JS dependencies](https://github.com/vaadin-miki/super-fields/issues/439)
+* \#463 - [Update code to Java 17](https://github.com/vaadin-miki/super-fields/issues/463)
+## Bug fixes
 # 0.17.0 - HasTooltip, HasLabel and Vaadin 23.3
 ## New features and enhancements
 (nothing reported)
