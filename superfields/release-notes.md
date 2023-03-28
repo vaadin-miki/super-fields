@@ -1,3 +1,10 @@
+# 0.18.1 - Vaadin 24 in Central
+## New features and enhancements
+(nothing reported)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#467 - [Deploy to Central is broken with Java 17](https://github.com/vaadin-miki/super-fields/issues/467)
 # 0.18.0 - Vaadin 24
 ## New features and enhancements
 (nothing reported)
