@@ -39,6 +39,7 @@ import org.vaadin.miki.markers.WithRequiredMixin;
 import org.vaadin.miki.markers.WithTooltipMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.labels.LabelPosition;
+import org.vaadin.miki.shared.text.TextInputMode;
 import org.vaadin.miki.superfields.text.SuperTextField;
 
 import java.text.DecimalFormat;
@@ -56,7 +57,6 @@ import java.util.function.Consumer;
  * @since 2020-04-07
  */
 @CssImport("./styles/form-layout-number-field-styles.css")
-//@CssImport(value = "./styles/label-positions.css", themeFor = "super-text-field")
 @SuppressWarnings("squid:S119") // SELF is a perfectly fine generic name that indicates its purpose
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
@@ -164,6 +164,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         if(maxFractionDigits >= 0)
             this.format.setMaximumFractionDigits(maxFractionDigits);
         this.updateRegularExpression();
+        this.updateTextInputMode();
 
         this.field.addClassName(TEXT_FIELD_STYLE_PREFIX +this.getClass().getSimpleName().toLowerCase());
         this.add(this.field);
@@ -174,6 +175,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.field.addFocusListener(this::onFieldSelected);
         this.field.addBlurListener(this::onFieldBlurred);
         this.field.addTextSelectionListener(this::onTextSelected);
+
         // the following line allows for ValueChangeMode to be effective (#337)
         // at the same time, it makes setting fraction/integer digits destructive (see #339)
         // (because without it the value would be updated on blur, and not on every change)
@@ -294,6 +296,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     protected void setMaximumFractionDigits(int digits) {
         this.format.setMaximumFractionDigits(digits);
         this.updateRegularExpression(true);
+        this.updateTextInputMode();
     }
 
     /**
@@ -349,6 +352,18 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         }
         else
             this.setPresentationValue(value);
+    }
+
+    /**
+     * Updates the underlying field's text input mode.
+     * This shows a proper on-screen keyboard on devices that support it.
+     */
+    // fixes #471
+    protected void updateTextInputMode() {
+        // if there are no fraction digits allowed, use NUMERIC (as DECIMAL shows decimal characters)
+        this.field.setTextInputMode(
+            this.getMaximumFractionDigits() == 0 ? TextInputMode.NUMERIC : TextInputMode.DECIMAL
+        );
     }
 
     /**
