@@ -335,6 +335,28 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     /**
+     * Specifies the allowed characters and prevents invalid input.
+     *
+     * @param builder Builder to be used. Note that the builder passed to it already starts with {@code [\d} and {@code ]} is added at the end.
+     * @return The passed builder with added allowed characters.
+     */
+    // note that this still allows entering a sequence of valid characters that is invalid (does not match the pattern)
+    // see #473
+    protected StringBuilder buildAllowedCharPattern(StringBuilder builder) {
+        builder.append(this.format.getDecimalFormatSymbols().getGroupingSeparator());
+        // allow regular space if NBS is used
+        if(this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE)
+            builder.append(" ");
+        if(this.getMaximumFractionDigits() > 0)
+            builder.append(this.format.getDecimalFormatSymbols().getDecimalSeparator());
+        // this should be last character to avoid implicit ranges
+        if(this.isNegativeValueAllowed())
+            builder.append(this.format.getDecimalFormatSymbols().getMinusSign());
+
+        return builder;
+    }
+
+    /**
      * Builds the regular expression for matching the input.
      */
     protected final void updateRegularExpression() {
@@ -344,6 +366,9 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.regexp = this.buildRegularExpression(new StringBuilder(), this.format).toString();
 
         this.field.setPattern(this.regexp);
+
+        final String allowedChars = this.buildAllowedCharPattern(new StringBuilder("[\\d")).append("]").toString();
+        this.field.setAllowedCharPattern(allowedChars);
 
         LOGGER.debug("pattern updated to {}", this.regexp);
         if(!this.isNegativeValueAllowed() && value != null && this.negativityPredicate.test(value)) {

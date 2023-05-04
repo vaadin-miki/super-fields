@@ -112,6 +112,14 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
     }
 
     @Override
+    protected StringBuilder buildAllowedCharPattern(StringBuilder builder) {
+        if(this.isScientificNotationEnabled())
+            builder.append(String.valueOf(this.getExponentSeparator()).toLowerCase(this.getLocale()))
+                .append(String.valueOf(this.getExponentSeparator()).toUpperCase(this.getLocale()));
+         return super.buildAllowedCharPattern(builder);
+    }
+
+    @Override
     protected StringBuilder buildRegularExpression(StringBuilder builder, DecimalFormat format) {
         builder = super.buildRegularExpression(builder.append("("), format).append(")");
         // adds scientific notation support
