@@ -1,6 +1,7 @@
 package org.vaadin.miki.util;
 
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Some general-purpose utils for {@link String}s.

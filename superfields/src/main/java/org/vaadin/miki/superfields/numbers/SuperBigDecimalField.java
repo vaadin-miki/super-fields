@@ -2,6 +2,7 @@ package org.vaadin.miki.superfields.numbers;
 
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
+import org.vaadin.miki.util.RegexTools;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -133,7 +134,7 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
             // significand fraction part can be disabled, though
             if(this.getMaximumSignificandFractionDigits() > 0)
                 builder.append("(")
-                       .append(escapeDot(format.getDecimalFormatSymbols().getDecimalSeparator()))
+                       .append(RegexTools.escaped(format.getDecimalFormatSymbols().getDecimalSeparator()))
                        .append("\\d+)?");
             builder.append("((").append(String.valueOf(this.getExponentSeparator()).toUpperCase(this.getLocale()))
                    .append("|")

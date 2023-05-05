@@ -42,12 +42,15 @@ import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.labels.LabelPosition;
 import org.vaadin.miki.shared.text.TextInputMode;
 import org.vaadin.miki.superfields.text.SuperTextField;
+import org.vaadin.miki.util.RegexTools;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -98,11 +101,6 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     private static final char SPACE = ' ';
 
     /**
-     * Dot. Needs to be escaped in regular expressions.
-     */
-    private static final char DOT = '.';
-
-    /**
      * Underlying text field.
      */
     private final SuperTextField field = new SuperTextField();
@@ -142,6 +140,11 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     private boolean focused = false;
 
     private Registration innerFieldValueChangeRegistration;
+
+    private final Set<Character> groupingAlternatives = new HashSet<>();
+    private final Set<Character> decimalSeparatorAlternatives = new HashSet<>();
+    private final Set<Character> negativeSignAlternatives = new HashSet<>();
+    private boolean groupingAlternativeAutomaticallyAdded = false;
 
     /**
      * Creates the field.
@@ -205,15 +208,6 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     private void onFieldChanged(HasValue.ValueChangeEvent<String> event) {
         this.updateValue();
-    }
-
-    /**
-     * Escapes the {@link #DOT} for regular expression, if needed.
-     * @param character Character to escape.
-     * @return Dot escaped or the passed character.
-     */
-    protected static String escapeDot(char character) {
-        return character == DOT ? "\\." : String.valueOf(character);
     }
 
     private DecimalFormat getFormat(Locale locale) {
@@ -351,7 +345,6 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
             builder.append(" ");
         if(this.getMaximumFractionDigits() > 0)
             builder.append(this.format.getDecimalFormatSymbols().getDecimalSeparator());
-        // this should be last character to avoid implicit ranges
         if(this.isNegativeValueAllowed())
             builder.append(this.format.getDecimalFormatSymbols().getMinusSign());
 
@@ -393,6 +386,19 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         );
     }
 
+    private void ensureSpaceGroupingPossible() {
+        // always make sure there is a space if the format has a non-breaking one
+        if(this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE) {
+            this.groupingAlternatives.add(SPACE);
+            this.groupingAlternativeAutomaticallyAdded = true;
+        }
+        // TODO make sure that if SPACE is added manually as an alternative, the flag is unset!
+        else if(this.groupingAlternativeAutomaticallyAdded && this.groupingAlternatives.contains(SPACE)) {
+            this.groupingAlternatives.remove(SPACE);
+            this.groupingAlternativeAutomaticallyAdded = false;
+        }
+    }
+
     /**
      * Builds regular expression that allows neat typing of the number already formatted.
      * Overwrite with care.
@@ -401,10 +407,12 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      * @return Builder with the regular expression.
      */
     protected StringBuilder buildRegularExpression(StringBuilder builder, DecimalFormat format) {
-        final String groupSeparatorRegexp =
-                format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE
-                        ? "[ "+format.getDecimalFormatSymbols().getGroupingSeparator()+"]"
-                        : escapeDot(format.getDecimalFormatSymbols().getGroupingSeparator());
+        this.ensureSpaceGroupingPossible();
+
+        final String groupSeparatorRegexp = RegexTools.characterSelector(
+            format.getDecimalFormatSymbols().getGroupingSeparator(),
+            this.groupingAlternatives
+        );
 
         builder.append("^");
 
@@ -462,7 +470,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         }
 
         if(this.format.getMaximumFractionDigits() > 0)
-            builder.append("(").append(escapeDot(format.getDecimalFormatSymbols().getDecimalSeparator()))
+            builder.append("(").append(RegexTools.escaped(format.getDecimalFormatSymbols().getDecimalSeparator()))
                     .append(REGEXP_START_ANY_DIGITS).append(format.getMaximumFractionDigits()).append("})?");
 
         builder.append(")?$");
