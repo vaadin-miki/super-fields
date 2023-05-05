@@ -22,9 +22,13 @@ import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
+import org.vaadin.miki.markers.WithTextInputModeMixin;
 import org.vaadin.miki.markers.WithTooltipMixin;
 import org.vaadin.miki.markers.WithValueMixin;
+import org.vaadin.miki.shared.text.TextInputMode;
 import org.vaadin.miki.shared.text.TextModificationDelegate;
+
+import java.util.Objects;
 
 /**
  * An extension of {@link TextField} with some useful (hopefully) features.
@@ -40,9 +44,11 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
         WithIdMixin<SuperTextField>, WithLabelMixin<SuperTextField>, WithPlaceholderMixin<SuperTextField>,
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
         WithHelperMixin<SuperTextField>, WithHelperPositionableMixin<SuperTextField>,
-        WithReceivingSelectionEventsFromClientMixin<SuperTextField>, WithClearButtonMixin<SuperTextField>, WithTooltipMixin<SuperTextField> {
+        WithReceivingSelectionEventsFromClientMixin<SuperTextField>, WithClearButtonMixin<SuperTextField>,
+        WithTooltipMixin<SuperTextField>, WithTextInputModeMixin<SuperTextField> {
 
     private final TextModificationDelegate<SuperTextField> delegate = new TextModificationDelegate<>(this, this.getEventBus(), this::getValue);
+    private TextInputMode textInputMode;
 
     public SuperTextField() {
         super();
@@ -125,6 +131,24 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     @Override
     public void modifyText(String replacement, int from, int to) {
         this.delegate.modifyText(replacement, from, to);
+    }
+
+    @Override
+    public void setTextInputMode(TextInputMode inputMode) {
+        // only when there is a change
+        if(!Objects.equals(inputMode, this.getTextInputMode()))
+            this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context -> {
+                // js courtesy of the one and only JC, thank you!
+                if(inputMode != null)
+                    this.getElement().executeJs("this.inputElement.inputMode = $0;", inputMode.name().toLowerCase());
+                else this.getElement().executeJs("delete this.inputElement.inputMode;" );
+                this.textInputMode = inputMode;
+            }));
+    }
+
+    @Override
+    public TextInputMode getTextInputMode() {
+        return this.textInputMode;
     }
 
     @SuppressWarnings("squid:S1185") // removing this method makes the class impossible to compile due to missing methods

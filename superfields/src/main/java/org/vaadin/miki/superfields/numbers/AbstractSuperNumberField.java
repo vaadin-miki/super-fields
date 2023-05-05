@@ -36,9 +36,11 @@ import org.vaadin.miki.markers.WithNullValueOptionallyAllowedMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
+import org.vaadin.miki.markers.WithTextInputModeMixin;
 import org.vaadin.miki.markers.WithTooltipMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.labels.LabelPosition;
+import org.vaadin.miki.shared.text.TextInputMode;
 import org.vaadin.miki.superfields.text.SuperTextField;
 
 import java.text.DecimalFormat;
@@ -56,7 +58,6 @@ import java.util.function.Consumer;
  * @since 2020-04-07
  */
 @CssImport("./styles/form-layout-number-field-styles.css")
-//@CssImport(value = "./styles/label-positions.css", themeFor = "super-text-field")
 @SuppressWarnings("squid:S119") // SELF is a perfectly fine generic name that indicates its purpose
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
@@ -66,7 +67,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
                    WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF>, WithClearButtonMixin<SELF>,
-                   WithRequiredMixin<SELF>, WithLabelPositionableMixin<SELF>, WithTooltipMixin<SELF> {
+                   WithRequiredMixin<SELF>, WithLabelPositionableMixin<SELF>, WithTooltipMixin<SELF>,
+                   WithTextInputModeMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -164,6 +166,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         if(maxFractionDigits >= 0)
             this.format.setMaximumFractionDigits(maxFractionDigits);
         this.updateRegularExpression();
+        this.updateTextInputMode();
 
         this.field.addClassName(TEXT_FIELD_STYLE_PREFIX +this.getClass().getSimpleName().toLowerCase());
         this.add(this.field);
@@ -174,6 +177,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.field.addFocusListener(this::onFieldSelected);
         this.field.addBlurListener(this::onFieldBlurred);
         this.field.addTextSelectionListener(this::onTextSelected);
+
         // the following line allows for ValueChangeMode to be effective (#337)
         // at the same time, it makes setting fraction/integer digits destructive (see #339)
         // (because without it the value would be updated on blur, and not on every change)
@@ -294,6 +298,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     protected void setMaximumFractionDigits(int digits) {
         this.format.setMaximumFractionDigits(digits);
         this.updateRegularExpression(true);
+        this.updateTextInputMode();
     }
 
     /**
@@ -332,6 +337,28 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     /**
+     * Specifies the allowed characters and prevents invalid input.
+     *
+     * @param builder Builder to be used. Note that the builder passed to it already starts with {@code [\d} and {@code ]} is added at the end.
+     * @return The passed builder with added allowed characters.
+     */
+    // note that this still allows entering a sequence of valid characters that is invalid (does not match the pattern)
+    // see #473
+    protected StringBuilder buildAllowedCharPattern(StringBuilder builder) {
+        builder.append(this.format.getDecimalFormatSymbols().getGroupingSeparator());
+        // allow regular space if NBS is used
+        if(this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE)
+            builder.append(" ");
+        if(this.getMaximumFractionDigits() > 0)
+            builder.append(this.format.getDecimalFormatSymbols().getDecimalSeparator());
+        // this should be last character to avoid implicit ranges
+        if(this.isNegativeValueAllowed())
+            builder.append(this.format.getDecimalFormatSymbols().getMinusSign());
+
+        return builder;
+    }
+
+    /**
      * Builds the regular expression for matching the input.
      */
     protected final void updateRegularExpression() {
@@ -342,6 +369,9 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
         this.field.setPattern(this.regexp);
 
+        final String allowedChars = this.buildAllowedCharPattern(new StringBuilder("[\\d")).append("]").toString();
+        this.field.setAllowedCharPattern(allowedChars);
+
         LOGGER.debug("pattern updated to {}", this.regexp);
         if(!this.isNegativeValueAllowed() && value != null && this.negativityPredicate.test(value)) {
             LOGGER.debug("negative values are not allowed, so turning into positive value {}", value);
@@ -349,6 +379,18 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         }
         else
             this.setPresentationValue(value);
+    }
+
+    /**
+     * Updates the underlying field's text input mode.
+     * This shows a proper on-screen keyboard on devices that support it.
+     */
+    // fixes #471
+    protected void updateTextInputMode() {
+        // if there are no fraction digits allowed, use NUMERIC (as DECIMAL shows decimal characters)
+        this.field.setTextInputMode(
+            this.getMaximumFractionDigits() == 0 ? TextInputMode.NUMERIC : TextInputMode.DECIMAL
+        );
     }
 
     /**
@@ -880,6 +922,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public LabelPosition getLabelPosition() {
         return this.field.getLabelPosition();
+    }
+
+    @Override
+    public void setTextInputMode(TextInputMode inputMode) {
+        this.field.setTextInputMode(inputMode);
+    }
+
+    @Override
+    public TextInputMode getTextInputMode() {
+        return this.field.getTextInputMode();
     }
 
     /**
