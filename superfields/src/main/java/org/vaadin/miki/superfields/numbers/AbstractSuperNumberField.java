@@ -36,6 +36,7 @@ import org.vaadin.miki.markers.WithNullValueOptionallyAllowedMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
+import org.vaadin.miki.markers.WithTextInputModeMixin;
 import org.vaadin.miki.markers.WithTooltipMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.labels.LabelPosition;
@@ -66,7 +67,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
                    WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF>, WithClearButtonMixin<SELF>,
-                   WithRequiredMixin<SELF>, WithLabelPositionableMixin<SELF>, WithTooltipMixin<SELF> {
+                   WithRequiredMixin<SELF>, WithLabelPositionableMixin<SELF>, WithTooltipMixin<SELF>,
+                   WithTextInputModeMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -920,6 +922,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public LabelPosition getLabelPosition() {
         return this.field.getLabelPosition();
+    }
+
+    @Override
+    public void setTextInputMode(TextInputMode inputMode) {
+        this.field.setTextInputMode(inputMode);
+    }
+
+    @Override
+    public TextInputMode getTextInputMode() {
+        return this.field.getTextInputMode();
     }
 
     /**
