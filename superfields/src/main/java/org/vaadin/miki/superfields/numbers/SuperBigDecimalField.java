@@ -128,20 +128,20 @@ public class SuperBigDecimalField extends AbstractSuperFloatingPointField<BigDec
             // it is supported in addition to the original formatting
             builder.append("|(^");
             if(this.isNegativeValueAllowed())
-                builder.append("-?");
+                RegexTools.characterSelector(builder, format.getDecimalFormatSymbols().getMinusSign(), this.getNegativeSignAlternatives()).append('?');
             // max significand integer digits cannot go below 1 (will be converted to 1 anyway)
             builder.append("\\d{1,").append(this.getMaximumSignificandIntegerDigits()).append("}");
             // significand fraction part can be disabled, though
             if(this.getMaximumSignificandFractionDigits() > 0)
-                builder.append("(")
-                       .append(RegexTools.escaped(format.getDecimalFormatSymbols().getDecimalSeparator()))
-                       .append("\\d+)?");
+                RegexTools.characterSelector(builder.append('('),format.getDecimalFormatSymbols().getDecimalSeparator(), this.getDecimalSeparatorAlternatives())
+                    .append("\\d+)?");
             builder.append("((").append(String.valueOf(this.getExponentSeparator()).toUpperCase(this.getLocale()))
                    .append("|")
                    .append(String.valueOf(this.getExponentSeparator()).toLowerCase(this.getLocale()))
                    .append(")");
             if(this.isNegativeExponentAllowed())
-                builder.append("(\\+|-)?");
+                RegexTools.characterSelector(builder.append("(\\+|"), format.getDecimalFormatSymbols().getMinusSign(), this.getNegativeSignAlternatives())
+                        .append(")?");
             else builder.append("\\+?");
             builder.append("\\d{0,").append(this.getMaximumExponentDigits()).append("})").append("$)");
         }

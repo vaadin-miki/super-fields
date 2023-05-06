@@ -47,7 +47,8 @@ import org.vaadin.miki.util.RegexTools;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -141,9 +142,9 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     private Registration innerFieldValueChangeRegistration;
 
-    private final Set<Character> groupingAlternatives = new HashSet<>();
-    private final Set<Character> decimalSeparatorAlternatives = new HashSet<>();
-    private final Set<Character> negativeSignAlternatives = new HashSet<>();
+    private final Set<Character> groupingAlternatives = new LinkedHashSet<>();
+    private final Set<Character> decimalSeparatorAlternatives = new LinkedHashSet<>();
+    private final Set<Character> negativeSignAlternatives = new LinkedHashSet<>();
     private boolean groupingAlternativeAutomaticallyAdded = false;
 
     /**
@@ -339,14 +340,11 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     // note that this still allows entering a sequence of valid characters that is invalid (does not match the pattern)
     // see #473
     protected StringBuilder buildAllowedCharPattern(StringBuilder builder) {
-        builder.append(this.format.getDecimalFormatSymbols().getGroupingSeparator());
-        // allow regular space if NBS is used
-        if(this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE)
-            builder.append(" ");
+        RegexTools.characterSelector(builder, this.format.getDecimalFormatSymbols().getGroupingSeparator(), this.getGroupingSeparatorAlternatives());
         if(this.getMaximumFractionDigits() > 0)
-            builder.append(this.format.getDecimalFormatSymbols().getDecimalSeparator());
+            RegexTools.characterSelector(builder, this.format.getDecimalFormatSymbols().getDecimalSeparator(), this.getDecimalSeparatorAlternatives());
         if(this.isNegativeValueAllowed())
-            builder.append(this.format.getDecimalFormatSymbols().getMinusSign());
+            RegexTools.characterSelector(builder, this.format.getDecimalFormatSymbols().getMinusSign(), this.getNegativeSignAlternatives());
 
         return builder;
     }
@@ -411,13 +409,13 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
         final String groupSeparatorRegexp = RegexTools.characterSelector(
             format.getDecimalFormatSymbols().getGroupingSeparator(),
-            this.groupingAlternatives
+            this.getGroupingSeparatorAlternatives()
         );
 
         builder.append("^");
 
         if(this.isNegativeValueAllowed())
-            builder.append(format.getDecimalFormatSymbols().getMinusSign()).append("?");
+            RegexTools.characterSelector(builder, format.getDecimalFormatSymbols().getMinusSign(), this.getNegativeSignAlternatives()).append("?");
 
         // everything after the negative sign can be optional, meaning that empty string is ok
         builder.append("(");
@@ -470,8 +468,9 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         }
 
         if(this.format.getMaximumFractionDigits() > 0)
-            builder.append("(").append(RegexTools.escaped(format.getDecimalFormatSymbols().getDecimalSeparator()))
-                    .append(REGEXP_START_ANY_DIGITS).append(format.getMaximumFractionDigits()).append("})?");
+            RegexTools.characterSelector(builder.append("("), format.getDecimalFormatSymbols().getDecimalSeparator(), this.getDecimalSeparatorAlternatives())
+                .append(REGEXP_START_ANY_DIGITS)
+                .append(format.getMaximumFractionDigits()).append("})?");
 
         builder.append(")?$");
         return builder;
@@ -940,6 +939,30 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public TextInputMode getTextInputMode() {
         return this.field.getTextInputMode();
+    }
+
+    /**
+     * Returns the currently accepted alternatives to the grouping (thousand) separator.
+     * @return Currently allowed alternatives to the main grouping separator, which is not included in the result. Never {@code null}, but possibly empty.
+     */
+    public Set<Character> getGroupingSeparatorAlternatives() {
+        return Collections.unmodifiableSet(this.groupingAlternatives);
+    }
+
+    /**
+     * Returns the currently accepted alternatives to the decimal separator.
+     * @return Currently allowed alternatives to the main decimal separator, which is not included in the result. Never {@code null}, but possibly empty.
+     */
+    public Set<Character> getDecimalSeparatorAlternatives() {
+        return Collections.unmodifiableSet(this.decimalSeparatorAlternatives);
+    }
+
+    /**
+     * Returns the currently accepted alternatives to the negative (minus) sign.
+     * @return Currently allowed alternatives to the main negative sign, which is not included in the result. Never {@code null}, but possibly empty.
+     */
+    public Set<Character> getNegativeSignAlternatives() {
+        return Collections.unmodifiableSet(negativeSignAlternatives);
     }
 
     /**
