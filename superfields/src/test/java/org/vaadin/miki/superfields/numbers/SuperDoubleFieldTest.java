@@ -3,7 +3,9 @@ package org.vaadin.miki.superfields.numbers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.text.ParseException;
 import java.util.Locale;
+import java.util.Set;
 
 public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Double> {
 
@@ -34,6 +36,28 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
         this.getField().setMaximumFractionDigits(1);
         Assert.assertEquals("1,2", this.getField().getRawValue());
         Assert.assertEquals(1.234d, this.getField().getValue(), 0);
+    }
+
+    @Test
+    public void testAlternativeSeparators() throws ParseException {
+        this.getField().setLocale(Locale.FRANCE);
+        this.getField().setGroupingSeparatorAlternatives(Set.of('_'));
+        this.getField().setDecimalSeparatorAlternatives(Set.of('|'));
+        for(String s: new String[]{"123_456|78", "12_34_56|78", "12345_6|78", "_123_456|78", "_123456_|78"}) {
+            final Double value = this.getField().parseRawValue(s);
+            Assert.assertEquals(Double.valueOf(123456.78), value);
+        }
+    }
+
+    @Test
+    public void testAlternativeSeparatorsWithNegativeSign() throws ParseException {
+        this.getField().setLocale(Locale.GERMANY);
+        this.getField().setNegativeSignAlternatives(Set.of('^', '%'));
+        this.getField().setDecimalSeparatorAlternatives(Set.of('_'));
+        for(String s: new String[]{"^123456_78", "%123456_78", "-123456_78"}) {
+            final Double value = this.getField().parseRawValue(s);
+            Assert.assertEquals(Double.valueOf(-123456.78), value);
+        }
     }
 
 }

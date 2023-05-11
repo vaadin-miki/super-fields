@@ -9,6 +9,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<BigDecimal> {
 
@@ -137,5 +138,41 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
         Assert.assertEquals("1.3E-11", this.getField().getRawValue());
     }
 
+    @Test
+    public void testAlternativeSeparators() throws ParseException {
+        this.getField().setLocale(Locale.FRANCE);
+        this.getField().setGroupingSeparatorAlternatives(Set.of('_'));
+        this.getField().setDecimalSeparatorAlternatives(Set.of('|'));
+        for(String s: new String[]{"123_456|78", "12_34_56|78", "12345_6|78", "_123_456|78", "_123456_|78"}) {
+            final BigDecimal value = this.getField().parseRawValue(s);
+            Assert.assertEquals(BigDecimal.valueOf(123456.78), value);
+        }
+    }
+
+    @Test
+    public void testAlternativeSeparatorsWithNegativeSign() throws ParseException {
+        this.getField().setLocale(Locale.GERMANY);
+        this.getField().setNegativeSignAlternatives(Set.of('^', '%'));
+        this.getField().setDecimalSeparatorAlternatives(Set.of('_'));
+        for(String s: new String[]{"^123456_78", "%123456_78", "-123456_78"}) {
+            final BigDecimal value = this.getField().parseRawValue(s);
+            Assert.assertEquals(BigDecimal.valueOf(-123456.78), value);
+        }
+    }
+
+    @Test
+    public void testScientificWithAlternativeSeparatorsWithNegativeSign() throws ParseException {
+        this.getField().withLocale(Locale.GERMANY)
+            .withExponentSeparator('e')
+            .withMaximumExponentDigits(3)
+            .withMaximumSignificandIntegerDigits(2)
+            .withMaximumSignificandFractionDigits(2)
+            .withNegativeSignAlternatives(Set.of('^', '%'))
+            .setDecimalSeparatorAlternatives(Set.of('_'));
+        for(String s: new String[]{"^2_3e%3", "%2_3E%3", "-2_3e^3"}) {
+            final BigDecimal value = this.getField().parseRawValue(s);
+            Assert.assertEquals(BigDecimal.valueOf(-0.0023), value);
+        }
+    }
 
 }

@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -14,6 +15,7 @@ import java.util.function.Supplier;
  * This is not a test class, rather a base class containing tests for floating-point number tests.
  * All floating point tests include also integer tests.
  */
+@SuppressWarnings("squid:S3577") // this is ok, the tests are inherited
 class BaseTestsForFloatingPointNumbers<T extends Number> extends BaseTestsForIntegerNumbers<T> {
 
     private final Map<Integer[], Set<String>> validLimitedInputs = new HashMap<>();
@@ -172,4 +174,16 @@ class BaseTestsForFloatingPointNumbers<T extends Number> extends BaseTestsForInt
                 }
         );
     }
+
+    // tests for #472
+    @Test
+    public void testNoMixingOfDecimalSymbolsAllowed() {
+        this.getField().setLocale(Locale.ENGLISH); // this uses . as decimal and , as grouping
+        this.getField().setDecimalSeparatorAlternatives(Set.of('.', ',', '-')); // so setting ., should fail (and - is minus, also fail)
+        Assert.assertTrue(this.getField().getDecimalSeparatorAlternatives().isEmpty());
+        this.getField().setDecimalSeparatorAlternatives(Set.of('|', '@'));
+        Assert.assertEquals(2, this.getField().getDecimalSeparatorAlternatives().size());
+        Assert.assertTrue(this.getField().getDecimalSeparatorAlternatives().containsAll(Set.of('|', '@')));
+    }
+
 }

@@ -43,6 +43,7 @@ import org.vaadin.miki.shared.labels.LabelPosition;
 import org.vaadin.miki.shared.text.TextInputMode;
 import org.vaadin.miki.superfields.text.SuperTextField;
 import org.vaadin.miki.util.RegexTools;
+import org.vaadin.miki.util.StringTools;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -53,6 +54,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Base class for super number fields.
@@ -390,7 +392,6 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
             this.groupingAlternatives.add(SPACE);
             this.groupingAlternativeAutomaticallyAdded = true;
         }
-        // TODO make sure that if SPACE is added manually as an alternative, the flag is unset!
         else if(this.groupingAlternativeAutomaticallyAdded && this.groupingAlternatives.contains(SPACE)) {
             this.groupingAlternatives.remove(SPACE);
             this.groupingAlternativeAutomaticallyAdded = false;
@@ -950,11 +951,94 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     /**
+     * Sets grouping separator alternatives, replacing previously existing ones.
+     * Note that this preserves the automatically added {@link #SPACE} when the format uses {@link #NON_BREAKING_SPACE}.
+     * @param alternatives Any alternatives that are identical to the already used separators or negative sign or their alternatives are ignored.
+     */
+    public void setGroupingSeparatorAlternatives(Set<Character> alternatives) {
+        this.groupingAlternatives.clear();
+        this.groupingAlternatives.addAll(
+        alternatives.stream()
+            .filter(c -> !this.negativeSignAlternatives.contains(c)
+                && !this.decimalSeparatorAlternatives.contains(c)
+                && this.format.getDecimalFormatSymbols().getMinusSign() != c
+                && this.format.getDecimalFormatSymbols().getGroupingSeparator() != c
+                && this.format.getDecimalFormatSymbols().getDecimalSeparator() != c)
+            .collect(Collectors.toCollection(LinkedHashSet::new))
+        );
+        if(this.groupingAlternativeAutomaticallyAdded) {
+            if(alternatives.contains(SPACE)) this.groupingAlternativeAutomaticallyAdded = false;
+            else if(!this.groupingAlternatives.contains(SPACE)) this.groupingAlternatives.add(SPACE);
+        }
+    }
+
+    /**
+     * Chains {@link #setGroupingSeparatorAlternatives(Set)} and returns itself.
+     * @param alternatives Alternatives to use.
+     * @return This.
+     * @see #setGroupingSeparatorAlternatives(Set)
+     */
+    @SuppressWarnings("unchecked")
+    public SELF withGroupingSeparatorAlternatives(Set<Character> alternatives) {
+        this.setGroupingSeparatorAlternatives(alternatives);
+        return (SELF)this;
+    }
+
+    /**
+     * Chains {@link #setGroupingSeparatorAlternatives(Set)} and returns itself.
+     * @param alternatives Alternatives to use.
+     * @return This.
+     * @see #setGroupingSeparatorAlternatives(Set)
+     */
+    public SELF withGroupingSeparatorAlternatives(char... alternatives) {
+        return this.withGroupingSeparatorAlternatives(StringTools.toCharacterSet(alternatives));
+    }
+
+    /**
      * Returns the currently accepted alternatives to the decimal separator.
      * @return Currently allowed alternatives to the main decimal separator, which is not included in the result. Never {@code null}, but possibly empty.
      */
-    public Set<Character> getDecimalSeparatorAlternatives() {
+    protected Set<Character> getDecimalSeparatorAlternatives() {
         return Collections.unmodifiableSet(this.decimalSeparatorAlternatives);
+    }
+
+    /**
+     * Sets decimal separator alternatives, replacing previously existing ones.
+     * @param alternatives Any alternatives that are identical to the already used separators or negative sign or their alternatives are ignored.
+     */
+    protected void setDecimalSeparatorAlternatives(Set<Character> alternatives) {
+        this.decimalSeparatorAlternatives.clear();
+        this.decimalSeparatorAlternatives.addAll(
+            alternatives.stream()
+                .filter(c -> !this.groupingAlternatives.contains(c)
+                    && !this.negativeSignAlternatives.contains(c)
+                    && (this.format.getDecimalFormatSymbols().getMinusSign() != c)
+                    && (this.format.getDecimalFormatSymbols().getGroupingSeparator() != c)
+                    && (this.format.getDecimalFormatSymbols().getDecimalSeparator() != c))
+                .collect(Collectors.toCollection(LinkedHashSet::new))
+        );
+    }
+
+    /**
+     * Chains {@link #setDecimalSeparatorAlternatives(Set)} and returns itself.
+     * @param alternatives Alternatives to use.
+     * @return This.
+     * @see #setDecimalSeparatorAlternatives(Set)
+     */
+    @SuppressWarnings("unchecked")
+    protected SELF withDecimalSeparatorAlternatives(Set<Character> alternatives) {
+        this.setDecimalSeparatorAlternatives(alternatives);
+        return (SELF) this;
+    }
+
+    /**
+     * Chains {@link #setDecimalSeparatorAlternatives(Set)} and returns itself.
+     * @param alternatives Alternatives to use.
+     * @return This.
+     * @see #setDecimalSeparatorAlternatives(Set)
+     */
+    protected SELF withDecimalSeparatorAlternatives(char... alternatives) {
+        return this.withDecimalSeparatorAlternatives(StringTools.toCharacterSet(alternatives));
     }
 
     /**
@@ -963,6 +1047,45 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      */
     public Set<Character> getNegativeSignAlternatives() {
         return Collections.unmodifiableSet(negativeSignAlternatives);
+    }
+
+    /**
+     * Sets negative sign alternatives, replacing previously existing ones.
+     * @param alternatives Any alternatives that are identical to the already used separators or negative sign or their alternatives are ignored.
+     */
+    public void setNegativeSignAlternatives(Set<Character> alternatives) {
+        this.negativeSignAlternatives.clear();
+        this.negativeSignAlternatives.addAll(
+            alternatives.stream()
+                .filter(c -> !this.groupingAlternatives.contains(c)
+                    && !this.decimalSeparatorAlternatives.contains(c)
+                    && (this.format.getDecimalFormatSymbols().getMinusSign() != c)
+                    && (this.format.getDecimalFormatSymbols().getGroupingSeparator() != c)
+                    && (this.format.getDecimalFormatSymbols().getDecimalSeparator() != c))
+                .collect(Collectors.toCollection(LinkedHashSet::new))
+        );
+    }
+
+    /**
+     * Chains {@link #setNegativeSignAlternatives(Set)} and returns itself.
+     * @param alternatives Alternatives to use.
+     * @return This.
+     * @see #setNegativeSignAlternatives(Set)
+     */
+    @SuppressWarnings("unchecked")
+    public SELF withNegativeSignAlternatives(Set<Character> alternatives) {
+        this.setNegativeSignAlternatives(alternatives);
+        return (SELF)this;
+    }
+
+    /**
+     * Chains {@link #setNegativeSignAlternatives(Set)} and returns itself.
+     * @param alternatives Alternatives to use.
+     * @return This.
+     * @see #setNegativeSignAlternatives(Set)
+     */
+    public SELF withNegativeSignAlternatives(char... alternatives) {
+        return this.withNegativeSignAlternatives(StringTools.toCharacterSet(alternatives));
     }
 
     /**
@@ -1024,8 +1147,14 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                 return null;
             else return this.getEmptyValue();
         }
-        if (this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE)
-            rawValue = rawValue.replace(SPACE, NON_BREAKING_SPACE);
+        // replace alternative characters
+        for(char c: this.getGroupingSeparatorAlternatives())
+            rawValue = rawValue.replace(c, this.format.getDecimalFormatSymbols().getGroupingSeparator());
+        for(char c: this.getDecimalSeparatorAlternatives())
+            rawValue = rawValue.replace(c, this.format.getDecimalFormatSymbols().getDecimalSeparator());
+        for(char c: this.getNegativeSignAlternatives())
+            rawValue = rawValue.replace(c, this.format.getDecimalFormatSymbols().getMinusSign());
+
         return this.parseRawValue(rawValue, this.format);
     }
 
