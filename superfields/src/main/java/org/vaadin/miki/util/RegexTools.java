@@ -20,7 +20,7 @@ public class RegexTools {
    */
   // courtesy of Tobi G. https://stackoverflow.com/questions/14134558/list-of-all-special-characters-that-need-to-be-escaped-in-a-regex
   public static final Set<Character> CHARACTERS_TO_ESCAPE = Set.of(
-      '\\', '.', '[', ']', '{', '}', '(', ')', '<', '>', '*', '+', '-', '=', '!', '?', '^', '$', '|'
+      '\\', '.', '[', ']', '{', '}', '(', ')', '<', '>', '*', '-', '+', '=', '!', '?', '^', '$', '|'
   );
 
   /**
@@ -54,7 +54,6 @@ public class RegexTools {
         return builder.append("]");
       }
     }
-
   }
 
   /**

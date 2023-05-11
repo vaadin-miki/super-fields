@@ -342,12 +342,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     // note that this still allows entering a sequence of valid characters that is invalid (does not match the pattern)
     // see #473
     protected StringBuilder buildAllowedCharPattern(StringBuilder builder) {
-        RegexTools.characterSelector(builder, this.format.getDecimalFormatSymbols().getGroupingSeparator(), this.getGroupingSeparatorAlternatives());
-        if(this.getMaximumFractionDigits() > 0)
-            RegexTools.characterSelector(builder, this.format.getDecimalFormatSymbols().getDecimalSeparator(), this.getDecimalSeparatorAlternatives());
-        if(this.isNegativeValueAllowed())
-            RegexTools.characterSelector(builder, this.format.getDecimalFormatSymbols().getMinusSign(), this.getNegativeSignAlternatives());
-
+        builder.append(RegexTools.escaped(this.format.getDecimalFormatSymbols().getGroupingSeparator()));
+        this.getGroupingSeparatorAlternatives().forEach(character -> builder.append(RegexTools.escaped(character)));
+        if(this.getMaximumFractionDigits() > 0) {
+            builder.append(RegexTools.escaped(this.format.getDecimalFormatSymbols().getDecimalSeparator()));
+            this.getDecimalSeparatorAlternatives().forEach(character -> builder.append(RegexTools.escaped(character)));
+        }
+        if(this.isNegativeValueAllowed()) {
+            builder.append(RegexTools.escaped(this.format.getDecimalFormatSymbols().getMinusSign()));
+            this.getNegativeSignAlternatives().forEach(character -> builder.append(RegexTools.escaped(character)));
+        }
         return builder;
     }
 
