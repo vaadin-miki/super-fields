@@ -8,6 +8,8 @@ import org.vaadin.miki.demo.ContentBuilder;
 import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.numbers.AbstractSuperNumberField;
 
+import java.util.Collections;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -45,6 +47,13 @@ public class AbstractSuperNumberFieldBuilder implements ContentBuilder<AbstractS
                         component.removeThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
                 }
         );
-        callback.accept(new Component[]{autoselect, separatorHidden, prefix, suffix, alignRight});
+
+        final Checkbox allowGroupAlternative = new Checkbox("Allow _ as grouping alternative?");
+        allowGroupAlternative.addValueChangeListener(event -> component.setGroupingSeparatorAlternatives(event.getValue() ? Set.of('_') : Collections.emptySet()));
+
+        final Checkbox allowNegativeAlternative = new Checkbox("Allow ^ and # as a negative sign?");
+        allowNegativeAlternative.addValueChangeListener(event -> component.setNegativeSignAlternatives(event.getValue() ? Set.of('^', '#') : Collections.emptySet()));
+
+        callback.accept(new Component[]{autoselect, separatorHidden, prefix, suffix, alignRight, allowGroupAlternative, allowNegativeAlternative});
     }
 }

@@ -974,6 +974,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
             if(alternatives.contains(SPACE)) this.groupingAlternativeAutomaticallyAdded = false;
             else if(!this.groupingAlternatives.contains(SPACE)) this.groupingAlternatives.add(SPACE);
         }
+        this.updateRegularExpression();
     }
 
     /**
@@ -1021,6 +1022,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                     && (this.format.getDecimalFormatSymbols().getDecimalSeparator() != c))
                 .collect(Collectors.toCollection(LinkedHashSet::new))
         );
+        this.updateRegularExpression();
     }
 
     /**
@@ -1068,6 +1070,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                     && (this.format.getDecimalFormatSymbols().getDecimalSeparator() != c))
                 .collect(Collectors.toCollection(LinkedHashSet::new))
         );
+        this.updateRegularExpression();
     }
 
     /**
