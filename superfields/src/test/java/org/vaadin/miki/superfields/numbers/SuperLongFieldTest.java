@@ -1,6 +1,11 @@
 package org.vaadin.miki.superfields.numbers;
 
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.text.ParseException;
 import java.util.Locale;
+import java.util.Set;
 
 public class SuperLongFieldTest extends BaseTestsForIntegerNumbers<Long> {
 
@@ -64,6 +69,26 @@ public class SuperLongFieldTest extends BaseTestsForIntegerNumbers<Long> {
                 "-123 456,", "-123 456,7", "-123 456,78", "-123 456,789", "-123 456,7890", "-123 456,78901",
                 "a", "1a", "a1", "a 2", "1 2 3", "1 23 4", "1 23 45", "12 34 56", "12 345 67 89"
         );
+    }
+
+    @Test
+    public void testAlternativeGroupingSeparators() throws ParseException {
+        this.getField().setLocale(Locale.FRANCE);
+        this.getField().setGroupingSeparatorAlternatives(Set.of('_'));
+        for(String s: new String[]{"123_456_789", "12_34_56_789", "12345_6789", "_123_456789", "_123456789_"}) {
+            final Long value = this.getField().parseRawValue(s);
+            Assert.assertEquals(Long.valueOf(123456789L), value);
+        }
+    }
+
+    @Test
+    public void testAlternativeNegativeSign() throws ParseException {
+        this.getField().setLocale(Locale.GERMANY);
+        this.getField().setNegativeSignAlternatives(Set.of('^', '%'));
+        for(String s: new String[]{"^123456123456", "%123456123456", "-123456123456"}) {
+            final Long value = this.getField().parseRawValue(s);
+            Assert.assertEquals(Long.valueOf(-123456123456L), value);
+        }
     }
 
 }
