@@ -4,6 +4,7 @@ import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.function.SerializablePredicate;
 
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Base class for implementations of {@link AbstractSuperNumberField} that allow modifications to minimum and maximum number of fraction digits.
@@ -100,4 +101,15 @@ public abstract class AbstractSuperFloatingPointField<T extends Number, SELF ext
     public final SELF withIntegerPartOptional() {
         return this.withIntegerPartOptional(true);
     }
+
+    @Override
+    public Set<Character> getDecimalSeparatorAlternatives() {
+        return super.getDecimalSeparatorAlternatives();
+    }
+
+    @Override
+    public void setDecimalSeparatorAlternatives(Set<Character> alternatives) {
+        super.setDecimalSeparatorAlternatives(alternatives);
+    }
+
 }

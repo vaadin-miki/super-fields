@@ -1,3 +1,11 @@
+# 0.18.2 - HasTextInputMode
+## New features and enhancements
+* \#471 - [Allow setting "inputmode" attribute on text and number fields](https://github.com/vaadin-miki/super-fields/issues/471)
+* \#472 - [Alternative symbols for grouping and decimal separators](https://github.com/vaadin-miki/super-fields/issues/472)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#467 - [Deploy to Central is broken with Java 17](https://github.com/vaadin-miki/super-fields/issues/467)
 # 0.18.1 - Vaadin 24 in Central
 ## New features and enhancements
 (nothing reported)

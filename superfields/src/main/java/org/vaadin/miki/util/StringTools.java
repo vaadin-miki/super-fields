@@ -1,6 +1,10 @@
 package org.vaadin.miki.util;
 
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Some general-purpose utils for {@link String}s.
@@ -35,6 +39,18 @@ public class StringTools {
         else return firstLetterUppercase(string.replaceAll(CAMEL_CASE_REGEXP, " ")
                 .replaceAll("\\s{2,}", " ") // also get rid of double spaces
                 .trim()); // and trim
+    }
+
+    /**
+     * Converts an array of characters into an ordered set.
+     * @param chars Characters.
+     * @return A set of characters. Never {@code null}, but possibly empty.
+     */
+    public static Set<Character> toCharacterSet(char... chars) {
+        // really? no other way?
+        return IntStream.range(0, chars.length)
+            .mapToObj(index -> chars[index])
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private StringTools() {
