@@ -38,7 +38,9 @@ Quite a few components log their state using [SLF4J](https://www.slf4j.org). Cri
 
 None of the number fields support range checking, so if you allow too many digits, overflows will occur.
 
-All number fields support text selection API.
+All number fields support text selection API. They also should show a numeric keyboard on mobile devices.
+
+All number fields support alternative characters that serve as grouping (thousand) separator, negative sign and (if applicable) the decimal separator. By default, the alternatives may not overlap with the symbols provided by the current `Locale`. Furthermore, some of those alternative symbols can be prohibited from being typed with a keyboard.
 
 ### `SuperDoubleField` and `SuperBigDecimalField`
 
@@ -59,6 +61,8 @@ An input field for entering localised `Integer` and `Long` numbers. Supports tho
 These are the same components as their Vaadin counterparts, except they fully support text selection API. This means that the text contained in the components can be selected from server-side code and that changes to selection in the browser are sent to the server as events.
 
 In addition to that, both components allow server-side initiated text change at caret position (or any selected range).
+
+`SuperTextField` implements `HasTextInputMode` which allows customising its on-screen keyboard on devices that support it.
 
 ## Date fields
 
