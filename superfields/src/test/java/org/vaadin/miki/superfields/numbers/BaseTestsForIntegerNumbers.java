@@ -402,4 +402,15 @@ class BaseTestsForIntegerNumbers<T extends Number> {
         Assert.assertTrue(this.field.getNegativeSignAlternatives().containsAll(Set.of('+', '_', '%')));
     }
 
+    @Test
+    public void testAlternativesOverlappingDisallowed() {
+        this.field.setLocale(Locale.ENGLISH);
+        this.field.withOverlappingAlternatives()
+            .withNegativeSignAlternatives('.');
+        Assert.assertTrue(this.field.getNegativeSignAlternatives().contains('.'));
+        // disallowing overlapping should remove overlaps
+        this.field.setOverlappingAlternatives(false);
+        Assert.assertTrue(this.field.getNegativeSignAlternatives().isEmpty());
+    }
+
 }

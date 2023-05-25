@@ -161,6 +161,15 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
     }
 
     @Test
+    public void testOverlappingAlternatives() throws ParseException {
+        this.getField().withLocale(Locale.ENGLISH)
+            .withOverlappingAlternatives()
+            .withDecimalSeparatorAlternatives(',');
+        final BigDecimal value = this.getField().parseRawValue("12345,67");
+        Assert.assertEquals(BigDecimal.valueOf(12345.67), value);
+    }
+
+    @Test
     public void testScientificWithAlternativeSeparatorsWithNegativeSign() throws ParseException {
         this.getField().withLocale(Locale.GERMANY)
             .withExponentSeparator('e')

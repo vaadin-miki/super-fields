@@ -49,12 +49,14 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Base class for super number fields.
@@ -148,6 +150,9 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     private final Set<Character> decimalSeparatorAlternatives = new LinkedHashSet<>();
     private final Set<Character> negativeSignAlternatives = new LinkedHashSet<>();
     private boolean groupingAlternativeAutomaticallyAdded = false;
+    private boolean overlappingAlternatives = false;
+
+    private final Set<Character> disallowedAlternativeChars = new HashSet<>();
 
     /**
      * Creates the field.
@@ -333,6 +338,11 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         else this.updateRegularExpression();
     }
 
+    private Stream<Character> getOnlyAllowedCharacters(Set<Character> set) {
+        return set.stream()
+            .filter(character -> !this.getKeyboardDisallowedAlternatives().contains(character));
+    }
+
     /**
      * Specifies the allowed characters and prevents invalid input.
      *
@@ -343,14 +353,17 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     // see #473
     protected StringBuilder buildAllowedCharPattern(StringBuilder builder) {
         builder.append(RegexTools.escaped(this.format.getDecimalFormatSymbols().getGroupingSeparator()));
-        this.getGroupingSeparatorAlternatives().forEach(character -> builder.append(RegexTools.escaped(character)));
+        this.getOnlyAllowedCharacters(this.getGroupingSeparatorAlternatives())
+            .forEach(character -> builder.append(RegexTools.escaped(character)));
         if(this.getMaximumFractionDigits() > 0) {
             builder.append(RegexTools.escaped(this.format.getDecimalFormatSymbols().getDecimalSeparator()));
-            this.getDecimalSeparatorAlternatives().forEach(character -> builder.append(RegexTools.escaped(character)));
+            this.getOnlyAllowedCharacters(this.getDecimalSeparatorAlternatives())
+                .forEach(character -> builder.append(RegexTools.escaped(character)));
         }
         if(this.isNegativeValueAllowed()) {
             builder.append(RegexTools.escaped(this.format.getDecimalFormatSymbols().getMinusSign()));
-            this.getNegativeSignAlternatives().forEach(character -> builder.append(RegexTools.escaped(character)));
+            this.getOnlyAllowedCharacters(this.getNegativeSignAlternatives())
+                .forEach(character -> builder.append(RegexTools.escaped(character)));
         }
         return builder;
     }
@@ -947,6 +960,113 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     /**
+     * Checks if alternative symbols are allowed to overlap with one another and the default locale's symbols.
+     * @return {@code true} when overlapping between symbols is allowed; {@code false} otherwise and by default.
+     */
+    public boolean isOverlappingAlternatives() {
+        return overlappingAlternatives;
+    }
+
+    /**
+     * Allows (or disallows) alternative grouping, separator and negative sign symbols to overlap with each other and with the locale's default symbols.
+     * Note that this may lead to some unexpected results.
+     * Alternative symbols are always replaced in fixed order: negative sign, grouping symbols, decimal separator symbols.
+     * @param overlappingAlternatives When {@code true}, overlapping between symbols will be allowed.
+     */
+    public void setOverlappingAlternatives(boolean overlappingAlternatives) {
+        this.overlappingAlternatives = overlappingAlternatives;
+        // when alternatives are no longer allowed, make sure none are left
+        if(!overlappingAlternatives) {
+            // remove locale symbols
+            final Set<Character> formatSymbols = Set.of(this.format.getDecimalFormatSymbols().getMinusSign(),
+                this.format.getDecimalFormatSymbols().getDecimalSeparator(),
+                this.format.getDecimalFormatSymbols().getGroupingSeparator());
+            Stream.of(this.negativeSignAlternatives, this.groupingAlternatives, this.decimalSeparatorAlternatives)
+                .forEach(characters -> characters.removeAll(formatSymbols));
+            // remove overlapping alternatives
+            this.negativeSignAlternatives.removeAll(this.getGroupingSeparatorAlternatives());
+            this.negativeSignAlternatives.removeAll(this.getDecimalSeparatorAlternatives());
+            this.groupingAlternatives.removeAll(this.getNegativeSignAlternatives());
+            this.groupingAlternatives.removeAll(this.getDecimalSeparatorAlternatives());
+            this.decimalSeparatorAlternatives.removeAll(this.getNegativeSignAlternatives());
+            this.decimalSeparatorAlternatives.removeAll(this.getGroupingSeparatorAlternatives());
+        }
+    }
+
+    /**
+     * Chains {@link #setOverlappingAlternatives(boolean)} and returns itself.
+     * @param overlappingAlternatives Whether to allow overlapping alternatives.
+     * @return This.
+     * @see #setOverlappingAlternatives(boolean)
+     */
+    @SuppressWarnings("unchecked")
+    public SELF withOverlappingAlternatives(boolean overlappingAlternatives) {
+        this.setOverlappingAlternatives(overlappingAlternatives);
+        return (SELF) this;
+    }
+
+    /**
+     * Chains {@link #setOverlappingAlternatives(boolean)} with {@code true} as a parameter, and returns itself.
+     * @return This.
+     * @see #setOverlappingAlternatives(boolean)
+     */
+    public SELF withOverlappingAlternatives() {
+        return this.withOverlappingAlternatives(true);
+    }
+
+    /**
+     * Chains {@link #setOverlappingAlternatives(boolean)} with {@code false} as a parameter, and returns itself.
+     * @return This.
+     * @see #setOverlappingAlternatives(boolean)
+     */
+    public SELF withoutOverlappingAlternatives() {
+        return this.withOverlappingAlternatives(false);
+    }
+
+    /**
+     * Prevents specified alternative characters from being typed with keyboard.
+     * Only the characters that are also used as grouping separator, decimal separator or negative sign alternative are prevented.
+     * This alters the underlying field's allowed char pattern; it is still possible to paste text with that character.
+     * @param characters Characters to be disallowed.
+     */
+    public void setKeyboardDisallowedAlternatives(Set<Character> characters) {
+        this.disallowedAlternativeChars.clear();
+        this.disallowedAlternativeChars.addAll(characters);
+        this.updateRegularExpression();
+    }
+
+    /**
+     * Returns the set of characters that are prevented from being typed in.
+     * Note that this set may include more characters than the alternative symbols.
+     * @return A set of characters that, if they are an alternative symbol, cannot be typed in. Never {@code null}, but possibly empty.
+     */
+    public Set<Character> getKeyboardDisallowedAlternatives() {
+        return Collections.unmodifiableSet(this.disallowedAlternativeChars);
+    }
+
+    /**
+     * Chains {@link #setKeyboardDisallowedAlternatives(Set)} and returns itself.
+     * @param characters Characters to disallow.
+     * @return This.
+     * @see #setKeyboardDisallowedAlternatives(Set)
+     */
+    @SuppressWarnings("unchecked")
+    public SELF withKeyboardDisallowedAlternatives(Set<Character> characters) {
+        this.setKeyboardDisallowedAlternatives(characters);
+        return (SELF) this;
+    }
+
+    /**
+     * Chains {@link #setKeyboardDisallowedAlternatives(Set)} and returns itself.
+     * @param characters Characters to disallow.
+     * @return This.
+     * @see #setKeyboardDisallowedAlternatives(Set)
+     */
+    public SELF withKeyboardDisallowedAlternatives(char... characters) {
+        return this.withKeyboardDisallowedAlternatives(StringTools.toCharacterSet(characters));
+    }
+
+    /**
      * Returns the currently accepted alternatives to the grouping (thousand) separator.
      * @return Currently allowed alternatives to the main grouping separator, which is not included in the result. Never {@code null}, but possibly empty.
      */
@@ -963,16 +1083,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.groupingAlternatives.clear();
         this.groupingAlternatives.addAll(
         alternatives.stream()
-            .filter(c -> !this.negativeSignAlternatives.contains(c)
+            .filter(c -> this.isOverlappingAlternatives() || (!this.negativeSignAlternatives.contains(c)
                 && !this.decimalSeparatorAlternatives.contains(c)
                 && this.format.getDecimalFormatSymbols().getMinusSign() != c
                 && this.format.getDecimalFormatSymbols().getGroupingSeparator() != c
-                && this.format.getDecimalFormatSymbols().getDecimalSeparator() != c)
+                && this.format.getDecimalFormatSymbols().getDecimalSeparator() != c))
             .collect(Collectors.toCollection(LinkedHashSet::new))
         );
         if(this.groupingAlternativeAutomaticallyAdded) {
             if(alternatives.contains(SPACE)) this.groupingAlternativeAutomaticallyAdded = false;
-            else if(!this.groupingAlternatives.contains(SPACE)) this.groupingAlternatives.add(SPACE);
+            else this.groupingAlternatives.add(SPACE);
         }
         this.updateRegularExpression();
     }
@@ -1015,11 +1135,11 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.decimalSeparatorAlternatives.clear();
         this.decimalSeparatorAlternatives.addAll(
             alternatives.stream()
-                .filter(c -> !this.groupingAlternatives.contains(c)
+                .filter(c -> this.isOverlappingAlternatives() || (!this.groupingAlternatives.contains(c)
                     && !this.negativeSignAlternatives.contains(c)
                     && (this.format.getDecimalFormatSymbols().getMinusSign() != c)
                     && (this.format.getDecimalFormatSymbols().getGroupingSeparator() != c)
-                    && (this.format.getDecimalFormatSymbols().getDecimalSeparator() != c))
+                    && (this.format.getDecimalFormatSymbols().getDecimalSeparator() != c)))
                 .collect(Collectors.toCollection(LinkedHashSet::new))
         );
         this.updateRegularExpression();
@@ -1063,11 +1183,11 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         this.negativeSignAlternatives.clear();
         this.negativeSignAlternatives.addAll(
             alternatives.stream()
-                .filter(c -> !this.groupingAlternatives.contains(c)
+                .filter(c -> this.isOverlappingAlternatives() || (!this.groupingAlternatives.contains(c)
                     && !this.decimalSeparatorAlternatives.contains(c)
                     && (this.format.getDecimalFormatSymbols().getMinusSign() != c)
                     && (this.format.getDecimalFormatSymbols().getGroupingSeparator() != c)
-                    && (this.format.getDecimalFormatSymbols().getDecimalSeparator() != c))
+                    && (this.format.getDecimalFormatSymbols().getDecimalSeparator() != c)))
                 .collect(Collectors.toCollection(LinkedHashSet::new))
         );
         this.updateRegularExpression();
@@ -1155,12 +1275,12 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
             else return this.getEmptyValue();
         }
         // replace alternative characters
+        for(char c: this.getNegativeSignAlternatives())
+            rawValue = rawValue.replace(c, this.format.getDecimalFormatSymbols().getMinusSign());
         for(char c: this.getGroupingSeparatorAlternatives())
             rawValue = rawValue.replace(c, this.format.getDecimalFormatSymbols().getGroupingSeparator());
         for(char c: this.getDecimalSeparatorAlternatives())
             rawValue = rawValue.replace(c, this.format.getDecimalFormatSymbols().getDecimalSeparator());
-        for(char c: this.getNegativeSignAlternatives())
-            rawValue = rawValue.replace(c, this.format.getDecimalFormatSymbols().getMinusSign());
 
         return this.parseRawValue(rawValue, this.format);
     }

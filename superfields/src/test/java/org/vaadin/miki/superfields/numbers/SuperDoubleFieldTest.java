@@ -60,4 +60,25 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
         }
     }
 
+    @Test
+    public void testOverlappingAlternatives() throws ParseException {
+        this.getField().withLocale(Locale.GERMANY)
+            .withOverlappingAlternatives()
+            .withDecimalSeparatorAlternatives('.');
+        Assert.assertTrue(this.getField().getDecimalSeparatorAlternatives().contains('.'));
+        final double value = this.getField().parseRawValue("12345.67");
+        Assert.assertEquals(12345.67, value, 0.00001);
+    }
+
+    @Test
+    public void testWithoutOverlappingAlternatives() throws ParseException {
+        this.getField().withLocale(Locale.GERMANY)
+            .withDecimalSeparatorAlternatives('.');
+        // without explicitly allowing symbols to overlap, the . is ignored and treated as a grouping symbol
+        Assert.assertTrue(this.getField().getDecimalSeparatorAlternatives().isEmpty());
+        final double value = this.getField().parseRawValue("12345.67");
+        Assert.assertEquals(1234567, value, 0.00001);
+    }
+
+
 }

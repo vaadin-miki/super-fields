@@ -54,6 +54,9 @@ public class AbstractSuperNumberFieldBuilder implements ContentBuilder<AbstractS
         final Checkbox allowNegativeAlternative = new Checkbox("Allow ^ and # as a negative sign?");
         allowNegativeAlternative.addValueChangeListener(event -> component.setNegativeSignAlternatives(event.getValue() ? Set.of('^', '#') : Collections.emptySet()));
 
-        callback.accept(new Component[]{autoselect, separatorHidden, prefix, suffix, alignRight, allowGroupAlternative, allowNegativeAlternative});
+        final Checkbox disallowAlternatives = new Checkbox("Disallow typing ^ and space?");
+        disallowAlternatives.addValueChangeListener(event -> component.setKeyboardDisallowedAlternatives(event.getValue() ? Set.of('^', ' ') : Collections.emptySet()));
+
+        callback.accept(new Component[]{autoselect, separatorHidden, prefix, suffix, alignRight, allowGroupAlternative, allowNegativeAlternative, disallowAlternatives});
     }
 }
