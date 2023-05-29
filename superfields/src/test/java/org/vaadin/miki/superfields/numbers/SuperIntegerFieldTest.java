@@ -1,5 +1,12 @@
 package org.vaadin.miki.superfields.numbers;
 
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Locale;
 
 public class SuperIntegerFieldTest extends BaseTestsForIntegerNumbers<Integer> {
@@ -42,6 +49,26 @@ public class SuperIntegerFieldTest extends BaseTestsForIntegerNumbers<Integer> {
                 "-123 456,", "-123 456,7", "-123 456,78", "-123 456,789", "-123 456,7890", "-123 456,78901",
                 "a", "1a", "a1", "a 2", "1 2 3", "1 23 4", "1 23 45", "12 34 56", "12 345 67 89"
         );
+    }
+
+    @Test
+    public void testAlternativeGroupingSeparators() throws ParseException {
+        this.getField().setLocale(Locale.FRANCE);
+        this.getField().setGroupingSeparatorAlternatives(Collections.singleton('_'));
+        for(String s: new String[]{"123_456", "12_34_56", "12345_6", "_123_456", "_123456_"}) {
+            final Integer value = this.getField().parseRawValue(s);
+            Assert.assertEquals(Integer.valueOf(123456), value);
+        }
+    }
+
+    @Test
+    public void testAlternativeNegativeSign() throws ParseException {
+        this.getField().setLocale(Locale.GERMANY);
+        this.getField().setNegativeSignAlternatives(new HashSet<>(Arrays.asList('^', '%')));
+        for(String s: new String[]{"^123456", "%123456", "-123456"}) {
+            final Integer value = this.getField().parseRawValue(s);
+            Assert.assertEquals(Integer.valueOf(-123456), value);
+        }
     }
 
 }

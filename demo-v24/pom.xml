@@ -4,13 +4,13 @@
     <parent>
         <artifactId>superfields-parent</artifactId>
         <groupId>pl.unforgiven</groupId>
-        <version>0.17.0-vaadin14</version>
+        <version>0.18.2-vaadin14</version>
     </parent>
 
-    <artifactId>superfields-demo-v23</artifactId>
-    <version>0.17.0-vaadin14</version>
+    <artifactId>superfields-demo-v24</artifactId>
+    <version>0.18.2-vaadin14</version>
     <name>V14 demo app for SuperFields</name>
-    <description>Showcase application for V14 and SuperFields.</description>
+    <description>Showcase application for V24+ and SuperFields.</description>
     <packaging>war</packaging>
 
     <properties>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>pl.unforgiven</groupId>
             <artifactId>superfields</artifactId>
-            <version>0.17.0-vaadin14</version>
+            <version>0.18.2.vaadin14</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -31,6 +31,7 @@
             <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
+
         <!-- Added to provide logging output as Flow uses -->
         <!-- the unbound SLF4J no-operation (NOP) logger implementation -->
         <dependency>
@@ -107,7 +108,6 @@
         </repository>
     </repositories>
 
-
     <build>
         <defaultGoal>jetty:run</defaultGoal>
         <plugins>
@@ -137,6 +137,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
             </plugin>
 
             <!-- install node/npm locally -->
@@ -218,10 +223,10 @@
                     <plugin>
                         <groupId>org.codehaus.cargo</groupId>
                         <artifactId>cargo-maven3-plugin</artifactId>
-                        <version>1.10.2</version>
+                        <version>1.10.6</version>
                         <configuration>
                             <container>
-                                <containerId>tomcat9x</containerId>
+                                <containerId>tomcat10x</containerId>
                                 <type>remote</type>
                             </container>
                             <configuration>

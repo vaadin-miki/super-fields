@@ -2,19 +2,21 @@
 
 ## Overview
 
-This is a collection of hopefully useful Vaadin 14 and 23+ components, grouped into several subprojects:
+This is a collection of hopefully useful Vaadin 14 and 24+ components, grouped into several subprojects:
 * `superfields` are various input components;
-* `demo-v23` contains an app for Vaadin 23+ that shows all components - [see the demo online](https://demo.unforgiven.pl/superfields/) or run it yourself with `mvn package jetty:run`
+* `demo-v24` contains an app for Vaadin 24+ that shows all components - [see the demo online](https://demo.unforgiven.pl/superfields/) or run it yourself with `mvn package jetty:run`
 
 ## Installation
 
 [SuperFields are also available in Vaadin Directory](https://vaadin.com/directory/component/superfields). If you find this library useful, consider rating it there or leaving a review. Thanks :)
 
-SuperFields work with Vaadin 23 (and above) and Vaadin 14 LTS (only as long as Vaadin 14 is officially supported).
+SuperFields work with Vaadin 24 (and above) and Vaadin 14 LTS (only as long as Vaadin 14 is officially supported).
 
-### Vaadin 23+ and Java 11
+### Vaadin 23/24 and Java 11/17
 
-Starting with **version 0.12** SuperFields work with the latest major Vaadin version. **Java 11** or newer is required.
+Starting from **version 0.18** SuperFields work with Vaadin 24 and require **Java 17**.
+
+**Versions 0.12 to 0.17** of SuperFields work with Vaadin 23 version. **Java 11** or newer is required.
 
 From **version 0.16** every release is available in Maven Central. Please note that the `groupId` of the project **has changed** from `org.vaadin.miki` to `pl.unforgiven`. Class names and package names **have not changed**.
 
@@ -25,7 +27,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>pl.unforgiven</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.17.0</version>
+   <version>0.18.2</version>
 </dependency>
 ```
 
@@ -40,7 +42,7 @@ Versions below **0.12** work only with Vaadin 14 LTS.
 
 SuperFields in general **should** be compatible with Vaadin 14 LTS and with Java 8. Each release has a corresponding version marked with `-vaadin14` suffix in the number, e.g. `0.12.0-vaadin14`. The functionality is identical to the official release.
 
-These releases are **not available** in Maven Central nor in GitHub. Instead, they can only be obtained from [Vaadin Directory](https://vaadin.com/directory/component/superfields). Here is the required repository:
+These releases are available in Maven Central. They can also be obtained from [Vaadin Directory](https://vaadin.com/directory/component/superfields). Here is the required repository:
 ```
 <repository>
    <id>vaadin-addons</id>

@@ -8,6 +8,9 @@ import org.vaadin.miki.demo.ContentBuilder;
 import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.numbers.AbstractSuperNumberField;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.function.Consumer;
 
 /**
@@ -45,6 +48,17 @@ public class AbstractSuperNumberFieldBuilder implements ContentBuilder<AbstractS
                         component.removeThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
                 }
         );
-        callback.accept(new Component[]{autoselect, separatorHidden, prefix, suffix, alignRight});
+
+        final Checkbox allowGroupAlternative = new Checkbox("Allow _ as grouping alternative?");
+        allowGroupAlternative.addValueChangeListener(event -> component.setGroupingSeparatorAlternatives(event.getValue() ? Collections.singleton('_') : Collections.emptySet()));
+
+        final Checkbox allowNegativeAlternative = new Checkbox("Allow ^ and # as a negative sign?");
+        allowNegativeAlternative.addValueChangeListener(event -> component.setNegativeSignAlternatives(event.getValue() ? new HashSet<>(Arrays.asList('^', '#')) : Collections.emptySet()));
+
+        final Checkbox disallowAlternatives = new Checkbox("(not available in Vaadin 14) Disallow typing ^ and space?");
+        disallowAlternatives.setEnabled(false);
+        // disallowAlternatives.addValueChangeListener(event -> component.setKeyboardDisallowedAlternatives(event.getValue() ? new HashSet<>(Arrays.asList('^', ' ')) : Collections.emptySet()));
+
+        callback.accept(new Component[]{autoselect, separatorHidden, prefix, suffix, alignRight, allowGroupAlternative, allowNegativeAlternative, disallowAlternatives});
     }
 }

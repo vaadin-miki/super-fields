@@ -34,17 +34,28 @@ import org.vaadin.miki.markers.WithNullValueOptionallyAllowedMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
 import org.vaadin.miki.markers.WithReceivingSelectionEventsFromClientMixin;
 import org.vaadin.miki.markers.WithRequiredMixin;
+import org.vaadin.miki.markers.WithTextInputModeMixin;
 import org.vaadin.miki.markers.WithTooltipMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 import org.vaadin.miki.shared.labels.LabelPosition;
+import org.vaadin.miki.shared.text.TextInputMode;
 import org.vaadin.miki.superfields.text.SuperTextField;
+import org.vaadin.miki.util.RegexTools;
+import org.vaadin.miki.util.StringTools;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Base class for super number fields.
@@ -54,7 +65,6 @@ import java.util.function.Consumer;
  * @since 2020-04-07
  */
 @CssImport("./styles/form-layout-number-field-styles.css")
-//@CssImport(value = "./styles/label-positions.css", themeFor = "super-text-field")
 @SuppressWarnings("squid:S119") // SELF is a perfectly fine generic name that indicates its purpose
 public abstract class AbstractSuperNumberField<T extends Number, SELF extends AbstractSuperNumberField<T, SELF>>
         extends CustomField<T>
@@ -64,7 +74,8 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF>,
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
                    WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF>, WithClearButtonMixin<SELF>,
-                   WithRequiredMixin<SELF>, WithLabelPositionableMixin<SELF>, WithTooltipMixin<SELF> {
+                   WithRequiredMixin<SELF>, WithLabelPositionableMixin<SELF>, WithTooltipMixin<SELF>,
+                   WithTextInputModeMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -92,11 +103,6 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      * Regular space.
      */
     private static final char SPACE = ' ';
-
-    /**
-     * Dot. Needs to be escaped in regular expressions.
-     */
-    private static final char DOT = '.';
 
     /**
      * Underlying text field.
@@ -139,6 +145,14 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     private Registration innerFieldValueChangeRegistration;
 
+    private final Set<Character> groupingAlternatives = new LinkedHashSet<>();
+    private final Set<Character> decimalSeparatorAlternatives = new LinkedHashSet<>();
+    private final Set<Character> negativeSignAlternatives = new LinkedHashSet<>();
+    private boolean groupingAlternativeAutomaticallyAdded = false;
+    private boolean overlappingAlternatives = false;
+
+    private final Set<Character> disallowedAlternativeChars = new HashSet<>();
+
     /**
      * Creates the field.
      * @param defaultValue Default value to use on startup and when there are errors.
@@ -162,17 +176,19 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         if(maxFractionDigits >= 0)
             this.format.setMaximumFractionDigits(maxFractionDigits);
         this.updateRegularExpression();
+        this.updateTextInputMode();
 
         this.field.addClassName(TEXT_FIELD_STYLE_PREFIX +this.getClass().getSimpleName().toLowerCase());
         this.add(this.field);
 
         this.field.setLabel(label);
-        this.field.setPreventInvalidInput(true);
         this.field.setWidthFull();
+        this.field.setPreventInvalidInput(true);
 
         this.field.addFocusListener(this::onFieldSelected);
         this.field.addBlurListener(this::onFieldBlurred);
         this.field.addTextSelectionListener(this::onTextSelected);
+
         // the following line allows for ValueChangeMode to be effective (#337)
         // at the same time, it makes setting fraction/integer digits destructive (see #339)
         // (because without it the value would be updated on blur, and not on every change)
@@ -200,15 +216,6 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
     private void onFieldChanged(HasValue.ValueChangeEvent<String> event) {
         this.updateValue();
-    }
-
-    /**
-     * Escapes the {@link #DOT} for regular expression, if needed.
-     * @param character Character to escape.
-     * @return Dot escaped or the passed character.
-     */
-    protected static String escapeDot(char character) {
-        return character == DOT ? "\\." : String.valueOf(character);
     }
 
     private DecimalFormat getFormat(Locale locale) {
@@ -293,6 +300,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     protected void setMaximumFractionDigits(int digits) {
         this.format.setMaximumFractionDigits(digits);
         this.updateRegularExpression(true);
+        this.updateTextInputMode();
     }
 
     /**
@@ -330,6 +338,36 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         else this.updateRegularExpression();
     }
 
+    private Stream<Character> getOnlyAllowedCharacters(Set<Character> set) {
+        return set.stream()
+            .filter(character -> !this.getKeyboardDisallowedAlternatives().contains(character));
+    }
+
+    /**
+     * Specifies the allowed characters and prevents invalid input.
+     *
+     * @param builder Builder to be used. Note that the builder passed to it already starts with {@code [\d} and {@code ]} is added at the end.
+     * @return The passed builder with added allowed characters.
+     */
+    // note that this still allows entering a sequence of valid characters that is invalid (does not match the pattern)
+    // see #473
+    protected StringBuilder buildAllowedCharPattern(StringBuilder builder) {
+        builder.append(RegexTools.escaped(this.format.getDecimalFormatSymbols().getGroupingSeparator()));
+        this.getOnlyAllowedCharacters(this.getGroupingSeparatorAlternatives())
+            .forEach(character -> builder.append(RegexTools.escaped(character)));
+        if(this.getMaximumFractionDigits() > 0) {
+            builder.append(RegexTools.escaped(this.format.getDecimalFormatSymbols().getDecimalSeparator()));
+            this.getOnlyAllowedCharacters(this.getDecimalSeparatorAlternatives())
+                .forEach(character -> builder.append(RegexTools.escaped(character)));
+        }
+        if(this.isNegativeValueAllowed()) {
+            builder.append(RegexTools.escaped(this.format.getDecimalFormatSymbols().getMinusSign()));
+            this.getOnlyAllowedCharacters(this.getNegativeSignAlternatives())
+                .forEach(character -> builder.append(RegexTools.escaped(character)));
+        }
+        return builder;
+    }
+
     /**
      * Builds the regular expression for matching the input.
      */
@@ -341,6 +379,10 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
 
         this.field.setPattern(this.regexp);
 
+        // not available in Vaadin 14
+        // final String allowedChars = this.buildAllowedCharPattern(new StringBuilder("[\\d")).append("]").toString();
+        // this.field.setAllowedCharPattern(allowedChars);
+
         LOGGER.debug("pattern updated to {}", this.regexp);
         if(!this.isNegativeValueAllowed() && value != null && this.negativityPredicate.test(value)) {
             LOGGER.debug("negative values are not allowed, so turning into positive value {}", value);
@@ -351,6 +393,30 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     }
 
     /**
+     * Updates the underlying field's text input mode.
+     * This shows a proper on-screen keyboard on devices that support it.
+     */
+    // fixes #471
+    protected void updateTextInputMode() {
+        // if there are no fraction digits allowed, use NUMERIC (as DECIMAL shows decimal characters)
+        this.field.setTextInputMode(
+            this.getMaximumFractionDigits() == 0 ? TextInputMode.NUMERIC : TextInputMode.DECIMAL
+        );
+    }
+
+    private void ensureSpaceGroupingPossible() {
+        // always make sure there is a space if the format has a non-breaking one
+        if(this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE) {
+            this.groupingAlternatives.add(SPACE);
+            this.groupingAlternativeAutomaticallyAdded = true;
+        }
+        else if(this.groupingAlternativeAutomaticallyAdded && this.groupingAlternatives.contains(SPACE)) {
+            this.groupingAlternatives.remove(SPACE);
+            this.groupingAlternativeAutomaticallyAdded = false;
+        }
+    }
+
+    /**
      * Builds regular expression that allows neat typing of the number already formatted.
      * Overwrite with care.
      * @param builder Builder, initially empty.
@@ -358,15 +424,17 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
      * @return Builder with the regular expression.
      */
     protected StringBuilder buildRegularExpression(StringBuilder builder, DecimalFormat format) {
-        final String groupSeparatorRegexp =
-                format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE
-                        ? "[ "+format.getDecimalFormatSymbols().getGroupingSeparator()+"]"
-                        : escapeDot(format.getDecimalFormatSymbols().getGroupingSeparator());
+        this.ensureSpaceGroupingPossible();
+
+        final String groupSeparatorRegexp = RegexTools.characterSelector(
+            format.getDecimalFormatSymbols().getGroupingSeparator(),
+            this.getGroupingSeparatorAlternatives()
+        );
 
         builder.append("^");
 
         if(this.isNegativeValueAllowed())
-            builder.append(format.getDecimalFormatSymbols().getMinusSign()).append("?");
+            RegexTools.characterSelector(builder, format.getDecimalFormatSymbols().getMinusSign(), this.getNegativeSignAlternatives()).append("?");
 
         // everything after the negative sign can be optional, meaning that empty string is ok
         builder.append("(");
@@ -419,8 +487,9 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         }
 
         if(this.format.getMaximumFractionDigits() > 0)
-            builder.append("(").append(escapeDot(format.getDecimalFormatSymbols().getDecimalSeparator()))
-                    .append(REGEXP_START_ANY_DIGITS).append(format.getMaximumFractionDigits()).append("})?");
+            RegexTools.characterSelector(builder.append("("), format.getDecimalFormatSymbols().getDecimalSeparator(), this.getDecimalSeparatorAlternatives())
+                .append(REGEXP_START_ANY_DIGITS)
+                .append(format.getMaximumFractionDigits()).append("})?");
 
         builder.append(")?$");
         return builder;
@@ -812,6 +881,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     public String getTooltipText() {
         return this.field.getTooltipText();
     }
+
     @Override
     public void setValueChangeMode(ValueChangeMode valueChangeMode) {
         this.field.setValueChangeMode(valueChangeMode);
@@ -881,6 +951,276 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
         return this.field.getLabelPosition();
     }
 
+    @Override
+    public void setTextInputMode(TextInputMode inputMode) {
+        this.field.setTextInputMode(inputMode);
+    }
+
+    @Override
+    public TextInputMode getTextInputMode() {
+        return this.field.getTextInputMode();
+    }
+
+    /**
+     * Checks if alternative symbols are allowed to overlap with one another and the default locale's symbols.
+     * @return {@code true} when overlapping between symbols is allowed; {@code false} otherwise and by default.
+     */
+    public boolean isOverlappingAlternatives() {
+        return overlappingAlternatives;
+    }
+
+    /**
+     * Allows (or disallows) alternative grouping, separator and negative sign symbols to overlap with each other and with the locale's default symbols.
+     * Note that this may lead to some unexpected results.
+     * Alternative symbols are always replaced in fixed order: negative sign, grouping symbols, decimal separator symbols.
+     * @param overlappingAlternatives When {@code true}, overlapping between symbols will be allowed.
+     */
+    public void setOverlappingAlternatives(boolean overlappingAlternatives) {
+        this.overlappingAlternatives = overlappingAlternatives;
+        // when alternatives are no longer allowed, make sure none are left
+        if(!overlappingAlternatives) {
+            // remove locale symbols
+            final Set<Character> formatSymbols = new HashSet<>(Arrays.asList(this.format.getDecimalFormatSymbols().getMinusSign(),
+                this.format.getDecimalFormatSymbols().getDecimalSeparator(),
+                this.format.getDecimalFormatSymbols().getGroupingSeparator()));
+            Stream.of(this.negativeSignAlternatives, this.groupingAlternatives, this.decimalSeparatorAlternatives)
+                .forEach(characters -> characters.removeAll(formatSymbols));
+            // remove overlapping alternatives
+            this.negativeSignAlternatives.removeAll(this.getGroupingSeparatorAlternatives());
+            this.negativeSignAlternatives.removeAll(this.getDecimalSeparatorAlternatives());
+            this.groupingAlternatives.removeAll(this.getNegativeSignAlternatives());
+            this.groupingAlternatives.removeAll(this.getDecimalSeparatorAlternatives());
+            this.decimalSeparatorAlternatives.removeAll(this.getNegativeSignAlternatives());
+            this.decimalSeparatorAlternatives.removeAll(this.getGroupingSeparatorAlternatives());
+        }
+    }
+
+    /**
+     * Chains {@link #setOverlappingAlternatives(boolean)} and returns itself.
+     * @param overlappingAlternatives Whether to allow overlapping alternatives.
+     * @return This.
+     * @see #setOverlappingAlternatives(boolean)
+     */
+    @SuppressWarnings("unchecked")
+    public SELF withOverlappingAlternatives(boolean overlappingAlternatives) {
+        this.setOverlappingAlternatives(overlappingAlternatives);
+        return (SELF) this;
+    }
+
+    /**
+     * Chains {@link #setOverlappingAlternatives(boolean)} with {@code true} as a parameter, and returns itself.
+     * @return This.
+     * @see #setOverlappingAlternatives(boolean)
+     */
+    public SELF withOverlappingAlternatives() {
+        return this.withOverlappingAlternatives(true);
+    }
+
+    /**
+     * Chains {@link #setOverlappingAlternatives(boolean)} with {@code false} as a parameter, and returns itself.
+     * @return This.
+     * @see #setOverlappingAlternatives(boolean)
+     */
+    public SELF withoutOverlappingAlternatives() {
+        return this.withOverlappingAlternatives(false);
+    }
+
+    /**
+     * Prevents specified alternative characters from being typed with keyboard.
+     * Only the characters that are also used as grouping separator, decimal separator or negative sign alternative are prevented.
+     * This alters the underlying field's allowed char pattern; it is still possible to paste text with that character.
+     * @param characters Characters to be disallowed.
+     */
+    // note: this has no effect in Vaadin 14
+    private void setKeyboardDisallowedAlternatives(Set<Character> characters) {
+        this.disallowedAlternativeChars.clear();
+        this.disallowedAlternativeChars.addAll(characters);
+        this.updateRegularExpression();
+    }
+
+    /**
+     * Returns the set of characters that are prevented from being typed in.
+     * Note that this set may include more characters than the alternative symbols.
+     * @return A set of characters that, if they are an alternative symbol, cannot be typed in. Never {@code null}, but possibly empty.
+     */
+    // this has no effect in Vaadin 14
+    private Set<Character> getKeyboardDisallowedAlternatives() {
+        return Collections.unmodifiableSet(this.disallowedAlternativeChars);
+    }
+
+    /**
+     * Chains {@link #setKeyboardDisallowedAlternatives(Set)} and returns itself.
+     * @param characters Characters to disallow.
+     * @return This.
+     * @see #setKeyboardDisallowedAlternatives(Set)
+     */
+    // this has no effect in Vaadin 14
+    @SuppressWarnings("unchecked")
+    private SELF withKeyboardDisallowedAlternatives(Set<Character> characters) {
+        this.setKeyboardDisallowedAlternatives(characters);
+        return (SELF) this;
+    }
+
+    /**
+     * Chains {@link #setKeyboardDisallowedAlternatives(Set)} and returns itself.
+     * @param characters Characters to disallow.
+     * @return This.
+     * @see #setKeyboardDisallowedAlternatives(Set)
+     */
+    // this has no effect in Vaadin 14
+    private SELF withKeyboardDisallowedAlternatives(char... characters) {
+        return this.withKeyboardDisallowedAlternatives(StringTools.toCharacterSet(characters));
+    }
+
+    /**
+     * Returns the currently accepted alternatives to the grouping (thousand) separator.
+     * @return Currently allowed alternatives to the main grouping separator, which is not included in the result. Never {@code null}, but possibly empty.
+     */
+    public Set<Character> getGroupingSeparatorAlternatives() {
+        return Collections.unmodifiableSet(this.groupingAlternatives);
+    }
+
+    /**
+     * Sets grouping separator alternatives, replacing previously existing ones.
+     * Note that this preserves the automatically added {@link #SPACE} when the format uses {@link #NON_BREAKING_SPACE}.
+     * @param alternatives Any alternatives that are identical to the already used separators or negative sign or their alternatives are ignored.
+     */
+    public void setGroupingSeparatorAlternatives(Set<Character> alternatives) {
+        this.groupingAlternatives.clear();
+        this.groupingAlternatives.addAll(
+        alternatives.stream()
+            .filter(c -> this.isOverlappingAlternatives() || (!this.negativeSignAlternatives.contains(c)
+                && !this.decimalSeparatorAlternatives.contains(c)
+                && this.format.getDecimalFormatSymbols().getMinusSign() != c
+                && this.format.getDecimalFormatSymbols().getGroupingSeparator() != c
+                && this.format.getDecimalFormatSymbols().getDecimalSeparator() != c))
+            .collect(Collectors.toCollection(LinkedHashSet::new))
+        );
+        if(this.groupingAlternativeAutomaticallyAdded) {
+            if(alternatives.contains(SPACE)) this.groupingAlternativeAutomaticallyAdded = false;
+            else this.groupingAlternatives.add(SPACE);
+        }
+        this.updateRegularExpression();
+    }
+
+    /**
+     * Chains {@link #setGroupingSeparatorAlternatives(Set)} and returns itself.
+     * @param alternatives Alternatives to use.
+     * @return This.
+     * @see #setGroupingSeparatorAlternatives(Set)
+     */
+    @SuppressWarnings("unchecked")
+    public SELF withGroupingSeparatorAlternatives(Set<Character> alternatives) {
+        this.setGroupingSeparatorAlternatives(alternatives);
+        return (SELF)this;
+    }
+
+    /**
+     * Chains {@link #setGroupingSeparatorAlternatives(Set)} and returns itself.
+     * @param alternatives Alternatives to use.
+     * @return This.
+     * @see #setGroupingSeparatorAlternatives(Set)
+     */
+    public SELF withGroupingSeparatorAlternatives(char... alternatives) {
+        return this.withGroupingSeparatorAlternatives(StringTools.toCharacterSet(alternatives));
+    }
+
+    /**
+     * Returns the currently accepted alternatives to the decimal separator.
+     * @return Currently allowed alternatives to the main decimal separator, which is not included in the result. Never {@code null}, but possibly empty.
+     */
+    protected Set<Character> getDecimalSeparatorAlternatives() {
+        return Collections.unmodifiableSet(this.decimalSeparatorAlternatives);
+    }
+
+    /**
+     * Sets decimal separator alternatives, replacing previously existing ones.
+     * @param alternatives Any alternatives that are identical to the already used separators or negative sign or their alternatives are ignored.
+     */
+    protected void setDecimalSeparatorAlternatives(Set<Character> alternatives) {
+        this.decimalSeparatorAlternatives.clear();
+        this.decimalSeparatorAlternatives.addAll(
+            alternatives.stream()
+                .filter(c -> this.isOverlappingAlternatives() || (!this.groupingAlternatives.contains(c)
+                    && !this.negativeSignAlternatives.contains(c)
+                    && (this.format.getDecimalFormatSymbols().getMinusSign() != c)
+                    && (this.format.getDecimalFormatSymbols().getGroupingSeparator() != c)
+                    && (this.format.getDecimalFormatSymbols().getDecimalSeparator() != c)))
+                .collect(Collectors.toCollection(LinkedHashSet::new))
+        );
+        this.updateRegularExpression();
+    }
+
+    /**
+     * Chains {@link #setDecimalSeparatorAlternatives(Set)} and returns itself.
+     * @param alternatives Alternatives to use.
+     * @return This.
+     * @see #setDecimalSeparatorAlternatives(Set)
+     */
+    @SuppressWarnings("unchecked")
+    protected SELF withDecimalSeparatorAlternatives(Set<Character> alternatives) {
+        this.setDecimalSeparatorAlternatives(alternatives);
+        return (SELF) this;
+    }
+
+    /**
+     * Chains {@link #setDecimalSeparatorAlternatives(Set)} and returns itself.
+     * @param alternatives Alternatives to use.
+     * @return This.
+     * @see #setDecimalSeparatorAlternatives(Set)
+     */
+    protected SELF withDecimalSeparatorAlternatives(char... alternatives) {
+        return this.withDecimalSeparatorAlternatives(StringTools.toCharacterSet(alternatives));
+    }
+
+    /**
+     * Returns the currently accepted alternatives to the negative (minus) sign.
+     * @return Currently allowed alternatives to the main negative sign, which is not included in the result. Never {@code null}, but possibly empty.
+     */
+    public Set<Character> getNegativeSignAlternatives() {
+        return Collections.unmodifiableSet(negativeSignAlternatives);
+    }
+
+    /**
+     * Sets negative sign alternatives, replacing previously existing ones.
+     * @param alternatives Any alternatives that are identical to the already used separators or negative sign or their alternatives are ignored.
+     */
+    public void setNegativeSignAlternatives(Set<Character> alternatives) {
+        this.negativeSignAlternatives.clear();
+        this.negativeSignAlternatives.addAll(
+            alternatives.stream()
+                .filter(c -> this.isOverlappingAlternatives() || (!this.groupingAlternatives.contains(c)
+                    && !this.decimalSeparatorAlternatives.contains(c)
+                    && (this.format.getDecimalFormatSymbols().getMinusSign() != c)
+                    && (this.format.getDecimalFormatSymbols().getGroupingSeparator() != c)
+                    && (this.format.getDecimalFormatSymbols().getDecimalSeparator() != c)))
+                .collect(Collectors.toCollection(LinkedHashSet::new))
+        );
+        this.updateRegularExpression();
+    }
+
+    /**
+     * Chains {@link #setNegativeSignAlternatives(Set)} and returns itself.
+     * @param alternatives Alternatives to use.
+     * @return This.
+     * @see #setNegativeSignAlternatives(Set)
+     */
+    @SuppressWarnings("unchecked")
+    public SELF withNegativeSignAlternatives(Set<Character> alternatives) {
+        this.setNegativeSignAlternatives(alternatives);
+        return (SELF)this;
+    }
+
+    /**
+     * Chains {@link #setNegativeSignAlternatives(Set)} and returns itself.
+     * @param alternatives Alternatives to use.
+     * @return This.
+     * @see #setNegativeSignAlternatives(Set)
+     */
+    public SELF withNegativeSignAlternatives(char... alternatives) {
+        return this.withNegativeSignAlternatives(StringTools.toCharacterSet(alternatives));
+    }
+
     /**
      * Explicitly invokes code that would otherwise be called when the component receives focus.
      * For testing purposes only.
@@ -940,8 +1280,14 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                 return null;
             else return this.getEmptyValue();
         }
-        if (this.format.getDecimalFormatSymbols().getGroupingSeparator() == NON_BREAKING_SPACE)
-            rawValue = rawValue.replace(SPACE, NON_BREAKING_SPACE);
+        // replace alternative characters
+        for(char c: this.getNegativeSignAlternatives())
+            rawValue = rawValue.replace(c, this.format.getDecimalFormatSymbols().getMinusSign());
+        for(char c: this.getGroupingSeparatorAlternatives())
+            rawValue = rawValue.replace(c, this.format.getDecimalFormatSymbols().getGroupingSeparator());
+        for(char c: this.getDecimalSeparatorAlternatives())
+            rawValue = rawValue.replace(c, this.format.getDecimalFormatSymbols().getDecimalSeparator());
+
         return this.parseRawValue(rawValue, this.format);
     }
 

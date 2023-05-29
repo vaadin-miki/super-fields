@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.function.SerializableSupplier;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.superfields.object.Property;
 import org.vaadin.miki.superfields.object.PropertyComponentBuilder;
@@ -25,6 +26,8 @@ import java.util.function.Predicate;
  */
 @SuppressWarnings("squid:S1452") // not really sure how to properly remove <?> in return types and allow type safety at the same time; any help appreciated
 public class SimplePropertyComponentBuilder implements PropertyComponentBuilder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimplePropertyComponentBuilder.class);
 
     /**
      * Default field builder used when no registered predicate matches given property.
@@ -72,7 +75,7 @@ public class SimplePropertyComponentBuilder implements PropertyComponentBuilder 
         if(result instanceof HasLabel && this.isDefaultLabel()) {
             final String fieldLabel = StringTools.humanReadable(property.getName());
             ((HasLabel) result).setLabel(fieldLabel);
-            LoggerFactory.getLogger(this.getClass()).info("default label for {} ({}): {}", property.getName(), result.getClass().getSimpleName(), fieldLabel);
+            LOGGER.info("default label for {} ({}): {}", property.getName(), result.getClass().getSimpleName(), fieldLabel);
         }
         return Optional.ofNullable(result);
     }

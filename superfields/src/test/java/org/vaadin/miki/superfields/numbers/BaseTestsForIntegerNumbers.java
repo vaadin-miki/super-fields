@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -29,6 +30,7 @@ import java.util.function.Supplier;
  * Base class containing tests for integer parts of number fields.
  * This is not a test class, rather a superclass for test classes.
  */
+@SuppressWarnings("squid:S3577") // this is ok, the tests are inherited
 class BaseTestsForIntegerNumbers<T extends Number> {
 
     public static final class NumberWrapper<X extends Number> {
@@ -377,6 +379,39 @@ class BaseTestsForIntegerNumbers<T extends Number> {
         this.field.setNullValueAllowed(false);
         final T value = this.field.parseRawValue("");
         Assert.assertNotNull(value);
+    }
+
+    // tests for #472
+    @Test
+    public void testNoMixingOfGroupingSymbolsAllowed() {
+        this.field.setLocale(Locale.ENGLISH); // this uses . as decimal and , as grouping
+        this.field.setGroupingSeparatorAlternatives(new HashSet<>(Arrays.asList('.', '-'))); // so setting . should fail (and - is minus, also fail)
+        Assert.assertTrue(this.field.getGroupingSeparatorAlternatives().isEmpty());
+        this.field.setLocale(new Locale("pl", "PL")); // this uses NBSP, so space must always be there
+        this.field.setGroupingSeparatorAlternatives(Collections.singleton('_'));
+        Assert.assertEquals(2, this.field.getGroupingSeparatorAlternatives().size());
+        Assert.assertTrue(this.field.getGroupingSeparatorAlternatives().containsAll(Arrays.asList(' ', '_')));
+    }
+
+    @Test
+    public void testNoMixingOfNegativeSignAllowed() {
+        this.field.setLocale(Locale.ENGLISH);
+        this.field.setNegativeSignAlternatives(new HashSet<>(Arrays.asList('.', ',')));
+        Assert.assertTrue(this.field.getGroupingSeparatorAlternatives().isEmpty());
+        this.field.setNegativeSignAlternatives(new HashSet<>(Arrays.asList('%', '_', '-', '+'))); // yes, + is ok for negatives :D
+        Assert.assertEquals(3, this.field.getNegativeSignAlternatives().size());
+        Assert.assertTrue(this.field.getNegativeSignAlternatives().containsAll(Arrays.asList('+', '_', '%')));
+    }
+
+    @Test
+    public void testAlternativesOverlappingDisallowed() {
+        this.field.setLocale(Locale.ENGLISH);
+        this.field.withOverlappingAlternatives()
+            .withNegativeSignAlternatives('.');
+        Assert.assertTrue(this.field.getNegativeSignAlternatives().contains('.'));
+        // disallowing overlapping should remove overlaps
+        this.field.setOverlappingAlternatives(false);
+        Assert.assertTrue(this.field.getNegativeSignAlternatives().isEmpty());
     }
 
 }

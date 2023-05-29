@@ -352,9 +352,8 @@ public class ObjectFieldFactory {
                     return Optional.empty();
                 else {
                     final C layout = (C) getObjectFieldGroupLayoutProvider().get();
-                    // apply style names if possible
                     if(layout instanceof HasStyle)
-                        ((HasStyle) layout).addClassNames(sanitiseStyles(getGroupLayoutStyleNames(), groupName));
+                        ((HasStyle)layout).addClassNames(sanitiseStyles(getGroupLayoutStyleNames(), groupName));
                     return Optional.of(layout);
                 }
             }

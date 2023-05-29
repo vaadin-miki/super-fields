@@ -81,19 +81,19 @@ public class HeaderFooterFieldWrapper<T,
     @Override
     public void setLabel(String label) {
         if(this.field instanceof HasLabel)
-            ((HasLabel) this.field).setLabel(label);
+            ((HasLabel)this.field).setLabel(label);
         else super.setLabel(label);
     }
 
     @Override
     public String getLabel() {
-        return this.field instanceof HasLabel ? ((HasLabel) this.field).getLabel() : super.getLabel();
+        return this.field instanceof HasLabel ? ((HasLabel)this.field).getLabel() : super.getLabel();
     }
 
     @Override
     public void setHelperComponent(Component component) {
         if(this.field instanceof HasHelper)
-            ((HasHelper) this.field).setHelperComponent(component);
+            ((HasHelper)this.field).setHelperComponent(component);
         else super.setHelperComponent(component);
     }
 
@@ -142,7 +142,7 @@ public class HeaderFooterFieldWrapper<T,
                 .map(Component::getChildren)
                 .forEach(stream -> this.propagateSetIndex(index, stream));
         if(this.field instanceof HasIndex)
-            ((HasIndex) this.field).setIndex(index);
+            ((HasIndex)this.field).setIndex(index);
     }
 
     public void setDisablingFooterOnReadOnly(boolean disablingFooterOnReadOnly) {

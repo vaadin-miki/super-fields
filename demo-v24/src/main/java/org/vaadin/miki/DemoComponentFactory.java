@@ -36,25 +36,20 @@ public final class DemoComponentFactory implements Serializable {
 
     private static final Comparator<Class<?>> CLASS_ORDER_COMPARATOR = Comparator.comparingInt(t -> t.isAnnotationPresent(Order.class) ? t.getAnnotation(Order.class).value() : Integer.MAX_VALUE - t.getSimpleName().charAt(0));
 
-    private static final ThreadLocal<DemoComponentFactory> COMPONENT_FACTORY = new ThreadLocal<>();
-
     private static boolean isNotInterface(Class<?> type) {
         return !type.isInterface();
     }
 
     public static DemoComponentFactory get() {
-        if(COMPONENT_FACTORY.get() == null) {
-            LOGGER.info("creating new instance of DemoComponentFactory");
-            COMPONENT_FACTORY.set(new DemoComponentFactory());
-        }
-        return COMPONENT_FACTORY.get();
+        // rolling back to creating a new instance every time, because of some threading issues
+        return new DemoComponentFactory();
     }
 
     private final Map<Class<? extends Component>, Component> components = new LinkedHashMap<>();
 
     private final Map<Class<?>, ContentBuilder<?>> contentBuilders = new LinkedHashMap<>();
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "squid:S3740", "rawtypes"}) // validator type should be ok
     private DemoComponentFactory() {
         final ValidatorStorage storage = new ValidatorStorage();
 
@@ -67,7 +62,6 @@ public final class DemoComponentFactory implements Serializable {
                         final Component component = componentProvider.getComponent();
                         this.components.put(component.getClass(), component);
                         if (componentProvider instanceof Validator && component instanceof HasValue)
-                            //noinspection rawtypes
                             storage.registerValidator((HasValue<?, ?>) component).accept((Validator) componentProvider);
                     } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                         LOGGER.error("creating a component from {} failed due to error {} with message {}", type.getSimpleName(), e.getClass().getSimpleName(), e.getMessage());
@@ -83,7 +77,7 @@ public final class DemoComponentFactory implements Serializable {
                         final Class<?> suitableType = ReflectTools.getGenericInterfaceType(contentBuilder.getClass(), ContentBuilder.class);
                         this.contentBuilders.put(suitableType, contentBuilder);
                         if (contentBuilder instanceof NeedsValidatorStorage)
-                            ((NeedsValidatorStorage) contentBuilder).setValidatorStorage(storage);
+                            ((NeedsValidatorStorage)contentBuilder).setValidatorStorage(storage);
                     } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                         LOGGER.error("creating a content builder from {} failed due to error {} with message {}", type.getSimpleName(), e.getClass().getSimpleName(), e.getMessage());
                     }

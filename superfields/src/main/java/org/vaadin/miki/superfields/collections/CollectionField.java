@@ -130,7 +130,7 @@ public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         this.layout = newLayout;
         this.add(newLayout);
         if(this.layout instanceof HasStyle)
-            ((HasStyle) this.layout).addClassName(LAYOUT_STYLE_NAME);
+            ((HasStyle)this.layout).addClassName(LAYOUT_STYLE_NAME);
     }
 
     /**

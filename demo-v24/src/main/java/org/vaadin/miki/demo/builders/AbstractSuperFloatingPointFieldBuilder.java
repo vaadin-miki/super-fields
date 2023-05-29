@@ -6,6 +6,9 @@ import org.vaadin.miki.demo.ContentBuilder;
 import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.numbers.AbstractSuperFloatingPointField;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.function.Consumer;
 
 /**
@@ -20,6 +23,10 @@ public class AbstractSuperFloatingPointFieldBuilder implements ContentBuilder<Ab
     public void buildContent(AbstractSuperFloatingPointField<?, ?> component, Consumer<Component[]> callback) {
         final Checkbox integerPartOptional = new Checkbox("Make integer part optional?");
         integerPartOptional.addValueChangeListener(event -> component.setIntegerPartOptional(event.getValue()));
-        callback.accept(new Component[]{integerPartOptional});
+
+        final Checkbox allowDecimalAlternatives = new Checkbox("Allow | and : as decimal separators?");
+        allowDecimalAlternatives.addValueChangeListener(event -> component.setDecimalSeparatorAlternatives(event.getValue() ? new HashSet<>(Arrays.asList('|', ':')) : Collections.emptySet()));
+
+        callback.accept(new Component[]{integerPartOptional, allowDecimalAlternatives});
     }
 }
