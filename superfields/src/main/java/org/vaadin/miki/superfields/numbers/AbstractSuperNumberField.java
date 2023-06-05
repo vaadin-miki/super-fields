@@ -29,6 +29,7 @@ import org.vaadin.miki.markers.WithClearButtonMixin;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
+import org.vaadin.miki.markers.WithInvalidInputPreventionMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithLocaleMixin;
@@ -76,7 +77,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
                    WithIdMixin<SELF>, WithNullValueOptionallyAllowedMixin<SELF, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T>,
                    WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF>, WithClearButtonMixin<SELF>,
                    WithRequiredMixin<SELF>, WithLabelPositionableMixin<SELF>, WithTooltipMixin<SELF>,
-                   WithTextInputModeMixin<SELF> {
+                   WithTextInputModeMixin<SELF>, WithInvalidInputPreventionMixin<SELF> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSuperNumberField.class);
 
@@ -957,6 +958,16 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     @Override
     public TextInputMode getTextInputMode() {
         return this.field.getTextInputMode();
+    }
+
+    @Override
+    public void setPreventingInvalidInput(boolean prevent) {
+        this.field.setPreventingInvalidInput(prevent);
+    }
+
+    @Override
+    public boolean isPreventingInvalidInput() {
+        return this.field.isPreventingInvalidInput();
     }
 
     /**

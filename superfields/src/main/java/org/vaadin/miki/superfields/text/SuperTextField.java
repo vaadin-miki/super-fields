@@ -17,6 +17,7 @@ import org.vaadin.miki.markers.WithClearButtonMixin;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
+import org.vaadin.miki.markers.WithInvalidInputPreventionMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
 import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithPlaceholderMixin;
@@ -45,10 +46,12 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
         WithValueMixin<AbstractField.ComponentValueChangeEvent<TextField, String>, String, SuperTextField>,
         WithHelperMixin<SuperTextField>, WithHelperPositionableMixin<SuperTextField>,
         WithReceivingSelectionEventsFromClientMixin<SuperTextField>, WithClearButtonMixin<SuperTextField>,
-        WithTooltipMixin<SuperTextField>, WithTextInputModeMixin<SuperTextField> {
+        WithTooltipMixin<SuperTextField>, WithTextInputModeMixin<SuperTextField>,
+        WithInvalidInputPreventionMixin<SuperTextField> {
 
     private final TextModificationDelegate<SuperTextField> delegate = new TextModificationDelegate<>(this, this.getEventBus(), this::getValue);
     private TextInputMode textInputMode;
+    private boolean preventInvalidInput;
 
     public SuperTextField() {
         super();
@@ -149,6 +152,19 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     @Override
     public TextInputMode getTextInputMode() {
         return this.textInputMode;
+    }
+
+    @Override
+    public void setPreventingInvalidInput(boolean prevent) {
+        this.preventInvalidInput = prevent;
+        this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
+            this.getElement().callJsFunction("preventInvalidInput", this.getElement(), prevent)
+        ));
+    }
+
+    @Override
+    public boolean isPreventingInvalidInput() {
+        return this.preventInvalidInput;
     }
 
     @SuppressWarnings("squid:S1185") // removing this method makes the class impossible to compile due to missing methods

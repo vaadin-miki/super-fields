@@ -12,17 +12,14 @@ class SuperTextField extends TextSelectionMixin.to(TextField) {
     }
 
     ensureValidText(e, webComponent, textInput) {
-        if (webComponent.pattern !== undefined && webComponent.preventInvalidMixin !== undefined && webComponent.preventInvalidMixin.preventInvalidInput) {
-            if (new RegExp(webComponent.pattern).test(textInput.value)) {
-                webComponent.preventInvalidMixin.lastValue = textInput.value;
-            }
-            else {
-                textInput.value = webComponent.preventInvalidMixin.lastValue;
-                webComponent._markInputPrevented();
-            }
-        }
-        else if (webComponent.preventInvalidMixin !== undefined) {
+        if (webComponent.preventInvalidMixin === undefined) {
+            // simply do nothing
+        } else if (webComponent.pattern === undefined || (new RegExp(webComponent.pattern).test(textInput.value))) {
             webComponent.preventInvalidMixin.lastValue = textInput.value;
+        } else {
+            // this triggers when neither of the above is true (so preventing is on, pattern is defined and the check failed
+            webComponent.value = webComponent.preventInvalidMixin.lastValue;
+            webComponent._markInputPrevented();
         }
     }
 
@@ -30,22 +27,28 @@ class SuperTextField extends TextSelectionMixin.to(TextField) {
         console.log('STF: preventing invalid input set to ' + prevent);
         const listener = (e) => this.ensureValidText(e, this,  this.inputElement);
         let lastKnownValue = this.inputElement.value;
-        if (this.preventInvalidMixin === undefined) {
-            this.preventInvalidMixin = {
-                lastValue: lastKnownValue,
-                preventInvalidInput: prevent
-            };
+
+        // no data present (i.e. was not preventing) and now will be preventing
+        if (this.preventInvalidMixin === undefined && prevent) {
+            if (!new RegExp(this.inputElement.pattern).test(lastKnownValue)) {
+                this.inputElement.value = '';
+                this.preventInvalidMixin = {
+                    lastValue: '',
+                    eventListener: listener
+                };
+            } else {
+                this.preventInvalidMixin = {
+                    lastValue: lastKnownValue,
+                    eventListener: listener
+                };
+            }
+            this.inputElement.addEventListener('input', listener);
         }
-        else if (!new RegExp(this.inputElement.pattern).test(lastKnownValue) && prevent) {
-            this.preventInvalidMixin.lastValue = '';
-            this.preventInvalidMixin.preventInvalidInput = true;
-            this.inputElement.value = '';
+        // data is present (i.e. was preventing) and now will not be preventing
+        else if (this.preventInvalidMixin !== undefined && !prevent) {
+            this.inputElement.removeEventListener('input', this.preventInvalidMixin.eventListener);
+            delete this.preventInvalidMixin;
         }
-        else {
-            this.preventInvalidMixin.lastValue = lastKnownValue;
-            this.preventInvalidMixin.preventInvalidInput = prevent;
-        }
-        this.inputElement.addEventListener('input', listener);
     }
 
 }
