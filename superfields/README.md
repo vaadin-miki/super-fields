@@ -42,6 +42,8 @@ All number fields support text selection API. They also should show a numeric ke
 
 All number fields support alternative characters that serve as grouping (thousand) separator, negative sign and (if applicable) the decimal separator. By default, the alternatives may not overlap with the symbols provided by the current `Locale`. Furthermore, some of those alternative symbols can be prohibited from being typed with a keyboard.
 
+All number fields implement `HasInvalidInputPrevention`. Turning input prevention on will disallow entering any text into the field that is not a properly formatted number (similar to `setPreventInvalidInput(true)` in Vaadin 14). Input prevention is turned off by default.
+
 ### `SuperDoubleField` and `SuperBigDecimalField`
 
 An input field for entering localised `Double` and `BigDecimal` numbers. Supports thousands (grouping) separators for the integer part and optional decimal separator.
@@ -63,6 +65,8 @@ These are the same components as their Vaadin counterparts, except they fully su
 In addition to that, both components allow server-side initiated text change at caret position (or any selected range).
 
 `SuperTextField` implements `HasTextInputMode` which allows customising its on-screen keyboard on devices that support it.
+
+`SuperTextField` implements `HasInvalidInputPrevention` which, when enabled, disallows entering any value that does not match the specified pattern. Note that enabling this feature without specifying a valid pattern has no effect.  
 
 ## Date fields
 
