@@ -1,3 +1,10 @@
+# 0.18.3 - HasInvalidInputPrevention
+## New features and enhancements
+* \#473 - [Bring back `setPreventInvalidInput`](https://github.com/vaadin-miki/super-fields/issues/473)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#481 - [Do not escape `-` in regular expressions](https://github.com/vaadin-miki/super-fields/issues/481)
 # 0.18.2 - HasTextInputMode
 ## New features and enhancements
 * \#471 - [Allow setting "inputmode" attribute on text and number fields](https://github.com/vaadin-miki/super-fields/issues/471)
