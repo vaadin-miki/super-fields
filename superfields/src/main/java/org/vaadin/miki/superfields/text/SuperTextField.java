@@ -158,7 +158,7 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     public void setPreventingInvalidInput(boolean prevent) {
         this.preventInvalidInput = prevent;
         this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-            this.getElement().callJsFunction("preventInvalidInput", this.getElement(), prevent)
+            this.getElement().callJsFunction("preventInvalidInput", prevent)
         ));
     }
 
