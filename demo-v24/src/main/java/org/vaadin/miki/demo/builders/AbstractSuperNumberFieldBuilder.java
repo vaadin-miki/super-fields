@@ -57,6 +57,9 @@ public class AbstractSuperNumberFieldBuilder implements ContentBuilder<AbstractS
         final Checkbox disallowAlternatives = new Checkbox("Disallow typing ^ and space?");
         disallowAlternatives.addValueChangeListener(event -> component.setKeyboardDisallowedAlternatives(event.getValue() ? Set.of('^', ' ') : Collections.emptySet()));
 
-        callback.accept(new Component[]{autoselect, separatorHidden, prefix, suffix, alignRight, allowGroupAlternative, allowNegativeAlternative, disallowAlternatives});
+        final Checkbox disallowInvalid = new Checkbox("Prevent invalid input?");
+        disallowInvalid.addValueChangeListener(event -> component.setPreventingInvalidInput(event.getValue()));
+
+        callback.accept(new Component[]{autoselect, separatorHidden, prefix, suffix, alignRight, allowGroupAlternative, allowNegativeAlternative, disallowAlternatives, disallowInvalid});
     }
 }
