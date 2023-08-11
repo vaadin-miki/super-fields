@@ -51,7 +51,6 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
 
     private final TextModificationDelegate<SuperTextField> delegate = new TextModificationDelegate<>(this, this.getEventBus(), this::getValue);
     private TextInputMode textInputMode;
-    private boolean preventInvalidInput;
 
     public SuperTextField() {
         super();
@@ -156,15 +155,12 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
 
     @Override
     public void setPreventingInvalidInput(boolean prevent) {
-        this.preventInvalidInput = prevent;
-        this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-            this.getElement().callJsFunction("preventInvalidInput", prevent)
-        ));
+        this.setPreventInvalidInput(prevent);
     }
 
     @Override
     public boolean isPreventingInvalidInput() {
-        return this.preventInvalidInput;
+        return this.isPreventInvalidInput();
     }
 
     @SuppressWarnings("squid:S1185") // removing this method makes the class impossible to compile due to missing methods
