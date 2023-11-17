@@ -20,4 +20,20 @@ public interface WithClearButtonMixin<SELF extends com.vaadin.flow.component.sha
         return (SELF)this;
     }
 
+    /**
+     * Chains {@link #setClearButtonVisible(boolean)} called with {@code true} and returns itself.
+     * @return This.
+     */
+    default SELF withClearButtonVisible() {
+        return this.withClearButtonVisible(true);
+    }
+
+    /**
+     * Chains {@link #setClearButtonVisible(boolean)} called with {@code false} and returns itself.
+     * @return This.
+     */
+    default SELF withoutClearButtonVisible() {
+        return this.withClearButtonVisible(false);
+    }
+
 }
