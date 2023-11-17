@@ -18,7 +18,8 @@ public class WithNullValueOptionallyAllowedBuilder implements ContentBuilder<Wit
 
     @Override
     public void buildContent(WithNullValueOptionallyAllowedMixin<?, ?, ?> component, Consumer<Component[]> callback) {
-        final Checkbox allow = new Checkbox("Allow empty string as null value?", event -> component.setNullValueAllowed(event.getValue()));
+        final Checkbox allow = new Checkbox("Allow null value?", event -> component.setNullValueAllowed(event.getValue()));
+        allow.setValue(component.isNullValueAllowed());
         callback.accept(new Component[]{allow});
     }
 }

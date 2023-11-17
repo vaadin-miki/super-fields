@@ -98,7 +98,7 @@ While intended to work with `CollectionField`, here is a general interface for a
 
 `MapField` is a customisable `CustomField` for data of type `Map<K, V>`. It is based on `CollectionField` and works with any field capable of displaying value of type `Map.Entry<K, V>`. 
 
-`MapEntryField` is a component that is a `CustomField` for `Map.Entry<K, V>`. It allows custom layout and dedicated components for keys and values of the map.   
+`MapEntryField` is a component that is a `CustomField` for `Map.Entry<K, V>`. It allows custom layout and dedicated components for keys and values of the map.
 
 ## `HasHeader`, `HasFooter` and layout helpers
 
@@ -139,6 +139,10 @@ A highly configurable grid that allows single selection. Each cell in the grid c
 A single- and multi-selection `Grid`s that are value components, meaning they broadcast value change events (rather than selection events). Both allow access to the underlying `Grid`, except changing selection mode.
 
 `GridMultiSelect` operates on `Set` and has an option to limit the size of the selection.
+
+### `ComponentSelect` (and `ButtonSelect`)
+
+A single-selection component that shows each option as an individual component that is a `ClickNotifier`, for example a button.
 
 ### `SuperTabs`
 

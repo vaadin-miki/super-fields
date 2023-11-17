@@ -1,0 +1,1 @@
+A `CustomField` that allows shows options as `ClickNotifer`s (e.g. `Button`s) and allows custom selection/deselection actions (e.g. style or theme changes).
