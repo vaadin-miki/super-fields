@@ -1,7 +1,10 @@
 package org.vaadin.miki.superfields.gridselect;
 
 import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridMultiSelectionModel;
 import com.vaadin.flow.data.selection.SelectionEvent;
@@ -10,8 +13,8 @@ import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithItemsMixin;
 import org.vaadin.miki.markers.WithLabelMixin;
-import org.vaadin.miki.markers.WithMaximumSelectionSizeMixin;
 import org.vaadin.miki.markers.WithLabelPositionableMixin;
+import org.vaadin.miki.markers.WithMaximumSelectionSizeMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.Collection;
@@ -24,6 +27,10 @@ import java.util.Set;
  * @author miki
  * @since 2020-12-09
  */
+@Tag("grid-multi-select")
+@CssImport(value = "./styles/label-positions.css", themeFor = "grid-multi-select")
+@CssImport(value = "./styles/label-positions-grids.css", themeFor = "grid-multi-select")
+@JsModule("./grid-multi-select.js")
 public class GridMultiSelect<V> extends AbstractGridSelect<V, Set<V>>
         implements WithIdMixin<GridMultiSelect<V>>, WithItemsMixin<V, GridMultiSelect<V>>,
         WithMaximumSelectionSizeMixin<GridMultiSelect<V>>, WithHelperMixin<GridMultiSelect<V>>,

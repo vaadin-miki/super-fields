@@ -2,8 +2,10 @@ package org.vaadin.miki.superfields.buttons;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.function.SerializableBiFunction;
 import org.vaadin.miki.superfields.componentselect.ComponentSelect;
@@ -17,6 +19,8 @@ import java.util.function.Supplier;
  * @author miki
  * @since 2023-11-17
  */
+@Tag("button-select")
+@JsModule("./button-select.js")
 public class ButtonSelect<T> extends ComponentSelect<Button, T> {
 
   /**

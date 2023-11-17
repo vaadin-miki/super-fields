@@ -6,13 +6,15 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.data.binder.HasItems;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithItemsMixin;
+import org.vaadin.miki.markers.WithLabelMixin;
+import org.vaadin.miki.markers.WithLabelPositionableMixin;
 import org.vaadin.miki.markers.WithValueMixin;
 
 import java.util.ArrayList;
@@ -36,10 +38,12 @@ import java.util.stream.Stream;
  * @since 2020-04-14
  */
 @Tag("item-grid")
+@JsModule("./item-grid.js")
 public class ItemGrid<T>
         extends CustomField<T>
-        implements HasItems<T>, HasStyle, WithItemsMixin<T, ItemGrid<T>>, WithIdMixin<ItemGrid<T>>,
+        implements HasStyle, WithItemsMixin<T, ItemGrid<T>>, WithIdMixin<ItemGrid<T>>,
                    WithHelperMixin<ItemGrid<T>>, WithHelperPositionableMixin<ItemGrid<T>>,
+                   WithLabelMixin<ItemGrid<T>>, WithLabelPositionableMixin<ItemGrid<T>>,
                    WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, ItemGrid<T>> {
 
     /**

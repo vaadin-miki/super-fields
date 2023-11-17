@@ -1,7 +1,6 @@
 package org.vaadin.miki.superfields.gridselect;
 
 import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.selection.SelectionEvent;
 
@@ -12,8 +11,6 @@ import com.vaadin.flow.data.selection.SelectionEvent;
  * @author miki
  * @since 2020-12-09
  */
-@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-custom-field")
-@CssImport(value = "./styles/label-positions-grids.css", themeFor = "vaadin-custom-field")
 public abstract class AbstractGridSelect<V, F> extends CustomField<F> {
 
     private final Grid<V> grid;
