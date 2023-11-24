@@ -6,7 +6,9 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasHelper;
 import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.JsModule;
 import org.vaadin.miki.markers.HasIndex;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
@@ -32,6 +34,8 @@ import java.util.stream.Stream;
  * @author miki
  * @since 2021-09-03
  */
+@Tag("header-footer-field-wrapper")
+@JsModule("./header-footer-field-wrapper.js")
 public class HeaderFooterFieldWrapper<T,
                                       H extends Component & HasComponents,
                                       F extends Component & HasComponents>

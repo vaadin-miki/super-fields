@@ -7,7 +7,9 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.function.SerializableBiFunction;
 import org.vaadin.miki.markers.WithHelperMixin;
@@ -35,6 +37,8 @@ import java.util.function.Supplier;
  * @author miki
  * @since 2023-11-14
  */
+@Tag("component-select")
+@JsModule("./component-select.js")
 public class ComponentSelect<C extends Component & ClickNotifier<C>, T> extends CustomField<T>
     implements WithItemsMixin<T, ComponentSelect<C, T>>, HasStyle, WithIdMixin<ComponentSelect<C, T>>,
     WithLabelMixin<ComponentSelect<C, T>>, WithLabelPositionableMixin<ComponentSelect<C, T>>,

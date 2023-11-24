@@ -56,6 +56,7 @@ public class ItemGridProvider implements ComponentProvider<ItemGrid<Class<? exte
                     result.setAlignItems(FlexComponent.Alignment.CENTER);
                     result.setPadding(true);
                     return result;
-                });
+                }).withHelperText("(you can select at most one item)")
+            .withLabel("Select your favourite component:");
     }
 }
