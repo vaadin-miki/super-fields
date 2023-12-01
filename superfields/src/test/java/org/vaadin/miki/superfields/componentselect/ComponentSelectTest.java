@@ -37,7 +37,8 @@ public class ComponentSelectTest {
           ComponentSelectHelpers.simpleComponentFactory(Button::new),
           OPTIONS)
         .withComponentSelectedAction((index, button) -> this.mostRecentlySelectedButton = index);
-    this.select.addValueChangeListener(this::valueChanged);  }
+    this.select.addValueChangeListener(this::valueChanged);
+  }
 
   @After
   public void tearDown() {
@@ -82,10 +83,29 @@ public class ComponentSelectTest {
     this.select.setValue(OPTIONS[2]);
     this.select.setValue(null);
     // null value disallowed, no value change should happen
+    Assert.assertEquals(OPTIONS[2], this.select.getValue());
     Assert.assertEquals(2, this.select.getSelectedIndex());
     Assert.assertEquals(1, this.eventCounter);
     Assert.assertEquals(2, this.mostRecentlySelectedButton);
+  }
+
+  @Test
+  public void testButtonClickSelectsDeselects() {
+    this.select.setValue(OPTIONS[2]);
+    this.select.getComponent(2).click();
+    // null selection is allowed by default
+    Assert.assertNull(this.select.getValue());
+    Assert.assertEquals(2, this.eventCounter);
+  }
+
+  @Test
+  public void testButtonClickNullDisallowed() {
+    this.select.setNullValueAllowed(false);
+    this.select.setValue(OPTIONS[2]);
+    this.select.getComponent(2).click();
+    // value should not be changed, it is disallowed
     Assert.assertEquals(OPTIONS[2], this.select.getValue());
+    Assert.assertEquals(1, this.eventCounter);
   }
 
   @Test
@@ -105,6 +125,30 @@ public class ComponentSelectTest {
       for (int zmp1 = 0; zmp1 < OPTIONS.length; zmp1++)
         Assert.assertEquals(zmp1 == selection, this.select.getComponent(zmp1).getThemeNames().contains(ButtonVariant.LUMO_PRIMARY.getVariantName()));
     }
+
+    // select items by clicking them
+    // select each option in turn, there should be only one selected button at a time
+    for(int selection = 0; selection < OPTIONS.length; selection++) {
+      // alternative way of setting value
+      this.select.getComponent(selection).click();
+      Assert.assertEquals(OPTIONS[selection], this.select.getValue());
+      for (int zmp1 = 0; zmp1 < OPTIONS.length; zmp1++)
+        Assert.assertEquals(zmp1 == selection, this.select.getComponent(zmp1).getThemeNames().contains(ButtonVariant.LUMO_PRIMARY.getVariantName()));
+    }
+
+    // now do the same, but disallow null value
+    this.select.setNullValueAllowed(false);
+    // select items by clicking them
+    // select each option in turn, there should be only one selected button at a time
+    for(int selection = 0; selection < OPTIONS.length; selection++) {
+      // alternative way of setting value
+      this.select.getComponent(selection).click();
+      Assert.assertEquals(OPTIONS[selection], this.select.getValue());
+      for (int zmp1 = 0; zmp1 < OPTIONS.length; zmp1++)
+        Assert.assertEquals(zmp1 == selection, this.select.getComponent(zmp1).getThemeNames().contains(ButtonVariant.LUMO_PRIMARY.getVariantName()));
+    }
+
+    this.select.setNullValueAllowed(true);
 
     // deselect
     this.select.setValue(null);
