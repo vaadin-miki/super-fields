@@ -17,7 +17,7 @@ import java.util.Locale;
  * @author miki
  * @since 2023-11-17
  */
-@Order(96)
+@Order(91)
 public class ComponentSelectProvider implements ComponentProvider<ComponentSelect<Button, Format>> {
   @Override
   public ComponentSelect<Button, Format> getComponent() {

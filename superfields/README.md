@@ -140,9 +140,13 @@ A single- and multi-selection `Grid`s that are value components, meaning they br
 
 `GridMultiSelect` operates on `Set` and has an option to limit the size of the selection.
 
-### `ComponentSelect` (and `ButtonSelect`)
+### `Component(Multi)Select` (and `Button(Multi)Select`)
 
-A single-selection component that shows each option as an individual component that is a `ClickNotifier`, for example a button.
+Single- and multi-selection components that show each option as an individual component that is a `ClickNotifier`, for example a button. `Button(Multi)Select` uses `Button`s and constructors that allow usage of styles or variants to show if a button is selected.
+
+`ComponentMultiSelect` and `ButtonMultiSelect` operate on `Set` and have an option to limit the size of the selection.
+
+`ComponentSelect` and `ButtonSelect` can optionally allow `null` value. Multi-selection versions do not accept `null` and use an empty set instead.
 
 ### `SuperTabs`
 
