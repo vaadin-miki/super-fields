@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 @Tag("component-select")
 @JsModule("./component-select.js")
 public class ComponentSelect<C extends Component & ClickNotifier<C>, T>
-    extends AbstractComponentSelect<C, T, ComponentSelect<C, T>>
+    extends AbstractComponentSelect<C, T, T, ComponentSelect<C, T>>
     implements WithNullValueOptionallyAllowedMixin<ComponentSelect<C, T>, AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T> {
 
   private boolean nullValueAllowed = true;
@@ -55,7 +55,7 @@ public class ComponentSelect<C extends Component & ClickNotifier<C>, T>
    */
   @SafeVarargs
   public <L extends Component & HasComponents> ComponentSelect(Supplier<L> layoutSupplier, SerializableBiFunction<Integer, T, C> componentFactory, SerializableBiConsumer<Integer, C> selectionModifier, SerializableBiConsumer<Integer, C> deselectionModifier, T... options) {
-    super(layoutSupplier, componentFactory, selectionModifier, deselectionModifier, options);
+    super(null, layoutSupplier, componentFactory, selectionModifier, deselectionModifier, options);
   }
 
   private void deselectCurrent() {

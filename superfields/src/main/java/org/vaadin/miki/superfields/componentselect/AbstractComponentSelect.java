@@ -27,14 +27,20 @@ import java.util.function.Supplier;
 
 /**
  * Base class for Component(Multi)Select.
+ *
+ * @param <C> Component to display for each option.
+ * @param <T> Type of the field.
+ * @param <I> Type of item.
+ * @param <SELF> Self type.
+ *
  * @author miki
  * @since 2023-11-28
  */
 @SuppressWarnings("squid:S119") // SELF is a fine generic name that is more descriptive than S
-public abstract class AbstractComponentSelect<C extends Component & ClickNotifier<C>, T, SELF extends AbstractComponentSelect<C, T, SELF>> extends CustomField<T>
- implements HasStyle, WithItemsMixin<T, SELF>, WithIdMixin<SELF>,
+public abstract class AbstractComponentSelect<C extends Component & ClickNotifier<C>, T, I, SELF extends AbstractComponentSelect<C, T, I, SELF>> extends CustomField<T>
+ implements HasStyle, WithItemsMixin<I, SELF>, WithIdMixin<SELF>,
     WithLabelMixin<SELF>, WithLabelPositionableMixin<SELF>,
-    WithHelperMixin<ComponentSelect<C, T>>, WithHelperPositionableMixin<SELF>,
+    WithHelperMixin<SELF>, WithHelperPositionableMixin<SELF>,
     WithValueMixin<AbstractField.ComponentValueChangeEvent<CustomField<T>, T>, T, SELF> {
 
   /**
@@ -50,11 +56,11 @@ public abstract class AbstractComponentSelect<C extends Component & ClickNotifie
    */
   protected static <X, Y> SerializableBiConsumer<X, Y> noOp() {return (x, y) -> {};}
 
-  private final List<T> options = new ArrayList<>();
+  private final List<I> options = new ArrayList<>();
   private final List<C> components = new ArrayList<>();
   private final HasComponents layout;
 
-  private SerializableBiFunction<Integer, T, C> factory;
+  private SerializableBiFunction<Integer, I, C> factory;
   private SerializableBiConsumer<Integer, C> whenSelected = noOp();
   private SerializableBiConsumer<Integer, C> whenDeselected = noOp();
 
@@ -68,13 +74,15 @@ public abstract class AbstractComponentSelect<C extends Component & ClickNotifie
    * @param <L> Layout type.
    */
   @SafeVarargs
-  protected <L extends Component & HasComponents> AbstractComponentSelect(Supplier<L> layoutSupplier, SerializableBiFunction<Integer, T, C> componentFactory, SerializableBiConsumer<Integer, C> selectionModifier, SerializableBiConsumer<Integer, C> deselectionModifier, T... options) {
+  protected <L extends Component & HasComponents> AbstractComponentSelect(T defaultValue, Supplier<L> layoutSupplier, SerializableBiFunction<Integer, I, C> componentFactory, SerializableBiConsumer<Integer, C> selectionModifier, SerializableBiConsumer<Integer, C> deselectionModifier, I... options) {
+    super(defaultValue);
     this.layout = layoutSupplier.get();
     this.setComponentFactory(componentFactory);
     this.setComponentSelectedAction(selectionModifier);
     this.setComponentDeselectedAction(deselectionModifier);
     this.add((Component) this.layout);
-    this.setItems(Arrays.asList(options));
+    this.options.addAll(Arrays.asList(options));
+    this.rebuildComponents(true); // nothing is selected at start anyway
   }
 
   /**
@@ -116,31 +124,37 @@ public abstract class AbstractComponentSelect<C extends Component & ClickNotifie
       this.whenSelected.accept(index, this.components.get(index));
   }
 
-  /**
-   * Rebuilds the components - removes the existing ones then calls the factory to produce new ones.
-   * Selected/deselected actions will be called on the newly created components, depending on their state.
-   */
-  protected final void rebuildComponents() {
+  private void rebuildComponents(boolean ignoreActions) {
     this.layout.removeAll();
     this.components.clear();
     int index = NO_SELECTION;
-    for(T option: this.options) {
+    for(I option: this.options) {
       index++;
       final C component = this.getComponentFactory().apply(index, option);
       component.addClickListener(this::onComponentClicked);
-      if(this.isSelected(index))
-        this.getComponentSelectedAction().accept(index, component);
-      else this.getComponentDeselectedAction().accept(index, component);
+      if(!ignoreActions) {
+        if (this.isSelected(index))
+          this.getComponentSelectedAction().accept(index, component);
+        else this.getComponentDeselectedAction().accept(index, component);
+      }
       this.components.add(component);
       this.layout.add(component);
     }
   }
 
   /**
+   * Rebuilds the components - removes the existing ones then calls the factory to produce new ones.
+   * Selected/deselected actions will be called on the newly created components, depending on their state.
+   */
+  protected final void rebuildComponents() {
+    this.rebuildComponents(false);
+  }
+
+  /**
    * Returns the current list of options. Modifying this list will modify the options available to this component, but will not rebuild components.
    * @return List of options. Never {@code null}, but possibly empty.
    */
-  protected List<T> getOptions() {
+  protected List<I> getOptions() {
     return options;
   }
 
@@ -171,7 +185,7 @@ public abstract class AbstractComponentSelect<C extends Component & ClickNotifie
    * Sets the factory that will be used to create new components.
    * @param factory Factory. Must not be {@code null}.
    */
-  public final void setComponentFactory(SerializableBiFunction<Integer, T, C> factory) {
+  public final void setComponentFactory(SerializableBiFunction<Integer, I, C> factory) {
     this.factory = Objects.requireNonNull(factory);
     this.rebuildComponents();
   }
@@ -180,7 +194,7 @@ public abstract class AbstractComponentSelect<C extends Component & ClickNotifie
    * Returns the current component factory.
    * @return The factory. Never {@code null}.
    */
-  public SerializableBiFunction<Integer, T, C> getComponentFactory() {
+  public SerializableBiFunction<Integer, I, C> getComponentFactory() {
     return this.factory;
   }
 
@@ -191,7 +205,7 @@ public abstract class AbstractComponentSelect<C extends Component & ClickNotifie
    * @see #setComponentFactory(SerializableBiFunction)
    */
   @SuppressWarnings("unchecked") // should be fine
-  public final SELF withComponentFactory(SerializableBiFunction<Integer, T, C> factory) {
+  public final SELF withComponentFactory(SerializableBiFunction<Integer, I, C> factory) {
     this.setComponentFactory(factory);
     return (SELF) this;
   }
@@ -254,7 +268,7 @@ public abstract class AbstractComponentSelect<C extends Component & ClickNotifie
   }
 
   @Override
-  public void setItems(Collection<T> items) {
+  public void setItems(Collection<I> items) {
     this.options.clear();
     this.options.addAll(items);
     this.rebuildComponents();
