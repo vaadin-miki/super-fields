@@ -40,7 +40,7 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
 
     private final SerializableSupplier<C> componentProvider;
 
-    private final ComponentObserver observer = new ComponentObserver();
+    private final ComponentObserver observer;
 
     private final boolean onlyLoadedOnce;
 
@@ -77,9 +77,38 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
      * @param removeOnHide Whether to remove the component when this object gets hidden.
      */
     public LazyLoad(SerializableSupplier<C> supplier, boolean removeOnHide) {
+        this(supplier, ComponentObserver::new, removeOnHide);
+    }
+
+    /**
+     * Creates lazy load wrapper for given contents. It will be displayed the first time this component becomes shown on screen.
+     * @param contents Contents to wrap for lazy loading.
+     * @param observerSupplier a way to create a customised {@link ComponentObserver} that will be used by this component.
+     */
+    public LazyLoad(C contents, SerializableSupplier<ComponentObserver> observerSupplier) {
+        this(() -> contents, observerSupplier, false);
+    }
+
+    /**
+     * Creates lazy load wrapper for given component supplier. It will be called exactly once, the first time this component becomes shown on screen.
+     * @param contentSupplier {@link Supplier} that will be called when the component gets into view.
+     * @param observerSupplier a way to create a customised {@link ComponentObserver} that will be used by this component.
+     */
+    public LazyLoad(SerializableSupplier<C> contentSupplier, SerializableSupplier<ComponentObserver> observerSupplier) {
+        this(contentSupplier, observerSupplier, false);
+    }
+
+    /**
+     * Creates lazy load wrapper for given component supplier.
+     * @param contentSupplier {@link Supplier} that will be called when the component gets into view.
+     * @param observerSupplier a way to create a customised {@link ComponentObserver} that will be used by this component.
+     * @param removeOnHide Whether to remove the component when this object gets hidden.
+     */
+    public LazyLoad(SerializableSupplier<C> contentSupplier, SerializableSupplier<ComponentObserver> observerSupplier, boolean removeOnHide) {
         super();
-        this.componentProvider = supplier;
+        this.componentProvider = contentSupplier;
         this.onlyLoadedOnce = !removeOnHide;
+        this.observer = observerSupplier.get();
         this.getContent().addClassNames(EMPTY_CLASS_NAME);
         this.getContent().add(this.observer);
         this.observer.addComponentObservationListener(this::onComponentObserved);
@@ -96,6 +125,9 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
             this.onNowHidden();
     }
 
+    /**
+     * Called when the content becomes hidden.
+     */
     protected void onNowHidden() {
         if(this.lazyLoadedContent != null) {
             this.getContent().removeClassName(LOADED_CLASS_NAME);
@@ -105,6 +137,9 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
         }
     }
 
+    /**
+     * Called when the content becomes visible.
+     */
     protected void onNowVisible() {
         if(this.lazyLoadedContent == null) {
             this.getContent().removeClassName(EMPTY_CLASS_NAME);
@@ -134,7 +169,7 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
 
     /**
      * Checks if the content has been already loaded ({@link #isOnlyLoadedOnce()} ()} is {@code true}) or is currently loaded.
-     * @return Whether or not the content has been loaded.
+     * @return Whether the content has been loaded.
      * @see #getLoadedContent()
      * @see #isOnlyLoadedOnce()
      */
