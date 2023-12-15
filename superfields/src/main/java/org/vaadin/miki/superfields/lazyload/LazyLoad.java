@@ -46,6 +46,9 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
 
     private C lazyLoadedContent = null;
 
+    private double hiddenVisibilityRange = 0.0d;
+    private double shownVisibilityRange = 1.0d;
+
     /**
      * Creates lazy load wrapper for given contents. It will be displayed the first time this component becomes shown on screen.
      * @param contents Contents to wrap for lazy loading.
@@ -116,13 +119,63 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
     }
 
     private void onComponentObserved(ComponentObservationEvent event) {
-        if(event.isFullyVisible()) {
+        if(event.getVisibilityRange() >= this.getContentShownVisibilityRange()) {
             this.onNowVisible();
             if(this.onlyLoadedOnce)
                 this.observer.unobserve(this);
         }
-        else if(event.isNotVisible())
+        else if(event.getVisibilityRange() <= this.getContentHiddenVisibilityRange())
             this.onNowHidden();
+    }
+
+    /**
+     * Returns the current range for considering the lazy-loaded component hidden.
+     * @return A number between 0 (inclusive) and {@link #getContentShownVisibilityRange()} (inclusive).
+     * @see #setContentVisibilityRanges(double, double)
+     */
+    public double getContentHiddenVisibilityRange() {
+        return this.hiddenVisibilityRange;
+    }
+
+    /**
+     * Returns the current range for considering the lazy-loaded component visible.
+     * @return A number between {@link #getContentHiddenVisibilityRange()} (inclusive) and 1 (inclusive).
+     * @see #setContentVisibilityRanges(double, double)
+     */
+    public double getContentShownVisibilityRange() {
+        return this.shownVisibilityRange;
+    }
+
+    /**
+     * Defines visibility ranges. {@link LazyLoad} uses a {@link ComponentObserver} to decide if the content should be shown or not.
+     * By default, the component is lazy-loaded when {@link LazyLoad} is fully visible and hidden when it is fully invisible.
+     * Defining ranges allows for lazy-loading the contents when it becomes partially visible. Be sure to know what you are doing and why.
+     * @param hiddenOnOrBelow Visibility range at which or below which the component is considered hidden. Must be between 0 (inclusive) and the other parameter (inclusive).
+     * @param visibleOnOrAbove Visibility range at which or above which the component is considered visible. Must be between the other parameter (inclusive) and 1 (inclusive).
+     * @see <a href="https://github.com/vaadin-miki/super-fields/issues/498">issue 498</a>
+     * @throws IllegalArgumentException when either range is below 0, above 1, or the first parameter is greater than the second
+     */
+    public void setContentVisibilityRanges(double hiddenOnOrBelow, double visibleOnOrAbove) {
+        if(hiddenOnOrBelow < 0 || visibleOnOrAbove > 1)
+            throw new IllegalArgumentException("component visibility boundaries must be between 0 and 1 (inclusive), but were %.3f and %.3f".formatted(hiddenOnOrBelow, visibleOnOrAbove));
+        else if(hiddenOnOrBelow > visibleOnOrAbove)
+            throw new IllegalArgumentException("visibility boundary for hiding the component (%.3f) must not be greater than the boundary for showing it (%.3f)".formatted(hiddenOnOrBelow, visibleOnOrAbove));
+        else {
+            this.shownVisibilityRange = visibleOnOrAbove;
+            this.hiddenVisibilityRange = hiddenOnOrBelow;
+        }
+    }
+
+    /**
+     * Chains {@link #setContentVisibilityRanges(double, double)} and returns itself.
+     * @param hiddenOnOrBelow Visibility range at which or below which the component is considered hidden. Must be between 0 (inclusive) and the other parameter (inclusive).
+     * @param visibleOnOrAbove Visibility range at which or above which the component is considered visible. Must be between the other parameter (inclusive) and 1 (inclusive).
+     * @return This.
+     * @see #setContentVisibilityRanges(double, double)
+     */
+    public LazyLoad<C> withContentVisibilityRanges(double hiddenOnOrBelow, double visibleOnOrAbove) {
+        this.setContentVisibilityRanges(hiddenOnOrBelow, visibleOnOrAbove);
+        return this;
     }
 
     /**
