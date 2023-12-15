@@ -1,3 +1,14 @@
+# 0.19.0 - Component(Multi)Select and refreshed LazyLoad
+## New features and enhancements
+* \#488 - [ComponentSelect (and ButtonSelect as an example)](https://github.com/vaadin-miki/super-fields/issues/488)
+* \#497 - [ComponentMultiSelect and ButtonMultiSelect](https://github.com/vaadin-miki/super-fields/issues/497)
+* \#498 - [Allow LazyLoad to use a custom ComponentObserver and visibility ranges](https://github.com/vaadin-miki/super-fields/issues/498)
+## Changes to API
+* \#493 - [All components should have custom tag names and default templates](https://github.com/vaadin-miki/super-fields/issues/493)
+* \#494 - [Add withXyz() and withoutXyz() to boolean mixins](https://github.com/vaadin-miki/super-fields/issues/494)
+* \#502 - [Vaadin 24.3](https://github.com/vaadin-miki/super-fields/issues/502)
+## Bug fixes
+* \#490 - [Changing date pattern does not update the component](https://github.com/vaadin-miki/super-fields/issues/490)
 # 0.18.3 - HasInvalidInputPrevention
 ## New features and enhancements
 * \#473 - [Bring back `setPreventInvalidInput`](https://github.com/vaadin-miki/super-fields/issues/473)
