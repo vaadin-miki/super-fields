@@ -3,7 +3,9 @@ package org.vaadin.miki.superfields.collections;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
@@ -23,6 +25,8 @@ import java.util.function.Supplier;
  * @author miki
  * @since 2022-04-08
  */
+@Tag("map-entry-field")
+@JsModule("./map-entry-field.js")
 public class MapEntryField<K, V> extends CustomField<Map.Entry<K, V>> {
 
     /**

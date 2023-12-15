@@ -1,0 +1,1 @@
+A multi-select version of `ComponentSelect`.

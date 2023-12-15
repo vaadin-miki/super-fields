@@ -98,7 +98,7 @@ While intended to work with `CollectionField`, here is a general interface for a
 
 `MapField` is a customisable `CustomField` for data of type `Map<K, V>`. It is based on `CollectionField` and works with any field capable of displaying value of type `Map.Entry<K, V>`. 
 
-`MapEntryField` is a component that is a `CustomField` for `Map.Entry<K, V>`. It allows custom layout and dedicated components for keys and values of the map.   
+`MapEntryField` is a component that is a `CustomField` for `Map.Entry<K, V>`. It allows custom layout and dedicated components for keys and values of the map.
 
 ## `HasHeader`, `HasFooter` and layout helpers
 
@@ -140,6 +140,14 @@ A single- and multi-selection `Grid`s that are value components, meaning they br
 
 `GridMultiSelect` operates on `Set` and has an option to limit the size of the selection.
 
+### `Component(Multi)Select` (and `Button(Multi)Select`)
+
+Single- and multi-selection components that show each option as an individual component that is a `ClickNotifier`, for example a button. `Button(Multi)Select` uses `Button`s and constructors that allow usage of styles or variants to show if a button is selected.
+
+`ComponentMultiSelect` and `ButtonMultiSelect` operate on `Set` and have an option to limit the size of the selection.
+
+`ComponentSelect` and `ButtonSelect` can optionally allow `null` value. Multi-selection versions do not accept `null` and use an empty set instead.
+
 ### `SuperTabs`
 
 A customisable tabbed pane (something like `TabSheet` in the Vaadin 8 era) that also serves as a value component (current value corresponds to the selected tab).
@@ -158,7 +166,7 @@ A wrapper for one instance of client-side `IntersectionObserver`. It allows obse
 
 ### `LazyLoad`
 
-A simple wrapper to lazy load contents when the component gets into view.
+A simple wrapper to lazy load contents when the component gets into view. By default, content is loaded when the component gets fully into view, but it is possible to configure it to load when only a part gets into view. 
 
 ### `ObservedField`
 

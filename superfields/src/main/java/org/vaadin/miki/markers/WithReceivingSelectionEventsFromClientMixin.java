@@ -22,5 +22,20 @@ public interface WithReceivingSelectionEventsFromClientMixin<SELF extends CanRec
         return (SELF)this;
     }
 
+    /**
+     * Chains {@link #setReceivingSelectionEventsFromClient(boolean)} called with {@code true} and returns itself.
+     * @return This.
+     */
+    default SELF withReceivingSelectionEventsFromClient() {
+        return this.withReceivingSelectionEventsFromClient(true);
+    }
+
+    /**
+     * Chains {@link #setReceivingSelectionEventsFromClient(boolean)} called with {@code false} and returns itself.
+     * @return This.
+     */
+    default SELF withoutReceivingSelectionEventsFromClient() {
+        return this.withReceivingSelectionEventsFromClient(false);
+    }
 
 }

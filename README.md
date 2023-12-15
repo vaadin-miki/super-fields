@@ -2,9 +2,9 @@
 
 ## Overview
 
-This is a collection of hopefully useful Vaadin 14 and 24+ components, grouped into several subprojects:
+This is a collection of hopefully useful Vaadin 14 and 24 components, grouped into several subprojects:
 * `superfields` are various input components;
-* `demo-v24` contains an app for Vaadin 24+ that shows all components - [see the demo online](https://demo.unforgiven.pl/superfields/) or run it yourself with `mvn package jetty:run`
+* `demo-v24` contains an app for Vaadin 24 that shows all components - [see the demo online](https://demo.unforgiven.pl/superfields/) or run it yourself with `mvn package jetty:run`
 
 ## Installation
 
@@ -27,7 +27,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>pl.unforgiven</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.18.3</version>
+   <version>0.19.0</version>
 </dependency>
 ```
 
@@ -40,15 +40,7 @@ All releases are available:
 
 Versions below **0.12** work only with Vaadin 14 LTS.
 
-SuperFields in general **should** be compatible with Vaadin 14 LTS and with Java 8. Each release has a corresponding version marked with `-vaadin14` suffix in the number, e.g. `0.12.0-vaadin14`. The functionality is identical to the official release.
-
-These releases are available in Maven Central. They can also be obtained from [Vaadin Directory](https://vaadin.com/directory/component/superfields). Here is the required repository:
-```
-<repository>
-   <id>vaadin-addons</id>
-   <url>https://maven.vaadin.com/vaadin-addons</url>
-</repository>
-```
+SuperFields in general **should** be compatible with Vaadin 14 LTS and with Java 8. Each release has a corresponding version marked with `-vaadin14` suffix in the number, e.g. `0.12.0-vaadin14`. The functionality is identical to the official release. These releases are available in Maven Central.
 
 This repository has a branch `java-8` which contains the code for the most recent release compatible with Java 8 and Vaadin 14 LTS. Please note that Java 8 has been released in 2014. Also, versions compatible with Vaadin 14 LTS will be maintained only as long as Vaadin 14 LTS is.
 
