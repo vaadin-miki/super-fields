@@ -166,7 +166,7 @@ A wrapper for one instance of client-side `IntersectionObserver`. It allows obse
 
 ### `LazyLoad`
 
-A simple wrapper to lazy load contents when the component gets into view.
+A simple wrapper to lazy load contents when the component gets into view. By default, content is loaded when the component gets fully into view, but it is possible to configure it to load when only a part gets into view. 
 
 ### `ObservedField`
 
