@@ -65,10 +65,11 @@ The author of the majority of the code is me (Miki), but this project would not 
 * Simon Martinelli
 * Dmitry Nazukin
 * Stefan Penndorf
+* Sebastian Penttinen
 * Stuart Robinson
 * Kaspar Scherrer
 * Tomi Virkki
-* Martin Vysny
+* Martin Vyšný
 * Leif Åstrand
 
 ## Support
