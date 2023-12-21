@@ -6,8 +6,10 @@ import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.function.SerializableSupplier;
@@ -36,7 +38,9 @@ import java.util.stream.Collectors;
  * @param <T> Type of the element in the collection.
  * @param <C> Type of the collection.
  */
-@CssImport(value = "./styles/label-positions-custom-field.css", themeFor = "vaadin-custom-field")
+@Tag("collection-field")
+@CssImport(value = "./styles/label-positions.css", themeFor = "collection-field")
+@JsModule("./collection-field.js")
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         implements CollectionController, WithIdMixin<CollectionField<T, C>>, HasStyle,
         WithCollectionValueComponentProviderMixin<T, CollectionField<T, C>>,

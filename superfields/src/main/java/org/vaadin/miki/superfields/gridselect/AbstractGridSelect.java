@@ -1,7 +1,6 @@
 package org.vaadin.miki.superfields.gridselect;
 
 import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.selection.SelectionEvent;
 

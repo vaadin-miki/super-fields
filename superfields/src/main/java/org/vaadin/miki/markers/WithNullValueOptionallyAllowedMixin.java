@@ -23,4 +23,22 @@ public interface WithNullValueOptionallyAllowedMixin<SELF extends HasNullValueOp
         return (SELF)this;
     }
 
+    /**
+     * Chains {@link #setNullValueAllowed(boolean)} called with {@code true} and returns itself.
+     * @return This.
+     * @see #setNullValueAllowed(boolean)
+     */
+    default SELF withNullValueAllowed() {
+        return this.withNullValueAllowed(true);
+    }
+
+    /**
+     * Chains {@link #setNullValueAllowed(boolean)} called with {@code false} and returns itself.
+     * @return This.
+     * @see #setNullValueAllowed(boolean)
+     */
+    default SELF withoutNullValueAllowed() {
+        return this.withNullValueAllowed(false);
+    }
+
 }

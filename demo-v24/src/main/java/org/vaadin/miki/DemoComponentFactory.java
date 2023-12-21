@@ -49,7 +49,7 @@ public final class DemoComponentFactory implements Serializable {
 
     private final Map<Class<?>, ContentBuilder<?>> contentBuilders = new LinkedHashMap<>();
 
-    @SuppressWarnings({"unchecked", "squid:S3740", "rawtypes"}) // validator type should be ok
+    @SuppressWarnings({"unchecked", "rawtypes", "squid:S3740"}) // validator type should be ok
     private DemoComponentFactory() {
         final ValidatorStorage storage = new ValidatorStorage();
 
