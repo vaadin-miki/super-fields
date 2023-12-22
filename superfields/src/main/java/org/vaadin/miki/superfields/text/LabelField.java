@@ -24,7 +24,7 @@ import org.vaadin.miki.markers.WithValueMixin;
  * @author miki
  * @since 2022-04-08
  */
-@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-custom-field")
+@CssImport(value = "./styles/label-positions-custom-field.css", themeFor = "vaadin-custom-field")
 @Tag("label-field")
 @JsModule("./label-field.js")
 public class LabelField<V> extends CustomField<V> implements HasStyle, WithLabelMixin<LabelField<V>>,

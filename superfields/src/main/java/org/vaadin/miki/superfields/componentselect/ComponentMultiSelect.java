@@ -11,7 +11,6 @@ import org.vaadin.miki.markers.WithMaximumSelectionSizeMixin;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -87,7 +86,8 @@ public class ComponentMultiSelect<C extends Component & ClickNotifier<C>, T>
 
   @Override
   protected void setPresentationValue(Set<T> newPresentationValue) {
-    newPresentationValue = Objects.requireNonNullElseGet(newPresentationValue, Collections::emptySet);
+    if(newPresentationValue == null)
+      newPresentationValue = Collections.emptySet();
 
     this.selection.clear();
 

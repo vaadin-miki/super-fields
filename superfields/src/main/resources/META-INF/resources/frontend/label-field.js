@@ -1,6 +1,6 @@
-import {CustomField} from '@vaadin/custom-field';
+import {CustomFieldElement} from '@vaadin/vaadin-custom-field';
 
-class LabelField extends CustomField {
+class LabelField extends CustomFieldElement {
 
     static get is() {return 'label-field'}
 

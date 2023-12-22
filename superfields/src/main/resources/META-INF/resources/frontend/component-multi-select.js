@@ -1,6 +1,6 @@
-import {CustomField} from '@vaadin/custom-field';
+import {CustomFieldElement} from '@vaadin/vaadin-custom-field';
 
-class ComponentMultiSelect extends CustomField {
+class ComponentMultiSelect extends CustomFieldElement {
 
     static get is() {return 'component-multi-select'}
 

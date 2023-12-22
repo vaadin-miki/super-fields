@@ -4,8 +4,6 @@ import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasText;
-import com.vaadin.flow.component.shared.HasThemeVariant;
-import com.vaadin.flow.component.shared.ThemeVariant;
 import com.vaadin.flow.function.SerializableBiConsumer;
 import com.vaadin.flow.function.SerializableBiFunction;
 
@@ -30,37 +28,11 @@ public final class ComponentSelectHelpers {
    */
   public static <C extends Component & ClickNotifier<C> & HasStyle> SerializableBiConsumer<Integer, C> changeStyle(final String fromStyle, final String toStyle) {
     return (index, component) -> {
-      if (fromStyle != null && !fromStyle.isBlank())
+      if (fromStyle != null && !fromStyle.isEmpty())
         component.removeClassName(fromStyle);
-      if (toStyle != null && !toStyle.isBlank())
+      if (toStyle != null && !toStyle.isEmpty())
         component.addClassName(toStyle);
     };
-  }
-
-  /**
-   * Returns an action that adds the given variant to the component.
-   *
-   * @param variant Variant to add.
-   * @param <V>     Theme variant.
-   * @param <C>     Type of component (must support the given theme variant).
-   * @return A {@link SerializableBiFunction}.
-   */
-  @SuppressWarnings("unchecked") // not much can be done, Vaadin's code does not ensure safe varags
-  public static <V extends ThemeVariant, C extends Component & ClickNotifier<C> & HasThemeVariant<V>> SerializableBiConsumer<Integer, C> addVariant(final V variant) {
-    return (index, component) -> component.addThemeVariants(variant);
-  }
-
-  /**
-   * Returns an action that removes the given variant from the component.
-   *
-   * @param variant Variant to remove.
-   * @param <V>     Theme variant.
-   * @param <C>     Type of component (must support the given theme variant).
-   * @return A {@link SerializableBiFunction}.
-   */
-  @SuppressWarnings("unchecked") // not much can be done, Vaadin's code does not ensure safe varags
-  public static <V extends ThemeVariant, C extends Component & ClickNotifier<C> & HasThemeVariant<V>> SerializableBiConsumer<Integer, C> removeVariant(final V variant) {
-    return (index, component) -> component.removeThemeVariants(variant);
   }
 
   /**

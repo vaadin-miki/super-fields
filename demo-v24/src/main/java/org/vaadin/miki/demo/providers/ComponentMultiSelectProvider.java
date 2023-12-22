@@ -11,6 +11,8 @@ import org.vaadin.miki.superfields.componentselect.ComponentMultiSelect;
 import org.vaadin.miki.superfields.componentselect.ComponentSelectHelpers;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -22,15 +24,15 @@ import java.util.Set;
 @Order(92)
 public class ComponentMultiSelectProvider implements ComponentProvider<ComponentMultiSelect<Button, String>>, Validator<Set<String>> {
 
-  private static final Set<String> ANSWER = Set.of("Athens", "Berlin", "Rome", "Tallinn", "Warsaw");
+  private static final Set<String> ANSWER = new LinkedHashSet<>(Arrays.asList("Athens", "Berlin", "Rome", "Tallinn", "Warsaw"));
 
   @Override
   public ComponentMultiSelect<Button, String> getComponent() {
     return new ComponentMultiSelect<Button, String>(
         FlexLayoutHelpers::row,
         ComponentSelectHelpers.simpleComponentFactory(Button::new),
-        ComponentSelectHelpers.addVariant(ButtonVariant.LUMO_ERROR),
-        ComponentSelectHelpers.removeVariant(ButtonVariant.LUMO_ERROR),
+        (index, button) -> button.addThemeVariants(ButtonVariant.LUMO_ERROR),
+        (index, button) -> button.removeThemeVariants(ButtonVariant.LUMO_ERROR),
         "Athens", "Belgrade", "Berlin", "London", "Rome", "Tallinn", "Warsaw"
     )
         .withHelperText("(EU as of the end of 2023)")

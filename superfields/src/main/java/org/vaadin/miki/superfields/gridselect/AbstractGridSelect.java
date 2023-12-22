@@ -11,8 +11,6 @@ import com.vaadin.flow.data.selection.SelectionEvent;
  * @author miki
  * @since 2020-12-09
  */
-@CssImport(value = "./styles/label-positions-custom-field.css", themeFor = "vaadin-custom-field")
-@CssImport(value = "./styles/label-positions-grids.css", themeFor = "vaadin-custom-field")
 public abstract class AbstractGridSelect<V, F> extends CustomField<F> {
 
     private final Grid<V> grid;

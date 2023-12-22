@@ -64,6 +64,7 @@ public class EnumObjectTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     // note: for v23+ this test uses MultiSelectComboBox, not available in V14
     public void testEnumListIsMultiselectComboBox() {
         final Map<Property<EnumObject, ?>, HasValue<?, ?>> map = this.field.getPropertiesAndComponents();

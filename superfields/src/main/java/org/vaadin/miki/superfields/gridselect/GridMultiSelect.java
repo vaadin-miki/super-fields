@@ -28,7 +28,6 @@ import java.util.Set;
  * @since 2020-12-09
  */
 @Tag("grid-multi-select")
-@CssImport(value = "./styles/label-positions.css", themeFor = "grid-multi-select")
 @CssImport(value = "./styles/label-positions-grids.css", themeFor = "grid-multi-select")
 @JsModule("./grid-multi-select.js")
 public class GridMultiSelect<V> extends AbstractGridSelect<V, Set<V>>

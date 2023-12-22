@@ -1,6 +1,6 @@
-import {CustomField} from '@vaadin/custom-field';
+import {CustomFieldElement} from '@vaadin/vaadin-custom-field';
 
-class GridSelect extends CustomField {
+class GridSelect extends CustomFieldElement {
 
     static get is() {return 'grid-select'}
 

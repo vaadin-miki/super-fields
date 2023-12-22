@@ -215,7 +215,7 @@ public abstract class AbstractComponentSelect<C extends Component & ClickNotifie
    * @param action Action to use. If {@code null} is passed, result of {@link #noOp()} will be used instead.
    */
   public final void setComponentSelectedAction(SerializableBiConsumer<Integer, C> action) {
-    this.whenSelected = Objects.requireNonNullElseGet(action, ComponentSelect::noOp);
+    this.whenSelected = action == null ? ComponentSelect.noOp() : action;
     this.rebuildComponents();
   }
 
@@ -244,7 +244,7 @@ public abstract class AbstractComponentSelect<C extends Component & ClickNotifie
    * @param action Action to use. If {@code null} is passed, result of {@link #noOp()} will be used instead.
    */
   public final void setComponentDeselectedAction(SerializableBiConsumer<Integer, C> action) {
-    this.whenDeselected = Objects.requireNonNullElseGet(action, ComponentSelect::noOp);
+    this.whenDeselected = action == null ? ComponentSelect.noOp() : action;
     this.rebuildComponents();
   }
 
@@ -276,8 +276,8 @@ public abstract class AbstractComponentSelect<C extends Component & ClickNotifie
 
   @Override
   public void focus() {
-    if(!this.components.isEmpty() && this.components.get(0) instanceof Focusable<?> first)
-      first.focus();
+    if(!this.components.isEmpty() && this.components.get(0) instanceof Focusable)
+      ((Focusable<?>)this.components.get(0)).focus();
     else super.focus();
   }
 

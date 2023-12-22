@@ -1,6 +1,6 @@
-import {CustomField} from '@vaadin/custom-field';
+import {CustomFieldElement} from '@vaadin/vaadin-custom-field';
 
-class VariantField extends CustomField {
+class VariantField extends CustomFieldElement {
 
     static get is() {return 'variant-field'}
 

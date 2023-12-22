@@ -50,8 +50,8 @@ public class ButtonSelect<T> extends ComponentSelect<Button, T> {
   @SafeVarargs
   public <L extends Component & HasComponents> ButtonSelect(Supplier<L> layoutProvider, ButtonVariant selectedVariant, T... items) {
     this(layoutProvider, ComponentSelectHelpers.simpleComponentFactory(Button::new, Object::toString),
-        ComponentSelectHelpers.addVariant(selectedVariant),
-        ComponentSelectHelpers.removeVariant(selectedVariant),
+        (integer, button) -> button.addThemeVariants(selectedVariant),
+        (integer, button) -> button.removeThemeVariants(selectedVariant),
         items);
   }
 

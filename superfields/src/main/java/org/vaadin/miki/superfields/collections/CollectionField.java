@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * @param <C> Type of the collection.
  */
 @Tag("collection-field")
-@CssImport(value = "./styles/label-positions.css", themeFor = "collection-field")
+@CssImport(value = "./styles/label-positions-custom-field.css", themeFor = "collection-field")
 @JsModule("./collection-field.js")
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         implements CollectionController, WithIdMixin<CollectionField<T, C>>, HasStyle,

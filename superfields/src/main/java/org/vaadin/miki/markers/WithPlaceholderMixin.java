@@ -1,7 +1,5 @@
 package org.vaadin.miki.markers;
 
-import com.vaadin.flow.component.HasPlaceholder;
-
 /**
  * Mixin interface to support chaining {@link #setPlaceholder(String)}.
  * @param <SELF> Self type.

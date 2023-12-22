@@ -199,7 +199,8 @@ export class DatePatternMixin {
             // fixes #490 (only when some value is already there)
             if (datepicker.value !== undefined && datepicker.value.length > 0) {
                 let parsed = datepicker.value.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/);
-                datepicker.inputElement.value = datepicker.i18n.formatDate({day: parseInt(parsed[3], 10), month: parseInt(parsed[2], 10)-1, year: parseInt(parsed[1], 10)});
+                // datepicker.inputElement does not work in v14, hence this query
+                datepicker.shadowRoot.querySelector('vaadin-date-picker-text-field').value = datepicker.i18n.formatDate({day: parseInt(parsed[3], 10), month: parseInt(parsed[2], 10)-1, year: parseInt(parsed[1], 10)});
             }
         }
     }

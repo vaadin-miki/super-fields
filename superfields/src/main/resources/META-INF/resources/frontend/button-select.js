@@ -1,6 +1,6 @@
-import {CustomField} from '@vaadin/custom-field';
+import {CustomFieldElement} from '@vaadin/vaadin-custom-field';
 
-class ButtonSelect extends CustomField {
+class ButtonSelect extends CustomFieldElement {
 
     static get is() {return 'button-select'}
 

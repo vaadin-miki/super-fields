@@ -6,7 +6,6 @@ import org.vaadin.miki.demo.ComponentProvider;
 import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.demo.data.Format;
 import org.vaadin.miki.superfields.componentselect.ComponentSelect;
-import org.vaadin.miki.superfields.componentselect.ComponentSelectHelpers;
 import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
 
 import java.util.Locale;
@@ -22,12 +21,12 @@ public class ComponentSelectProvider implements ComponentProvider<ComponentSelec
   @Override
   public ComponentSelect<Button, Format> getComponent() {
     return new ComponentSelect<>(FlexLayoutHelpers::row,
-        (integer, format) -> new Button("%d. %s".formatted(integer + 1, format.name().toLowerCase(Locale.ROOT).replace('_', ' '))),
+        (integer, format) -> new Button(String.format("%d. %s", integer + 1, format.name().toLowerCase(Locale.ROOT).replace('_', ' '))),
         Format.values()
     )
         .withHelperText("(click a button to select the corresponding option)")
-        .withComponentSelectedAction(ComponentSelectHelpers.addVariant(ButtonVariant.LUMO_PRIMARY))
-        .withComponentDeselectedAction(ComponentSelectHelpers.removeVariant(ButtonVariant.LUMO_PRIMARY))
+        .withComponentSelectedAction((index, button) -> button.addThemeVariants(ButtonVariant.LUMO_PRIMARY))
+        .withComponentDeselectedAction((index, button) -> button.removeThemeVariants(ButtonVariant.LUMO_PRIMARY))
         .withLabel("Select your favourite book format:");
   }
 }

@@ -1,6 +1,6 @@
-import {CustomField} from '@vaadin/custom-field';
+import {CustomFieldElement} from '@vaadin/vaadin-custom-field';
 
-class HeaderFooterFieldWrapper extends CustomField {
+class HeaderFooterFieldWrapper extends CustomFieldElement {
 
     static get is() {return 'header-footer-field-wrapper'}
 

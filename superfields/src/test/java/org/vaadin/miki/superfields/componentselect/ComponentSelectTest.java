@@ -110,8 +110,8 @@ public class ComponentSelectTest {
 
   @Test
   public void testVariantChanges() {
-    this.select.withComponentSelectedAction(ComponentSelectHelpers.addVariant(ButtonVariant.LUMO_PRIMARY))
-        .setComponentDeselectedAction(ComponentSelectHelpers.removeVariant(ButtonVariant.LUMO_PRIMARY));
+    this.select.withComponentSelectedAction((index, button) -> button.addThemeVariants(ButtonVariant.LUMO_PRIMARY))
+        .setComponentDeselectedAction((index, button) -> button.removeThemeVariants(ButtonVariant.LUMO_PRIMARY));
     // nothing is selected at start
     for(int zmp1=0; zmp1<OPTIONS.length; zmp1++)
       Assert.assertFalse(this.select.getComponent(zmp1).getThemeNames().contains(ButtonVariant.LUMO_PRIMARY.getVariantName()));

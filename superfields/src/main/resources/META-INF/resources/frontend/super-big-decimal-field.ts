@@ -1,5 +1,5 @@
-import {html, LitElement} from 'lit';
-import {customElement} from 'lit/decorators.js';
+import {html, LitElement} from 'lit-element';
+import {customElement} from 'lit-element/lib/decorators.js';
 
 @customElement('super-big-decimal-field')
 export class SuperBigDecimalField extends LitElement {

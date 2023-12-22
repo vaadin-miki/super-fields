@@ -157,9 +157,9 @@ public class LazyLoad<C extends Component> extends Composite<LazyLoad.LazyLoadEl
      */
     public void setContentVisibilityRanges(double hiddenOnOrBelow, double visibleOnOrAbove) {
         if(hiddenOnOrBelow < 0 || visibleOnOrAbove > 1)
-            throw new IllegalArgumentException("component visibility boundaries must be between 0 and 1 (inclusive), but were %.3f and %.3f".formatted(hiddenOnOrBelow, visibleOnOrAbove));
+            throw new IllegalArgumentException(String.format("component visibility boundaries must be between 0 and 1 (inclusive), but were %.3f and %.3f", hiddenOnOrBelow, visibleOnOrAbove));
         else if(hiddenOnOrBelow > visibleOnOrAbove)
-            throw new IllegalArgumentException("visibility boundary for hiding the component (%.3f) must not be greater than the boundary for showing it (%.3f)".formatted(hiddenOnOrBelow, visibleOnOrAbove));
+            throw new IllegalArgumentException(String.format("visibility boundary for hiding the component (%.3f) must not be greater than the boundary for showing it (%.3f)", hiddenOnOrBelow, visibleOnOrAbove));
         else {
             this.shownVisibilityRange = visibleOnOrAbove;
             this.hiddenVisibilityRange = hiddenOnOrBelow;

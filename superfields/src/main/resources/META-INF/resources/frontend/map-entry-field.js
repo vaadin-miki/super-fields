@@ -1,6 +1,6 @@
-import {CustomField} from '@vaadin/custom-field';
+import {CustomFieldElement} from '@vaadin/vaadin-custom-field';
 
-class MapEntryField extends CustomField {
+class MapEntryField extends CustomFieldElement {
 
     static get is() {return 'map-entry-field'}
 
