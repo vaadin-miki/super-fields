@@ -39,7 +39,8 @@
     width: 100%;
 }
 
-:host([data-label-position-details~="after"]) [class|="vaadin"] [part="input-field"] {
+:host([data-label-position-details~="after"]) [class|="vaadin"] [part="input-field"],
+:host([data-label-position-details~="after"]) [class|="vaadin"] [part="input-fields"] {
     order: -1;
 }
 :host([data-label-position-details~="after"][theme~="helper-above-field"]) [class|="vaadin"] [part="helper-text"] {
