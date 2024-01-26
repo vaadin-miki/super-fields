@@ -11,11 +11,13 @@
     <version>0.7.77-SNAPSHOT</version>
     <name>V24+ demo app for SuperFields</name>
     <description>Showcase application for V24+ and SuperFields.</description>
-    <packaging>war</packaging>
+    <packaging>${packaging.type}</packaging>
 
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <jetty.plugin.version>11.0.13</jetty.plugin.version>
+        <packaging.type>war</packaging.type>
+        <maven.compiler.release>17</maven.compiler.release>
     </properties>
 
     <dependencies>
@@ -53,15 +55,6 @@
     </dependencies>
 
     <repositories>
-        <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
-        <repository>
-            <id>vaadin-prereleases</id>
-            <url>https://maven.vaadin.com/vaadin-prereleases</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-
         <!-- Main Maven repository -->
         <repository>
             <id>central</id>
@@ -174,13 +167,13 @@
         <profile>
             <id>quarkus</id>
             <properties>
-                <quarkus.version>3.6.4</quarkus.version>
+                <quarkus.version>3.6.7</quarkus.version>
                 <packaging.type>jar</packaging.type>
             </properties>
             <dependencyManagement>
                 <dependencies>
                     <!-- Quarkus Platform BOM to keep the project
-                         artifacts in synch with the quarkus.version -->
+                         artifacts in sync with the quarkus.version -->
                     <dependency>
                         <groupId>io.quarkus</groupId>
                         <artifactId>quarkus-bom</artifactId>
@@ -209,6 +202,11 @@
                     <artifactId>slf4j-jboss-logmanager</artifactId>
                     <version>1.1.0.Final</version>
                 </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-core-deployment</artifactId>
+                    <version>${quarkus.version}</version>
+                </dependency>
             </dependencies>
             <build>
                 <plugins>
@@ -231,8 +229,9 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
+                     </plugin>
                 </plugins>
-            </build>        </profile>
+            </build>
+        </profile>
     </profiles>
 </project>
