@@ -12,38 +12,39 @@ import java.util.Locale;
 
 public class DatePatternDelegateTest {
 
-    private SuperDatePicker datePicker;
+  private SuperDatePicker datePicker;
 
-    @Before
-    public void setUp() {
-        MockVaadin.setup();
-        this.datePicker = new SuperDatePicker().withDatePattern(DatePatterns.YYYY_MM_DD).withLocale(new Locale("pl", "PL"));
-    }
+  @Before
+  public void setUp() {
+    MockVaadin.setup();
+    this.datePicker = new SuperDatePicker().withDatePattern(DatePatterns.YYYY_MM_DD).withLocale(new Locale("pl", "PL"));
+  }
 
-    @After
-    public void tearDown() {
-        MockVaadin.tearDown();
-    }
+  @After
+  public void tearDown() {
+    MockVaadin.tearDown();
+  }
 
-    @Test
-    public void testFormattedValue() {
-        LocalDate expected = LocalDate.of(1999, 5, 3);
-        this.datePicker.setValue(expected);
-        LocalDate value = this.datePicker.getValue();
-        Assert.assertEquals(expected, value);
-        String raw = this.datePicker.getFormattedValue();
-        Assert.assertEquals("1999-05-03", raw);
+  @Test
+  public void testFormattedValue() {
+    LocalDate expected = LocalDate.of(1999, 5, 3);
+    this.datePicker.setValue(expected);
+    LocalDate value = this.datePicker.getValue();
+    Assert.assertEquals(expected, value);
+    String raw = this.datePicker.getFormattedValue();
+    Assert.assertEquals("1999-05-03", raw);
 
-        // now server-side month formatting
-        this.datePicker.setDatePattern(DatePatterns.D_MMMM_YYYY);
-        raw = this.datePicker.getFormattedValue();
-        Assert.assertEquals("3 maja 1999", raw);
+    // now server-side month formatting
+    this.datePicker.setDatePattern(DatePatterns.D_MMMM_YYYY);
+    raw = this.datePicker.getFormattedValue();
+    Assert.assertEquals("3 maja 1999", raw);
 
-        this.datePicker.setDatePattern(null);
+    this.datePicker.setLocale(new Locale("pl", "PL"));
+    this.datePicker.setDatePattern(null);
 
-        // now formatted according to locale
-        raw = this.datePicker.getFormattedValue();
-        Assert.assertEquals("03.05.1999", raw);
-    }
+    // now formatted according to locale
+    raw = this.datePicker.getFormattedValue();
+    Assert.assertEquals("3.05.1999", raw);
+  }
 
 }
