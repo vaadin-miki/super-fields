@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  * @author miki
  * @since 2022-04-08
  */
-@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-custom-field")
+@CssImport(value = "./styles/label-positions.css", themeFor = "map-field")
 @Tag("map-field")
 @JsModule("./map-field.js")
 public class MapField<K, V> extends CustomField<Map<K, V>> implements HasStyle,

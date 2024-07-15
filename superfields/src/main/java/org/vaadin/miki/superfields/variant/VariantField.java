@@ -29,7 +29,7 @@ import java.util.Optional;
  * @author miki
  * @since 2022-04-11
  */
-@CssImport(value = "./styles/label-positions.css", themeFor = "vaadin-custom-field")
+@CssImport(value = "./styles/label-positions.css", themeFor = "variant-field")
 @Tag("variant-field")
 @JsModule("./variant-field.js")
 public class VariantField extends CustomField<Object> implements HasStyle,
