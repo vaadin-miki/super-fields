@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class SuperTabsTest {
 
@@ -241,6 +242,22 @@ public class SuperTabsTest {
             Assert.assertEquals("only tab1 should have a parent", value.equals(tab1), this.tabs.getTabContents(value).get().getParent().isPresent());
             Assert.assertFalse(this.tabs.getTabContents(value).get().getElement().getClassList().contains("selected-tab"));
         }
+    }
+
+    @Test
+    public void testTabSetSelected() {
+        final String tabTitle = "foo";
+        this.tabs.addTab("something", "anything", tabTitle, "another thing");
+        Assert.assertNotEquals(tabTitle, this.tabs.getValue());
+        final Optional<Tab> perhapsHeader = this.tabs.getTabHeader(tabTitle);
+        Assert.assertTrue(perhapsHeader.isPresent());
+        final Tab tab = perhapsHeader.get();
+        tab.setSelected(true);
+        Assert.assertEquals(tabTitle, this.tabs.getValue());
+
+        final Tab notThere = new Tab("oh wow");
+        notThere.setSelected(true);
+        Assert.assertEquals(tabTitle, this.tabs.getValue());
     }
 
 }
