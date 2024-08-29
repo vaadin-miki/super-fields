@@ -12,6 +12,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.dom.PropertyChangeEvent;
 import org.vaadin.miki.markers.WithHelperMixin;
 import org.vaadin.miki.markers.WithHelperPositionableMixin;
 import org.vaadin.miki.markers.WithIdMixin;
@@ -206,6 +207,20 @@ public class SuperTabs<T>
                 this.tabs.setSelectedTab(tab);
             else
                 this.updateValue();
+        }
+        tab.getElement().addPropertyChangeListener("selected", this::tabSelectedPropertyChanged);
+    }
+
+    private void tabSelectedPropertyChanged(PropertyChangeEvent propertyChangeEvent) {
+        if(propertyChangeEvent.getPropertyName().equals("selected") &&
+           (propertyChangeEvent.getOldValue() == null || !Boolean.parseBoolean(propertyChangeEvent.getOldValue().toString())) &&
+            propertyChangeEvent.getValue() != null &&
+            Boolean.parseBoolean(propertyChangeEvent.getValue().toString())) {
+        this.tabsToContents.entrySet().stream()
+            .filter(entry -> Objects.equals(entry.getKey().getElement(), propertyChangeEvent.getSource()))
+            .findFirst()
+            .map(Map.Entry::getKey)
+            .ifPresent(this.tabs::setSelectedTab);
         }
     }
 

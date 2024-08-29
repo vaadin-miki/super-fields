@@ -1,6 +1,7 @@
 package org.vaadin.miki.demo.builders;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import org.vaadin.miki.demo.ContentBuilder;
@@ -30,6 +31,8 @@ public class SuperTabsBuilder implements ContentBuilder<SuperTabs<?>> {
                 component.setTabHandler(event.getValue());
         });
 
-        callback.accept(new Component[]{multilineTabs, tabHandlers});
+        @SuppressWarnings("unchecked")
+        final Button tabSelect = new Button("Switch to \"Open source\" tab with .setSelected()", event ->  ((SuperTabs<String>)component).getTabHeader("Open source").ifPresent(tab -> tab.setSelected(true)));
+        callback.accept(new Component[]{multilineTabs, tabHandlers, tabSelect});
     }
 }
