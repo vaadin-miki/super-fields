@@ -27,7 +27,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>pl.unforgiven</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.19.0</version>
+   <version>0.19.2</version>
 </dependency>
 ```
 
@@ -65,10 +65,11 @@ The author of the majority of the code is me (Miki), but this project would not 
 * Simon Martinelli
 * Dmitry Nazukin
 * Stefan Penndorf
+* Sebastian Penttinen
 * Stuart Robinson
 * Kaspar Scherrer
 * Tomi Virkki
-* Martin Vysny
+* Martin Vyšný
 * Leif Åstrand
 
 ## Support

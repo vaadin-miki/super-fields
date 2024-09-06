@@ -1,3 +1,18 @@
+# 0.19.2 - Vaadin 24.4
+## New features and enhancements
+* \#518 - [selecting a tab programmatically in SuperTabs](https://github.com/vaadin-miki/super-fields/issues/518)
+## Changes to API
+* \#519 - [Upgrade to Vaadin 24.4](https://github.com/vaadin-miki/super-fields/issues/519)
+## Bug fixes
+(nothing reported)
+# 0.19.1 - Bug fixes
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#514 - [Upgrade Vaadin to 24.3.12](https://github.com/vaadin-miki/super-fields/issues/514)
+## Bug fixes
+* \#511 - [AFTER_* label positions are incorrect for custom fields](https://github.com/vaadin-miki/super-fields/issues/511)
+* \#513 - [SuperTextField.inputMode cannot be set inside a Grid.Column](https://github.com/vaadin-miki/super-fields/issues/513)
 # 0.19.0 - Component(Multi)Select and refreshed LazyLoad
 ## New features and enhancements
 * \#488 - [ComponentSelect (and ButtonSelect as an example)](https://github.com/vaadin-miki/super-fields/issues/488)

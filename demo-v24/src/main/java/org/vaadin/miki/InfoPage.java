@@ -17,7 +17,7 @@ import org.vaadin.miki.superfields.itemgrid.ItemGrid;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
+import java.util.Collection;
 
 /**
  * Information about the demo, its organisation and components.
@@ -38,12 +38,14 @@ public class InfoPage extends VerticalLayout {
             new Span("Bottom left corner of the browser window will show major notifications from each component - like value change notifications. Bottom right corner is reserved for secondary notifications, e.g. focus and blur events.")
         );
 
+        final Collection<Class<? extends Component>> types = DemoComponentFactory.get().getDemoableComponentTypes();
         final ItemGrid<Class<? extends Component>> grid = new ItemGrid<Class<? extends Component>>()
-                .withItems(DemoComponentFactory.get().getDemoableComponentTypes())
+                .withItems(types)
                 .withColumnCount(5)
                 .withPaddingCellsClickable(false)
                 .withCellGenerator(this::buildDisplayCell)
-                .withId("presentation-grid");
+                .withId("presentation-grid")
+                .withLabel("There are %d components with demo pages:".formatted(types.size()));
         grid.addValueChangeListener(event -> this.getUI()
                 .ifPresent(ui ->
                         ui.navigate(
@@ -80,16 +82,15 @@ public class InfoPage extends VerticalLayout {
         final Div result = new Div();
         result.add(new H3(type.getSimpleName()));
 
-        try (InputStream resource = this.getClass().getClassLoader().getResourceAsStream(type.getSimpleName().toLowerCase(Locale.ROOT) + ".md")) {
+        final String resourceName = "/" + type.getSimpleName() + ".md";
+        try (InputStream resource = this.getClass().getClassLoader().getResourceAsStream(resourceName)) {
             if (resource != null) {
                 try {
                     final Span desc = new Span(new String(readAllBytes(resource)));
                     desc.addClassName("presentation-description");
                     result.add(desc);
-                } catch (IOException e) {
-                    LOGGER.error("could not read description for component {}", type.getSimpleName(), e);
-                }
             }
+            else LOGGER.error("did not find resource {}", resourceName);
         } catch (IOException e) {
             LOGGER.error("could not open description for component {}", type.getSimpleName(), e);
         }

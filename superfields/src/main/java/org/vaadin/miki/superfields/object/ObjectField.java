@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  * @author miki
  * @since 2022-05-16
  */
-@CssImport(value = "./styles/label-positions-custom-field.css", themeFor = "vaadin-custom-field")
+@CssImport(value = "./styles/label-positions.css", themeFor = "object-field")
 @Tag("object-field")
 @JsModule("./object-field.js")
 public class ObjectField<T> extends CustomField<T>

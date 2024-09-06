@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>pl.unforgiven</groupId>
     <artifactId>superfields-parent</artifactId>
-    <version>0.19.0-vaadin14</version>
+    <version>0.19.2-vaadin14</version>
     <modules>
         <module>superfields</module>
         <module>demo-v24</module>
     </modules>
     <name>SuperFields - Root project for SuperFields</name>
-    <description>Root project for SuperFields. Includes basic dependencies, repositories and other configuration.</description>
+    <description>Root project for SuperFields. Includes basic dependencies, repositories and other configuration.
+    </description>
     <packaging>pom</packaging>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>14.11.0</vaadin.version>
+        <vaadin.version>14.11.13</vaadin.version>
     </properties>
 
 </project>

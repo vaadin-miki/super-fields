@@ -10,14 +10,13 @@ export class TextSelectionMixin {
                     data.startsAt = data.input.selectionStart;
                     data.endsAt = data.input.selectionEnd;
                     data.selection = data.input.value.substring(data.startsAt, data.endsAt);
-                }
-                else {
+                } else {
                     data.startsAt = -1;
                     data.endsAt = -1;
                     data.selection = '';
                 }
                 src.dataset.selectedText = data.selection;
-                if(data.callServer && (currentStart !== data.startsAt || currentEnd !== data.endsAt)) {
+                if (data.callServer && (currentStart !== data.startsAt || currentEnd !== data.endsAt)) {
                     console.log('TSM: calling server');
                     src.$server.selectionChanged(data.startsAt, data.endsAt, data.selection);
                 }
@@ -36,7 +35,7 @@ export class TextSelectionMixin {
             }
 
             select(src, from, to) {
-                console.log('TSM: selecting from '+from+' to '+to);
+                console.log('TSM: selecting from ' + from + ' to ' + to);
                 if (from <= to) {
                     src.selectionMixin.input.selectionStart = from;
                     src.selectionMixin.input.selectionEnd = to;
@@ -45,7 +44,7 @@ export class TextSelectionMixin {
             }
 
             replaceText(src, text, from, to) {
-                console.log('TSM: replacing text '+text+' from '+from+' to '+to);
+                console.log('TSM: replacing text ' + text + ' from ' + from + ' to ' + to);
                 if (from < 0) {
                     from = src.selectionMixin.input.selectionStart;
                 }
@@ -55,21 +54,21 @@ export class TextSelectionMixin {
                 src.selectionMixin.input.setRangeText(text, from, to);
                 // the above code does not trigger value changes
                 // so using the trick from clear-button handler
-                const inputEvent = new Event('input', { bubbles: true, composed: true });
-                const changeEvent = new Event('change', { bubbles: !src._slottedInput });
+                const inputEvent = new Event('input', {bubbles: true, composed: true});
+                const changeEvent = new Event('change', {bubbles: !src._slottedInput});
                 src.selectionMixin.input.dispatchEvent(inputEvent);
                 src.selectionMixin.input.dispatchEvent(changeEvent);
             }
 
             listenToEvents(inputComponent, webComponent, notifyServer) {
-                console.log('TSM: setting up text selection for component <'+webComponent.tagName+'>');
+                console.log('TSM: setting up text selection for component <' + webComponent.tagName + '>');
                 if (inputComponent === undefined) {
                     console.log('TSM: input component is undefined, attempting to find it from shadow root/input element');
                     inputComponent = webComponent.inputElement;
                     if (inputComponent === undefined) {
                         console.log('TSM: no input component, server will reinitialise this component shortly (probably used inside Grid, nothing to worry about)');
                         // this trick has been suggested by the magnificent Erik Lumme, thank you!
-                        webComponent.$server.reinitialiseListening();
+                        webComponent.$server.performDelayedInitialisation();
                     }
                 }
                 if (inputComponent !== undefined) {
