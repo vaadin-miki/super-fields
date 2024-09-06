@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.vaadin.miki.shared.dates.DatePatterns;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Locale;
 
 public class DatePatternDelegateTest {
@@ -44,7 +46,8 @@ public class DatePatternDelegateTest {
 
     // now formatted according to locale
     raw = this.datePicker.getFormattedValue();
-    Assert.assertEquals("03.05.1999", raw);
+    final String formatted = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(this.datePicker.getLocale()).format(expected);
+    Assert.assertEquals(formatted, raw);
   }
 
 }
