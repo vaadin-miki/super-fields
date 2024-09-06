@@ -1,3 +1,9 @@
+# 0.19.2 - Vaadin 24.4
+## New features and enhancements
+* \#518 - [selecting a tab programmatically in SuperTabs](https://github.com/vaadin-miki/super-fields/issues/518)
+## Changes to API
+* \#519 - [Upgrade to Vaadin 24.4](https://github.com/vaadin-miki/super-fields/issues/519)
+## Bug fixes
 # 0.19.1 - Bug fixes
 ## New features and enhancements
 (nothing reported)
