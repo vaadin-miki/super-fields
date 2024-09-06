@@ -21,6 +21,7 @@ import java.util.Collection;
 
 /**
  * Information about the demo, its organisation and components.
+ *
  * @author miki
  * @since 2020-06-03
  */
@@ -28,74 +29,72 @@ import java.util.Collection;
 @PageTitle("SuperFields - Demo App")
 public class InfoPage extends VerticalLayout {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InfoPage.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InfoPage.class);
 
-    public InfoPage() {
-        super(
-            new Span("Hello and welcome to SuperFields demo! Thank you for your interest in this little project, I hope you find it useful."),
-            new Span("The components shown in this demo are available in SuperFields, a small collection of handy stuff designed to work with Vaadin 23+/14 and Java."),
-            new Span("To see a component in action simply select it in the grid below or click a corresponding tab above. Each page features the chosen component, followed by (some of) the configurable options."),
-            new Span("Bottom left corner of the browser window will show major notifications from each component - like value change notifications. Bottom right corner is reserved for secondary notifications, e.g. focus and blur events.")
-        );
+  public InfoPage() {
+    super(
+        new Span("Hello and welcome to SuperFields demo! Thank you for your interest in this little project, I hope you find it useful."),
+        new Span("The components shown in this demo are available in SuperFields, a small collection of handy stuff designed to work with Vaadin 23+/14 and Java."),
+        new Span("To see a component in action simply select it in the grid below or click a corresponding tab above. Each page features the chosen component, followed by (some of) the configurable options."),
+        new Span("Bottom left corner of the browser window will show major notifications from each component - like value change notifications. Bottom right corner is reserved for secondary notifications, e.g. focus and blur events.")
+    );
 
-        final Collection<Class<? extends Component>> types = DemoComponentFactory.get().getDemoableComponentTypes();
-        final ItemGrid<Class<? extends Component>> grid = new ItemGrid<Class<? extends Component>>()
-                .withItems(types)
-                .withColumnCount(5)
-                .withPaddingCellsClickable(false)
-                .withCellGenerator(this::buildDisplayCell)
-                .withId("presentation-grid")
-                .withLabel("There are %d components with demo pages:".formatted(types.size()));
-        grid.addValueChangeListener(event -> this.getUI()
-                .ifPresent(ui ->
-                        ui.navigate(
-                                RouteConfiguration.forRegistry(VaadinService.getCurrent().getRouter().getRegistry())
-                                        .getUrl(DemoPage.class, event.getValue().getSimpleName().toLowerCase()
-                                ))));
-        this.setWidthFull();
-        grid.setSizeFull();
-        this.add(grid);
+    final Collection<Class<? extends Component>> types = DemoComponentFactory.get().getDemoableComponentTypes();
+    final ItemGrid<Class<? extends Component>> grid = new ItemGrid<Class<? extends Component>>()
+        .withItems(types)
+        .withColumnCount(5)
+        .withPaddingCellsClickable(false)
+        .withCellGenerator(this::buildDisplayCell)
+        .withId("presentation-grid")
+        .withLabel(String.format("There are %d components with demo pages:", types.size()));
+    grid.addValueChangeListener(event -> this.getUI()
+        .ifPresent(ui ->
+            ui.navigate(
+                RouteConfiguration.forRegistry(VaadinService.getCurrent().getRouter().getRegistry())
+                    .getUrl(DemoPage.class, event.getValue().getSimpleName().toLowerCase()
+                    ))));
+    this.setWidthFull();
+    grid.setSizeFull();
+    this.add(grid);
 
-        this.add(
-            new Anchor("https://github.com/vaadin-miki/super-fields", "More information can be found on the project's main page on GitHub."),
-            new Anchor("https://github.com/vaadin-miki/super-fields/issues", "Please use GitHub to report issues and request features and components."),
-            new Anchor("https://vaadin.com/directory/component/superfields", "If you find this library useful, please consider sparing a moment and writing a comment or leaving a rating in the Vaadin Directory. Thank you!"),
-            new Span("Disclaimer: unless otherwise noted, all code has been written by me (Miki) and is released under Apache 2.0 License. This library is not officially supported or endorsed by Vaadin and is not part of the Vaadin Platform.")
-        );
+    this.add(
+        new Anchor("https://github.com/vaadin-miki/super-fields", "More information can be found on the project's main page on GitHub."),
+        new Anchor("https://github.com/vaadin-miki/super-fields/issues", "Please use GitHub to report issues and request features and components."),
+        new Anchor("https://vaadin.com/directory/component/superfields", "If you find this library useful, please consider sparing a moment and writing a comment or leaving a rating in the Vaadin Directory. Thank you!"),
+        new Span("Disclaimer: unless otherwise noted, all code has been written by me (Miki) and is released under Apache 2.0 License. This library is not officially supported or endorsed by Vaadin and is not part of the Vaadin Platform.")
+    );
+  }
+
+  private static byte[] readAllBytes(InputStream resource) throws IOException {
+    // courtesy of https://stackoverflow.com/questions/59049358/java-1-8-and-below-equivalent-for-inputstream-readallbytes
+    final int bufLen = 1024;
+    final byte[] buf = new byte[bufLen];
+    int readLen;
+
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+    while ((readLen = resource.read(buf, 0, bufLen)) != -1)
+      outputStream.write(buf, 0, readLen);
+
+    return outputStream.toByteArray();
+  }
+
+  private Component buildDisplayCell(Class<? extends Component> type, int row, int column) {
+    final Div result = new Div();
+    result.add(new H3(type.getSimpleName()));
+
+    final String resourceName = "/" + type.getSimpleName() + ".md";
+    try (InputStream resource = this.getClass().getClassLoader().getResourceAsStream(resourceName)) {
+      if (resource != null) {
+        final Span desc = new Span(new String(readAllBytes(resource)));
+        desc.addClassName("presentation-description");
+        result.add(desc);
+      } else LOGGER.error("did not find resource {}", resourceName);
+    } catch (IOException e) {
+      LOGGER.error("could not open description for component {}", type.getSimpleName(), e);
     }
-
-    private static byte[] readAllBytes(InputStream resource) throws IOException {
-        // courtesy of https://stackoverflow.com/questions/59049358/java-1-8-and-below-equivalent-for-inputstream-readallbytes
-        final int bufLen = 1024;
-        final byte[] buf = new byte[bufLen];
-        int readLen;
-
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        while ((readLen = resource.read(buf, 0, bufLen)) != -1)
-            outputStream.write(buf, 0, readLen);
-
-        return outputStream.toByteArray();
-    }
-
-    private Component buildDisplayCell(Class<? extends Component> type, int row, int column) {
-        final Div result = new Div();
-        result.add(new H3(type.getSimpleName()));
-
-        final String resourceName = "/" + type.getSimpleName() + ".md";
-        try (InputStream resource = this.getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            if (resource != null) {
-                try {
-                    final Span desc = new Span(new String(readAllBytes(resource)));
-                    desc.addClassName("presentation-description");
-                    result.add(desc);
-            }
-            else LOGGER.error("did not find resource {}", resourceName);
-        } catch (IOException e) {
-            LOGGER.error("could not open description for component {}", type.getSimpleName(), e);
-        }
-        result.addClassName("presentation-cell");
-        return result;
-    }
+    result.addClassName("presentation-cell");
+    return result;
+  }
 
 }
