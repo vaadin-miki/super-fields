@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>pl.unforgiven</groupId>
     <artifactId>superfields-parent</artifactId>
-    <version>0.7.77-SNAPSHOT</version>
+    <version>0.19.2</version>
     <modules>
         <module>superfields</module>
         <module>demo-v24</module>
