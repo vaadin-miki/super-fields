@@ -6,7 +6,6 @@ window.Vaadin.featureFlags.collaborationEngineBackend = false;
 window.Vaadin.featureFlags.webPush = false;
 window.Vaadin.featureFlags.formFillerAddon = false;
 window.Vaadin.featureFlags.hillaI18n = false;
-window.Vaadin.featureFlags.copilotFlow = false;
-window.Vaadin.featureFlags.copilotI18n = false;
+window.Vaadin.featureFlags.fullstackSignals = false;
 window.Vaadin.featureFlags.copilotExperimentalFeatures = false;
 export {};
