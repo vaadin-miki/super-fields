@@ -8,6 +8,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.dom.DisabledUpdateMode;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.events.text.TextSelectionListener;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
@@ -117,7 +118,7 @@ public class SuperTextField extends TextField implements CanSelectText, TextSele
     this.delegate.fireTextSelectionEvent(true, start, end, selection);
   }
 
-  @ClientCallable
+  @ClientCallable(DisabledUpdateMode.ALWAYS) // fixes #531
   private void performDelayedInitialisation() {
     // fixes #243
     this.delegate.reinitialiseListeners();
