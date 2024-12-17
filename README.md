@@ -3,14 +3,18 @@
 ## Overview
 
 This is a collection of hopefully useful Vaadin 14 and 24 components, grouped into several subprojects:
+
 * `superfields` are various input components;
-* `demo-v24` contains an app for Vaadin 24 that shows all components - [see the demo online](https://demo.unforgiven.pl/superfields/) or run it yourself with `mvn package jetty:run`
+* `demo-v24` contains an app for Vaadin 24 that shows all
+  components - [see the demo online](https://demo.unforgiven.pl/superfields/) or run it yourself with
+  `mvn package jetty:run`
 
 ## Installation
 
-[SuperFields are also available in Vaadin Directory](https://vaadin.com/directory/component/superfields). If you find this library useful, consider rating it there or leaving a review. Thanks :)
+[SuperFields are also available in Vaadin Directory](https://vaadin.com/directory/component/superfields). If you find
+this library useful, consider rating it there or leaving a review. Thanks :)
 
-SuperFields work with Vaadin 24 (and above) and Vaadin 14 LTS (only as long as Vaadin 14 is officially supported).
+SuperFields work with Vaadin 24 (and above).
 
 ### Vaadin 23/24 and Java 11/17
 
@@ -18,11 +22,13 @@ Starting from **version 0.18** SuperFields work with Vaadin 24 and require **Jav
 
 **Versions 0.12 to 0.17** of SuperFields work with Vaadin 23 version. **Java 11** or newer is required.
 
-From **version 0.16** every release is available in Maven Central. Please note that the `groupId` of the project **has changed** from `org.vaadin.miki` to `pl.unforgiven`. Class names and package names **have not changed**.
+From **version 0.16** every release is available in Maven Central. Please note that the `groupId` of the project **has
+changed** from `org.vaadin.miki` to `pl.unforgiven`. Class names and package names **have not changed**.
 
 #### Maven setup
 
 This is the relevant dependency:
+
 ```
 <dependency>
    <groupId>pl.unforgiven</groupId>
@@ -32,17 +38,31 @@ This is the relevant dependency:
 ```
 
 All releases are available:
+
 * in Maven Central
 * as binaries under [project's releases](https://github.com/vaadin-miki/super-fields/releases)
-* as Maven packages from [GitHub packages](https://github.com/vaadin-miki/super-fields/packages/177670) or from [Vaadin Directory](https://vaadin.com/directory/component/superfields)
+* as Maven packages from [GitHub packages](https://github.com/vaadin-miki/super-fields/packages/177670) or
+  from [Vaadin Directory](https://vaadin.com/directory/component/superfields)
 
 ### Vaadin 14 LTS and Java 8
 
-Versions below **0.12** work only with Vaadin 14 LTS.
+Versions **0.19.3** and newer **do not** have a Vaadin 14 release, as it has reached the end of free LTS support. Thus,
+the last version that works with Vaadin 14 is **0.19.2-vaadin14**.
 
-SuperFields in general **should** be compatible with Vaadin 14 LTS and with Java 8. Each release has a corresponding version marked with `-vaadin14` suffix in the number, e.g. `0.12.0-vaadin14`. The functionality is identical to the official release. These releases are available in Maven Central.
+Please note that versions below **0.12** work only with Vaadin 14 LTS.
 
-This repository has a branch `java-8` which contains the code for the most recent release compatible with Java 8 and Vaadin 14 LTS. Please note that Java 8 has been released in 2014. Also, versions compatible with Vaadin 14 LTS will be maintained only as long as Vaadin 14 LTS is.
+Each release between **0.12.0** and **0.19.2** has a corresponding version marked with `-vaadin14` suffix in the number,
+e.g. `0.12.0-vaadin14`. The functionality is identical to the regular release. These releases are available in Maven
+Central.
+
+This repository has a branch `java-8` which contains the code for the most recent release compatible with Java 8 and
+Vaadin 14 LTS. Please note that Java 8 has been released in 2014 and free support for Vaadin 14 LTS has ended in
+September 2024.
+
+Future releases of `SuperFields` for Vaadin 14 are still possible only in two cases:
+
+* pull requests by the community;
+* paid work (see `Support` below).
 
 ## Contribution guidelines
 
@@ -50,7 +70,8 @@ You are more than welcome to contribute. Feel free to make PRs, submit issues, i
 
 ### Contributors
 
-The author of the majority of the code is me (Miki), but this project would not be possible without these wonderful people - listed in (Finnish) alphabetical order:
+The author of the majority of the code is me (Miki), but this project would not be possible without these wonderful
+people - listed in (Finnish) alphabetical order:
 
 * Diego Cardoso
 * Wolfgang Fischlein
@@ -75,10 +96,14 @@ The author of the majority of the code is me (Miki), but this project would not 
 ## Support
 
 If you like SuperFields, you can support it in a variety of ways:
-* spread the word - the more people know about SuperFields, the better! - if you use social networks, you can tag me on Mastodon (`@miki@the.unforgiven.pl`) or on Twitter (`@mikiolsz`)
-* visit [the Vaadin Directory](https://vaadin.com/directory/component/superfields), rate the components and/or leave a review
-* contribute - pick an issue from the list, implement it and make a PR
-* buy a print of [one of my photos](https://www.uneven-eyes.info/page/photos-for-you)
+
+* spread the word - the more people know about SuperFields, the better! - if you use social networks, you can tag me on
+  Mastodon (`@miki@the.unforgiven.pl`) or on Twitter (`@mikiolsz`);
+* visit [the Vaadin Directory](https://vaadin.com/directory/component/superfields), rate the components and/or leave a
+  review;
+* contribute - pick an issue from the list, implement it and make a PR;
+* on-demand features - get in touch with me to agree the details;
+* buy a print of [one of my photos](https://www.uneven-eyes.info/page/photos-for-you).
 
 ## Small print
 
