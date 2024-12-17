@@ -11,12 +11,15 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.material.Material;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Main layout of the application.
+ *
  * @author miki
  * @since 2020-07-04
  */
@@ -25,35 +28,35 @@ import java.util.Map;
 @CssImport(value = "./styles/super-tabs-styles.css", themeFor = "vaadin-tabs")
 public class MainLayout extends VerticalLayout implements RouterLayout, AfterNavigationObserver {
 
-    private final Tabs navigationTabs = new Tabs();
+  private final Tabs navigationTabs = new Tabs();
 
-    private final Map<String, Tab> tabs = new HashMap<>();
+  private final Map<String, Tab> tabs = new HashMap<>();
 
-    public MainLayout() {
-        // set up tabs
-        this.navigationTabs.setWidthFull();
-        final RouterLink infoLink = new RouterLink();
-        infoLink.setRoute(InfoPage.class);
-        final Icon icon = new Icon(VaadinIcon.INFO_CIRCLE);
-        icon.setSize("16px");
-        icon.setColor("blue");
-        icon.addClassName("tab-icon");
-        infoLink.add(icon, new Span("SuperFields demo"));
-        this.navigationTabs.add(new Tab(infoLink));
-        final DemoComponentFactory demoComponentFactory = DemoComponentFactory.get();
-        demoComponentFactory.getDemoableComponentTypes().stream().map(type -> {
-            final Tab tab = new Tab(new RouterLink(type.getSimpleName(), DemoPage.class, type.getSimpleName().toLowerCase()));
-            this.tabs.put(type.getSimpleName().toLowerCase(), tab);
-            return tab;
-        }).forEach(this.navigationTabs::add);
-        this.add(this.navigationTabs);
-    }
+  public MainLayout() {
+    // set up tabs
+    this.navigationTabs.setWidthFull();
+    final RouterLink infoLink = new RouterLink();
+    infoLink.setRoute(InfoPage.class);
+    final Icon icon = new Icon(VaadinIcon.INFO_CIRCLE);
+    icon.setSize("16px");
+    icon.setColor("blue");
+    icon.addClassName("tab-icon");
+    infoLink.add(icon, new Span("SuperFields demo"));
+    this.navigationTabs.add(new Tab(infoLink));
+    final DemoComponentFactory demoComponentFactory = DemoComponentFactory.get();
+    demoComponentFactory.getDemoableComponentTypes().stream().map(type -> {
+      final Tab tab = new Tab(new RouterLink(type.getSimpleName(), DemoPage.class, type.getSimpleName().toLowerCase()));
+      this.tabs.put(type.getSimpleName().toLowerCase(), tab);
+      return tab;
+    }).forEach(this.navigationTabs::add);
+    this.add(this.navigationTabs);
+  }
 
-    @Override
-    public void afterNavigation(AfterNavigationEvent event) {
-        if(event.getLocation().getPath().isEmpty())
-            this.navigationTabs.setSelectedIndex(0);
-        else if(!event.getLocation().getPath().equals("binder"))
-            this.navigationTabs.setSelectedTab(this.tabs.get(event.getLocation().getSegments().get(1)));
-    }
+  @Override
+  public void afterNavigation(AfterNavigationEvent event) {
+    if (event.getLocation().getPath().isEmpty())
+      this.navigationTabs.setSelectedIndex(0);
+    else if (!event.getLocation().getPath().equals("binder"))
+      this.navigationTabs.setSelectedTab(this.tabs.get(event.getLocation().getSegments().get(1)));
+  }
 }
