@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>pl.unforgiven</groupId>
     <artifactId>superfields-parent</artifactId>
-    <version>0.19.2</version>
+    <version>0.19.3</version>
     <modules>
         <module>superfields</module>
         <module>demo-v24</module>
@@ -18,7 +18,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>24.4.11</vaadin.version>
+        <vaadin.version>24.5.8</vaadin.version>
     </properties>
 
 </project>

@@ -2,9 +2,9 @@ name: Code Quality
 
 on:
   pull_request:
-    branches: [master, development]
+    branches: [ master, development ]
   push:
-    branches: [master, development, java-8]
+    branches: [ master, development, java-8 ]
 
 jobs:
   code_scan:
@@ -12,11 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: temurin

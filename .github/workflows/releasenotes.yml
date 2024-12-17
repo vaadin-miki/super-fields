@@ -2,7 +2,7 @@ name: Prepare release notes when milestone closes
 
 on:
   milestone:
-    types: [closed]
+    types: [ closed ]
 
 jobs:
   update-release-notes:
@@ -20,7 +20,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           source: development
           target: notes-${{ steps.version.outputs.version }}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           ref: notes-${{ steps.version.outputs.version }}
       - name: Create milestone notes

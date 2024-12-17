@@ -1,16 +1,16 @@
 name: Publish to Central
 on:
   push:
-    branches: [java-8]
+    branches: [ java-8 ]
 
 jobs:
   publish_central:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up JDK 8
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: 1.8
           distribution: oracle

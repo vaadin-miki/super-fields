@@ -4,11 +4,11 @@
     <parent>
         <artifactId>superfields-parent</artifactId>
         <groupId>pl.unforgiven</groupId>
-        <version>0.19.2</version>
+        <version>0.19.3</version>
     </parent>
 
     <artifactId>superfields-demo-v24</artifactId>
-    <version>0.19.2</version>
+    <version>0.19.3</version>
     <name>V24+ demo app for SuperFields</name>
     <description>Showcase application for V24+ and SuperFields.</description>
     <packaging>war</packaging>
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>pl.unforgiven</groupId>
             <artifactId>superfields</artifactId>
-            <version>0.19.2</version>
+            <version>0.19.3</version>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
