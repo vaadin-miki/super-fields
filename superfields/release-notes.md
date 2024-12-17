@@ -1,3 +1,10 @@
+# 0.19.3 - Vaadin 24.5
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#527 - [Vaadin 24.5](https://github.com/vaadin-miki/super-fields/issues/527)
+## Bug fixes
+* \#530 - [JS errors when text field is used in a grid and disabled](https://github.com/vaadin-miki/super-fields/issues/530)
 # 0.19.2 - Vaadin 24.4
 ## New features and enhancements
 * \#518 - [selecting a tab programmatically in SuperTabs](https://github.com/vaadin-miki/super-fields/issues/518)
