@@ -1,3 +1,10 @@
+# 0.19.4 - Vaadin 24.6
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#538 - [Upgrade to Vaadin 24.6](https://github.com/vaadin-miki/super-fields/issues/538)
+## Bug fixes
+* \#537 - [Programmatically set values in SuperNumberField are overwritten when set inside Key-Press Event](https://github.com/vaadin-miki/super-fields/issues/537)
 # 0.19.3 - Vaadin 24.5
 ## New features and enhancements
 (nothing reported)
