@@ -15,7 +15,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>24.5.8</vaadin.version>
+        <vaadin.version>24.6.4</vaadin.version>
         <maven.jar.plugin.version>3.1.2</maven.jar.plugin.version>
         <javadoc.plugin.version>3.4.1</javadoc.plugin.version>
     </properties>
