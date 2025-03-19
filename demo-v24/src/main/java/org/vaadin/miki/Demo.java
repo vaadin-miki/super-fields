@@ -1,12 +1,12 @@
 package org.vaadin.miki;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.theme.NoTheme;
+import com.vaadin.flow.component.page.Push;
 
 /**
  * @author miki
- * @since 2024-10-18
+ * @since 2025-03-19
  */
-@NoTheme
+@Push
 public class Demo implements AppShellConfigurator {
 }

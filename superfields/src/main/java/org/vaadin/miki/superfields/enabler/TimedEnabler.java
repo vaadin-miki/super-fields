@@ -3,7 +3,11 @@ package org.vaadin.miki.superfields.enabler;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.UI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,10 +21,13 @@ import java.util.TimerTask;
  */
 public class TimedEnabler<C extends Component & HasEnabled> extends Composite<C> implements HasEnabled {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(TimedEnabler.class);
+
   private final C component;
   private long enableAfter;
   private long disableAfter;
   private final Timer timer = new Timer();
+  private boolean changeInProgress = false;
 
   public TimedEnabler(C component) {
     super();
@@ -28,21 +35,49 @@ public class TimedEnabler<C extends Component & HasEnabled> extends Composite<C>
   }
 
   private void doEnable(boolean enabled) {
-    this.component.setEnabled(enabled);
+    LOGGER.info("component setting enabled to {} (current state self: {}, component: {})", enabled, HasEnabled.super.isEnabled(), this.component.isEnabled());
     HasEnabled.super.setEnabled(enabled);
+    this.component.setEnabled(enabled);
+  }
+
+  private void markChangeComplete() {
+    this.changeInProgress = false;
+    LOGGER.info("change complete! (current state self: {}, component: {})", HasEnabled.super.isEnabled(), this.component.isEnabled());
   }
 
   @Override
   public void setEnabled(boolean enabled) {
-    if (this.isEnabled() != enabled) {
+    if (this.isEnabled() != enabled && !this.changeInProgress) {
       final long delay = enabled ? this.getEnabledTimeout() : this.getDisabledTimeout();
-      this.timer.schedule(new TimerTask() {
-        @Override
-        public void run() {
-          doEnable(enabled);
-        }
-      }, delay);
-    }
+      LOGGER.info("scheduling enabled to {} in {} ms", enabled, delay);
+      LOGGER.info("(current state self: {}, component: {})", HasEnabled.super.isEnabled(), this.component.isEnabled());
+      final UI ui = UI.getCurrent();
+      Objects.requireNonNull(ui, "ui must not be null to schedule a state change!");
+      if (delay > 0) {
+        this.changeInProgress = true;
+        this.timer.schedule(new TimerTask() {
+          @Override
+          public void run() {
+            ui.access(() -> {
+              LOGGER.info("setting enabled to {}", enabled);
+              doEnable(enabled);
+            });
+            markChangeComplete();
+          }
+        }, delay);
+      } else this.doEnable(enabled);
+    } else
+      LOGGER.info("a change in state has already been queried for object of type {}; ignoring another request", this.component.getClass().getSimpleName());
+  }
+
+  /**
+   * Checks if there already is a change about to happen.
+   * Requests to change the state while one change is already in progress are ignored.
+   *
+   * @return {@code true} when there is an active request about to happen, {@code false} otherwise.
+   */
+  public boolean isChangeInProgress() {
+    return changeInProgress;
   }
 
   @Override
