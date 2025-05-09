@@ -14,7 +14,9 @@
                 <repository>
                     <id>central</id>
                     <url>https://repo1.maven.org/maven2</url>
-                    <releases><enabled>true</enabled></releases>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
                 </repository>
                 <repository>
                     <id>github</id>
@@ -30,6 +32,11 @@
             <id>github</id>
             <username>USERNAME</username>
             <password>GITHUB_TOKEN</password>
+        </server>
+        <server>
+            <id>central</id>
+            <username>${CENTRAL_USERNAME}</username>
+            <password>${CENTRAL_PASSWORD}</password>
         </server>
         <server>
             <id>demo-deployment</id>
