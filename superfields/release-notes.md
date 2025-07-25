@@ -1,3 +1,9 @@
+# 0.19.5 - Vaadin 24.8
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#548 - [Update to Vaadin 24.8](https://github.com/vaadin-miki/super-fields/issues/548)
+## Bug fixes
 # 0.19.4 - Vaadin 24.6
 ## New features and enhancements
 (nothing reported)
