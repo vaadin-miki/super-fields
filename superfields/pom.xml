@@ -9,21 +9,16 @@
     <name>SuperFields</name>
     <description>Code for various Vaadin 24 fields and other components.</description>
     <url>https://www.unforgiven.pl/superfields</url>
-    <version>0.19.4</version>
+    <version>0.19.5</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>24.6.4</vaadin.version>
+        <vaadin.version>24.8.4</vaadin.version>
         <maven.jar.plugin.version>3.1.2</maven.jar.plugin.version>
         <javadoc.plugin.version>3.4.1</javadoc.plugin.version>
     </properties>
-
-    <organization>
-        <name>Miki</name>
-        <url>https://github.com/vaadin-miki</url>
-    </organization>
 
     <licenses>
         <license>
@@ -139,16 +134,6 @@
         </profile>
         <profile>
             <id>deploy-central</id>
-            <distributionManagement>
-                <repository>
-                    <id>maven-central</id>
-                    <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-                <snapshotRepository>
-                    <id>maven-central</id>
-                    <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-            </distributionManagement>
             <build>
                 <plugins>
                     <plugin>
@@ -201,14 +186,14 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.7.0</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>maven-central</serverId>
-                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                            <waitUntil>published</waitUntil>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -226,6 +211,11 @@
         </profile>
     </profiles>
 
+    <organization>
+        <name>Unforgiven.pl</name>
+        <url>https://www.unforgiven.pl</url>
+    </organization>
+
     <developers>
         <developer>
             <name>Miki</name>
@@ -234,6 +224,7 @@
             <organizationUrl>https://www.unforgiven.pl</organizationUrl>
         </developer>
     </developers>
+
     <scm>
         <connection>scm:git:git://github.com/vaadin-miki/super-fields.git</connection>
         <developerConnection>scm:git:git://github.com/vaadin-miki/super-fields.git</developerConnection>
