@@ -64,6 +64,15 @@ Future releases of `SuperFields` for Vaadin 14 are still possible only in two ca
 * pull requests by the community;
 * paid work (see `Support` below).
 
+### Snapshot versions
+
+As of version `0.20` snapshots may be available from Central. Snapshot versions follow a version `0.0.YEAR-SNAPSHOT`,
+where `YEAR` is the current calendar year. These are automatically created upon a new commit to `development` and are
+also [automatically removed from Central every 90 days](https://central.sonatype.org/publish/publish-portal-snapshots/).
+
+Please abstain from using snapshot versions in production code. The intended use is to try bugfixes and new features
+as they are being implemented and to ensure the deployment pipeline works at all times.
+
 ## Contribution guidelines
 
 You are more than welcome to contribute. Feel free to make PRs, submit issues, ideas etc.
