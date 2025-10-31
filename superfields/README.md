@@ -124,10 +124,6 @@ A `CustomField<T>` capable of building components and matching them with object'
 
 In most common cases one would use `ObjectFieldFactory` to create and configure `ObjectField`, and then annotate data model class with the additional information. Please consult the demo application or the tests (`ObjectFieldTest`, `NestedObjectFieldTest` and `EnumObjectTest`) for details. Also please note that [`ObjectFieldFactory` will become a separate library](https://github.com/vaadin-miki/super-fields/issues/401) at some point in the future. 
 
-### `SuperCheckbox`
-
-It is known that [`Checkbox` does not support read-only mode](https://github.com/vaadin/web-components/issues/688). This component exists as a workaround and binds `enabled` and `readOnly` as one: setting the checkbox to read-only will disable it. 
-
 ## Select fields
 
 ### `ItemGrid`
