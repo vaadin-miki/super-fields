@@ -42,7 +42,7 @@ All number fields support text selection API. They also should show a numeric ke
 
 All number fields support alternative characters that serve as grouping (thousand) separator, negative sign and (if applicable) the decimal separator. By default, the alternatives may not overlap with the symbols provided by the current `Locale`. Furthermore, some of those alternative symbols can be prohibited from being typed with a keyboard.
 
-All number fields implement `HasInvalidInputPrevention`. Turning input prevention on will disallow entering any text into the field that is not a properly formatted number (similar to `setPreventInvalidInput(true)` in Vaadin 14). Input prevention is turned off by default.
+All number fields implement `HasInvalidInputPrevention`. Input prevention is turned on by default from version 0.20 onwards - entering any text into the field that is not a properly formatted number is not possible (similar to `setPreventInvalidInput(true)` in Vaadin 14). Switching this feature off will still restrict user input to numbers and separators, but will not e.g. check length requirements.
 
 ### `SuperDoubleField` and `SuperBigDecimalField`
 
