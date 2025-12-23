@@ -49,6 +49,11 @@
             <artifactId>vaadin-core</artifactId>
             <version>${vaadin.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-dev</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
     </dependencies>
 
     <repositories>
