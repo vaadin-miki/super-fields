@@ -7,15 +7,15 @@
         <version>0.7.77-SNAPSHOT</version>
     </parent>
 
-    <artifactId>superfields-demo-v24</artifactId>
+    <artifactId>demo-app</artifactId>
     <version>0.7.77-SNAPSHOT</version>
-    <name>V24+ demo app for SuperFields</name>
-    <description>Showcase application for V24+ and SuperFields.</description>
+    <name>Demo app for SuperFields</name>
+    <description>Showcase application for SuperFields.</description>
     <packaging>war</packaging>
 
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <jetty.plugin.version>11.0.13</jetty.plugin.version>
+        <jetty.plugin.version>12.1.2</jetty.plugin.version>
     </properties>
 
     <dependencies>
@@ -47,6 +47,11 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-core</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-dev</artifactId>
             <version>${vaadin.version}</version>
         </dependency>
     </dependencies>
@@ -84,8 +89,8 @@
         <plugins>
             <!-- We use jetty plugin, replace it with your favourite developing servlet container -->
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
+                <groupId>org.eclipse.jetty.ee10</groupId>
+                <artifactId>jetty-ee10-maven-plugin</artifactId>
                 <version>${jetty.plugin.version}</version>
                 <configuration>
                     <systemProperties>

@@ -8,7 +8,6 @@ import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.function.SerializableSupplier;
@@ -51,7 +50,6 @@ import java.util.Set;
  * @author miki
  * @since 2022-05-16
  */
-@CssImport(value = "./styles/label-positions.css", themeFor = "object-field")
 @Tag("object-field")
 @JsModule("./object-field.js")
 public class ObjectField<T> extends CustomField<T>

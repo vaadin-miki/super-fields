@@ -1,15 +1,9 @@
-import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-
 /**
  * A web component that wraps Intersection Observer object and broadcasts events about changes.
  * This requires Flow and a corresponding server-side Java component to work properly.
  * Alternatively, make sure that this.$server.componentStatusChanged(String, double) is available.
  */
-export class ComponentObserver extends PolymerElement {
-
-    static get template() {
-        return html``;
-    }
+export class ComponentObserver extends HTMLElement {
 
     static get is() {
         return 'component-observer';

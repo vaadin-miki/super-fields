@@ -7,7 +7,7 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.tabs.Tab;
@@ -39,7 +39,7 @@ import java.util.function.Supplier;
  * @since 2020-04-10
  */
 @Tag("super-tabs")
-@CssImport(value = "./styles/super-tabs-multiline.css", themeFor = "vaadin-tabs")
+@JsModule("./super-tabs.js")
 public class SuperTabs<T>
         extends CustomField<T>
         implements HasStyle, WithItemsMixin<T, SuperTabs<T>>, WithIdMixin<SuperTabs<T>>, WithHelperMixin<SuperTabs<T>>,
@@ -56,7 +56,7 @@ public class SuperTabs<T>
      */
     public static final String MULTILINE_THEME_NAME = "multi-line-tabs";
 
-    private final Tabs tabs = new Tabs();
+    private final SuperTabsHeader tabs = new SuperTabsHeader();
 
     private final HasComponents contents;
 

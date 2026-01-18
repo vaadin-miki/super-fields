@@ -2,21 +2,19 @@
 
 ## Overview
 
-This is a collection of hopefully useful Vaadin 14 and 24 components, grouped into several subprojects:
+This is a collection of hopefully useful components for Vaadin 25. There are two submodules within this repository:
 
-* `superfields` are various input components;
-* `demo-v24` contains an app for Vaadin 24 that shows all
-  components - [see the demo online](https://demo.unforgiven.pl/superfields/) or run it yourself with
-  `mvn package jetty:run`
+* `superfields` are various Vaadin components;
+* `demo-app` that contains an app for Vaadin 25 that shows all components - [see the demo online](https://demo.unforgiven.pl/superfields/) or run it yourself with `mvn package jetty:run`
 
 ## Installation
 
 [SuperFields are also available in Vaadin Directory](https://vaadin.com/directory/component/superfields). If you find
 this library useful, consider rating it there or leaving a review. Thanks :)
 
-SuperFields work with Vaadin 24 (and above).
+### Vaadin and Java versions
 
-### Vaadin 23/24 and Java 11/17
+Starting from **version 0.20** SuperFields work with Vaadin 25 and require **Java 21**. 
 
 Starting from **version 0.18** SuperFields work with Vaadin 24 and require **Java 17**.
 
@@ -87,6 +85,7 @@ people - listed in (Finnish) alphabetical order:
 * Jean-Christophe Gueriaud
 * Holger Hähnel
 * Matthias Hämmerle
+* Sascha Ißbrücker
 * Jarmo Kemppainen
 * Gerald Koch
 * Sebastian Kühnau
@@ -104,7 +103,7 @@ people - listed in (Finnish) alphabetical order:
 
 ## Support
 
-If you like SuperFields, you can support it in a variety of ways:
+If you like SuperFields, you can support the project in a variety of ways:
 
 * spread the word - the more people know about SuperFields, the better! - if you use social networks, you can tag me on
   Mastodon (`@miki@the.unforgiven.pl`) or on Twitter (`@mikiolsz`);
