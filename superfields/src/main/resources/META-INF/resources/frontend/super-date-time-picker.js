@@ -1,9 +1,12 @@
 import {DateTimePicker} from '@vaadin/date-time-picker';
 import {DatePatternMixin} from "./date-pattern-mixin";
+import {CSS_LABEL_POSITIONS} from "./styles/css-label-positions";
 
 class SuperDateTimePicker extends DatePatternMixin.to(DateTimePicker) {
 
     static get is() { return 'super-date-time-picker'; }
+
+    static get styles() { return [CSS_LABEL_POSITIONS]; }
 
     initPatternSetting(datepicker) {
         super.initPatternSetting(datepicker.querySelector('vaadin-date-picker'));

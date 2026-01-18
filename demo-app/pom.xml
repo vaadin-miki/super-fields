@@ -7,10 +7,10 @@
         <version>0.7.77-SNAPSHOT</version>
     </parent>
 
-    <artifactId>superfields-demo-v24</artifactId>
+    <artifactId>demo-app</artifactId>
     <version>0.7.77-SNAPSHOT</version>
-    <name>V24+ demo app for SuperFields</name>
-    <description>Showcase application for V24+ and SuperFields.</description>
+    <name>Demo app for SuperFields</name>
+    <description>Showcase application for SuperFields.</description>
     <packaging>war</packaging>
 
     <properties>

@@ -1,10 +1,13 @@
 import {DatePicker} from '@vaadin/date-picker';
 import {DatePatternMixin} from "./date-pattern-mixin";
 import {TextSelectionMixin} from "./text-selection-mixin";
+import {CSS_LABEL_POSITIONS} from "./styles/css-label-positions";
 
 class SuperDatePicker extends TextSelectionMixin.to(DatePatternMixin.to(DatePicker)) {
 
     static get is() {return 'super-date-picker'}
+
+    static get styles() {return [CSS_LABEL_POSITIONS]}
 
     setCallingServer(callingServer) {
         console.log('SDP: configuring text selection listeners; callingServer flag is '+callingServer);

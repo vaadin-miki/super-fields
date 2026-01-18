@@ -1,6 +1,6 @@
 package org.vaadin.miki;
 
-import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -20,9 +20,7 @@ import java.util.Map;
  * @author miki
  * @since 2020-07-04
  */
-@CssImport("./styles/demo-styles.css")
-@CssImport(value = "./styles/super-number-fields-styles.css", themeFor = "vaadin-text-field")
-@CssImport(value = "./styles/super-tabs-styles.css", themeFor = "vaadin-tabs")
+@StyleSheet("demo-styles.css")
 public class MainLayout extends VerticalLayout implements RouterLayout, AfterNavigationObserver {
 
     private final Tabs navigationTabs = new Tabs();

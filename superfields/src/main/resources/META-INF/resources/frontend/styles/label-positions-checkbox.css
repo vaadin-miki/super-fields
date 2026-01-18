@@ -1,7 +1,0 @@
-:host([data-label-position-details~="before"]) [class|="vaadin"] [part="label"] {
-    order: 1;
-}
-
-:host([data-label-position-details~="before"]) [class|="vaadin"] .vaadin-checkbox-wrapper {
-    order: 2;
-}

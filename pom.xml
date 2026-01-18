@@ -7,7 +7,7 @@
     <version>0.7.77-SNAPSHOT</version>
     <modules>
         <module>superfields</module>
-        <module>demo-v24</module>
+        <module>demo-app</module>
     </modules>
     <name>SuperFields - Root project for SuperFields</name>
     <description>Root project for SuperFields. Includes basic dependencies, repositories and other configuration.
@@ -18,7 +18,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vaadin.version>25.0.2</vaadin.version>
+        <vaadin.version>25.0.3</vaadin.version>
     </properties>
 
 </project>

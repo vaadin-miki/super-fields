@@ -28,7 +28,7 @@ The web components listen to each key press and mouse click. If text selection c
 
 #### Label position
 
-Most of the components that can have a label allow positioning said label through `setLabelPosition(...)` (or `withLabelPosition(...)`). This should work in most layouts, with `FormLayout` being an obvious exception. Not all components support all possible values of `LabelPosition` (`SuperCheckbox` ignores vertical alignment). In addition, things might work weird when using right-to-left languages - if that happens, please report the problem in GitHub.
+Most of the components that can have a label allow positioning said label through `setLabelPosition(...)` (or `withLabelPosition(...)`). This should work in most layouts, with `FormLayout` being an obvious exception. Not all components support all possible values of `LabelPosition`. In addition, things might work weird when using right-to-left languages - if that happens, please report the problem in GitHub.
 
 #### Log messages
 

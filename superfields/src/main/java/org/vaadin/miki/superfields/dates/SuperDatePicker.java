@@ -6,7 +6,6 @@ import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.events.text.TextSelectionListener;
@@ -40,7 +39,6 @@ import java.util.Locale;
  */
 @JsModule("./super-date-picker.js")
 @Tag("super-date-picker")
-@CssImport(value = "./styles/label-positions.css", themeFor = "super-date-picker")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperDatePicker extends DatePicker
         implements CanSelectText, CanReceiveSelectionEventsFromClient, WithReceivingSelectionEventsFromClientMixin<SuperDatePicker>,
