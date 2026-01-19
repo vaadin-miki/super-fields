@@ -2,21 +2,19 @@
 
 ## Overview
 
-This is a collection of hopefully useful Vaadin 14 and 24 components, grouped into several subprojects:
+This is a collection of hopefully useful components for Vaadin 25. There are two submodules within this repository:
 
-* `superfields` are various input components;
-* `demo-v24` contains an app for Vaadin 24 that shows all
-  components - [see the demo online](https://demo.unforgiven.pl/superfields/) or run it yourself with
-  `mvn package jetty:run`
+* `superfields` are various Vaadin components;
+* `demo-app` that contains an app for Vaadin 25 that shows all components - [see the demo online](https://demo.unforgiven.pl/superfields/) or run it yourself with `mvn package jetty:run`
 
 ## Installation
 
 [SuperFields are also available in Vaadin Directory](https://vaadin.com/directory/component/superfields). If you find
 this library useful, consider rating it there or leaving a review. Thanks :)
 
-SuperFields work with Vaadin 24 (and above).
+### Vaadin and Java versions
 
-### Vaadin 23/24 and Java 11/17
+Starting from **version 0.20** SuperFields work with Vaadin 25 and require **Java 21**. 
 
 Starting from **version 0.18** SuperFields work with Vaadin 24 and require **Java 17**.
 
@@ -33,7 +31,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>pl.unforgiven</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.19.5</version>
+   <version>0.20.0</version>
 </dependency>
 ```
 
@@ -64,6 +62,15 @@ Future releases of `SuperFields` for Vaadin 14 are still possible only in two ca
 * pull requests by the community;
 * paid work (see `Support` below).
 
+### Snapshot versions
+
+As of version `0.20` snapshots may be available from Central. Snapshot versions follow a version `0.0.YEAR-SNAPSHOT`,
+where `YEAR` is the current calendar year. These are automatically created upon a new commit to `development` and are
+also [automatically removed from Central every 90 days](https://central.sonatype.org/publish/publish-portal-snapshots/).
+
+Please abstain from using snapshot versions in production code. The intended use is to try bugfixes and new features
+as they are being implemented and to ensure the deployment pipeline works at all times.
+
 ## Contribution guidelines
 
 You are more than welcome to contribute. Feel free to make PRs, submit issues, ideas etc.
@@ -78,6 +85,7 @@ people - listed in (Finnish) alphabetical order:
 * Jean-Christophe Gueriaud
 * Holger Hähnel
 * Matthias Hämmerle
+* Sascha Ißbrücker
 * Jarmo Kemppainen
 * Gerald Koch
 * Sebastian Kühnau
@@ -95,7 +103,7 @@ people - listed in (Finnish) alphabetical order:
 
 ## Support
 
-If you like SuperFields, you can support it in a variety of ways:
+If you like SuperFields, you can support the project in a variety of ways:
 
 * spread the word - the more people know about SuperFields, the better! - if you use social networks, you can tag me on
   Mastodon (`@miki@the.unforgiven.pl`) or on Twitter (`@mikiolsz`);

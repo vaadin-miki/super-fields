@@ -1,9 +1,12 @@
 import {TextField} from '@vaadin/text-field';
 import {TextSelectionMixin} from "./text-selection-mixin";
+import {CSS_LABEL_POSITIONS} from "./styles/css-label-positions";
 
 class SuperTextField extends TextSelectionMixin.to(TextField) {
 
     static get is() {return 'super-text-field'}
+
+    static get styles() {return [CSS_LABEL_POSITIONS]}
 
     setCallingServer(callingServer) {
         console.log('STF: configuring event listeners; callingServer flag is '+callingServer);

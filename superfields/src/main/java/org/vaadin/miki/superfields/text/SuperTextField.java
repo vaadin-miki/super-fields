@@ -5,7 +5,6 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.dom.DisabledUpdateMode;
@@ -40,7 +39,6 @@ import java.util.Objects;
  */
 @Tag("super-text-field")
 @JsModule("./super-text-field.js")
-@CssImport(value = "./styles/label-positions.css", themeFor = "super-text-field")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextField extends TextField implements CanSelectText, TextSelectionNotifier<SuperTextField>,
     CanModifyText, WithRequiredMixin<SuperTextField>, WithLabelPositionableMixin<SuperTextField>,

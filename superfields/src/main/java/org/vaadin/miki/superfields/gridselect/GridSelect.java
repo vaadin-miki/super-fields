@@ -3,7 +3,6 @@ package org.vaadin.miki.superfields.gridselect;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.Grid;
 import org.vaadin.miki.markers.WithHelperMixin;
@@ -24,8 +23,6 @@ import java.util.Set;
  * @since 2020-08-07
  */
 @Tag("grid-select")
-@CssImport(value = "./styles/label-positions.css", themeFor = "grid-select")
-@CssImport(value = "./styles/label-positions-grids.css", themeFor = "grid-select")
 @JsModule("./grid-select.js")
 public class GridSelect<V> extends AbstractGridSelect<V, V>
         implements WithIdMixin<GridSelect<V>>, WithItemsMixin<V, GridSelect<V>>, WithHelperMixin<GridSelect<V>>,

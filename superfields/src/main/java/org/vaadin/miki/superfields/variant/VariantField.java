@@ -6,7 +6,6 @@ import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.function.SerializableSupplier;
 import org.vaadin.miki.markers.WithHelperMixin;
@@ -29,7 +28,6 @@ import java.util.Optional;
  * @author miki
  * @since 2022-04-11
  */
-@CssImport(value = "./styles/label-positions.css", themeFor = "variant-field")
 @Tag("variant-field")
 @JsModule("./variant-field.js")
 public class VariantField extends CustomField<Object> implements HasStyle,

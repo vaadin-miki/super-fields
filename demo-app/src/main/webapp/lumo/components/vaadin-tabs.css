@@ -1,0 +1,3 @@
+:host(#belongs-to-super-tabs) [part="tabs"] {
+    width: 400px;
+}

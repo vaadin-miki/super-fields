@@ -111,7 +111,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
   /**
    * Underlying text field.
    */
-  private final SuperTextField field = new SuperTextField();
+  private final SuperTextField field = new SuperTextField().withPreventingInvalidInput();
 
   /**
    * A predicate for negativity of numbers.

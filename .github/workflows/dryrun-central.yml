@@ -1,0 +1,32 @@
+name: Snapshot to Central
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  dryrun_central:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+      - name: Snapshot to central
+        run: |
+          set -x
+          export TIMESTAMP=`date +'%Y'`
+          mvn versions:set -DnewVersion=0.0.$TIMESTAMP-SNAPSHOT --file pom.xml -DartifactId=superfields
+          mvn deploy -P deploy-central --file superfields/pom.xml
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}

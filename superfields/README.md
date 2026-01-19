@@ -28,7 +28,7 @@ The web components listen to each key press and mouse click. If text selection c
 
 #### Label position
 
-Most of the components that can have a label allow positioning said label through `setLabelPosition(...)` (or `withLabelPosition(...)`). This should work in most layouts, with `FormLayout` being an obvious exception. Not all components support all possible values of `LabelPosition` (`SuperCheckbox` ignores vertical alignment). In addition, things might work weird when using right-to-left languages - if that happens, please report the problem in GitHub.
+Most of the components that can have a label allow positioning said label through `setLabelPosition(...)` (or `withLabelPosition(...)`). This should work in most layouts, with `FormLayout` being an obvious exception. Not all components support all possible values of `LabelPosition`. In addition, things might work weird when using right-to-left languages - if that happens, please report the problem in GitHub.
 
 #### Log messages
 
@@ -42,7 +42,7 @@ All number fields support text selection API. They also should show a numeric ke
 
 All number fields support alternative characters that serve as grouping (thousand) separator, negative sign and (if applicable) the decimal separator. By default, the alternatives may not overlap with the symbols provided by the current `Locale`. Furthermore, some of those alternative symbols can be prohibited from being typed with a keyboard.
 
-All number fields implement `HasInvalidInputPrevention`. Turning input prevention on will disallow entering any text into the field that is not a properly formatted number (similar to `setPreventInvalidInput(true)` in Vaadin 14). Input prevention is turned off by default.
+All number fields implement `HasInvalidInputPrevention`. Input prevention is turned on by default from version 0.20 onwards - entering any text into the field that is not a properly formatted number is not possible (similar to `setPreventInvalidInput(true)` in Vaadin 14). Switching this feature off will still restrict user input to numbers and separators, but will not e.g. check length requirements.
 
 ### `SuperDoubleField` and `SuperBigDecimalField`
 
@@ -123,10 +123,6 @@ A `CustomField<Object>`. It checks the type of the value passed to it and attemp
 A `CustomField<T>` capable of building components and matching them with object's properties. Once configured it is basically an automated form generator. This component is highly configurable and details on how to use it are present in [the project's wiki](https://github.com/vaadin-miki/super-fields/wiki).
 
 In most common cases one would use `ObjectFieldFactory` to create and configure `ObjectField`, and then annotate data model class with the additional information. Please consult the demo application or the tests (`ObjectFieldTest`, `NestedObjectFieldTest` and `EnumObjectTest`) for details. Also please note that [`ObjectFieldFactory` will become a separate library](https://github.com/vaadin-miki/super-fields/issues/401) at some point in the future. 
-
-### `SuperCheckbox`
-
-It is known that [`Checkbox` does not support read-only mode](https://github.com/vaadin/web-components/issues/688). This component exists as a workaround and binds `enabled` and `readOnly` as one: setting the checkbox to read-only will disable it. 
 
 ## Select fields
 

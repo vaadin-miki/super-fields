@@ -8,7 +8,6 @@ import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
  * @param <C> Type of the collection.
  */
 @Tag("collection-field")
-@CssImport(value = "./styles/label-positions.css", themeFor = "collection-field")
 @JsModule("./collection-field.js")
 public class CollectionField<T, C extends Collection<T>> extends CustomField<C>
         implements CollectionController, WithIdMixin<CollectionField<T, C>>, HasStyle,

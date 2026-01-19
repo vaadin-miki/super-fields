@@ -1,0 +1,12 @@
+import {css} from 'lit'
+export const CSS_SUPER_TABS_MULTILINE = css`
+    :host([theme="multi-line-tabs"]) [part="tabs"] {
+        flex-wrap: wrap;
+        --_lumo-tabs-overflow-mask-image: none !important;
+    }
+
+    :host([theme="multi-line-tabs"]) [part="forward-button"],
+    :host([theme="multi-line-tabs"]) [part="back-button"] {
+        display: none;
+    }
+`;

@@ -5,7 +5,6 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.shared.Registration;
@@ -34,7 +33,6 @@ import org.vaadin.miki.shared.text.TextModificationDelegate;
  */
 @Tag("super-text-area")
 @JsModule("./super-text-area.js")
-@CssImport(value = "./styles/label-positions.css", themeFor = "super-text-area")
 @SuppressWarnings("squid:S110") // there is no way to reduce the number of parent classes
 public class SuperTextArea extends TextArea implements CanSelectText, TextSelectionNotifier<SuperTextArea>,
     CanModifyText, WithRequiredMixin<SuperTextArea>, WithLabelPositionableMixin<SuperTextArea>,

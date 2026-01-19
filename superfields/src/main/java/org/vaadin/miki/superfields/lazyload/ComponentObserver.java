@@ -7,11 +7,13 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.dom.Element;
-import com.vaadin.flow.internal.JsonSerializer;
+import com.vaadin.flow.internal.JacksonUtils;
 import com.vaadin.flow.shared.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.miki.markers.WithIdMixin;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,8 +31,14 @@ import java.util.Optional;
 public class ComponentObserver extends Component implements WithIdMixin<ComponentObserver> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ComponentObserver.class);
+    private static JsonNode serialiseRanges(double[] range) {
+        final ArrayNode node = JacksonUtils.createArrayNode();
+        for(double r: range)
+            node.add(r);
+        return node;
+    }
 
-    private final double[] ranges;
+    private final double[] ranges = new double[]{0.0d, 1.0d};
 
     private final Map<String, Component> observedComponents = new HashMap<>();
     private final Map<Component, Registration> observedDetachedListeners = new HashMap<>();
@@ -60,9 +68,10 @@ public class ComponentObserver extends Component implements WithIdMixin<Componen
      * @param visibilityRanges Ranges at which to trigger visibility change events. If not specified, {@code [0.0, 1.0]} will be used.
      */
     public ComponentObserver(Component viewportRoot, String rootMargin, double... visibilityRanges) {
-        this.ranges = (visibilityRanges == null || visibilityRanges.length == 0) ?
-                new double[]{0.0d, 1.0d} :
-                visibilityRanges;
+        if(visibilityRanges.length == 2) {
+            this.ranges[0] = visibilityRanges[0];
+            this.ranges[1] = visibilityRanges[1];
+        }
         this.rootElement = viewportRoot == null ? null : viewportRoot.getElement();
         this.rootMargin = rootMargin;
         this.initClient();
@@ -73,7 +82,7 @@ public class ComponentObserver extends Component implements WithIdMixin<Componen
             this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
                     this.getElement().callJsFunction(
                             "initObserver",
-                            rootElement, rootMargin, JsonSerializer.toJson(ranges)
+                            rootElement, rootMargin, serialiseRanges(this.ranges)
                     )));
             this.observedComponents.forEach(this::observe);
             this.clientInitialised = true;
