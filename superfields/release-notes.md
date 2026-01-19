@@ -1,3 +1,11 @@
+# 0.20.0 - Vaadin 25
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#558 - [Number fields should prevent invalid input by default](https://github.com/vaadin-miki/super-fields/issues/558)
+* \#560 - [Migrate to Vaadin 25](https://github.com/vaadin-miki/super-fields/issues/560)
+* \#561 - [Remove SuperCheckBox](https://github.com/vaadin-miki/super-fields/issues/561)
+## Bug fixes
 # 0.19.5 - Vaadin 24.8
 ## New features and enhancements
 (nothing reported)
