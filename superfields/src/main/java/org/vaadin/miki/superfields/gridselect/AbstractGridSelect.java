@@ -30,8 +30,8 @@ public abstract class AbstractGridSelect<V, F> extends CustomField<F> {
         this.add(grid);
 
         this.grid.addSelectionListener(this::onGridSelected);
-        this.grid.addFocusListener(gridFocusEvent -> this.fireEvent(new FocusEvent<>(this, gridFocusEvent.isFromClient())));
-        this.grid.addBlurListener(gridBlurEvent -> this.fireEvent(new BlurEvent<>(this, gridBlurEvent.isFromClient())));
+        this.grid.addFocusListener(gridFocusEvent -> this.fireEvent(new FocusEvent<>(this, gridFocusEvent.isFromClient(), null)));
+        this.grid.addBlurListener(gridBlurEvent -> this.fireEvent(new BlurEvent<>(this, gridBlurEvent.isFromClient(), null)));
 
         // this js snippet courtesy of Tomi Virkki
         // prevents selection on-click and on-space-pressed, basically turning the grid into read-only when needed
