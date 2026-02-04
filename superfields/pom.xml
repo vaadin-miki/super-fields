@@ -9,7 +9,7 @@
     <name>SuperFields</name>
     <description>Code for various Vaadin 24 fields and other components.</description>
     <url>https://www.unforgiven.pl/superfields</url>
-    <version>0.7.77-SNAPSHOT</version>
+    <version>0.20.1</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
