@@ -14,11 +14,16 @@ this library useful, consider rating it there or leaving a review. Thanks :)
 
 ### Vaadin and Java versions
 
-Starting from **version 0.20** SuperFields work with Vaadin 25 and require **Java 21**. 
+| SuperFields version                   | Vaadin Version | Java version |
+|---------------------------------------| -- | -- |
+| `0.20.1+`                             | 25.0.4+ | 21 |
+| `0.20.0`                              | 25.0.0 - 25.0.3 | 21 |
+| `0.18.X` - `0.19.X`                   | 24.0.0 - 24.9.10 | 17 |
+| `0.12.X` - `0.17.X`                   | 23 | 11 |
+| `0.12.X-vaadin14` - `0.19.2-vaadin14` | 14 | 8 |
+| `0.1 - 0.11`                          | 14 | 8 |
 
-Starting from **version 0.18** SuperFields work with Vaadin 24 and require **Java 17**.
-
-**Versions 0.12 to 0.17** of SuperFields work with Vaadin 23 version. **Java 11** or newer is required.
+Vaadin 24.9.11 is **not supported**. Please upgrade to Vaadin 25.
 
 From **version 0.16** every release is available in Maven Central. Please note that the `groupId` of the project **has
 changed** from `org.vaadin.miki` to `pl.unforgiven`. Class names and package names **have not changed**.
@@ -31,7 +36,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>pl.unforgiven</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.20.0</version>
+   <version>0.20.1</version>
 </dependency>
 ```
 

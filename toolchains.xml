@@ -10,7 +10,7 @@
       <id>temurin_21</id>
     </provides>
     <configuration>
-      <jdkHome>/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.9-10/x64</jdkHome>
+      <jdkHome>/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.10-7/x64</jdkHome>
     </configuration>
   </toolchain>
 </toolchains>

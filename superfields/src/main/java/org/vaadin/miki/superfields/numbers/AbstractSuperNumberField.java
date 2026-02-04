@@ -518,7 +518,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     this.focused = false;
     this.updateFieldValue();
     // fire event
-    this.getEventBus().fireEvent(new BlurEvent<>(this, event.isFromClient()));
+    this.getEventBus().fireEvent(new BlurEvent<>(this, event.isFromClient(), null));
   }
 
   private void onFieldSelected(FocusNotifier.FocusEvent<TextField> event) {
@@ -532,7 +532,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
     if (this.isAutoselect())
       this.field.selectAll();
     // fire event
-    this.getEventBus().fireEvent(new FocusEvent<>(this, event.isFromClient()));
+    this.getEventBus().fireEvent(new FocusEvent<>(this, event.isFromClient(), null));
   }
 
   /**
@@ -1284,7 +1284,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
    * For testing purposes only.
    */
   final void simulateFocus() {
-    this.onFieldSelected(new FocusNotifier.FocusEvent<>(this.field, false));
+    this.onFieldSelected(new FocusNotifier.FocusEvent<>(this.field, false, null));
   }
 
   /**
@@ -1292,7 +1292,7 @@ public abstract class AbstractSuperNumberField<T extends Number, SELF extends Ab
    * For testing purposes only.
    */
   final void simulateBlur() {
-    this.onFieldBlurred(new BlurNotifier.BlurEvent<>(this.field, false));
+    this.onFieldBlurred(new BlurNotifier.BlurEvent<>(this.field, false, null));
   }
 
   /**
