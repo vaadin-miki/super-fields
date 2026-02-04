@@ -1,3 +1,10 @@
+# 0.20.1 - New Blur/Focus constructors for Vaadin 25.0.4+
+## New features and enhancements
+(nothing reported)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#569 - [Focus and Blur events now have three parameters](https://github.com/vaadin-miki/super-fields/issues/569)
 # 0.20.0 - Vaadin 25
 ## New features and enhancements
 (nothing reported)
