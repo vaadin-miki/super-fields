@@ -10,26 +10,26 @@ import org.vaadin.miki.superfields.text.SuperTextField;
 
 public class HeaderFooterFieldWrapperTest {
 
-    @Before
-    public void setUp() throws Exception {
-        MockVaadin.setup();
-    }
+  @Before
+  public void setUp() {
+    MockVaadin.setup();
+  }
 
-    @After
-    public void tearDown() throws Exception {
-        MockVaadin.tearDown();
-    }
+  @After
+  public void tearDown() {
+    MockVaadin.tearDown();
+  }
 
-    @Test
-    public void testDefaultValueIsFromComponent() {
-        final SuperTextField textField = new SuperTextField();
+  @Test
+  public void testDefaultValueIsFromComponent() {
+    final SuperTextField textField = new SuperTextField();
 
-        final HeaderFooterFieldWrapper<String, FlexLayout, FlexLayout> wrapper = new HeaderFooterFieldWrapper<>(
-                FlexLayout::new, new FlexLayout(), textField, new FlexLayout()
-        );
+    final HeaderFooterFieldWrapper<String, FlexLayout, FlexLayout> wrapper = new HeaderFooterFieldWrapper<>(
+        FlexLayout::new, new FlexLayout(), textField, new FlexLayout()
+    );
 
-        Assert.assertEquals("", textField.getValue());
-        Assert.assertEquals("", wrapper.getValue());
-    }
+    Assert.assertEquals("", textField.getValue());
+    Assert.assertEquals("", wrapper.getValue());
+  }
 
 }

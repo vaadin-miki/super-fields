@@ -16,7 +16,8 @@ this library useful, consider rating it there or leaving a review. Thanks :)
 
 | SuperFields version                   | Vaadin Version | Java version |
 |---------------------------------------| -- | -- |
-| `0.20.1+`                             | 25.0.4+ | 21 |
+| `0.20.2`                             | 25.1.0+ | 21 |
+| `0.20.1`                             | 25.0.4+ | 21 |
 | `0.20.0`                              | 25.0.0 - 25.0.3 | 21 |
 | `0.18.X` - `0.19.X`                   | 24.0.0 - 24.9.10 | 17 |
 | `0.12.X` - `0.17.X`                   | 23 | 11 |
@@ -102,6 +103,7 @@ people - listed in (Finnish) alphabetical order:
 * Sebastian Penttinen
 * Stuart Robinson
 * Kaspar Scherrer
+* Matti Tahvonen
 * Tomi Virkki
 * Martin Vyšný
 * Leif Åstrand

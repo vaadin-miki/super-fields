@@ -1,4 +1,5 @@
-import {css} from 'lit'
+import {css} from 'lit';
+
 export const CSS_LABEL_POSITIONS = css`
     /* css magic by Jarmo Kemppainen */
 
@@ -46,6 +47,7 @@ export const CSS_LABEL_POSITIONS = css`
     :host([data-label-position-details~="after"]) [class|="vaadin"] [part="input-fields"] {
         order: -1;
     }
+
     :host([data-label-position-details~="after"][theme~="helper-above-field"]) [class|="vaadin"] [part="helper-text"] {
         order: -2;
     }
@@ -53,6 +55,7 @@ export const CSS_LABEL_POSITIONS = css`
     :host([data-label-position-details~="before"][theme~="helper-above-field"]) [class|="vaadin"] [part="label"] {
         order: 1;
     }
+
     :host([data-label-position-details~="before"][theme~="helper-above-field"]) [class|="vaadin"] [part="helper-text"] {
         order: 0;
     }

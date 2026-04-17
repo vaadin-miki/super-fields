@@ -11,18 +11,19 @@ import java.util.function.Consumer;
 
 /**
  * Builds content for {@link HasLocale}.
+ *
  * @author miki
  * @since 2020-11-19
  */
 @Order(50)
 public class HasLocaleBuilder implements ContentBuilder<HasLocale> {
 
-    @Override
-    public void buildContent(HasLocale component, Consumer<Component[]> callback) {
-        final ComboBox<Locale> locales = new ComboBox<>("Select locale:", new Locale("pl", "PL"), Locale.UK, Locale.FRANCE, Locale.GERMANY, Locale.CHINA);
-        locales.setItemLabelGenerator(locale -> locale.getDisplayCountry() + " / "+locale.getDisplayLanguage());
-        locales.setAllowCustomValue(false);
-        locales.addValueChangeListener(event -> component.setLocale(event.getValue()));
-        callback.accept(new Component[]{locales});
-    }
+  @Override
+  public void buildContent(HasLocale component, Consumer<Component[]> callback) {
+    final ComboBox<Locale> locales = new ComboBox<>("Select locale:", new Locale.Builder().setLanguage("pl").setRegion("PL").build(), Locale.UK, Locale.FRANCE, Locale.GERMANY, Locale.CHINA);
+    locales.setItemLabelGenerator(locale -> locale.getDisplayCountry() + " / " + locale.getDisplayLanguage());
+    locales.setAllowCustomValue(false);
+    locales.addValueChangeListener(event -> component.setLocale(event.getValue()));
+    callback.accept(new Component[]{locales});
+  }
 }
