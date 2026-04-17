@@ -103,6 +103,7 @@ people - listed in (Finnish) alphabetical order:
 * Sebastian Penttinen
 * Stuart Robinson
 * Kaspar Scherrer
+* Matti Tahvonen
 * Tomi Virkki
 * Martin Vyšný
 * Leif Åstrand
