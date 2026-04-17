@@ -1,3 +1,11 @@
+# 0.20.2 - Vaadin 25.1 and bugfixes
+## New features and enhancements
+(nothing reported)
+## Changes to API
+* \#583 - [Upgrade to Vaadin 25.1](https://github.com/vaadin-miki/super-fields/issues/583)
+## Bug fixes
+* \#564 - [SuperTabs overflow buttons are not styled](https://github.com/vaadin-miki/super-fields/issues/564)
+* \#574 - [weird invalid import message during build](https://github.com/vaadin-miki/super-fields/issues/574)
 # 0.20.1 - New Blur/Focus constructors for Vaadin 25.0.4+
 ## New features and enhancements
 (nothing reported)
