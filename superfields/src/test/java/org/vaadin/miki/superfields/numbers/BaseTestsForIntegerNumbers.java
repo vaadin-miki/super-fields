@@ -390,7 +390,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     this.field.setLocale(Locale.ENGLISH); // this uses . as decimal and , as grouping
     this.field.setGroupingSeparatorAlternatives(Set.of('.', '-')); // so setting . should fail (and - is minus, also fail)
     Assert.assertTrue(this.field.getGroupingSeparatorAlternatives().isEmpty());
-    this.field.setLocale(new Locale("pl", "PL")); // this uses NBSP, so space must always be there
+    this.field.setLocale(new Locale.Builder().setLanguage("pl").setRegion("PL").build()); // this uses NBSP, so space must always be there
     this.field.setGroupingSeparatorAlternatives(Set.of('_'));
     Assert.assertEquals(2, this.field.getGroupingSeparatorAlternatives().size());
     Assert.assertTrue(this.field.getGroupingSeparatorAlternatives().containsAll(Set.of(' ', '_')));

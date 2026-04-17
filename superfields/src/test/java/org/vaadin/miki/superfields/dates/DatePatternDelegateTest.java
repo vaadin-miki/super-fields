@@ -19,7 +19,7 @@ public class DatePatternDelegateTest {
   @Before
   public void setUp() {
     MockVaadin.setup();
-    this.datePicker = new SuperDatePicker().withDatePattern(DatePatterns.YYYY_MM_DD).withLocale(new Locale("pl", "PL"));
+    this.datePicker = new SuperDatePicker().withDatePattern(DatePatterns.YYYY_MM_DD).withLocale(new Locale.Builder().setLanguage("pl").setRegion("PL").build());
   }
 
   @After
@@ -41,7 +41,7 @@ public class DatePatternDelegateTest {
     raw = this.datePicker.getFormattedValue();
     Assert.assertEquals("3 maja 1999", raw);
 
-    this.datePicker.setLocale(new Locale("pl", "PL"));
+    this.datePicker.setLocale(new Locale.Builder().setLanguage("pl").setRegion("PL").build());
     this.datePicker.setDatePattern(null);
 
     // now formatted according to locale
