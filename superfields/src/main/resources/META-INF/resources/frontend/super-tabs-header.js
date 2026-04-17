@@ -1,6 +1,6 @@
 import {Tabs} from '@vaadin/tabs';
 import {tabsStyles} from '@vaadin/tabs/src/styles/vaadin-tabs-base-styles.js';
-import {CSS_SUPER_TABS_MULTILINE} from "./styles/css-super-tabs-multiline";
+import {CSS_SUPER_TABS_MULTILINE, CSS_SUPER_TABS_STYLED_OVERFLOW_BUTTONS} from "./styles/css-super-tabs-multiline";
 
 class SuperTabsHeader extends Tabs {
 
@@ -9,7 +9,7 @@ class SuperTabsHeader extends Tabs {
     }
 
     static get styles() {
-        return [tabsStyles, CSS_SUPER_TABS_MULTILINE]
+        return [tabsStyles, CSS_SUPER_TABS_MULTILINE, CSS_SUPER_TABS_STYLED_OVERFLOW_BUTTONS]
     }
 
 }
