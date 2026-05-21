@@ -1,3 +1,11 @@
+# 0.20.3 - Bugfixes
+## New features and enhancements
+(nothing reported)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#589 - [SuperTextArea full size is not working](https://github.com/vaadin-miki/super-fields/issues/589)
+* \#591 - [Number field does not wobble when input is prevented](https://github.com/vaadin-miki/super-fields/issues/591)
 # 0.20.2 - Vaadin 25.1 and bugfixes
 ## New features and enhancements
 (nothing reported)
