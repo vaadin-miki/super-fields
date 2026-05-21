@@ -1,16 +1,21 @@
 import {TextField} from '@vaadin/text-field';
 import {TextSelectionMixin} from "./text-selection-mixin";
 import {CSS_LABEL_POSITIONS} from "./styles/css-label-positions";
+import {CSS_TEXT_FIELD_WOBBLE} from "./styles/css-wobble";
 
 class SuperTextField extends TextSelectionMixin.to(TextField) {
 
-    static get is() {return 'super-text-field'}
+    static get is() {
+        return 'super-text-field'
+    }
 
-    static get styles() {return [CSS_LABEL_POSITIONS]}
+    static get styles() {
+        return [CSS_LABEL_POSITIONS, CSS_TEXT_FIELD_WOBBLE]
+    }
 
     setCallingServer(callingServer) {
-        console.log('STF: configuring event listeners; callingServer flag is '+callingServer);
-        console.log('STF: this now refers to '+this);
+        console.log('STF: configuring event listeners; callingServer flag is ' + callingServer);
+        console.log('STF: this now refers to ' + this);
         this.listenToEvents(this.inputElement, this, callingServer);
     }
 
@@ -28,7 +33,7 @@ class SuperTextField extends TextSelectionMixin.to(TextField) {
 
     preventInvalidInput(prevent) {
         console.log('STF: preventing invalid input set to ' + prevent);
-        const listener = (e) => this.ensureValidText(e, this,  this.inputElement);
+        const listener = (e) => this.ensureValidText(e, this, this.inputElement);
         let lastKnownValue = this.inputElement.value;
 
         // no data present (i.e. was not preventing) and now will be preventing
