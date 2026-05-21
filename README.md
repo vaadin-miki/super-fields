@@ -37,7 +37,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>pl.unforgiven</groupId>
    <artifactId>superfields</artifactId>
-   <version>{VERSION}</version>
+   <version>0.20.3</version>
 </dependency>
 ```
 
