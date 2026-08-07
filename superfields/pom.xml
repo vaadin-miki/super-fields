@@ -15,7 +15,7 @@
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <vaadin.version>25.1.5</vaadin.version>
+    <vaadin.version>25.2.5</vaadin.version>
     <maven.jar.plugin.version>3.1.2</maven.jar.plugin.version>
     <javadoc.plugin.version>3.4.1</javadoc.plugin.version>
   </properties>
@@ -208,6 +208,26 @@
           <url>https://maven.pkg.github.com/vaadin-miki/super-fields</url>
         </repository>
       </distributionManagement>
+    </profile>
+    <!-- for work with prereleases -->
+    <profile>
+      <id>vaadin-prereleases</id>
+      <repositories>
+        <repository>
+          <id>vaadin-prereleases</id>
+          <url>
+            https://maven.vaadin.com/vaadin-prereleases/
+          </url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>vaadin-prereleases</id>
+          <url>
+            https://maven.vaadin.com/vaadin-prereleases/
+          </url>
+        </pluginRepository>
+      </pluginRepositories>
     </profile>
   </profiles>
 

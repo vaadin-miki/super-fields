@@ -18,7 +18,29 @@
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <vaadin.version>25.1.5</vaadin.version>
+    <vaadin.version>25.2.5</vaadin.version>
   </properties>
 
+  <profiles>
+    <profile>
+      <id>vaadin-prereleases</id>
+      <repositories>
+        <repository>
+          <id>vaadin-prereleases</id>
+          <url>
+            https://maven.vaadin.com/vaadin-prereleases/
+          </url>
+        </repository>
+      </repositories>
+
+      <pluginRepositories>
+        <pluginRepository>
+          <id>vaadin-prereleases</id>
+          <url>
+            https://maven.vaadin.com/vaadin-prereleases/
+          </url>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
 </project>
