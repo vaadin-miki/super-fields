@@ -4,9 +4,13 @@ import {CSS_LABEL_POSITIONS} from "./styles/css-label-positions";
 
 class SuperDateTimePicker extends DatePatternMixin.to(DateTimePicker) {
 
-    static get is() { return 'super-date-time-picker'; }
+    static get is() {
+        return 'super-date-time-picker';
+    }
 
-    static get styles() { return [CSS_LABEL_POSITIONS]; }
+    static get styles() {
+        return [CSS_LABEL_POSITIONS];
+    }
 
     initPatternSetting(datepicker) {
         super.initPatternSetting(datepicker.querySelector('vaadin-date-picker'));
@@ -20,4 +24,5 @@ class SuperDateTimePicker extends DatePatternMixin.to(DateTimePicker) {
     }
 
 }
+
 customElements.define(SuperDateTimePicker.is, SuperDateTimePicker);
