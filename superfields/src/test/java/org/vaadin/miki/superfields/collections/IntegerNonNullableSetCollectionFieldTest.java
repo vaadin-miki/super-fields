@@ -1,11 +1,11 @@
 package org.vaadin.miki.superfields.collections;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.vaadin.browserless.BrowserlessUIContext;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.vaadin.miki.superfields.numbers.SuperIntegerField;
 
 import java.util.Set;
@@ -17,18 +17,24 @@ import java.util.TreeSet;
  */
 public class IntegerNonNullableSetCollectionFieldTest {
 
+    private BrowserlessUIContext window;
+
     private CollectionField<Integer, Set<Integer>> collectionField;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        MockVaadin.setup();
-        this.collectionField = new CollectionField<>(TreeSet::new, (index, controller) -> new FlexLayout(),
-                (CollectionValueComponentProvider<Integer, SuperIntegerField>)(index, controller) -> new SuperIntegerField(null, "element at index "+index).withNullValueAllowed(true));
+        this.window = BrowserlessUIContext.forComponent(() -> {
+            this.collectionField = new CollectionField<>(TreeSet::new, (index, controller) -> new FlexLayout(),
+                    (CollectionValueComponentProvider<Integer, SuperIntegerField>)(index, controller) -> new SuperIntegerField(null, "element at index "+index).withNullValueAllowed(true));
+            return this.collectionField;
+        });
     }
 
-    @After
-    public void tearDown() {
-        MockVaadin.tearDown();
+    @AfterEach
+    public void closeWindow() {
+        if (this.window != null) {
+            this.window.close();
+        }
     }
 
     // reported in #374
@@ -36,7 +42,7 @@ public class IntegerNonNullableSetCollectionFieldTest {
     public void testFilterNullItemsWorksByDefault() {
         this.collectionField.add(0);
         final Set<Integer> value = this.collectionField.getValue();
-        Assert.assertTrue(value.isEmpty());
+        Assertions.assertTrue(value.isEmpty());
     }
 
 }

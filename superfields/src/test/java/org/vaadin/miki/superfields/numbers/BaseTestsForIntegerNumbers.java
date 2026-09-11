@@ -1,17 +1,19 @@
 package org.vaadin.miki.superfields.numbers;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.vaadin.browserless.BrowserlessUIContext;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextFieldTester;
 import com.vaadin.flow.shared.Registration;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -31,6 +33,8 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"squid:S3577", "unused"}) // this is ok, the tests are inherited
 class BaseTestsForIntegerNumbers<T extends Number> {
+
+  private BrowserlessUIContext window;
 
   public static final class NumberWrapper<X extends Number> {
     private X number;
@@ -158,66 +162,132 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     this.invalidLimitedInputs.get(maxDigitsLimit).addAll(Arrays.asList(inputs));
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
-    MockVaadin.setup();
-    this.field = this.fieldSupplier.get();
+    this.window = BrowserlessUIContext.forComponent(() -> {
+      this.field = this.fieldSupplier.get();
+      return this.field;
+    });
   }
 
-  @After
-  public void tearDown() {
-    MockVaadin.tearDown();
+  @AfterEach
+  public void closeWindow() {
+    if (this.window != null) {
+      this.window.close();
+    }
+  }
+
+  /**
+   * The text field the number field wraps - the one a user actually types into.
+   */
+  private TextFieldTester<TextField, String> innerField() {
+    return this.window.test(this.window.find(TextField.class).single());
+  }
+
+  /**
+   * What the component is expected to make of the given text, mirroring {@code generateModelValue()}.
+   * Note this covers the wiring only; that {@code parseRawValue} produces the <em>right</em> number is
+   * asserted against literal values in the subclasses and in
+   * {@link #testTextTypedByUserIsReportedAsComingFromTheClient()}.
+   */
+  private T expectedValueOf(String input) {
+    try {
+      return this.field.parseRawValue(input);
+    }
+    catch (ParseException e) {
+      // a NullPointerException would mean there is no format, which cannot happen once the field is built,
+      // so it is deliberately not caught here - unlike in generateModelValue()
+      return this.field.getEmptyValue();
+    }
+  }
+
+  // typing into the inner field is the only way to cover the chain
+  // inner value change -> updateValue() -> generateModelValue() -> value of the number field
+  @Test
+  public void testTextTypedByUserBecomesModelValue() {
+    final TextFieldTester<TextField, String> inner = this.innerField();
+    final Set<T> produced = new HashSet<>();
+    this.validOutOfTheBoxInputs.forEach(input -> {
+      inner.setValue(input);
+      Assertions.assertEquals(this.expectedValueOf(input), this.field.getValue(),
+          String.format("typing %s into %s must result in the parsed value", input, this.field.getClass().getSimpleName()));
+      produced.add(this.field.getValue());
+    });
+    // without this the whole loop would still pass if both sides always fell back to the empty value
+    produced.remove(this.field.getEmptyValue());
+    Assertions.assertFalse(produced.isEmpty(), "no input produced an actual value, so the round trip proves nothing");
+  }
+
+  @Test
+  public void testTextTypedByUserIsReportedAsComingFromTheClient() {
+    final boolean[] fromClient = {false};
+    this.field.addValueChangeListener(event -> fromClient[0] = event.isFromClient());
+    this.innerField().setValue(this.numberWithGroups);
+    Assertions.assertEquals(this.baseTestNumber, this.field.getValue());
+    Assertions.assertTrue(fromClient[0], "a value typed by the user must be reported as coming from the client");
+  }
+
+  @Test
+  public void testReadOnlyFieldRejectsUserInput() {
+    final T valueBefore = this.field.getValue();
+    this.field.setReadOnly(true);
+    Assertions.assertThrows(IllegalStateException.class, () -> this.innerField().setValue(this.numberWithGroups),
+        "a user must not be able to type into a read-only field");
+    Assertions.assertEquals(valueBefore, this.field.getValue(), "the value must not have changed");
+    // the server-side API is not affected by read-only, which is why setValue() cannot test this at all
+    this.field.setValue(this.baseTestNumber);
+    Assertions.assertEquals(this.baseTestNumber, this.field.getValue());
   }
 
   @Test
   public void testInvalidInputPreventedAtStart() {
-    Assert.assertTrue("invalid input prevention is not turned on", this.field.isPreventingInvalidInput());
+    Assertions.assertTrue(this.field.isPreventingInvalidInput(), "invalid input prevention is not turned on");
   }
 
   @Test
   public void testValidOutOfTheBoxInputs() {
-    Assert.assertTrue("no testable inputs that are valid, cannot continue!", this.validOutOfTheBoxInputs.size() > 0);
+    Assertions.assertTrue(this.validOutOfTheBoxInputs.size() > 0, "no testable inputs that are valid, cannot continue!");
     String regexp = this.field.getRegexp();
-    this.validOutOfTheBoxInputs.forEach(s -> Assert.assertTrue(String.format("input %s must match %s for %s", s, regexp, this.field.getClass().getSimpleName()), s.matches(regexp)));
+    this.validOutOfTheBoxInputs.forEach(s -> Assertions.assertTrue(s.matches(regexp), String.format("input %s must match %s for %s", s, regexp, this.field.getClass().getSimpleName())));
   }
 
   @Test
   public void testInvalidOutOfTheBoxInputs() {
-    Assert.assertTrue("no testable inputs that are invalid, cannot continue!", this.invalidOutOfTheBoxInputs.size() > 0);
+    Assertions.assertTrue(this.invalidOutOfTheBoxInputs.size() > 0, "no testable inputs that are invalid, cannot continue!");
     String regexp = this.field.getRegexp();
-    this.invalidOutOfTheBoxInputs.forEach(s -> Assert.assertFalse(String.format("input %s must not match %s for %s", s, regexp, this.field.getClass().getSimpleName()), s.matches(regexp)));
+    this.invalidOutOfTheBoxInputs.forEach(s -> Assertions.assertFalse(s.matches(regexp), String.format("input %s must not match %s for %s", s, regexp, this.field.getClass().getSimpleName())));
   }
 
   @Test
   public void testValidLimitedInputs() {
-    Assert.assertTrue("no testable limited length inputs that are valid, cannot continue!", this.validLimitedInputs.size() > 0);
+    Assertions.assertTrue(this.validLimitedInputs.size() > 0, "no testable limited length inputs that are valid, cannot continue!");
     this.validLimitedInputs.forEach((limit, inputs) -> {
       this.field.setMaximumIntegerDigits(limit);
       String regexp = this.field.getRegexp();
-      inputs.forEach(s -> Assert.assertTrue(String.format("input %s must match %s for %s with integer limit %d", s, regexp, this.field.getClass().getSimpleName(), limit), s.matches(regexp)));
+      inputs.forEach(s -> Assertions.assertTrue(s.matches(regexp), String.format("input %s must match %s for %s with integer limit %d", s, regexp, this.field.getClass().getSimpleName(), limit)));
     });
   }
 
   @Test
   public void testInvalidLimitedInputs() {
-    Assert.assertTrue("no testable limited length inputs that are invalid, cannot continue!", this.invalidLimitedInputs.size() > 0);
+    Assertions.assertTrue(this.invalidLimitedInputs.size() > 0, "no testable limited length inputs that are invalid, cannot continue!");
     this.invalidLimitedInputs.forEach((limit, inputs) -> {
       this.field.withMaximumIntegerDigits(limit);
       String regexp = this.field.getRegexp();
-      inputs.forEach(s -> Assert.assertFalse(String.format("input %s must not match %s for %s with integer limit %d", s, regexp, this.field.getClass().getSimpleName(), limit), s.matches(regexp)));
+      inputs.forEach(s -> Assertions.assertFalse(s.matches(regexp), String.format("input %s must not match %s for %s with integer limit %d", s, regexp, this.field.getClass().getSimpleName(), limit)));
     });
   }
 
   @Test
   public void testInitiallyZero() {
-    Assert.assertEquals(this.zero, this.field.getValue());
-    Assert.assertEquals("0", this.field.getRawValue());
+    Assertions.assertEquals(this.zero, this.field.getValue());
+    Assertions.assertEquals("0", this.field.getRawValue());
   }
 
   @Test
   public void testFormattingInput() {
     this.field.setValue(this.baseTestNumber);
-    Assert.assertEquals(this.numberWithGroups, this.field.getRawValue());
+    Assertions.assertEquals(this.numberWithGroups, this.field.getRawValue());
   }
 
   @Test
@@ -225,30 +295,30 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     this.field.setGroupingSeparatorHiddenOnFocus(true);
     this.field.setValue(this.baseTestNumber);
     this.field.simulateFocus();
-    Assert.assertEquals(this.numberWithoutGroups, this.field.getRawValue());
+    Assertions.assertEquals(this.numberWithoutGroups, this.field.getRawValue());
     this.field.simulateBlur();
-    Assert.assertEquals(this.numberWithGroups, this.field.getRawValue());
+    Assertions.assertEquals(this.numberWithGroups, this.field.getRawValue());
     this.field.setGroupingSeparatorHiddenOnFocus(false);
     this.field.simulateFocus();
-    Assert.assertEquals(this.numberWithGroups, this.field.getRawValue());
+    Assertions.assertEquals(this.numberWithGroups, this.field.getRawValue());
   }
 
   @Test
   public void testAllowingNegativeValueAbsValue() {
     this.field.setValue(this.negativeTestNumber);
-    Assert.assertEquals("-" + this.numberWithGroups, this.field.getRawValue());
+    Assertions.assertEquals("-" + this.numberWithGroups, this.field.getRawValue());
     this.field.setNegativeValueAllowed(false);
-    Assert.assertEquals(this.baseTestNumber, this.field.getValue());
-    Assert.assertEquals(this.numberWithGroups, this.field.getRawValue());
+    Assertions.assertEquals(this.baseTestNumber, this.field.getValue());
+    Assertions.assertEquals(this.numberWithGroups, this.field.getRawValue());
   }
 
   @Test
   public void testAllowingNegativeValueNoEffectOnPositive() {
     this.field.setValue(this.baseTestNumber);
-    Assert.assertEquals(this.numberWithGroups, this.field.getRawValue());
+    Assertions.assertEquals(this.numberWithGroups, this.field.getRawValue());
     this.field.setNegativeValueAllowed(false);
-    Assert.assertEquals(this.baseTestNumber, this.field.getValue());
-    Assert.assertEquals(this.numberWithGroups, this.field.getRawValue());
+    Assertions.assertEquals(this.baseTestNumber, this.field.getValue());
+    Assertions.assertEquals(this.numberWithGroups, this.field.getRawValue());
   }
 
   // bug report: https://github.com/vaadin-miki/super-fields/issues/10
@@ -257,7 +327,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     this.getField().setMaximumIntegerDigits(9); // grouping size is 3, so 9 is a multiplication of it
     String regexp = this.getField().getRegexp();
     for (String s : new String[]{"1234567890", "12345678901", "123456789012", "123 456 789 0", "123 456 789 01", "123 456 789 012"})
-      Assert.assertFalse(String.format("%s must not match %s (regression on bug #10)", regexp, s), s.matches(regexp));
+      Assertions.assertFalse(s.matches(regexp), String.format("%s must not match %s (regression on bug #10)", regexp, s));
   }
 
   @Test
@@ -265,8 +335,8 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     this.getField().setNullValueAllowed(true);
     this.getField().setValue(null);
     T value = this.getField().getValue();
-    Assert.assertNull("value was set to null and it must be null", value);
-    Assert.assertTrue("null representation must be an empty string", this.getField().getRawValue().isEmpty());
+    Assertions.assertNull(value, "value was set to null and it must be null");
+    Assertions.assertTrue(this.getField().getRawValue().isEmpty(), "null representation must be an empty string");
   }
 
   @Test
@@ -275,8 +345,8 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     this.getField().setNegativeValueAllowed(false);
     this.getField().setValue(null);
     T value = this.getField().getValue();
-    Assert.assertNull("value was set to null and it must be null", value);
-    Assert.assertTrue("null representation must be an empty string", this.getField().getRawValue().isEmpty());
+    Assertions.assertNull(value, "value was set to null and it must be null");
+    Assertions.assertTrue(this.getField().getRawValue().isEmpty(), "null representation must be an empty string");
   }
 
   @Test
@@ -285,8 +355,8 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     this.getField().setNegativeValueAllowed(true);
     this.getField().setValue(null);
     T value = this.getField().getValue();
-    Assert.assertNull("value was set to null and it must be null", value);
-    Assert.assertTrue("null representation must be an empty string", this.getField().getRawValue().isEmpty());
+    Assertions.assertNull(value, "value was set to null and it must be null");
+    Assertions.assertTrue(this.getField().getRawValue().isEmpty(), "null representation must be an empty string");
   }
 
   @Test
@@ -295,26 +365,26 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     this.getField().setValue(null);
     this.getField().setNegativeValueAllowed(!this.getField().isNegativeValueAllowed());
     T value = this.getField().getValue();
-    Assert.assertNull("value was set to null and it must be null", value);
-    Assert.assertTrue("null representation must be an empty string", this.getField().getRawValue().isEmpty());
+    Assertions.assertNull(value, "value was set to null and it must be null");
+    Assertions.assertTrue(this.getField().getRawValue().isEmpty(), "null representation must be an empty string");
   }
 
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testNullWithNoNullAllowedThrowsException() {
     // by default, there should be no allowance for null values
-    this.getField().setValue(null);
+    Assertions.assertThrows(IllegalArgumentException.class, () -> this.getField().setValue(null));
   }
 
   private <E extends ComponentEvent<?>> void checkEventTriggered(Function<ComponentEventListener<E>, Registration> addEvent, Consumer<AbstractSuperNumberField<T, ?>> fireEvent) {
     this.eventFlag = false;
     Registration registration = addEvent.apply(event -> this.eventFlag = true);
     fireEvent.accept(this.getField());
-    Assert.assertTrue(this.eventFlag);
+    Assertions.assertTrue(this.eventFlag);
     this.eventFlag = false;
     registration.remove();
     this.getField().simulateFocus();
-    Assert.assertFalse(this.eventFlag);
+    Assertions.assertFalse(this.eventFlag);
   }
 
   @Test
@@ -334,9 +404,9 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     final int minFraction = this.field.getMinimumFractionDigits();
     final int maxDigits = this.field.getMaximumIntegerDigits();
     this.field.setLocale(Locale.GERMANY); // ticket #224 - any change in locale would trigger this
-    Assert.assertEquals("max fraction digits must not change when changing locale", maxFraction, this.field.getMaximumFractionDigits());
-    Assert.assertEquals("min fraction digits must not change when changing locale", minFraction, this.field.getMinimumFractionDigits());
-    Assert.assertEquals("max integer digits must not change when changing locale", maxDigits, this.field.getMaximumIntegerDigits());
+    Assertions.assertEquals(maxFraction, this.field.getMaximumFractionDigits(), "max fraction digits must not change when changing locale");
+    Assertions.assertEquals(minFraction, this.field.getMinimumFractionDigits(), "min fraction digits must not change when changing locale");
+    Assertions.assertEquals(maxDigits, this.field.getMaximumIntegerDigits(), "max integer digits must not change when changing locale");
   }
 
   @Test
@@ -350,22 +420,22 @@ class BaseTestsForIntegerNumbers<T extends Number> {
         .withValidator(validator)
         .bind("number");
     binder.setBean(wrapper);
-    Assert.assertFalse("validator must fail with no number", binder.isValid());
+    Assertions.assertFalse(binder.isValid(), "validator must fail with no number");
     wrapper.setNumber(this.baseTestNumber);
     binder.setBean(wrapper);
-    Assert.assertTrue("validator must not fail with the correct number", binder.isValid());
+    Assertions.assertTrue(binder.isValid(), "validator must not fail with the correct number");
     wrapper.setNumber(this.negativeTestNumber);
     binder.setBean(wrapper);
-    Assert.assertFalse("validator must fail with wrong number", binder.isValid());
+    Assertions.assertFalse(binder.isValid(), "validator must fail with wrong number");
 
     this.field.setValue(this.baseTestNumber);
-    Assert.assertTrue("validator must be ok after field was changed to good number", binder.isValid());
+    Assertions.assertTrue(binder.isValid(), "validator must be ok after field was changed to good number");
 
     validator.setReferenceValue(this.negativeTestNumber);
-    Assert.assertFalse("validator must not be ok after it was changed", binder.isValid());
+    Assertions.assertFalse(binder.isValid(), "validator must not be ok after it was changed");
     validator.setReferenceValue(this.baseTestNumber);
     this.field.setValue(this.baseTestNumber);
-    Assert.assertTrue("validator must be ok", binder.isValid());
+    Assertions.assertTrue(binder.isValid(), "validator must be ok");
 
   }
 
@@ -374,14 +444,14 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   public void testEmptyStringParsesProperlyWhenNullAllowed() throws ParseException {
     this.field.setNullValueAllowed(true);
     final T value = this.field.parseRawValue("");
-    Assert.assertNull(value);
+    Assertions.assertNull(value);
   }
 
   @Test
   public void testEmptyStringParsesProperlyWhenNullNotAllowed() throws ParseException {
     this.field.setNullValueAllowed(false);
     final T value = this.field.parseRawValue("");
-    Assert.assertNotNull(value);
+    Assertions.assertNotNull(value);
   }
 
   // tests for #472
@@ -389,21 +459,21 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   public void testNoMixingOfGroupingSymbolsAllowed() {
     this.field.setLocale(Locale.ENGLISH); // this uses . as decimal and , as grouping
     this.field.setGroupingSeparatorAlternatives(Set.of('.', '-')); // so setting . should fail (and - is minus, also fail)
-    Assert.assertTrue(this.field.getGroupingSeparatorAlternatives().isEmpty());
+    Assertions.assertTrue(this.field.getGroupingSeparatorAlternatives().isEmpty());
     this.field.setLocale(new Locale.Builder().setLanguage("pl").setRegion("PL").build()); // this uses NBSP, so space must always be there
     this.field.setGroupingSeparatorAlternatives(Set.of('_'));
-    Assert.assertEquals(2, this.field.getGroupingSeparatorAlternatives().size());
-    Assert.assertTrue(this.field.getGroupingSeparatorAlternatives().containsAll(Set.of(' ', '_')));
+    Assertions.assertEquals(2, this.field.getGroupingSeparatorAlternatives().size());
+    Assertions.assertTrue(this.field.getGroupingSeparatorAlternatives().containsAll(Set.of(' ', '_')));
   }
 
   @Test
   public void testNoMixingOfNegativeSignAllowed() {
     this.field.setLocale(Locale.ENGLISH);
     this.field.setNegativeSignAlternatives(Set.of('.', ','));
-    Assert.assertTrue(this.field.getGroupingSeparatorAlternatives().isEmpty());
+    Assertions.assertTrue(this.field.getGroupingSeparatorAlternatives().isEmpty());
     this.field.setNegativeSignAlternatives(Set.of('%', '_', '-', '+')); // yes, + is ok for negatives :D
-    Assert.assertEquals(3, this.field.getNegativeSignAlternatives().size());
-    Assert.assertTrue(this.field.getNegativeSignAlternatives().containsAll(Set.of('+', '_', '%')));
+    Assertions.assertEquals(3, this.field.getNegativeSignAlternatives().size());
+    Assertions.assertTrue(this.field.getNegativeSignAlternatives().containsAll(Set.of('+', '_', '%')));
   }
 
   @Test
@@ -411,10 +481,10 @@ class BaseTestsForIntegerNumbers<T extends Number> {
     this.field.setLocale(Locale.ENGLISH);
     this.field.withOverlappingAlternatives()
         .withNegativeSignAlternatives('.');
-    Assert.assertTrue(this.field.getNegativeSignAlternatives().contains('.'));
+    Assertions.assertTrue(this.field.getNegativeSignAlternatives().contains('.'));
     // disallowing overlapping should remove overlaps
     this.field.setOverlappingAlternatives(false);
-    Assert.assertTrue(this.field.getNegativeSignAlternatives().isEmpty());
+    Assertions.assertTrue(this.field.getNegativeSignAlternatives().isEmpty());
   }
 
 }

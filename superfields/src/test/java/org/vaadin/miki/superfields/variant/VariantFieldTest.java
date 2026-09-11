@@ -1,11 +1,9 @@
 package org.vaadin.miki.superfields.variant;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.Text;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.vaadin.miki.superfields.numbers.SuperIntegerField;
 import org.vaadin.miki.superfields.text.LabelField;
 import org.vaadin.miki.superfields.text.SuperTextField;
@@ -21,15 +19,9 @@ public class VariantFieldTest {
 
     private int eventCounter = 0;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        MockVaadin.setup();
         this.eventCounter = 0;
-    }
-
-    @After
-    public void tearDown() {
-        MockVaadin.tearDown();
     }
 
     @Test
@@ -42,41 +34,41 @@ public class VariantFieldTest {
         field.addValueChangeListener(event -> this.eventCounter++);
 
         field.setValue(STRING_VALUE);
-        Assert.assertEquals(STRING_VALUE, field.getValue());
-        Assert.assertTrue(field.getField() instanceof SuperTextField);
+        Assertions.assertEquals(STRING_VALUE, field.getValue());
+        Assertions.assertTrue(field.getField() instanceof SuperTextField);
         final SuperTextField textField = (SuperTextField) field.getField();
-        Assert.assertEquals(STRING_VALUE, textField.getValue());
-        Assert.assertEquals(1, this.eventCounter);
+        Assertions.assertEquals(STRING_VALUE, textField.getValue());
+        Assertions.assertEquals(1, this.eventCounter);
 
         field.setValue(INT_VALUE);
-        Assert.assertEquals(INT_VALUE, field.getValue());
-        Assert.assertTrue(field.getField() instanceof SuperIntegerField);
+        Assertions.assertEquals(INT_VALUE, field.getValue());
+        Assertions.assertTrue(field.getField() instanceof SuperIntegerField);
         final SuperIntegerField integerField = (SuperIntegerField) field.getField();
-        Assert.assertEquals(INT_VALUE, integerField.getValue());
-        Assert.assertEquals(2, this.eventCounter);
+        Assertions.assertEquals(INT_VALUE, integerField.getValue());
+        Assertions.assertEquals(2, this.eventCounter);
 
         final Integer modified = -INT_VALUE*2;
         ((SuperIntegerField)field.getField()).setValue(modified);
-        Assert.assertEquals(modified, field.getValue());
-        Assert.assertEquals(3, this.eventCounter);
-        Assert.assertSame(integerField, field.getField());
+        Assertions.assertEquals(modified, field.getValue());
+        Assertions.assertEquals(3, this.eventCounter);
+        Assertions.assertSame(integerField, field.getField());
 
         field.setValue(STRING_VALUE);
-        Assert.assertNotSame(textField, field.getField());
-        Assert.assertEquals(STRING_VALUE, field.getValue());
-        Assert.assertEquals(4, this.eventCounter);
+        Assertions.assertNotSame(textField, field.getField());
+        Assertions.assertEquals(STRING_VALUE, field.getValue());
+        Assertions.assertEquals(4, this.eventCounter);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAssigningValueOnFresh() {
         final VariantField field = new VariantField();
-        field.setValue("this must fail, as no type is registered");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> field.setValue("this must fail, as no type is registered"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAssigningUnknownValue() {
         final VariantField field = new VariantField().withTypedFieldProvider(TypedFieldProvider.of(String.class, SuperTextField::new));
-        field.setValue(INT_VALUE);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> field.setValue(INT_VALUE));
     }
 
     @Test
@@ -84,15 +76,15 @@ public class VariantFieldTest {
         final VariantField field = new VariantField().withTypedFieldProvider(TypedFieldProvider.of(String.class, SuperTextField::new));
         field.setValue(STRING_VALUE);
         field.clear();
-        Assert.assertNull(field.getValue());
-        Assert.assertTrue("field is of type "+field.getField().getClass().getSimpleName(), field.getField() instanceof LabelField);
-        Assert.assertNull(((LabelField<?>) field.getField()).getValue());
+        Assertions.assertNull(field.getValue());
+        Assertions.assertTrue(field.getField() instanceof LabelField, "field is of type "+field.getField().getClass().getSimpleName());
+        Assertions.assertNull(((LabelField<?>) field.getField()).getValue());
     }
 
     @Test
     public void testSettingNullShouldAlwaysWork() {
         final VariantField field = new VariantField();
-        Assert.assertNull(field.getValue());
+        Assertions.assertNull(field.getValue());
         field.setValue(null);
     }
 
@@ -101,10 +93,10 @@ public class VariantFieldTest {
         final VariantField field = new VariantField()
                 .withNullComponentProvider(() -> new Text(STRING_VALUE));
         field.addValueChangeListener(event -> this.eventCounter++);
-        Assert.assertTrue(field.getField() instanceof Text);
-        Assert.assertEquals(STRING_VALUE, ((Text) field.getField()).getText());
-        Assert.assertNull(field.getValue());
-        Assert.assertEquals(0, this.eventCounter);
+        Assertions.assertTrue(field.getField() instanceof Text);
+        Assertions.assertEquals(STRING_VALUE, ((Text) field.getField()).getText());
+        Assertions.assertNull(field.getValue());
+        Assertions.assertEquals(0, this.eventCounter);
     }
 
     @Test
@@ -112,8 +104,8 @@ public class VariantFieldTest {
         final VariantField field = new VariantField().withTypedFieldProvider(TypedFieldProvider.of(Integer.class, SuperIntegerField::new));
         field.setValue(INT_VALUE);
         field.setReadOnly(true);
-        Assert.assertTrue(field.isReadOnly());
-        Assert.assertTrue(((SuperIntegerField)field.getField()).isReadOnly());
+        Assertions.assertTrue(field.isReadOnly());
+        Assertions.assertTrue(((SuperIntegerField)field.getField()).isReadOnly());
     }
 
 }

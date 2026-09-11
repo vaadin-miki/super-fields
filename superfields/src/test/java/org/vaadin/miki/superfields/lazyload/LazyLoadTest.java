@@ -1,11 +1,11 @@
 package org.vaadin.miki.superfields.lazyload;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.vaadin.browserless.BrowserlessUIContext;
 import com.vaadin.flow.component.html.Span;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author miki
@@ -13,42 +13,48 @@ import org.junit.Test;
  */
 public class LazyLoadTest {
 
+  private BrowserlessUIContext window;
+
   private LazyLoad<Span> lazyLoad;
 
-  @Before
+  @BeforeEach
   public void setup() {
-    MockVaadin.setup();
-    this.lazyLoad = new LazyLoad<>(new Span("this is a test"));
+    this.window = BrowserlessUIContext.forComponent(() -> {
+      this.lazyLoad = new LazyLoad<>(new Span("this is a test"));
+      return this.lazyLoad;
+    });
   }
 
-  @After
-  public void tearDown() {
-    MockVaadin.tearDown();
+  @AfterEach
+  public void closeWindow() {
+    if (this.window != null) {
+      this.window.close();
+    }
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testVisibilityBelowZero() {
-    this.lazyLoad.setContentVisibilityRanges(-3, 0.5);
+    Assertions.assertThrows(IllegalArgumentException.class, () -> this.lazyLoad.setContentVisibilityRanges(-3, 0.5));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testVisibilityAboveOne() {
-    this.lazyLoad.setContentVisibilityRanges(0.1, 1.5);
+    Assertions.assertThrows(IllegalArgumentException.class, () -> this.lazyLoad.setContentVisibilityRanges(0.1, 1.5));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testVisibilityNotInOrder() {
-    this.lazyLoad.setContentVisibilityRanges(0.9, 0.8);
+    Assertions.assertThrows(IllegalArgumentException.class, () -> this.lazyLoad.setContentVisibilityRanges(0.9, 0.8));
   }
 
   @Test
   public void testVisibilityRangesOk() {
-    Assert.assertEquals(0, this.lazyLoad.getContentHiddenVisibilityRange(), 0.000005);
-    Assert.assertEquals(1, this.lazyLoad.getContentShownVisibilityRange(),  0.000005);
+    Assertions.assertEquals(0, this.lazyLoad.getContentHiddenVisibilityRange(), 0.000005);
+    Assertions.assertEquals(1, this.lazyLoad.getContentShownVisibilityRange(), 0.000005);
 
     this.lazyLoad.setContentVisibilityRanges(0.2, 0.75);
-    Assert.assertEquals(0.2,  this.lazyLoad.getContentHiddenVisibilityRange(), 0.0005);
-    Assert.assertEquals(0.75, this.lazyLoad.getContentShownVisibilityRange(),  0.0005);
+    Assertions.assertEquals(0.2, this.lazyLoad.getContentHiddenVisibilityRange(), 0.0005);
+    Assertions.assertEquals(0.75, this.lazyLoad.getContentShownVisibilityRange(), 0.0005);
   }
 
 }
