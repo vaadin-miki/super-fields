@@ -1,10 +1,8 @@
 package org.vaadin.miki.superfields.dates;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -13,26 +11,20 @@ public class SuperDatePickerI18nTest {
 
   private SuperDatePickerI18n i18n;
 
-  @Before
+  @BeforeEach
   public void setUp() {
-    MockVaadin.setup();
     this.i18n = new SuperDatePickerI18n(new Locale.Builder().setLanguage("pl").setRegion("PL").build());
-  }
-
-  @After
-  public void tearDown() {
-    MockVaadin.tearDown();
   }
 
   @Test
   public void setProperlyInitialised() {
-    Assert.assertEquals(new Locale.Builder().setLanguage("pl").setRegion("PL").build(), this.i18n.getLocale());
-    Assert.assertEquals("Anuluj", this.i18n.getCancel());
-    Assert.assertEquals("Dzisiaj", this.i18n.getToday());
-    Assert.assertEquals(Arrays.asList("styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec", "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień"), this.i18n.getMonthNames());
-    Assert.assertEquals(Arrays.asList("niedziela", "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota"), this.i18n.getWeekdays());
-    Assert.assertEquals(Arrays.asList("niedz.", "pon.", "wt.", "śr.", "czw.", "pt.", "sob."), this.i18n.getWeekdaysShort());
-    Assert.assertEquals(1, this.i18n.getFirstDayOfWeek());
-    Assert.assertEquals(Arrays.asList("stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września", "października", "listopada", "grudnia"), this.i18n.getDisplayMonthNames());
+    Assertions.assertEquals(new Locale.Builder().setLanguage("pl").setRegion("PL").build(), this.i18n.getLocale());
+    Assertions.assertEquals("Anuluj", this.i18n.getCancel());
+    Assertions.assertEquals("Dzisiaj", this.i18n.getToday());
+    Assertions.assertEquals(Arrays.asList("styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec", "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień"), this.i18n.getMonthNames());
+    Assertions.assertEquals(Arrays.asList("niedziela", "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota"), this.i18n.getWeekdays());
+    Assertions.assertEquals(Arrays.asList("niedz.", "pon.", "wt.", "śr.", "czw.", "pt.", "sob."), this.i18n.getWeekdaysShort());
+    Assertions.assertEquals(1, this.i18n.getFirstDayOfWeek());
+    Assertions.assertEquals(Arrays.asList("stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września", "października", "listopada", "grudnia"), this.i18n.getDisplayMonthNames());
   }
 }

@@ -1,7 +1,7 @@
 package org.vaadin.miki.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,7 +17,7 @@ public class StringToolsTest {
         final String[] expected = new String[]{null, "", "Hello", "H", "Hello", "\nfoo"};
 
         for(int zmp1=0; zmp1<input.length; zmp1++)
-            Assert.assertEquals(expected[zmp1], StringTools.firstLetterUppercase(input[zmp1]));
+            Assertions.assertEquals(expected[zmp1], StringTools.firstLetterUppercase(input[zmp1]));
     }
 
     @Test
@@ -26,7 +26,7 @@ public class StringToolsTest {
         final String[] expected = new String[]{null, "", "This is sparta", "This Is Sparta", "This Is Sparta", "This_is_not", "This Is Also Sparta", "And this"};
 
         for(int zmp1=0; zmp1<input.length; zmp1++)
-            Assert.assertEquals(expected[zmp1], StringTools.humanReadable(input[zmp1]));
+            Assertions.assertEquals(expected[zmp1], StringTools.humanReadable(input[zmp1]));
     }
 
     @Test
@@ -38,7 +38,7 @@ public class StringToolsTest {
             Collections.emptySet(), Collections.singleton('o'), Set.of('\t', 'ą', 'a')
         );
         for(int zmp1=0; zmp1<input.length; zmp1++)
-            Assert.assertEquals(expected.get(zmp1), StringTools.toCharacterSet(input[zmp1]));
+            Assertions.assertEquals(expected.get(zmp1), StringTools.toCharacterSet(input[zmp1]));
     }
 
 }

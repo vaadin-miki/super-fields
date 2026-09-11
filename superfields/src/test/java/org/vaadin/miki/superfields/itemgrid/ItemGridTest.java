@@ -1,12 +1,13 @@
 package org.vaadin.miki.superfields.itemgrid;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.vaadin.browserless.BrowserlessUIContext;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.vaadin.miki.DomClickTester;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,75 +17,90 @@ import java.util.Optional;
 
 public class ItemGridTest {
 
+  private BrowserlessUIContext window;
+
   private ItemGrid<String> grid;
 
   private int eventCounter;
 
-  @Before
+  @BeforeEach
   public void setUp() {
-    MockVaadin.setup();
-    this.grid = new ItemGrid<>();
+    this.window = BrowserlessUIContext.forComponent(() -> {
+      this.grid = new ItemGrid<>();
+      return this.grid;
+    });
     this.eventCounter = 0;
     this.grid.addValueChangeListener(event -> eventCounter++);
   }
 
-  @After
-  public void tearDown() {
-    MockVaadin.tearDown();
+  @AfterEach
+  public void closeWindow() {
+    if (this.window != null) {
+      this.window.close();
+    }
+  }
+
+  /**
+   * Clicks the cell at given coordinates the way a user would. Nothing happens when there is no such cell.
+   */
+  private void clickCell(int row, int column) {
+    this.grid.getCellInformation(row, column)
+        .map(CellInformation::getComponent)
+        .ifPresent(component -> new DomClickTester(component).click());
   }
 
   @Test
   public void testNothingOnStartup() {
-    Assert.assertEquals(0, this.grid.size());
-    Assert.assertEquals(0, this.grid.getRowCount());
-    Assert.assertEquals(3, this.grid.getColumnCount());
-    Assert.assertEquals(0, this.grid.getCellComponents().count());
-    Assert.assertTrue(this.grid.getCellInformation().isEmpty());
-    Assert.assertNull(this.grid.getValue());
-    Assert.assertEquals(0, this.eventCounter);
+    Assertions.assertEquals(0, this.grid.size());
+    Assertions.assertEquals(0, this.grid.getRowCount());
+    Assertions.assertEquals(3, this.grid.getColumnCount());
+    Assertions.assertEquals(0, this.grid.getCellComponents().count());
+    Assertions.assertTrue(this.grid.getCellInformation().isEmpty());
+    Assertions.assertNull(this.grid.getValue());
+    Assertions.assertEquals(0, this.eventCounter);
   }
 
   private void assertCellSelectionAndStyles(String value) {
-    Assert.assertEquals(value, this.grid.getValue());
-    Assert.assertTrue("no cell found for value", this.grid.getCellInformation(value).isPresent());
-    Assert.assertTrue(this.grid.getCellInformation(value).get().getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME));
-    Assert.assertTrue(this.grid.getCellInformation().stream().filter(info -> !value.equals(info.getValue())).noneMatch(info -> info.getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)));
+    Assertions.assertEquals(value, this.grid.getValue());
+    Assertions.assertTrue(this.grid.getCellInformation(value).isPresent(), "no cell found for value");
+    Assertions.assertTrue(this.grid.getCellInformation(value).get().getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME));
+    Assertions.assertTrue(this.grid.getCellInformation().stream().filter(info -> !value.equals(info.getValue())).noneMatch(info -> info.getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)));
   }
 
   @Test
   public void testOneFullRowOfItemsServerSide() {
     final String one = "one", two = "two", three = "three";
     this.grid.setItems(one, two, three);
-    Assert.assertEquals(0, this.eventCounter);
-    Assert.assertEquals(3, this.grid.size());
-    Assert.assertEquals(1, this.grid.getRowCount());
-    Assert.assertEquals(3, this.grid.getColumnCount());
-    Assert.assertNull(this.grid.getValue());
-    Assert.assertEquals(3, this.grid.getCellInformation().size());
+    Assertions.assertEquals(0, this.eventCounter);
+    Assertions.assertEquals(3, this.grid.size());
+    Assertions.assertEquals(1, this.grid.getRowCount());
+    Assertions.assertEquals(3, this.grid.getColumnCount());
+    Assertions.assertNull(this.grid.getValue());
+    Assertions.assertEquals(3, this.grid.getCellInformation().size());
     // by default, all spans
-    Assert.assertTrue("all cells should be spans by default", this.grid.getCellComponents().allMatch(Span.class::isInstance));
-    Assert.assertTrue("no cell should be selected when adding items", this.grid.getCellComponents().noneMatch(component -> ((Span) component).getClassNames().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)));
+    Assertions.assertTrue(this.grid.getCellComponents().allMatch(Span.class::isInstance), "all cells should be spans by default");
+    Assertions.assertTrue(this.grid.getCellComponents().noneMatch(component -> ((Span) component).getClassNames().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)), "no cell should be selected when adding items");
 
     // select something
     this.grid.setValue(two);
-    Assert.assertEquals(1, this.eventCounter);
+    Assertions.assertEquals(1, this.eventCounter);
     this.assertCellSelectionAndStyles(two);
 
     // select that same something again
     this.grid.setValue(two);
-    Assert.assertEquals("value was not changed, so event should not fire", 1, this.eventCounter);
+    Assertions.assertEquals(1, this.eventCounter, "value was not changed, so event should not fire");
     this.assertCellSelectionAndStyles(two);
 
     // select some other value
     this.grid.setValue(one);
-    Assert.assertEquals("value was changed, so event should fire", 2, this.eventCounter);
+    Assertions.assertEquals(2, this.eventCounter, "value was changed, so event should fire");
     this.assertCellSelectionAndStyles(one);
 
     // select nothing
     this.grid.setValue(null);
-    Assert.assertEquals(3, this.eventCounter);
-    Assert.assertNull(this.grid.getValue());
-    Assert.assertTrue("no cell should be selected when selecting null", this.grid.getCellComponents().noneMatch(component -> component.getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)));
+    Assertions.assertEquals(3, this.eventCounter);
+    Assertions.assertNull(this.grid.getValue());
+    Assertions.assertTrue(this.grid.getCellComponents().noneMatch(component -> component.getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)), "no cell should be selected when selecting null");
   }
 
   @Test
@@ -92,41 +108,41 @@ public class ItemGridTest {
     final String[] items = new String[]{"zero", "one", "two", "three", "four", "five", "six", "seven"};
     this.grid.setItems(items);
 
-    Assert.assertEquals(8, this.grid.size());
-    Assert.assertEquals(3, this.grid.getColumnCount());
-    Assert.assertEquals(3, this.grid.getRowCount());
-    Assert.assertNull(this.grid.getValue());
+    Assertions.assertEquals(8, this.grid.size());
+    Assertions.assertEquals(3, this.grid.getColumnCount());
+    Assertions.assertEquals(3, this.grid.getRowCount());
+    Assertions.assertNull(this.grid.getValue());
 
     // click cell in 2nd row, 3rd column ("five")
-    this.grid.simulateCellClick(1, 2);
-    Assert.assertEquals(1, this.eventCounter);
-    Assert.assertEquals(items[5], this.grid.getValue());
+    this.clickCell(1, 2);
+    Assertions.assertEquals(1, this.eventCounter);
+    Assertions.assertEquals(items[5], this.grid.getValue());
 
     // click that cell again to deselect it
-    this.grid.simulateCellClick(1, 2);
-    Assert.assertEquals(2, this.eventCounter);
-    Assert.assertNull(this.grid.getValue());
+    this.clickCell(1, 2);
+    Assertions.assertEquals(2, this.eventCounter);
+    Assertions.assertNull(this.grid.getValue());
 
     // click a cell in top row, 2nd column ("one")
-    this.grid.simulateCellClick(0, 1);
-    Assert.assertEquals(3, this.eventCounter);
-    Assert.assertEquals(items[1], this.grid.getValue());
+    this.clickCell(0, 1);
+    Assertions.assertEquals(3, this.eventCounter);
+    Assertions.assertEquals(items[1], this.grid.getValue());
 
     // click a cell in 3rd row, 1st column ("six")
-    this.grid.simulateCellClick(2, 0);
-    Assert.assertEquals(4, this.eventCounter);
-    Assert.assertEquals(items[6], this.grid.getValue());
+    this.clickCell(2, 0);
+    Assertions.assertEquals(4, this.eventCounter);
+    Assertions.assertEquals(items[6], this.grid.getValue());
 
     // clicking a cell totally outside does nothing
-    this.grid.simulateCellClick(-1, -1);
-    Assert.assertEquals(4, this.eventCounter);
+    this.clickCell(-1, -1);
+    Assertions.assertEquals(4, this.eventCounter);
 
     // after all this, only one cell should be selected
     List<CellInformation<String>> selection = this.grid.getCellInformation().stream().filter(cell -> cell.getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)).toList();
-    Assert.assertEquals(1, selection.size());
-    Assert.assertEquals(items[6], selection.get(0).getValue());
-    Assert.assertEquals(2, selection.get(0).getRow());
-    Assert.assertEquals(0, selection.get(0).getColumn());
+    Assertions.assertEquals(1, selection.size());
+    Assertions.assertEquals(items[6], selection.get(0).getValue());
+    Assertions.assertEquals(2, selection.get(0).getRow());
+    Assertions.assertEquals(0, selection.get(0).getColumn());
   }
 
   @Test
@@ -134,48 +150,48 @@ public class ItemGridTest {
     final String[] items = new String[]{"item0", "item1", "item2", "item3", "item4", "item5", "item6", "item7", "item8", "item9"};
     this.grid.setItems(items);
     // default column count is 3 and there is no selection
-    Assert.assertNull(this.grid.getValue());
-    Assert.assertEquals(4, this.grid.getRowCount());
-    Assert.assertEquals(3, this.grid.getColumnCount());
-    Assert.assertEquals(10, this.grid.size());
+    Assertions.assertNull(this.grid.getValue());
+    Assertions.assertEquals(4, this.grid.getRowCount());
+    Assertions.assertEquals(3, this.grid.getColumnCount());
+    Assertions.assertEquals(10, this.grid.size());
 
     // click value in the second row, third column ("item5")
-    this.grid.simulateCellClick(1, 2);
-    Assert.assertEquals(1, this.eventCounter);
-    Assert.assertEquals(items[5], this.grid.getValue());
-    Assert.assertEquals(this.grid.getCellInformation(1, 2), this.grid.getCellInformation(items[5]));
+    this.clickCell(1, 2);
+    Assertions.assertEquals(1, this.eventCounter);
+    Assertions.assertEquals(items[5], this.grid.getValue());
+    Assertions.assertEquals(this.grid.getCellInformation(1, 2), this.grid.getCellInformation(items[5]));
 
     // change column count to 5
     this.grid.setColumnCount(5);
-    Assert.assertEquals("changing column size should not trigger value change", 1, this.eventCounter);
-    Assert.assertEquals("10 items in 5 columns should be arranged in 2 rows", 2, this.grid.getRowCount());
-    Assert.assertEquals(5, this.grid.getColumnCount());
-    Assert.assertEquals(10, this.grid.size());
-    Assert.assertEquals(items[5], this.grid.getValue());
-    Assert.assertNotEquals(this.grid.getCellInformation(1, 2), this.grid.getCellInformation(items[5]));
+    Assertions.assertEquals(1, this.eventCounter, "changing column size should not trigger value change");
+    Assertions.assertEquals(2, this.grid.getRowCount(), "10 items in 5 columns should be arranged in 2 rows");
+    Assertions.assertEquals(5, this.grid.getColumnCount());
+    Assertions.assertEquals(10, this.grid.size());
+    Assertions.assertEquals(items[5], this.grid.getValue());
+    Assertions.assertNotEquals(this.grid.getCellInformation(1, 2), this.grid.getCellInformation(items[5]));
 
     // clicking the same coordinates should result in different value ("item7")
-    this.grid.simulateCellClick(1, 2);
-    Assert.assertEquals(2, this.eventCounter);
-    Assert.assertEquals(items[7], this.grid.getValue());
+    this.clickCell(1, 2);
+    Assertions.assertEquals(2, this.eventCounter);
+    Assertions.assertEquals(items[7], this.grid.getValue());
 
-    this.grid.simulateCellClick(1, 2);
-    Assert.assertEquals(3, this.eventCounter);
-    Assert.assertNull(this.grid.getValue());
+    this.clickCell(1, 2);
+    Assertions.assertEquals(3, this.eventCounter);
+    Assertions.assertNull(this.grid.getValue());
 
     // change column count to 15, all should fit in one row
     this.grid.setColumnCount(15);
-    Assert.assertNull(this.grid.getValue());
-    Assert.assertEquals(15, this.grid.getColumnCount());
-    Assert.assertEquals(10, this.grid.size());
-    Assert.assertEquals(1, this.grid.getRowCount());
+    Assertions.assertNull(this.grid.getValue());
+    Assertions.assertEquals(15, this.grid.getColumnCount());
+    Assertions.assertEquals(10, this.grid.size());
+    Assertions.assertEquals(1, this.grid.getRowCount());
 
     // changing column count to less than 1 should result in 1
     this.grid.setColumnCount(-5);
-    Assert.assertNull(this.grid.getValue());
-    Assert.assertEquals(1, this.grid.getColumnCount());
-    Assert.assertEquals(10, this.grid.getRowCount());
-    Assert.assertEquals(10, this.grid.size());
+    Assertions.assertNull(this.grid.getValue());
+    Assertions.assertEquals(1, this.grid.getColumnCount());
+    Assertions.assertEquals(10, this.grid.getRowCount());
+    Assertions.assertEquals(10, this.grid.size());
   }
 
   @Test
@@ -184,24 +200,24 @@ public class ItemGridTest {
     this.grid.setItems(items);
 
     this.grid.setValue(items[1]);
-    Assert.assertEquals(items[1], this.grid.getValue());
+    Assertions.assertEquals(items[1], this.grid.getValue());
     // by default, the component is a span with text that corresponds to the text
-    Assert.assertTrue(this.grid.getSelectedCellInformation().isPresent());
-    Assert.assertTrue(this.grid.getCellInformation().stream().allMatch(info -> info.getComponent() instanceof Span));
-    Assert.assertEquals(items[1], ((Span) this.grid.getSelectedCellInformation().get().getComponent()).getText());
-    Assert.assertTrue(this.grid.getSelectedCellInformation().get().getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME));
+    Assertions.assertTrue(this.grid.getSelectedCellInformation().isPresent());
+    Assertions.assertTrue(this.grid.getCellInformation().stream().allMatch(info -> info.getComponent() instanceof Span));
+    Assertions.assertEquals(items[1], ((Span) this.grid.getSelectedCellInformation().get().getComponent()).getText());
+    Assertions.assertTrue(this.grid.getSelectedCellInformation().get().getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME));
     this.eventCounter = 0;
 
     // change the cell generator
     this.grid.setCellGenerator((value, row, column) -> new Paragraph(value));
-    Assert.assertEquals(0, this.eventCounter);
-    Assert.assertEquals(items[1], this.grid.getValue());
+    Assertions.assertEquals(0, this.eventCounter);
+    Assertions.assertEquals(items[1], this.grid.getValue());
     // the components now should be paragraphs
-    Assert.assertTrue(this.grid.getSelectedCellInformation().isPresent());
-    Assert.assertTrue(this.grid.getCellInformation().stream().allMatch(info -> info.getComponent() instanceof Paragraph));
-    Assert.assertEquals(items[1], ((Paragraph) this.grid.getSelectedCellInformation().get().getComponent()).getText());
+    Assertions.assertTrue(this.grid.getSelectedCellInformation().isPresent());
+    Assertions.assertTrue(this.grid.getCellInformation().stream().allMatch(info -> info.getComponent() instanceof Paragraph));
+    Assertions.assertEquals(items[1], ((Paragraph) this.grid.getSelectedCellInformation().get().getComponent()).getText());
     // but the selection handler should still be the same, just adding class names
-    Assert.assertTrue(this.grid.getSelectedCellInformation().get().getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME));
+    Assertions.assertTrue(this.grid.getSelectedCellInformation().get().getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME));
   }
 
   @Test
@@ -214,28 +230,28 @@ public class ItemGridTest {
     this.grid.setCellSelectionHandler(event -> log.add((event.isSelected() ? "+" : "-") + event.getCellInformation().getValue()));
 
     // as value is already selected, setting selection handler should leave messages (whole component is repainted)
-    Assert.assertEquals(5, log.size());
-    Assert.assertEquals("initially all components must be redrawn", Arrays.asList("-A", "+B", "-C", "-D", "-E"), log);
+    Assertions.assertEquals(5, log.size());
+    Assertions.assertEquals(Arrays.asList("-A", "+B", "-C", "-D", "-E"), log, "initially all components must be redrawn");
 
     log.clear();
     this.grid.setValue(items[4]);
-    Assert.assertEquals(Arrays.asList("-B", "+E"), log);
+    Assertions.assertEquals(Arrays.asList("-B", "+E"), log);
 
     log.clear();
-    this.grid.simulateCellClick(1, 1);
-    Assert.assertEquals("deselection should require an extra call to handler", Collections.singletonList("-E"), log);
+    this.clickCell(1, 1);
+    Assertions.assertEquals(Collections.singletonList("-E"), log, "deselection should require an extra call to handler");
 
     log.clear();
     this.grid.setValue(items[3]);
     this.grid.setValue(items[0]);
-    Assert.assertEquals("selection handler should be called in order", Arrays.asList("+D", "-D", "+A"), log);
+    Assertions.assertEquals(Arrays.asList("+D", "-D", "+A"), log, "selection handler should be called in order");
 
     log.clear();
     this.grid.setValue(null);
-    Assert.assertEquals("setting null should not need an extra call to handler", Collections.singletonList("-A"), log);
+    Assertions.assertEquals(Collections.singletonList("-A"), log, "setting null should not need an extra call to handler");
 
     // old selection handler should not be invoked
-    Assert.assertTrue(this.grid.getCellInformation().stream().noneMatch(info -> info.getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)));
+    Assertions.assertTrue(this.grid.getCellInformation().stream().noneMatch(info -> info.getComponent().getElement().getClassList().contains(ItemGrid.DEFAULT_SELECTED_ITEM_CLASS_NAME)));
   }
 
   @Test
@@ -244,41 +260,41 @@ public class ItemGridTest {
     this.grid.setItems(items);
     this.grid.setColumnCount(4);
 
-    Assert.assertEquals("9 elements in 4 columns - that is 3 rows", 3, this.grid.getRowCount());
+    Assertions.assertEquals(3, this.grid.getRowCount(), "9 elements in 4 columns - that is 3 rows");
 
     this.grid.setRowPaddingStrategy(RowPaddingStrategies.LAST_ROW_FILL_END);
 
-    Assert.assertEquals("padded 9 elements in 4 columns - that is 3 rows", 3, this.grid.getRowCount());
-    Assert.assertEquals("with padding there should be 12 elements", 12, this.grid.size());
-    Assert.assertEquals("only 3 padding cells should be there", 3, this.grid.getCellInformation().stream().filter(cell -> !cell.isValueCell()).count());
+    Assertions.assertEquals(3, this.grid.getRowCount(), "padded 9 elements in 4 columns - that is 3 rows");
+    Assertions.assertEquals(12, this.grid.size(), "with padding there should be 12 elements");
+    Assertions.assertEquals(3, this.grid.getCellInformation().stream().filter(cell -> !cell.isValueCell()).count(), "only 3 padding cells should be there");
     for (int zmp1 = 1; zmp1 <= 3; zmp1++)
-      Assert.assertFalse("last three cells in last row must not be value cells", this.grid.getCellInformation(2, zmp1).map(CellInformation::isValueCell).orElse(false));
+      Assertions.assertFalse(this.grid.getCellInformation(2, zmp1).map(CellInformation::isValueCell).orElse(false), "last three cells in last row must not be value cells");
 
     // this makes the grid effectively 2 columns, with padding column on each side
     this.grid.setRowPaddingStrategy((rowNumber, gridColumns, itemsLeft) -> new RowPadding(1, 1));
 
-    Assert.assertEquals("9 elements, 4 columns with 2 padding cells - 5 rows", 5, this.grid.getRowCount());
-    Assert.assertEquals("weird padding should have 19 cells in total", 19, this.grid.size());
+    Assertions.assertEquals(5, this.grid.getRowCount(), "9 elements, 4 columns with 2 padding cells - 5 rows");
+    Assertions.assertEquals(19, this.grid.size(), "weird padding should have 19 cells in total");
 
     for (int zmp1 = 0; zmp1 < 4; zmp1++)
-      Assert.assertEquals("four rows with 4 columns", 4, this.grid.getRowCellInformation(zmp1).size());
-    Assert.assertEquals("last row with only 3 columns", 3, this.grid.getRowCellInformation(4).size());
+      Assertions.assertEquals(4, this.grid.getRowCellInformation(zmp1).size(), "four rows with 4 columns");
+    Assertions.assertEquals(3, this.grid.getRowCellInformation(4).size(), "last row with only 3 columns");
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testPaddingStrategyMustNotTakeAllColumns() {
     final String[] items = new String[]{"A", "B", "C", "D"};
     this.grid.setColumnCount(2);
     this.grid.setRowPaddingStrategy((rowNumber, gridColumns, itemsLeft) -> new RowPadding(1, 1));
-    this.grid.setItems(items); // now this must fail
+    Assertions.assertThrows(IllegalStateException.class, () -> this.grid.setItems(items)); // now this must fail
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testPaddingStrategyMustNotTakeMoreColumns() {
     final String[] items = new String[]{"A", "B", "C", "D"};
     this.grid.setColumnCount(3);
     this.grid.setItems(items);
-    this.grid.setRowPaddingStrategy((rowNumber, gridColumns, itemsLeft) -> new RowPadding(2, 2));
+    Assertions.assertThrows(IllegalStateException.class, () -> this.grid.setRowPaddingStrategy((rowNumber, gridColumns, itemsLeft) -> new RowPadding(2, 2)));
   }
 
   @Test
@@ -287,17 +303,17 @@ public class ItemGridTest {
     this.grid.setItems(items);
     this.grid.setRowPaddingStrategy(RowPaddingStrategies.FIRST_ROW_FILL_BEGINNING);
     final Optional<CellInformation<String>> perhapsCell = this.grid.getCellInformation(0, 0);
-    Assert.assertTrue("there should be cell at (0, 0)", perhapsCell.isPresent());
-    Assert.assertFalse("cell at (0, 0) must not be a value cell", perhapsCell.get().isValueCell());
-    this.grid.simulateCellClick(0, 0);
-    Assert.assertEquals("padding cells are not clickable by default", 0, this.eventCounter);
-    this.grid.simulateCellClick(0, 1);
-    Assert.assertEquals("value cells are clickable", 1, this.eventCounter);
+    Assertions.assertTrue(perhapsCell.isPresent(), "there should be cell at (0, 0)");
+    Assertions.assertFalse(perhapsCell.get().isValueCell(), "cell at (0, 0) must not be a value cell");
+    this.clickCell(0, 0);
+    Assertions.assertEquals(0, this.eventCounter, "padding cells are not clickable by default");
+    this.clickCell(0, 1);
+    Assertions.assertEquals(1, this.eventCounter, "value cells are clickable");
     this.grid.setPaddingCellsClickable(true);
-    this.grid.simulateCellClick(0, 0);
-    Assert.assertEquals("padding cells should now be clickable", 2, this.eventCounter);
-    this.grid.simulateCellClick(0, 1);
-    Assert.assertEquals("value cells are still clickable", 3, this.eventCounter);
+    this.clickCell(0, 0);
+    Assertions.assertEquals(2, this.eventCounter, "padding cells should now be clickable");
+    this.clickCell(0, 1);
+    Assertions.assertEquals(3, this.eventCounter, "value cells are still clickable");
   }
 
 }

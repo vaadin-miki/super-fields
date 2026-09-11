@@ -1,13 +1,13 @@
 package org.vaadin.miki.superfields.tabs;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.vaadin.browserless.BrowserlessUIContext;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.tabs.Tab;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,15 +17,19 @@ import java.util.Optional;
 
 public class SuperTabsTest {
 
+    private BrowserlessUIContext window;
+
     private SuperTabs<String> tabs;
 
     // these are only for events and the like
     private int eventCount, headerGeneratorCount, contentGeneratorCount;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        MockVaadin.setup();
-        this.tabs = new SuperTabs<>();
+        this.window = BrowserlessUIContext.forComponent(() -> {
+            this.tabs = new SuperTabs<>();
+            return this.tabs;
+        });
         this.tabs.setTabHandler(TabHandlers.VISIBILITY_HANDLER);
         this.tabs.addValueChangeListener(e -> eventCount++);
         this.eventCount = 0;
@@ -33,30 +37,32 @@ public class SuperTabsTest {
         this.contentGeneratorCount = 0;
     }
 
-    @After
-    public void tearDown() {
-        MockVaadin.tearDown();
+    @AfterEach
+    public void closeWindow() {
+        if (this.window != null) {
+            this.window.close();
+        }
     }
 
     @Test
     public void testNothingOnStartup() {
-        Assert.assertEquals(0, this.tabs.size());
-        Assert.assertEquals(0, this.eventCount);
-        Assert.assertFalse(this.tabs.isCustomValueAllowed());
-        Assert.assertNotNull(this.tabs.getTabContentGenerator());
-        Assert.assertNotNull(this.tabs.getTabHeaderGenerator());
+        Assertions.assertEquals(0, this.tabs.size());
+        Assertions.assertEquals(0, this.eventCount);
+        Assertions.assertFalse(this.tabs.isCustomValueAllowed());
+        Assertions.assertNotNull(this.tabs.getTabContentGenerator());
+        Assertions.assertNotNull(this.tabs.getTabHeaderGenerator());
     }
 
     @Test
     public void testAddDefaultFirstTab() {
         final String string = "hello";
         this.tabs.addTab(string);
-        Assert.assertEquals(1, this.tabs.size());
-        Assert.assertEquals(Collections.singletonList(string), this.tabs.getValues());
-        Assert.assertEquals("adding first tab must trigger value change event", 1, this.eventCount);
-        Assert.assertEquals(string, this.tabs.getValue());
-        Assert.assertTrue(this.tabs.getTabHeader(string).isPresent());
-        Assert.assertTrue(this.tabs.getTabContents(string).isPresent());
+        Assertions.assertEquals(1, this.tabs.size());
+        Assertions.assertEquals(Collections.singletonList(string), this.tabs.getValues());
+        Assertions.assertEquals(1, this.eventCount, "adding first tab must trigger value change event");
+        Assertions.assertEquals(string, this.tabs.getValue());
+        Assertions.assertTrue(this.tabs.getTabHeader(string).isPresent());
+        Assertions.assertTrue(this.tabs.getTabContents(string).isPresent());
     }
 
     @Test
@@ -73,46 +79,46 @@ public class SuperTabsTest {
         final String first = "first", second = "second", third = "third";
         this.tabs.addTab(first);
         // only one generation of both header and content, because the first tab is selected automatically
-        Assert.assertEquals("header should have been only generated once", 1, this.headerGeneratorCount);
-        Assert.assertEquals("content should have been only generated once", 1, this.contentGeneratorCount);
+        Assertions.assertEquals(1, this.headerGeneratorCount, "header should have been only generated once");
+        Assertions.assertEquals(1, this.contentGeneratorCount, "content should have been only generated once");
 
         this.tabs.addTab(second);
-        Assert.assertEquals("only the first tab should trigger value change", 1, this.eventCount);
-        Assert.assertEquals(first, this.tabs.getValue());
-        Assert.assertEquals(2, this.tabs.size());
-        Assert.assertEquals("header should have been generated twice", 2, this.headerGeneratorCount);
-        Assert.assertEquals("content should have been generated twice", 2, this.contentGeneratorCount);
+        Assertions.assertEquals(1, this.eventCount, "only the first tab should trigger value change");
+        Assertions.assertEquals(first, this.tabs.getValue());
+        Assertions.assertEquals(2, this.tabs.size());
+        Assertions.assertEquals(2, this.headerGeneratorCount, "header should have been generated twice");
+        Assertions.assertEquals(2, this.contentGeneratorCount, "content should have been generated twice");
 
         this.eventCount = 0;
         // switch to other tab
         this.tabs.setValue(second);
-        Assert.assertEquals("only one value change event should have happened", 1, this.eventCount);
-        Assert.assertEquals(second, this.tabs.getValue());
+        Assertions.assertEquals(1, this.eventCount, "only one value change event should have happened");
+        Assertions.assertEquals(second, this.tabs.getValue());
         this.tabs.setValue(second);
-        Assert.assertEquals("value was not really changed, event should not trigger", 1, this.eventCount);
+        Assertions.assertEquals(1, this.eventCount, "value was not really changed, event should not trigger");
 
         // switch to the first tab again
         this.tabs.setValue(first);
-        Assert.assertEquals("two value change events should have happened", 2, this.eventCount);
-        Assert.assertEquals("header *still* should have been generated twice", 2, this.headerGeneratorCount);
-        Assert.assertEquals("content *still* should have been generated twice", 2, this.contentGeneratorCount);
+        Assertions.assertEquals(2, this.eventCount, "two value change events should have happened");
+        Assertions.assertEquals(2, this.headerGeneratorCount, "header *still* should have been generated twice");
+        Assertions.assertEquals(2, this.contentGeneratorCount, "content *still* should have been generated twice");
 
         // this should have no effect
         this.tabs.setValue("no effect");
-        Assert.assertEquals("no value change happened", 2, this.eventCount);
-        Assert.assertEquals("no changes, two headers", 2, this.headerGeneratorCount);
-        Assert.assertEquals("no changes, two contents", 2, this.contentGeneratorCount);
-        Assert.assertEquals(first, this.tabs.getValue());
+        Assertions.assertEquals(2, this.eventCount, "no value change happened");
+        Assertions.assertEquals(2, this.headerGeneratorCount, "no changes, two headers");
+        Assertions.assertEquals(2, this.contentGeneratorCount, "no changes, two contents");
+        Assertions.assertEquals(first, this.tabs.getValue());
 
         this.eventCount = 0;
         this.tabs.setCustomValueAllowed(true);
         this.tabs.setValue(third);
-        Assert.assertEquals(3, this.tabs.size());
-        Assert.assertEquals("tab should be switched to the new one", 1, this.eventCount);
-        Assert.assertEquals(third, this.tabs.getValue());
-        Assert.assertEquals("should now be three tabs", 3, this.headerGeneratorCount);
-        Assert.assertEquals("should now be three contents", 3, this.contentGeneratorCount);
-        Assert.assertEquals(Arrays.asList(first, second, third), this.tabs.getValues());
+        Assertions.assertEquals(3, this.tabs.size());
+        Assertions.assertEquals(1, this.eventCount, "tab should be switched to the new one");
+        Assertions.assertEquals(third, this.tabs.getValue());
+        Assertions.assertEquals(3, this.headerGeneratorCount, "should now be three tabs");
+        Assertions.assertEquals(3, this.contentGeneratorCount, "should now be three contents");
+        Assertions.assertEquals(Arrays.asList(first, second, third), this.tabs.getValues());
     }
 
     @Test
@@ -120,63 +126,63 @@ public class SuperTabsTest {
         final String first = "first", second = "second", third = "third", fourth = "fourth";
         this.tabs.addTab(first, second, third, fourth);
 
-        Assert.assertEquals("value changed should be triggered only for the first tab", 1, this.eventCount);
-        Assert.assertEquals(first, this.tabs.getValue());
-        Assert.assertEquals(4, this.tabs.size());
+        Assertions.assertEquals(1, this.eventCount, "value changed should be triggered only for the first tab");
+        Assertions.assertEquals(first, this.tabs.getValue());
+        Assertions.assertEquals(4, this.tabs.size());
 
         this.eventCount = 0;
         this.tabs.setValue(third);
-        Assert.assertEquals(third, this.tabs.getValue());
-        Assert.assertEquals(1, this.eventCount);
+        Assertions.assertEquals(third, this.tabs.getValue());
+        Assertions.assertEquals(1, this.eventCount);
 
         this.eventCount = 0;
         this.tabs.removeTab(second);
-        Assert.assertEquals("no event should trigger when non-active tab is removed", 0, this.eventCount);
-        Assert.assertEquals(third, this.tabs.getValue());
-        Assert.assertEquals(3, this.tabs.size());
-        Assert.assertEquals(Arrays.asList(first, third, fourth), this.tabs.getValues());
-        Assert.assertFalse(this.tabs.getTabContents(second).isPresent());
-        Assert.assertFalse(this.tabs.getTabHeader(second).isPresent());
+        Assertions.assertEquals(0, this.eventCount, "no event should trigger when non-active tab is removed");
+        Assertions.assertEquals(third, this.tabs.getValue());
+        Assertions.assertEquals(3, this.tabs.size());
+        Assertions.assertEquals(Arrays.asList(first, third, fourth), this.tabs.getValues());
+        Assertions.assertFalse(this.tabs.getTabContents(second).isPresent());
+        Assertions.assertFalse(this.tabs.getTabHeader(second).isPresent());
 
         this.tabs.removeTab(third);
-        Assert.assertEquals("removing current tab should trigger value change", 1, this.eventCount);
-        Assert.assertNull(this.tabs.getValue());
-        Assert.assertEquals(2, this.tabs.size());
-        Assert.assertEquals(Arrays.asList(first, fourth), this.tabs.getValues());
-        Assert.assertFalse(this.tabs.getTabContents(third).isPresent());
-        Assert.assertFalse(this.tabs.getTabHeader(third).isPresent());
+        Assertions.assertEquals(1, this.eventCount, "removing current tab should trigger value change");
+        Assertions.assertNull(this.tabs.getValue());
+        Assertions.assertEquals(2, this.tabs.size());
+        Assertions.assertEquals(Arrays.asList(first, fourth), this.tabs.getValues());
+        Assertions.assertFalse(this.tabs.getTabContents(third).isPresent());
+        Assertions.assertFalse(this.tabs.getTabHeader(third).isPresent());
     }
 
     @Test
     public void testVisibilityOfTabContentsAndSelectedTabHeadersWithDefaultTabHandler() {
         final String tab1 = "tab1", tab2 = "tab2", tab3 = "tab3";
         this.tabs.addTab(tab1, tab2, tab3);
-        Assert.assertTrue(this.tabs.getTabContents(tab1).isPresent());
-        Assert.assertTrue(this.tabs.getTabContents(tab1).get().isVisible());
-        Assert.assertTrue(this.tabs.getTabContents(tab2).isPresent());
-        Assert.assertFalse(this.tabs.getTabContents(tab2).get().isVisible());
-        Assert.assertTrue(this.tabs.getTabContents(tab3).isPresent());
-        Assert.assertFalse(this.tabs.getTabContents(tab3).get().isVisible());
-        Assert.assertTrue(this.tabs.getTabHeader(tab1).isPresent());
-        Assert.assertTrue(this.tabs.getTabHeader(tab1).get().isSelected());
-        Assert.assertTrue(this.tabs.getTabHeader(tab2).isPresent());
-        Assert.assertFalse(this.tabs.getTabHeader(tab2).get().isSelected());
-        Assert.assertTrue(this.tabs.getTabHeader(tab3).isPresent());
-        Assert.assertFalse(this.tabs.getTabHeader(tab3).get().isSelected());
+        Assertions.assertTrue(this.tabs.getTabContents(tab1).isPresent());
+        Assertions.assertTrue(this.tabs.getTabContents(tab1).get().isVisible());
+        Assertions.assertTrue(this.tabs.getTabContents(tab2).isPresent());
+        Assertions.assertFalse(this.tabs.getTabContents(tab2).get().isVisible());
+        Assertions.assertTrue(this.tabs.getTabContents(tab3).isPresent());
+        Assertions.assertFalse(this.tabs.getTabContents(tab3).get().isVisible());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab1).isPresent());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab1).get().isSelected());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab2).isPresent());
+        Assertions.assertFalse(this.tabs.getTabHeader(tab2).get().isSelected());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab3).isPresent());
+        Assertions.assertFalse(this.tabs.getTabHeader(tab3).get().isSelected());
 
         this.tabs.setValue(tab3);
-        Assert.assertTrue(this.tabs.getTabContents(tab1).isPresent());
-        Assert.assertFalse(this.tabs.getTabContents(tab1).get().isVisible());
-        Assert.assertTrue(this.tabs.getTabContents(tab2).isPresent());
-        Assert.assertFalse(this.tabs.getTabContents(tab2).get().isVisible());
-        Assert.assertTrue(this.tabs.getTabContents(tab3).isPresent());
-        Assert.assertTrue(this.tabs.getTabContents(tab3).get().isVisible());
-        Assert.assertTrue(this.tabs.getTabHeader(tab1).isPresent());
-        Assert.assertFalse(this.tabs.getTabHeader(tab1).get().isSelected());
-        Assert.assertTrue(this.tabs.getTabHeader(tab2).isPresent());
-        Assert.assertFalse(this.tabs.getTabHeader(tab2).get().isSelected());
-        Assert.assertTrue(this.tabs.getTabHeader(tab3).isPresent());
-        Assert.assertTrue(this.tabs.getTabHeader(tab3).get().isSelected());
+        Assertions.assertTrue(this.tabs.getTabContents(tab1).isPresent());
+        Assertions.assertFalse(this.tabs.getTabContents(tab1).get().isVisible());
+        Assertions.assertTrue(this.tabs.getTabContents(tab2).isPresent());
+        Assertions.assertFalse(this.tabs.getTabContents(tab2).get().isVisible());
+        Assertions.assertTrue(this.tabs.getTabContents(tab3).isPresent());
+        Assertions.assertTrue(this.tabs.getTabContents(tab3).get().isVisible());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab1).isPresent());
+        Assertions.assertFalse(this.tabs.getTabHeader(tab1).get().isSelected());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab2).isPresent());
+        Assertions.assertFalse(this.tabs.getTabHeader(tab2).get().isSelected());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab3).isPresent());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab3).get().isSelected());
     }
 
     @Test
@@ -184,32 +190,32 @@ public class SuperTabsTest {
         this.tabs.setTabHandler(TabHandlers.REMOVING_HANDLER);
         final String tab1 = "tab1", tab2 = "tab2", tab3 = "tab3";
         this.tabs.addTab(tab1, tab2, tab3);
-        Assert.assertTrue(this.tabs.getTabContents(tab1).isPresent());
-        Assert.assertTrue(this.tabs.getTabContents(tab1).get().getParent().isPresent());
-        Assert.assertTrue(this.tabs.getTabContents(tab2).isPresent());
-        Assert.assertFalse(this.tabs.getTabContents(tab2).get().getParent().isPresent());
-        Assert.assertTrue(this.tabs.getTabContents(tab3).isPresent());
-        Assert.assertFalse(this.tabs.getTabContents(tab3).get().getParent().isPresent());
-        Assert.assertTrue(this.tabs.getTabHeader(tab1).isPresent());
-        Assert.assertTrue(this.tabs.getTabHeader(tab1).get().isSelected());
-        Assert.assertTrue(this.tabs.getTabHeader(tab2).isPresent());
-        Assert.assertFalse(this.tabs.getTabHeader(tab2).get().isSelected());
-        Assert.assertTrue(this.tabs.getTabHeader(tab3).isPresent());
-        Assert.assertFalse(this.tabs.getTabHeader(tab3).get().isSelected());
+        Assertions.assertTrue(this.tabs.getTabContents(tab1).isPresent());
+        Assertions.assertTrue(this.tabs.getTabContents(tab1).get().getParent().isPresent());
+        Assertions.assertTrue(this.tabs.getTabContents(tab2).isPresent());
+        Assertions.assertFalse(this.tabs.getTabContents(tab2).get().getParent().isPresent());
+        Assertions.assertTrue(this.tabs.getTabContents(tab3).isPresent());
+        Assertions.assertFalse(this.tabs.getTabContents(tab3).get().getParent().isPresent());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab1).isPresent());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab1).get().isSelected());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab2).isPresent());
+        Assertions.assertFalse(this.tabs.getTabHeader(tab2).get().isSelected());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab3).isPresent());
+        Assertions.assertFalse(this.tabs.getTabHeader(tab3).get().isSelected());
 
         this.tabs.setValue(tab3);
-        Assert.assertTrue(this.tabs.getTabContents(tab1).isPresent());
-        Assert.assertFalse(this.tabs.getTabContents(tab1).get().getParent().isPresent());
-        Assert.assertTrue(this.tabs.getTabContents(tab2).isPresent());
-        Assert.assertFalse(this.tabs.getTabContents(tab2).get().getParent().isPresent());
-        Assert.assertTrue(this.tabs.getTabContents(tab3).isPresent());
-        Assert.assertTrue(this.tabs.getTabContents(tab3).get().getParent().isPresent());
-        Assert.assertTrue(this.tabs.getTabHeader(tab1).isPresent());
-        Assert.assertFalse(this.tabs.getTabHeader(tab1).get().isSelected());
-        Assert.assertTrue(this.tabs.getTabHeader(tab2).isPresent());
-        Assert.assertFalse(this.tabs.getTabHeader(tab2).get().isSelected());
-        Assert.assertTrue(this.tabs.getTabHeader(tab3).isPresent());
-        Assert.assertTrue(this.tabs.getTabHeader(tab3).get().isSelected());
+        Assertions.assertTrue(this.tabs.getTabContents(tab1).isPresent());
+        Assertions.assertFalse(this.tabs.getTabContents(tab1).get().getParent().isPresent());
+        Assertions.assertTrue(this.tabs.getTabContents(tab2).isPresent());
+        Assertions.assertFalse(this.tabs.getTabContents(tab2).get().getParent().isPresent());
+        Assertions.assertTrue(this.tabs.getTabContents(tab3).isPresent());
+        Assertions.assertTrue(this.tabs.getTabContents(tab3).get().getParent().isPresent());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab1).isPresent());
+        Assertions.assertFalse(this.tabs.getTabHeader(tab1).get().isSelected());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab2).isPresent());
+        Assertions.assertFalse(this.tabs.getTabHeader(tab2).get().isSelected());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab3).isPresent());
+        Assertions.assertTrue(this.tabs.getTabHeader(tab3).get().isSelected());
     }
 
     @Test
@@ -223,24 +229,24 @@ public class SuperTabsTest {
         // now, selected tab is tab1 and all components are attached to the container
         // in addition, selected tab (tab1) contents have a style name
         for(String value: new String[]{tab1, tab2, tab3}) {
-            Assert.assertTrue(this.tabs.getTabContents(value).isPresent());
-            Assert.assertTrue(this.tabs.getTabContents(value).get().getParent().isPresent());
+            Assertions.assertTrue(this.tabs.getTabContents(value).isPresent());
+            Assertions.assertTrue(this.tabs.getTabContents(value).get().getParent().isPresent());
             contents.put(value, this.tabs.getTabContents(value).get());
-            Assert.assertEquals("contents for tab1 should have a selected-tab class name", value.equals(tab1), this.tabs.getTabContents(value).get().getElement().getClassList().contains("selected-tab"));
+            Assertions.assertEquals(value.equals(tab1), this.tabs.getTabContents(value).get().getElement().getClassList().contains("selected-tab"), "contents for tab1 should have a selected-tab class name");
         }
 
         this.tabs.setTabHandler(TabHandlers.REMOVING_HANDLER);
         // no value change should happen
-        Assert.assertEquals(0, this.eventCount);
+        Assertions.assertEquals(0, this.eventCount);
 
         // all components should still be the same
         // but, only the selected one should have a parent (others should not)
         // also, none of them should have a selected class name
         for(String value: new String[]{tab1, tab2, tab3}) {
-            Assert.assertTrue(this.tabs.getTabContents(value).isPresent());
-            Assert.assertSame(contents.get(value), this.tabs.getTabContents(value).get());
-            Assert.assertEquals("only tab1 should have a parent", value.equals(tab1), this.tabs.getTabContents(value).get().getParent().isPresent());
-            Assert.assertFalse(this.tabs.getTabContents(value).get().getElement().getClassList().contains("selected-tab"));
+            Assertions.assertTrue(this.tabs.getTabContents(value).isPresent());
+            Assertions.assertSame(contents.get(value), this.tabs.getTabContents(value).get());
+            Assertions.assertEquals(value.equals(tab1), this.tabs.getTabContents(value).get().getParent().isPresent(), "only tab1 should have a parent");
+            Assertions.assertFalse(this.tabs.getTabContents(value).get().getElement().getClassList().contains("selected-tab"));
         }
     }
 
@@ -248,16 +254,16 @@ public class SuperTabsTest {
     public void testTabSetSelected() {
         final String tabTitle = "foo";
         this.tabs.addTab("something", "anything", tabTitle, "another thing");
-        Assert.assertNotEquals(tabTitle, this.tabs.getValue());
+        Assertions.assertNotEquals(tabTitle, this.tabs.getValue());
         final Optional<Tab> perhapsHeader = this.tabs.getTabHeader(tabTitle);
-        Assert.assertTrue(perhapsHeader.isPresent());
+        Assertions.assertTrue(perhapsHeader.isPresent());
         final Tab tab = perhapsHeader.get();
         tab.setSelected(true);
-        Assert.assertEquals(tabTitle, this.tabs.getValue());
+        Assertions.assertEquals(tabTitle, this.tabs.getValue());
 
         final Tab notThere = new Tab("oh wow");
         notThere.setSelected(true);
-        Assert.assertEquals(tabTitle, this.tabs.getValue());
+        Assertions.assertEquals(tabTitle, this.tabs.getValue());
     }
 
 }

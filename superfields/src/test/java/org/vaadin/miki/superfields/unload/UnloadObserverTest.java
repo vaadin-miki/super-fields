@@ -1,80 +1,80 @@
 package org.vaadin.miki.superfields.unload;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.github.mvysny.kaributesting.v10.Routes;
+import com.vaadin.browserless.BrowserlessApplicationContext;
+import com.vaadin.browserless.BrowserlessUIContext;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class UnloadObserverTest {
 
-    @Before
+    // this is the only test that needs routes: it navigates to SampleView
+    private BrowserlessApplicationContext application;
+
+    private BrowserlessUIContext window;
+
+    @BeforeEach
     public void setUp() {
-        final Routes routes = new Routes();
-        routes.autoDiscoverViews();
-        MockVaadin.setup(routes);
+        this.application = BrowserlessApplicationContext.create(SampleView.class);
+        this.window = this.application.newUser().newWindow();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
-        MockVaadin.tearDown();
+        // closing the application also closes its users and their windows
+        this.application.close();
     }
 
     @Test
     public void testCreatingUnattached() {
-        Assert.assertNotNull("there should be a UI for current thread", UI.getCurrent());
+        Assertions.assertNotNull(UI.getCurrent(), "there should be a UI for current thread");
         UnloadObserver instance = UnloadObserver.get();
-        Assert.assertNotNull("there should be a non-null instance of unload observer", instance);
+        Assertions.assertNotNull(instance, "there should be a non-null instance of unload observer");
         UnloadObserver second = UnloadObserver.get();
-        Assert.assertNotNull("calling get() second time should give a non-null result", second);
-        Assert.assertSame("both instances should be the same", instance, second);
-        Assert.assertFalse("unload observer should not be attached to anything", instance.getParent().isPresent());
-        Assert.assertFalse("unload observer should not be part of any UI", instance.getUI().isPresent());
+        Assertions.assertNotNull(second, "calling get() second time should give a non-null result");
+        Assertions.assertSame(instance, second, "both instances should be the same");
+        Assertions.assertFalse(instance.getParent().isPresent(), "unload observer should not be attached to anything");
+        Assertions.assertFalse(instance.getUI().isPresent(), "unload observer should not be part of any UI");
     }
 
     private void assertValidUnloadObserver(UnloadObserver instance, UI ui, Component parent) {
-        Assert.assertTrue("unload observer should be attached to something", instance.getParent().isPresent());
-        Assert.assertSame("unload observer should be attached to given parent", instance.getParent().get(), parent);
-        Assert.assertTrue("unload observer should be part of some UI", instance.getUI().isPresent());
-        Assert.assertSame("unload observer should be part of given UI", instance.getUI().get(), ui);
+        Assertions.assertTrue(instance.getParent().isPresent(), "unload observer should be attached to something");
+        Assertions.assertSame(instance.getParent().get(), parent, "unload observer should be attached to given parent");
+        Assertions.assertTrue(instance.getUI().isPresent(), "unload observer should be part of some UI");
+        Assertions.assertSame(instance.getUI().get(), ui, "unload observer should be part of given UI");
 
         UnloadObserver second = UnloadObserver.getAttached();
-        Assert.assertSame("getting attached should return the same object", instance, second);
+        Assertions.assertSame(instance, second, "getting attached should return the same object");
     }
 
     @Test
     public void testCreatingAttachedToUI() {
-        Assert.assertNotNull("there should be a UI for current thread", UI.getCurrent());
+        Assertions.assertNotNull(UI.getCurrent(), "there should be a UI for current thread");
         UnloadObserver instance = UnloadObserver.getAttached();
-        Assert.assertNotNull("there should be a non-null instance of unload observer", instance);
+        Assertions.assertNotNull(instance, "there should be a non-null instance of unload observer");
         UnloadObserver second = UnloadObserver.get();
-        Assert.assertNotNull("calling get() second time should give a non-null result", second);
-        Assert.assertSame("both instances should be the same", instance, second);
+        Assertions.assertNotNull(second, "calling get() second time should give a non-null result");
+        Assertions.assertSame(instance, second, "both instances should be the same");
         this.assertValidUnloadObserver(instance, UI.getCurrent(), UI.getCurrent());
     }
 
     @Test
     public void testCreatingAttachedToAComponent() {
-        UI.getCurrent().navigate(""); // go to sample view
-        Optional<SampleView> perhapsView = UI.getCurrent().getChildren().filter(SampleView.class::isInstance).map(SampleView.class::cast).findFirst();
-        Assert.assertTrue("a view should have been found", perhapsView.isPresent());
-        SampleView view = perhapsView.get();
+        SampleView view = this.window.navigate(SampleView.class);
         UnloadObserver instance = UnloadObserver.getAttached(view);
         this.assertValidUnloadObserver(instance, UI.getCurrent(), view);
 
         UnloadObserver second = UnloadObserver.get();
-        Assert.assertSame("call to get() should result in already attached observer", instance, second);
+        Assertions.assertSame(instance, second, "call to get() should result in already attached observer");
 
         // now attaching from view to UI
         second = UnloadObserver.getAttached();
-        Assert.assertSame("call to getAttached() should return previous instance, but with changed properties", instance, second);
+        Assertions.assertSame(instance, second, "call to getAttached() should return previous instance, but with changed properties");
         this.assertValidUnloadObserver(instance, UI.getCurrent(), UI.getCurrent());
-        Assert.assertTrue("view should no longer contain the unload observer", view.getChildren().noneMatch(component -> component == instance));
+        Assertions.assertTrue(view.getChildren().noneMatch(component -> component == instance), "view should no longer contain the unload observer");
     }
 
 }
