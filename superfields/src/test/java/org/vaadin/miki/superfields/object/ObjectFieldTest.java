@@ -26,7 +26,7 @@ import java.util.stream.Stream;
  * @author miki
  * @since 2022-06-23
  */
-public class ObjectFieldTest {
+class ObjectFieldTest {
 
   private BrowserlessUIContext window;
 
@@ -41,7 +41,7 @@ public class ObjectFieldTest {
   private ObjectField<DataObject> field;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     this.window = BrowserlessUIContext.forComponent(() -> {
       this.field = FACTORY.buildAndConfigureObjectField(DataObject.class, DataObject::new, false);
       return this.field;
@@ -49,14 +49,14 @@ public class ObjectFieldTest {
   }
 
   @AfterEach
-  public void closeWindow() {
+  void closeWindow() {
     if (this.window != null) {
       this.window.close();
     }
   }
 
   @Test
-  public void testInitialisedWithAllProperties() {
+  void testInitialisedWithAllProperties() {
     // before setting a value there should be nothing
     // note that this field is not repainted when built
     Assertions.assertTrue(this.field.getPropertiesAndComponents().isEmpty());
@@ -86,7 +86,7 @@ public class ObjectFieldTest {
   }
 
   @Test
-  public void testFieldsCorrectlyMappedToComponents() {
+  void testFieldsCorrectlyMappedToComponents() {
     this.field.setValue(DataObject.build());
 
     final Map<Property<DataObject, ?>, HasValue<?, ?>> map = this.field.getPropertiesAndComponents();
@@ -106,8 +106,9 @@ public class ObjectFieldTest {
   }
 
   @Test
-  @SuppressWarnings("OptionalGetWithoutIsPresent") // getter is present
-  public void testComponentsHaveCorrectValues() {
+  @SuppressWarnings("OptionalGetWithoutIsPresent")
+    // getter is present
+  void testComponentsHaveCorrectValues() {
     final DataObject value = new DataObject();
     value.setText("hello, world");
     value.setHidden(123L);

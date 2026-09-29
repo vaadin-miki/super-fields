@@ -15,34 +15,34 @@ import java.util.TreeSet;
  * @author miki
  * @since 2022-04-28
  */
-public class IntegerNonNullableSetCollectionFieldTest {
+class IntegerNonNullableSetCollectionFieldTest {
 
-    private BrowserlessUIContext window;
+  private BrowserlessUIContext window;
 
-    private CollectionField<Integer, Set<Integer>> collectionField;
+  private CollectionField<Integer, Set<Integer>> collectionField;
 
-    @BeforeEach
-    public void setup() {
-        this.window = BrowserlessUIContext.forComponent(() -> {
-            this.collectionField = new CollectionField<>(TreeSet::new, (index, controller) -> new FlexLayout(),
-                    (CollectionValueComponentProvider<Integer, SuperIntegerField>)(index, controller) -> new SuperIntegerField(null, "element at index "+index).withNullValueAllowed(true));
-            return this.collectionField;
-        });
+  @BeforeEach
+  void setup() {
+    this.window = BrowserlessUIContext.forComponent(() -> {
+      this.collectionField = new CollectionField<>(TreeSet::new, (index, controller) -> new FlexLayout(),
+          (CollectionValueComponentProvider<Integer, SuperIntegerField>) (index, controller) -> new SuperIntegerField(null, "element at index " + index).withNullValueAllowed(true));
+      return this.collectionField;
+    });
+  }
+
+  @AfterEach
+  void closeWindow() {
+    if (this.window != null) {
+      this.window.close();
     }
+  }
 
-    @AfterEach
-    public void closeWindow() {
-        if (this.window != null) {
-            this.window.close();
-        }
-    }
-
-    // reported in #374
-    @Test
-    public void testFilterNullItemsWorksByDefault() {
-        this.collectionField.add(0);
-        final Set<Integer> value = this.collectionField.getValue();
-        Assertions.assertTrue(value.isEmpty());
-    }
+  // reported in #374
+  @Test
+  void testFilterNullItemsWorksByDefault() {
+    this.collectionField.add(0);
+    final Set<Integer> value = this.collectionField.getValue();
+    Assertions.assertTrue(value.isEmpty());
+  }
 
 }

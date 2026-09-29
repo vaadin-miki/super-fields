@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class ItemGridTest {
+class ItemGridTest {
 
   private BrowserlessUIContext window;
 
@@ -24,7 +24,7 @@ public class ItemGridTest {
   private int eventCounter;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.window = BrowserlessUIContext.forComponent(() -> {
       this.grid = new ItemGrid<>();
       return this.grid;
@@ -34,7 +34,7 @@ public class ItemGridTest {
   }
 
   @AfterEach
-  public void closeWindow() {
+  void closeWindow() {
     if (this.window != null) {
       this.window.close();
     }
@@ -50,7 +50,7 @@ public class ItemGridTest {
   }
 
   @Test
-  public void testNothingOnStartup() {
+  void testNothingOnStartup() {
     Assertions.assertEquals(0, this.grid.size());
     Assertions.assertEquals(0, this.grid.getRowCount());
     Assertions.assertEquals(3, this.grid.getColumnCount());
@@ -68,7 +68,7 @@ public class ItemGridTest {
   }
 
   @Test
-  public void testOneFullRowOfItemsServerSide() {
+  void testOneFullRowOfItemsServerSide() {
     final String one = "one", two = "two", three = "three";
     this.grid.setItems(one, two, three);
     Assertions.assertEquals(0, this.eventCounter);
@@ -104,7 +104,7 @@ public class ItemGridTest {
   }
 
   @Test
-  public void threeRowsOfItemsSimulateClicks() {
+  void threeRowsOfItemsSimulateClicks() {
     final String[] items = new String[]{"zero", "one", "two", "three", "four", "five", "six", "seven"};
     this.grid.setItems(items);
 
@@ -146,7 +146,7 @@ public class ItemGridTest {
   }
 
   @Test
-  public void tenItemsChangingColumnCount() {
+  void tenItemsChangingColumnCount() {
     final String[] items = new String[]{"item0", "item1", "item2", "item3", "item4", "item5", "item6", "item7", "item8", "item9"};
     this.grid.setItems(items);
     // default column count is 3 and there is no selection
@@ -195,7 +195,7 @@ public class ItemGridTest {
   }
 
   @Test
-  public void testFiveItemsChangingCellGenerator() {
+  void testFiveItemsChangingCellGenerator() {
     final String[] items = new String[]{"A", "B", "C", "D", "E"};
     this.grid.setItems(items);
 
@@ -221,7 +221,7 @@ public class ItemGridTest {
   }
 
   @Test
-  public void testFiveItemsChangingSelectionHandler() {
+  void testFiveItemsChangingSelectionHandler() {
     final List<String> log = new ArrayList<>();
     final String[] items = new String[]{"A", "B", "C", "D", "E"};
     this.grid.setItems(items);
@@ -255,7 +255,7 @@ public class ItemGridTest {
   }
 
   @Test
-  public void testPaddingStrategyChanges() {
+  void testPaddingStrategyChanges() {
     final String[] items = new String[]{"item-1", "item-2", "item-3", "item-4", "item-5", "item-6", "item-7", "item-8", "item-9"};
     this.grid.setItems(items);
     this.grid.setColumnCount(4);
@@ -282,7 +282,7 @@ public class ItemGridTest {
   }
 
   @Test
-  public void testPaddingStrategyMustNotTakeAllColumns() {
+  void testPaddingStrategyMustNotTakeAllColumns() {
     final String[] items = new String[]{"A", "B", "C", "D"};
     this.grid.setColumnCount(2);
     this.grid.setRowPaddingStrategy((rowNumber, gridColumns, itemsLeft) -> new RowPadding(1, 1));
@@ -290,7 +290,7 @@ public class ItemGridTest {
   }
 
   @Test
-  public void testPaddingStrategyMustNotTakeMoreColumns() {
+  void testPaddingStrategyMustNotTakeMoreColumns() {
     final String[] items = new String[]{"A", "B", "C", "D"};
     this.grid.setColumnCount(3);
     this.grid.setItems(items);
@@ -298,7 +298,7 @@ public class ItemGridTest {
   }
 
   @Test
-  public void clickPaddingCells() {
+  void clickPaddingCells() {
     final String[] items = new String[]{"one", "two"};
     this.grid.setItems(items);
     this.grid.setRowPaddingStrategy(RowPaddingStrategies.FIRST_ROW_FILL_BEGINNING);

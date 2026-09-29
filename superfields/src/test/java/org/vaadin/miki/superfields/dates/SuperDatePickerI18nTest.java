@@ -7,17 +7,17 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Locale;
 
-public class SuperDatePickerI18nTest {
+class SuperDatePickerI18nTest {
 
   private SuperDatePickerI18n i18n;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.i18n = new SuperDatePickerI18n(new Locale.Builder().setLanguage("pl").setRegion("PL").build());
   }
 
   @Test
-  public void setProperlyInitialised() {
+  void setProperlyInitialised() {
     Assertions.assertEquals(new Locale.Builder().setLanguage("pl").setRegion("PL").build(), this.i18n.getLocale());
     Assertions.assertEquals("Anuluj", this.i18n.getCancel());
     Assertions.assertEquals("Dzisiaj", this.i18n.getToday());

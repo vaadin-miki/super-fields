@@ -11,14 +11,14 @@ import org.junit.jupiter.api.Test;
  * @author miki
  * @since 2023-12-15
  */
-public class LazyLoadTest {
+class LazyLoadTest {
 
   private BrowserlessUIContext window;
 
   private LazyLoad<Span> lazyLoad;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     this.window = BrowserlessUIContext.forComponent(() -> {
       this.lazyLoad = new LazyLoad<>(new Span("this is a test"));
       return this.lazyLoad;
@@ -26,29 +26,29 @@ public class LazyLoadTest {
   }
 
   @AfterEach
-  public void closeWindow() {
+  void closeWindow() {
     if (this.window != null) {
       this.window.close();
     }
   }
 
   @Test
-  public void testVisibilityBelowZero() {
+  void testVisibilityBelowZero() {
     Assertions.assertThrows(IllegalArgumentException.class, () -> this.lazyLoad.setContentVisibilityRanges(-3, 0.5));
   }
 
   @Test
-  public void testVisibilityAboveOne() {
+  void testVisibilityAboveOne() {
     Assertions.assertThrows(IllegalArgumentException.class, () -> this.lazyLoad.setContentVisibilityRanges(0.1, 1.5));
   }
 
   @Test
-  public void testVisibilityNotInOrder() {
+  void testVisibilityNotInOrder() {
     Assertions.assertThrows(IllegalArgumentException.class, () -> this.lazyLoad.setContentVisibilityRanges(0.9, 0.8));
   }
 
   @Test
-  public void testVisibilityRangesOk() {
+  void testVisibilityRangesOk() {
     Assertions.assertEquals(0, this.lazyLoad.getContentHiddenVisibilityRange(), 0.000005);
     Assertions.assertEquals(1, this.lazyLoad.getContentShownVisibilityRange(), 0.000005);
 

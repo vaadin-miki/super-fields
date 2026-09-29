@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.vaadin.miki.superfields.text.SuperTextField;
 
-public class HeaderFooterFieldWrapperTest {
+class HeaderFooterFieldWrapperTest {
 
   @Test
-  public void testDefaultValueIsFromComponent() {
+  void testDefaultValueIsFromComponent() {
     final SuperTextField textField = new SuperTextField();
 
     final HeaderFooterFieldWrapper<String, FlexLayout, FlexLayout> wrapper = new HeaderFooterFieldWrapper<>(

@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @SuppressWarnings("squid:S1068")
-public class ReflectToolsTest {
+class ReflectToolsTest {
 
   public static final class TestDateTimePicker extends DateTimePicker {
 
@@ -39,14 +39,14 @@ public class ReflectToolsTest {
   private final int number = 0;
 
   @Test
-  public void datePickerAvailableForSuperDateTimePicker() {
+  void datePickerAvailableForSuperDateTimePicker() {
     final Optional<DatePicker> perhapsPicker = ReflectTools.getValueOfField(new TestDateTimePicker(), DatePicker.class, "datePicker");
     Assertions.assertTrue(perhapsPicker.isPresent());
     Assertions.assertNotNull(perhapsPicker.get());
   }
 
   @Test
-  public void findGenericAttributeOfField() throws NoSuchFieldException {
+  void findGenericAttributeOfField() throws NoSuchFieldException {
     checkType("stringList", 0, String.class);
     checkNoType("stringList", 2);
     checkType("dataObjects", 0, DataObject.class);

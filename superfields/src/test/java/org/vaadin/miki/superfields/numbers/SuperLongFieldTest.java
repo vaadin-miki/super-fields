@@ -72,7 +72,7 @@ public class SuperLongFieldTest extends BaseTestsForIntegerNumbers<Long> {
   }
 
   @Test
-  public void testAlternativeGroupingSeparators() throws ParseException {
+  void testAlternativeGroupingSeparators() throws ParseException {
     this.getField().setLocale(Locale.FRANCE);
     this.getField().setGroupingSeparatorAlternatives(Set.of('_'));
     for (String s : new String[]{"123_456_789", "12_34_56_789", "12345_6789", "_123_456789", "_123456789_"}) {
@@ -82,7 +82,7 @@ public class SuperLongFieldTest extends BaseTestsForIntegerNumbers<Long> {
   }
 
   @Test
-  public void testAlternativeNegativeSign() throws ParseException {
+  void testAlternativeNegativeSign() throws ParseException {
     this.getField().setLocale(Locale.GERMANY);
     this.getField().setNegativeSignAlternatives(Set.of('^', '%'));
     for (String s : new String[]{"^123456123456", "%123456123456", "-123456123456"}) {

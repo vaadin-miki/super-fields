@@ -9,7 +9,7 @@ import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
 
 import java.util.Set;
 
-public class ComponentMultiSelectTest {
+class ComponentMultiSelectTest {
 
   public enum Option {THESE, ARE, THE, OPTIONS, FOR, MULTISELECT}
 
@@ -17,14 +17,14 @@ public class ComponentMultiSelectTest {
   private int eventCounter = 0;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     this.eventCounter = 0;
     this.select = new ComponentMultiSelect<Button, Option>(FlexLayoutHelpers::row, ComponentSelectHelpers.simpleComponentFactory(Button::new), Option.values());
     this.select.addValueChangeListener(event -> eventCounter++);
   }
 
   @Test
-  public void testEmptyAtStartAndAssignValues() {
+  void testEmptyAtStartAndAssignValues() {
     Assertions.assertTrue(this.select.getValue().isEmpty());
     final Set<Option> value = Set.of(Option.ARE, Option.OPTIONS, Option.MULTISELECT);
     this.select.setValue(value);
@@ -32,19 +32,19 @@ public class ComponentMultiSelectTest {
   }
 
   @Test
-  public void testCorrectButtonsSelected() {
+  void testCorrectButtonsSelected() {
     this.select
         .withComponentSelectedAction(ComponentSelectHelpers.addVariant(ButtonVariant.LUMO_PRIMARY))
         .setComponentDeselectedAction(ComponentSelectHelpers.removeVariant(ButtonVariant.LUMO_PRIMARY));
 
     final Set<Option> value = Set.of(Option.MULTISELECT, Option.THE);
     this.select.setValue(value);
-    for(int zmp1=0; zmp1<Option.values().length; zmp1++)
+    for (int zmp1 = 0; zmp1 < Option.values().length; zmp1++)
       Assertions.assertEquals(this.select.getValue().contains(Option.values()[zmp1]), this.select.getComponent(zmp1).getThemeNames().contains(ButtonVariant.LUMO_PRIMARY.getVariantName()));
   }
 
   @Test
-  public void testMaximumIsRespected() {
+  void testMaximumIsRespected() {
     this.select.setMaximumSelectionSize(2);
     this.select.setValue(Set.of(Option.THESE, Option.FOR, Option.OPTIONS));
     // only two values will be selected of the passed value
@@ -58,7 +58,7 @@ public class ComponentMultiSelectTest {
   }
 
   @Test
-  public void testValueChangeByButtonClicks() {
+  void testValueChangeByButtonClicks() {
     this.select.getComponent(0).click();
     this.select.getComponent(2).click();
     Assertions.assertEquals(Set.of(Option.THESE, Option.THE), this.select.getValue());
@@ -66,7 +66,7 @@ public class ComponentMultiSelectTest {
   }
 
   @Test
-  public void testSetMaximumReducesSelectionIfNeeded() {
+  void testSetMaximumReducesSelectionIfNeeded() {
     this.select
         .withComponentSelectedAction(ComponentSelectHelpers.addVariant(ButtonVariant.LUMO_PRIMARY))
         .withComponentDeselectedAction(ComponentSelectHelpers.removeVariant(ButtonVariant.LUMO_PRIMARY))
@@ -77,8 +77,8 @@ public class ComponentMultiSelectTest {
     Assertions.assertEquals(2, this.eventCounter);
     // and only two buttons must be marked selected
     int count = 0;
-    for(int zmp1=0; zmp1 < this.select.getComponentCount(); zmp1++)
-      if(this.select.getComponent(zmp1).getThemeNames().contains(ButtonVariant.LUMO_PRIMARY.getVariantName()))
+    for (int zmp1 = 0; zmp1 < this.select.getComponentCount(); zmp1++)
+      if (this.select.getComponent(zmp1).getThemeNames().contains(ButtonVariant.LUMO_PRIMARY.getVariantName()))
         count++;
     Assertions.assertEquals(2, count);
   }

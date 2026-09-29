@@ -22,7 +22,7 @@ import java.util.List;
  * @author miki
  * @since 2021-08-23
  */
-public class StringListCollectionFieldTest {
+class StringListCollectionFieldTest {
 
   private BrowserlessUIContext window;
 
@@ -31,7 +31,7 @@ public class StringListCollectionFieldTest {
   private int eventCounter = 0;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     this.window = BrowserlessUIContext.forComponent(() -> {
       this.collectionField = new CollectionField<>(ArrayList::new, (index, ctrl) -> {
         this.controller = ctrl;
@@ -45,14 +45,14 @@ public class StringListCollectionFieldTest {
   }
 
   @AfterEach
-  public void closeWindow() {
+  void closeWindow() {
     if (this.window != null) {
       this.window.close();
     }
   }
 
   @Test
-  public void testSimpleList() {
+  void testSimpleList() {
     final List<String> expected = new ArrayList<>(Arrays.asList("this", "is", "test"));
     this.collectionField.setValue(expected);
     final List<String> result = this.collectionField.getValue();
@@ -79,7 +79,7 @@ public class StringListCollectionFieldTest {
   }
 
   @Test
-  public void testRemoveAndAddElements() {
+  void testRemoveAndAddElements() {
     final List<String> source = new ArrayList<>(Arrays.asList("test", "for", "removing", "elements"));
     this.collectionField.setValue(source);
     Assertions.assertEquals(source.size(), this.collectionField.size());
@@ -102,13 +102,13 @@ public class StringListCollectionFieldTest {
   }
 
   @Test
-  public void testEmptyCollectionOutOfTheBox() {
+  void testEmptyCollectionOutOfTheBox() {
     Assertions.assertTrue(this.collectionField.getValue().isEmpty());
     Assertions.assertEquals(0, this.collectionField.size());
   }
 
   @Test
-  public void testClearWorks() {
+  void testClearWorks() {
     final List<String> source = new ArrayList<>(Arrays.asList("this", "is", "a", "very", "long", "list"));
     this.collectionField.setValue(source);
     Assertions.assertEquals(source.size(), this.collectionField.size());
@@ -121,7 +121,7 @@ public class StringListCollectionFieldTest {
   }
 
   @Test
-  public void testDisabling() {
+  void testDisabling() {
     this.collectionField.setValue(Arrays.asList("hello", "world"));
     for (int zmp1 = 0; zmp1 < this.collectionField.size(); zmp1++)
       Assertions.assertTrue(((TextField) this.collectionField.getField(zmp1)).isEnabled());
@@ -132,7 +132,7 @@ public class StringListCollectionFieldTest {
   }
 
   @Test
-  public void testReadOnly() {
+  void testReadOnly() {
     this.collectionField.setValue(Arrays.asList("hello", "world"));
     for (int zmp1 = 0; zmp1 < this.collectionField.size(); zmp1++)
       Assertions.assertFalse(this.collectionField.getField(zmp1).isReadOnly());
@@ -148,7 +148,7 @@ public class StringListCollectionFieldTest {
   }
 
   @Test
-  public void testReindexing() {
+  void testReindexing() {
     // wrapper is needed, as it HasIndex
     this.collectionField.setCollectionValueComponentProvider(CollectionComponentProviders.rowWithRemoveButtonFirst(CollectionComponentProviders::textField, "remove"));
     this.collectionField.setValue(Arrays.asList("this", "is", "an", "elaborate", "test"));
@@ -167,7 +167,7 @@ public class StringListCollectionFieldTest {
   }
 
   @Test
-  public void testChangingRenderNoValueChangeTriggered() {
+  void testChangingRenderNoValueChangeTriggered() {
     this.collectionField.setValue(Arrays.asList("hello", "world"));
     this.eventCounter = 0;
     // changing renderer should not trigger value change - none needed

@@ -15,12 +15,12 @@ import org.vaadin.miki.superfields.layouts.FlexLayoutHelpers;
  * @author miki
  * @since 2023-11-17
  */
-public class ComponentSelectTest {
+class ComponentSelectTest {
 
   private BrowserlessUIContext window;
 
   private static final String[] OPTIONS = {"these", "are", "the", "test", "options"};
-  
+
   private int mostRecentlySelectedButton = -1;
   private int eventCounter = 0;
   private ComponentSelect<Button, String> select;
@@ -30,14 +30,14 @@ public class ComponentSelectTest {
   }
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     this.mostRecentlySelectedButton = -1;
     this.eventCounter = 0;
     this.window = BrowserlessUIContext.forComponent(() -> {
       this.select = new ComponentSelect<Button, String>(
-            FlexLayoutHelpers::row,
-            ComponentSelectHelpers.simpleComponentFactory(Button::new),
-            OPTIONS)
+          FlexLayoutHelpers::row,
+          ComponentSelectHelpers.simpleComponentFactory(Button::new),
+          OPTIONS)
           .withComponentSelectedAction((index, button) -> this.mostRecentlySelectedButton = index);
       return this.select;
     });
@@ -45,21 +45,21 @@ public class ComponentSelectTest {
   }
 
   @AfterEach
-  public void closeWindow() {
+  void closeWindow() {
     if (this.window != null) {
       this.window.close();
     }
   }
 
   @Test
-  public void testValueChangeWorks() {
+  void testValueChangeWorks() {
     Assertions.assertEquals(ComponentSelect.NO_SELECTION, this.select.getSelectedIndex());
     Assertions.assertNull(this.select.getValue());
     Assertions.assertEquals(0, this.eventCounter);
     Assertions.assertEquals(-1, this.mostRecentlySelectedButton);
 
     Assertions.assertEquals(OPTIONS.length, this.select.getComponentCount());
-    for(int zmp1=0; zmp1<OPTIONS.length; zmp1++)
+    for (int zmp1 = 0; zmp1 < OPTIONS.length; zmp1++)
       Assertions.assertEquals(OPTIONS[zmp1], this.select.getComponent(zmp1).getText());
 
     this.select.setValue(OPTIONS[1]);
@@ -84,7 +84,7 @@ public class ComponentSelectTest {
   }
 
   @Test
-  public void testNullValueDisallowed() {
+  void testNullValueDisallowed() {
     this.select.setNullValueAllowed(false);
     this.select.setValue(OPTIONS[2]);
     this.select.setValue(null);
@@ -96,7 +96,7 @@ public class ComponentSelectTest {
   }
 
   @Test
-  public void testButtonClickSelectsDeselects() {
+  void testButtonClickSelectsDeselects() {
     this.select.setValue(OPTIONS[2]);
     this.select.getComponent(2).click();
     // null selection is allowed by default
@@ -105,7 +105,7 @@ public class ComponentSelectTest {
   }
 
   @Test
-  public void testButtonClickNullDisallowed() {
+  void testButtonClickNullDisallowed() {
     this.select.setNullValueAllowed(false);
     this.select.setValue(OPTIONS[2]);
     this.select.getComponent(2).click();
@@ -115,15 +115,15 @@ public class ComponentSelectTest {
   }
 
   @Test
-  public void testVariantChanges() {
+  void testVariantChanges() {
     this.select.withComponentSelectedAction(ComponentSelectHelpers.addVariant(ButtonVariant.LUMO_PRIMARY))
         .setComponentDeselectedAction(ComponentSelectHelpers.removeVariant(ButtonVariant.LUMO_PRIMARY));
     // nothing is selected at start
-    for(int zmp1=0; zmp1<OPTIONS.length; zmp1++)
+    for (int zmp1 = 0; zmp1 < OPTIONS.length; zmp1++)
       Assertions.assertFalse(this.select.getComponent(zmp1).getThemeNames().contains(ButtonVariant.LUMO_PRIMARY.getVariantName()));
 
     // select each option in turn, there should be only one selected button at a time
-    for(int selection = 0; selection < OPTIONS.length; selection++) {
+    for (int selection = 0; selection < OPTIONS.length; selection++) {
       // alternative way of setting value
       this.select.setSelectedIndex(selection);
       Assertions.assertEquals(OPTIONS[selection], this.select.getValue());
@@ -134,7 +134,7 @@ public class ComponentSelectTest {
 
     // select items by clicking them
     // select each option in turn, there should be only one selected button at a time
-    for(int selection = 0; selection < OPTIONS.length; selection++) {
+    for (int selection = 0; selection < OPTIONS.length; selection++) {
       // alternative way of setting value
       this.select.getComponent(selection).click();
       Assertions.assertEquals(OPTIONS[selection], this.select.getValue());
@@ -146,7 +146,7 @@ public class ComponentSelectTest {
     this.select.setNullValueAllowed(false);
     // select items by clicking them
     // select each option in turn, there should be only one selected button at a time
-    for(int selection = 0; selection < OPTIONS.length; selection++) {
+    for (int selection = 0; selection < OPTIONS.length; selection++) {
       // alternative way of setting value
       this.select.getComponent(selection).click();
       Assertions.assertEquals(OPTIONS[selection], this.select.getValue());
@@ -158,7 +158,7 @@ public class ComponentSelectTest {
 
     // deselect
     this.select.setValue(null);
-    for(int zmp1=0; zmp1<OPTIONS.length; zmp1++)
+    for (int zmp1 = 0; zmp1 < OPTIONS.length; zmp1++)
       Assertions.assertFalse(this.select.getComponent(zmp1).getThemeNames().contains(ButtonVariant.LUMO_PRIMARY.getVariantName()));
   }
 

@@ -27,7 +27,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class NestedObjectFieldTest {
+class NestedObjectFieldTest {
 
   private BrowserlessUIContext window;
 
@@ -35,7 +35,7 @@ public class NestedObjectFieldTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(NestedObjectFieldTest.class);
 
   @BeforeAll
-  public static void setupFactory() {
+  static void setupFactory() {
     FACTORY.registerInstanceProvider(DataObject.class, DataObject::new);
   }
 
@@ -43,7 +43,7 @@ public class NestedObjectFieldTest {
   private int eventCounter = 0;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     this.eventCounter = 0;
     this.window = BrowserlessUIContext.forComponent(() -> {
       this.field = FACTORY.buildAndConfigureObjectField(NestedObject.class, NestedObject::new);
@@ -52,14 +52,14 @@ public class NestedObjectFieldTest {
   }
 
   @AfterEach
-  public void closeWindow() {
+  void closeWindow() {
     if (this.window != null) {
       this.window.close();
     }
   }
 
   @Test
-  public void testInitialisedProperly() {
+  void testInitialisedProperly() {
     // this field is repainted
     Assertions.assertFalse(this.field.getPropertiesAndComponents().isEmpty());
     Assertions.assertFalse(this.field.getGroupLayouts().isEmpty());
@@ -67,7 +67,7 @@ public class NestedObjectFieldTest {
   }
 
   @Test
-  public void testCollectionFieldRenderedProperly() {
+  void testCollectionFieldRenderedProperly() {
     final NestedObject nestedObject = new NestedObject();
     final List<String> stringList = Arrays.asList("trolling", "is", "a", "art");
     nestedObject.setTexts(stringList);
@@ -75,7 +75,7 @@ public class NestedObjectFieldTest {
     this.field.setValue(nestedObject);
     final Map<Property<NestedObject, ?>, HasValue<?, ?>> map = this.field.getPropertiesAndComponents();
     final HasValue<?, ?> collectionField = map.keySet().stream().filter(def -> "texts".equals(def.getName())).map(map::get).findFirst().orElse(null);
-    Assertions.assertTrue(collectionField instanceof CollectionField);
+    Assertions.assertInstanceOf(CollectionField.class, collectionField);
     Assertions.assertEquals(stringList, collectionField.getValue());
     final List<Component> listComponents = ((CollectionField<?, ?>) collectionField).getChildren().findFirst().orElseGet(FlexLayoutHelpers::column).getChildren().toList();
     Assertions.assertEquals(stringList.size(), listComponents.size());
@@ -84,7 +84,7 @@ public class NestedObjectFieldTest {
   }
 
   @Test
-  public void testDataObjectFieldIsObjectField() {
+  void testDataObjectFieldIsObjectField() {
     final DataObject dataObject = DataObject.build();
     final NestedObject nestedObject = new NestedObject();
     nestedObject.setDataObject(dataObject);
@@ -95,7 +95,7 @@ public class NestedObjectFieldTest {
     final HasValue<?, ?> objectField = map.keySet().stream().filter(def -> "dataObject".equals(def.getName())).map(map::get).findFirst().orElse(null);
 
     Assertions.assertNotNull(objectField);
-    Assertions.assertTrue(objectField instanceof ObjectField, "ObjectField should be returned, not " + objectField.getClass().getSimpleName());
+    Assertions.assertInstanceOf(ObjectField.class, objectField, "ObjectField should be returned, not " + objectField.getClass().getSimpleName());
     Assertions.assertEquals(DataObject.class, ((ObjectField<?>) objectField).getDataType());
     Assertions.assertEquals(dataObject, objectField.getValue());
     // all properties from data object should be present
@@ -104,7 +104,7 @@ public class NestedObjectFieldTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testObjectsFieldIsCollectionField() {
+  void testObjectsFieldIsCollectionField() {
     final DataObject dataObject = DataObject.build();
     final NestedObject nestedObject = new NestedObject();
     nestedObject.setObjects(List.of(dataObject));
@@ -115,7 +115,7 @@ public class NestedObjectFieldTest {
     final HasValue<?, ?> collectionField = map.keySet().stream().filter(def -> "objects".equals(def.getName())).map(map::get).findFirst().orElse(null);
 
     Assertions.assertNotNull(collectionField);
-    Assertions.assertTrue(collectionField instanceof CollectionField, "CollectionField should be returned, not " + collectionField.getClass().getSimpleName());
+    Assertions.assertInstanceOf(CollectionField.class, collectionField, "CollectionField should be returned, not " + collectionField.getClass().getSimpleName());
     Assertions.assertEquals(nestedObject.getObjects(), collectionField.getValue());
     Assertions.assertEquals(1, ((CollectionController) collectionField).size());
 
@@ -146,7 +146,7 @@ public class NestedObjectFieldTest {
   }
 
   @Test
-  public void testMapFieldIsCorrect() {
+  void testMapFieldIsCorrect() {
     final Map<String, DataObject> dataObjectMap = Stream.of("hello", "world").collect(Collectors.toMap(Function.identity(), s -> DataObject.build()));
     final NestedObject nestedObject = new NestedObject();
     nestedObject.setObjectMap(dataObjectMap);
@@ -157,12 +157,12 @@ public class NestedObjectFieldTest {
     final HasValue<?, ?> mapField = map.keySet().stream().filter(def -> "objectMap".equals(def.getName())).map(map::get).findFirst().orElse(null);
 
     Assertions.assertNotNull(mapField);
-    Assertions.assertTrue(mapField instanceof MapField, "MapField should be returned, not " + mapField.getClass().getSimpleName());
+    Assertions.assertInstanceOf(MapField.class, mapField, "MapField should be returned, not " + mapField.getClass().getSimpleName());
     Assertions.assertEquals(dataObjectMap, mapField.getValue());
   }
 
   @Test
-  public void testFieldsRenderedAsExplicitlyRequested() {
+  void testFieldsRenderedAsExplicitlyRequested() {
     final NestedObject nestedObject = new NestedObject();
     nestedObject.setNumber(123);
     nestedObject.setText("hello, world");
@@ -173,7 +173,7 @@ public class NestedObjectFieldTest {
     final HasValue<?, ?> numberField = map.keySet().stream().filter(def -> "number".equals(def.getName())).map(map::get).findFirst().orElse(null);
 
     Assertions.assertNotNull(numberField);
-    Assertions.assertTrue(numberField instanceof LabelField, "LabelField should be returned, not " + numberField.getClass().getSimpleName());
+    Assertions.assertInstanceOf(LabelField.class, numberField, "LabelField should be returned, not " + numberField.getClass().getSimpleName());
     Assertions.assertEquals(nestedObject.getNumber(), numberField.getValue());
 
     final HasValue<?, ?> textField = map.keySet().stream().filter(def -> "text".equals(def.getName())).map(map::get).findFirst().orElse(null);

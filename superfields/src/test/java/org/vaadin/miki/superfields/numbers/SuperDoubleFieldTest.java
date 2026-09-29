@@ -23,7 +23,7 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
   }
 
   @Test
-  public void testMinimumFractionDigits() {
+  void testMinimumFractionDigits() {
     this.getField().setValue(SIX_DIGITS_PLUS_ONE);
     this.getField().setMinimumFractionDigits(3);
     Assertions.assertEquals(FORMATTED_SIX_DIGITS_PLUS_ONE + "00", this.getField().getRawValue());
@@ -31,7 +31,7 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
   }
 
   @Test
-  public void testMaximumFractionDigits() {
+  void testMaximumFractionDigits() {
     this.getField().setValue(1.234d);
     this.getField().setMaximumFractionDigits(1);
     Assertions.assertEquals("1,2", this.getField().getRawValue());
@@ -39,7 +39,7 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
   }
 
   @Test
-  public void testAlternativeSeparators() throws ParseException {
+  void testAlternativeSeparators() throws ParseException {
     this.getField().setLocale(Locale.FRANCE);
     this.getField().setGroupingSeparatorAlternatives(Set.of('_'));
     this.getField().setDecimalSeparatorAlternatives(Set.of('|'));
@@ -50,7 +50,7 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
   }
 
   @Test
-  public void testAlternativeSeparatorsWithNegativeSign() throws ParseException {
+  void testAlternativeSeparatorsWithNegativeSign() throws ParseException {
     this.getField().setLocale(Locale.GERMANY);
     this.getField().setNegativeSignAlternatives(Set.of('^', '%'));
     this.getField().setDecimalSeparatorAlternatives(Set.of('_'));
@@ -61,22 +61,24 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
   }
 
   @Test
-  public void testOverlappingAlternatives() throws ParseException {
+  void testOverlappingAlternatives() throws ParseException {
     this.getField().withLocale(Locale.GERMANY)
         .withOverlappingAlternatives()
         .withDecimalSeparatorAlternatives('.');
     Assertions.assertTrue(this.getField().getDecimalSeparatorAlternatives().contains('.'));
-    final double value = this.getField().parseRawValue("12345.67");
+    final Double value = this.getField().parseRawValue("12345.67");
+    Assertions.assertNotNull(value);
     Assertions.assertEquals(12345.67, value, 0.00001);
   }
 
   @Test
-  public void testWithoutOverlappingAlternatives() throws ParseException {
+  void testWithoutOverlappingAlternatives() throws ParseException {
     this.getField().withLocale(Locale.GERMANY)
         .withDecimalSeparatorAlternatives('.');
     // without explicitly allowing symbols to overlap, the . is ignored and treated as a grouping symbol
     Assertions.assertTrue(this.getField().getDecimalSeparatorAlternatives().isEmpty());
-    final double value = this.getField().parseRawValue("12345.67");
+    final Double value = this.getField().parseRawValue("12345.67");
+    Assertions.assertNotNull(value);
     Assertions.assertEquals(1234567, value, 0.00001);
   }
 

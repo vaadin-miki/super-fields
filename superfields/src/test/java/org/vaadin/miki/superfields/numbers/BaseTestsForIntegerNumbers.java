@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 /**
  * Base class containing tests for integer parts of number fields.
@@ -163,7 +164,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.window = BrowserlessUIContext.forComponent(() -> {
       this.field = this.fieldSupplier.get();
       return this.field;
@@ -171,7 +172,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @AfterEach
-  public void closeWindow() {
+  void closeWindow() {
     if (this.window != null) {
       this.window.close();
     }
@@ -193,8 +194,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   private T expectedValueOf(String input) {
     try {
       return this.field.parseRawValue(input);
-    }
-    catch (ParseException e) {
+    } catch (ParseException e) {
       // a NullPointerException would mean there is no format, which cannot happen once the field is built,
       // so it is deliberately not caught here - unlike in generateModelValue()
       return this.field.getEmptyValue();
@@ -204,7 +204,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   // typing into the inner field is the only way to cover the chain
   // inner value change -> updateValue() -> generateModelValue() -> value of the number field
   @Test
-  public void testTextTypedByUserBecomesModelValue() {
+  void testTextTypedByUserBecomesModelValue() {
     final TextFieldTester<TextField, String> inner = this.innerField();
     final Set<T> produced = new HashSet<>();
     this.validOutOfTheBoxInputs.forEach(input -> {
@@ -219,7 +219,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testTextTypedByUserIsReportedAsComingFromTheClient() {
+  void testTextTypedByUserIsReportedAsComingFromTheClient() {
     final boolean[] fromClient = {false};
     this.field.addValueChangeListener(event -> fromClient[0] = event.isFromClient());
     this.innerField().setValue(this.numberWithGroups);
@@ -228,10 +228,11 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testReadOnlyFieldRejectsUserInput() {
+  void testReadOnlyFieldRejectsUserInput() {
     final T valueBefore = this.field.getValue();
     this.field.setReadOnly(true);
-    Assertions.assertThrows(IllegalStateException.class, () -> this.innerField().setValue(this.numberWithGroups),
+    final TextFieldTester<TextField, String> inner = this.innerField();
+    Assertions.assertThrows(IllegalStateException.class, () -> inner.setValue(this.numberWithGroups),
         "a user must not be able to type into a read-only field");
     Assertions.assertEquals(valueBefore, this.field.getValue(), "the value must not have changed");
     // the server-side API is not affected by read-only, which is why setValue() cannot test this at all
@@ -240,27 +241,27 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testInvalidInputPreventedAtStart() {
+  void testInvalidInputPreventedAtStart() {
     Assertions.assertTrue(this.field.isPreventingInvalidInput(), "invalid input prevention is not turned on");
   }
 
   @Test
-  public void testValidOutOfTheBoxInputs() {
-    Assertions.assertTrue(this.validOutOfTheBoxInputs.size() > 0, "no testable inputs that are valid, cannot continue!");
+  void testValidOutOfTheBoxInputs() {
+    Assertions.assertFalse(this.validOutOfTheBoxInputs.isEmpty(), "no testable inputs that are valid, cannot continue!");
     String regexp = this.field.getRegexp();
     this.validOutOfTheBoxInputs.forEach(s -> Assertions.assertTrue(s.matches(regexp), String.format("input %s must match %s for %s", s, regexp, this.field.getClass().getSimpleName())));
   }
 
   @Test
-  public void testInvalidOutOfTheBoxInputs() {
-    Assertions.assertTrue(this.invalidOutOfTheBoxInputs.size() > 0, "no testable inputs that are invalid, cannot continue!");
+  void testInvalidOutOfTheBoxInputs() {
+    Assertions.assertFalse(this.invalidOutOfTheBoxInputs.isEmpty(), "no testable inputs that are invalid, cannot continue!");
     String regexp = this.field.getRegexp();
     this.invalidOutOfTheBoxInputs.forEach(s -> Assertions.assertFalse(s.matches(regexp), String.format("input %s must not match %s for %s", s, regexp, this.field.getClass().getSimpleName())));
   }
 
   @Test
-  public void testValidLimitedInputs() {
-    Assertions.assertTrue(this.validLimitedInputs.size() > 0, "no testable limited length inputs that are valid, cannot continue!");
+  void testValidLimitedInputs() {
+    Assertions.assertFalse(this.validLimitedInputs.isEmpty(), "no testable limited length inputs that are valid, cannot continue!");
     this.validLimitedInputs.forEach((limit, inputs) -> {
       this.field.setMaximumIntegerDigits(limit);
       String regexp = this.field.getRegexp();
@@ -269,8 +270,8 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testInvalidLimitedInputs() {
-    Assertions.assertTrue(this.invalidLimitedInputs.size() > 0, "no testable limited length inputs that are invalid, cannot continue!");
+  void testInvalidLimitedInputs() {
+    Assertions.assertFalse(this.invalidLimitedInputs.isEmpty(), "no testable limited length inputs that are invalid, cannot continue!");
     this.invalidLimitedInputs.forEach((limit, inputs) -> {
       this.field.withMaximumIntegerDigits(limit);
       String regexp = this.field.getRegexp();
@@ -279,19 +280,19 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testInitiallyZero() {
+  void testInitiallyZero() {
     Assertions.assertEquals(this.zero, this.field.getValue());
     Assertions.assertEquals("0", this.field.getRawValue());
   }
 
   @Test
-  public void testFormattingInput() {
+  void testFormattingInput() {
     this.field.setValue(this.baseTestNumber);
     Assertions.assertEquals(this.numberWithGroups, this.field.getRawValue());
   }
 
   @Test
-  public void testRemovingGroupingSeparatorOnFocus() {
+  void testRemovingGroupingSeparatorOnFocus() {
     this.field.setGroupingSeparatorHiddenOnFocus(true);
     this.field.setValue(this.baseTestNumber);
     this.field.simulateFocus();
@@ -304,7 +305,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testAllowingNegativeValueAbsValue() {
+  void testAllowingNegativeValueAbsValue() {
     this.field.setValue(this.negativeTestNumber);
     Assertions.assertEquals("-" + this.numberWithGroups, this.field.getRawValue());
     this.field.setNegativeValueAllowed(false);
@@ -313,7 +314,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testAllowingNegativeValueNoEffectOnPositive() {
+  void testAllowingNegativeValueNoEffectOnPositive() {
     this.field.setValue(this.baseTestNumber);
     Assertions.assertEquals(this.numberWithGroups, this.field.getRawValue());
     this.field.setNegativeValueAllowed(false);
@@ -323,15 +324,16 @@ class BaseTestsForIntegerNumbers<T extends Number> {
 
   // bug report: https://github.com/vaadin-miki/super-fields/issues/10
   @Test
-  public void testIntegerLengthMultiplicationOfGroup() {
+  void testIntegerLengthMultiplicationOfGroup() {
     this.getField().setMaximumIntegerDigits(9); // grouping size is 3, so 9 is a multiplication of it
-    String regexp = this.getField().getRegexp();
+    final String regexp = this.getField().getRegexp();
+    final Pattern pattern = Pattern.compile(regexp);
     for (String s : new String[]{"1234567890", "12345678901", "123456789012", "123 456 789 0", "123 456 789 01", "123 456 789 012"})
-      Assertions.assertFalse(s.matches(regexp), String.format("%s must not match %s (regression on bug #10)", regexp, s));
+      Assertions.assertFalse(pattern.matcher(s).matches(), String.format("%s must not match %s (regression on bug #10)", regexp, s));
   }
 
   @Test
-  public void testNullWithNullAllowed() {
+  void testNullWithNullAllowed() {
     this.getField().setNullValueAllowed(true);
     this.getField().setValue(null);
     T value = this.getField().getValue();
@@ -340,7 +342,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testNullWithNullAllowedAndNegativeNotAllowed() {
+  void testNullWithNullAllowedAndNegativeNotAllowed() {
     this.getField().setNullValueAllowed(true);
     this.getField().setNegativeValueAllowed(false);
     this.getField().setValue(null);
@@ -350,7 +352,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testNullWithNullAllowedAndNegativeAllowed() {
+  void testNullWithNullAllowedAndNegativeAllowed() {
     this.getField().setNullValueAllowed(true);
     this.getField().setNegativeValueAllowed(true);
     this.getField().setValue(null);
@@ -360,7 +362,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testNullAllowedSetNullThenChangeRegexp() {
+  void testNullAllowedSetNullThenChangeRegexp() {
     this.getField().setNullValueAllowed(true);
     this.getField().setValue(null);
     this.getField().setNegativeValueAllowed(!this.getField().isNegativeValueAllowed());
@@ -371,9 +373,10 @@ class BaseTestsForIntegerNumbers<T extends Number> {
 
 
   @Test
-  public void testNullWithNoNullAllowedThrowsException() {
+  void testNullWithNoNullAllowedThrowsException() {
     // by default, there should be no allowance for null values
-    Assertions.assertThrows(IllegalArgumentException.class, () -> this.getField().setValue(null));
+    final AbstractSuperNumberField<?, ?> aField = this.getField();
+    Assertions.assertThrows(IllegalArgumentException.class, () -> aField.setValue(null));
   }
 
   private <E extends ComponentEvent<?>> void checkEventTriggered(Function<ComponentEventListener<E>, Registration> addEvent, Consumer<AbstractSuperNumberField<T, ?>> fireEvent) {
@@ -388,17 +391,17 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testFocus() {
+  void testFocus() {
     this.checkEventTriggered(this.getField()::addFocusListener, AbstractSuperNumberField::simulateFocus);
   }
 
   @Test
-  public void testBlur() {
+  void testBlur() {
     this.checkEventTriggered(this.getField()::addBlurListener, AbstractSuperNumberField::simulateBlur);
   }
 
   @Test
-  public void testChangesInLocaleDoNotAffectPrecision() {
+  void testChangesInLocaleDoNotAffectPrecision() {
     this.field.setMaximumIntegerDigits(4);
     final int maxFraction = this.field.getMaximumFractionDigits();
     final int minFraction = this.field.getMinimumFractionDigits();
@@ -410,7 +413,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testBinderAndValidation() {
+  void testBinderAndValidation() {
     final NumberWrapper<T> wrapper = new NumberWrapper<>();
     @SuppressWarnings("unchecked") final Binder<NumberWrapper<T>> binder = new Binder<>((Class<NumberWrapper<T>>) (Class<?>) NumberWrapper.class);
     final NumberValidator<T> validator = new NumberValidator<>();
@@ -441,14 +444,14 @@ class BaseTestsForIntegerNumbers<T extends Number> {
 
   // checks for regressions of #284
   @Test
-  public void testEmptyStringParsesProperlyWhenNullAllowed() throws ParseException {
+  void testEmptyStringParsesProperlyWhenNullAllowed() throws ParseException {
     this.field.setNullValueAllowed(true);
     final T value = this.field.parseRawValue("");
     Assertions.assertNull(value);
   }
 
   @Test
-  public void testEmptyStringParsesProperlyWhenNullNotAllowed() throws ParseException {
+  void testEmptyStringParsesProperlyWhenNullNotAllowed() throws ParseException {
     this.field.setNullValueAllowed(false);
     final T value = this.field.parseRawValue("");
     Assertions.assertNotNull(value);
@@ -456,7 +459,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
 
   // tests for #472
   @Test
-  public void testNoMixingOfGroupingSymbolsAllowed() {
+  void testNoMixingOfGroupingSymbolsAllowed() {
     this.field.setLocale(Locale.ENGLISH); // this uses . as decimal and , as grouping
     this.field.setGroupingSeparatorAlternatives(Set.of('.', '-')); // so setting . should fail (and - is minus, also fail)
     Assertions.assertTrue(this.field.getGroupingSeparatorAlternatives().isEmpty());
@@ -467,7 +470,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testNoMixingOfNegativeSignAllowed() {
+  void testNoMixingOfNegativeSignAllowed() {
     this.field.setLocale(Locale.ENGLISH);
     this.field.setNegativeSignAlternatives(Set.of('.', ','));
     Assertions.assertTrue(this.field.getGroupingSeparatorAlternatives().isEmpty());
@@ -477,7 +480,7 @@ class BaseTestsForIntegerNumbers<T extends Number> {
   }
 
   @Test
-  public void testAlternativesOverlappingDisallowed() {
+  void testAlternativesOverlappingDisallowed() {
     this.field.setLocale(Locale.ENGLISH);
     this.field.withOverlappingAlternatives()
         .withNegativeSignAlternatives('.');

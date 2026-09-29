@@ -1,5 +1,6 @@
 package org.vaadin.miki.superfields.dates;
 
+import com.vaadin.browserless.BrowserlessUIContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,16 +11,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
-import com.vaadin.browserless.BrowserlessUIContext;
 
-public class DatePatternDelegateTest {
+class DatePatternDelegateTest {
 
   private BrowserlessUIContext window;
 
   private SuperDatePicker datePicker;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.window = BrowserlessUIContext.forComponent(() -> {
       this.datePicker = new SuperDatePicker().withDatePattern(DatePatterns.YYYY_MM_DD).withLocale(new Locale.Builder().setLanguage("pl").setRegion("PL").build());
       return this.datePicker;
@@ -27,14 +27,14 @@ public class DatePatternDelegateTest {
   }
 
   @AfterEach
-  public void closeWindow() {
+  void closeWindow() {
     if (this.window != null) {
       this.window.close();
     }
   }
 
   @Test
-  public void testFormattedValue() {
+  void testFormattedValue() {
     LocalDate expected = LocalDate.of(1999, 5, 3);
     this.datePicker.setValue(expected);
     LocalDate value = this.datePicker.getValue();

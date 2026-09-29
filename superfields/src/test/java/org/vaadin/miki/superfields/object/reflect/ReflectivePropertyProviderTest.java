@@ -9,14 +9,14 @@ import org.vaadin.miki.superfields.object.Property;
 
 import java.util.Collection;
 
-public class ReflectivePropertyProviderTest {
+class ReflectivePropertyProviderTest {
 
-    @Test
-    public void testProviderUsesActualTypes() {
-        final ReflectivePropertyProvider provider = new ReflectivePropertyProvider();
-        final Collection<Property<DataInterface,?>> definitions = provider.getObjectPropertyDefinitions(DataInterface.class, new DataObject());
-        Assertions.assertFalse(definitions.isEmpty());
-        DataObjectConfiguration.EXPECTED_FIELDS.keySet().forEach(name -> Assertions.assertTrue(definitions.stream().anyMatch(prop -> name.equals(prop.getName())), String.format("did not find property %s", name)));
-    }
+  @Test
+  void testProviderUsesActualTypes() {
+    final ReflectivePropertyProvider provider = new ReflectivePropertyProvider();
+    final Collection<Property<DataInterface, ?>> definitions = provider.getObjectPropertyDefinitions(DataInterface.class, new DataObject());
+    Assertions.assertFalse(definitions.isEmpty());
+    DataObjectConfiguration.EXPECTED_FIELDS.keySet().forEach(name -> Assertions.assertTrue(definitions.stream().anyMatch(prop -> name.equals(prop.getName())), String.format("did not find property %s", name)));
+  }
 
 }

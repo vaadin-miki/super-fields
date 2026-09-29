@@ -50,7 +50,7 @@ public class SuperIntegerFieldTest extends BaseTestsForIntegerNumbers<Integer> {
   }
 
   @Test
-  public void testAlternativeGroupingSeparators() throws ParseException {
+  void testAlternativeGroupingSeparators() throws ParseException {
     this.getField().setLocale(Locale.FRANCE);
     this.getField().setGroupingSeparatorAlternatives(Set.of('_'));
     for (String s : new String[]{"123_456", "12_34_56", "12345_6", "_123_456", "_123456_"}) {
@@ -60,7 +60,7 @@ public class SuperIntegerFieldTest extends BaseTestsForIntegerNumbers<Integer> {
   }
 
   @Test
-  public void testAlternativeNegativeSign() throws ParseException {
+  void testAlternativeNegativeSign() throws ParseException {
     this.getField().setLocale(Locale.GERMANY);
     this.getField().setNegativeSignAlternatives(Set.of('^', '%'));
     for (String s : new String[]{"^123456", "%123456", "-123456"}) {

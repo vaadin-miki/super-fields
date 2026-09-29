@@ -25,6 +25,7 @@ public class DomClickTester extends ComponentTester<Component> {
    *
    * @throws IllegalStateException when the component is detached, hidden or disabled.
    */
+  @Override
   public void click() {
     this.ensureComponentIsUsable();
     this.fireDomEvent("click");

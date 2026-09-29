@@ -32,7 +32,7 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
   }
 
   @Test
-  public void testMinimumFractionDigits() {
+  void testMinimumFractionDigits() {
     this.getField().setValue(TEN_DIGITS_PLUS_TWO);
     this.getField().setMinimumFractionDigits(6);
     Assertions.assertEquals(FORMATTED_TEN_DIGITS_PLUS_TWO + "0000", this.getField().getRawValue());
@@ -40,7 +40,7 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
   }
 
   @Test
-  public void testMaximumFractionDigits() {
+  void testMaximumFractionDigits() {
     this.getField().setValue(TEN_DIGITS_PLUS_TWO);
     this.getField().setMaximumFractionDigits(1);
     Assertions.assertEquals("1 234 567 890,1", this.getField().getRawValue());
@@ -56,7 +56,7 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
   }
 
   @Test
-  public void testInputsWithScientificNotationTurnedOn() {
+  void testInputsWithScientificNotationTurnedOn() {
     Assertions.assertFalse(this.getField().isScientificNotationEnabled());
     this.getField().setMaximumExponentDigits(3);
     Assertions.assertTrue(this.getField().isScientificNotationEnabled());
@@ -66,7 +66,7 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
   }
 
   @Test
-  public void testScientificNotationSupported() throws ParseException {
+  void testScientificNotationSupported() throws ParseException {
     this.getField().setMaximumExponentDigits(3);
     for (Map.Entry<String, BigDecimal> entry : SCI_NOTATION.entrySet()) {
       for (int zmp1 = 0; zmp1 < entry.getKey().length(); zmp1++) {
@@ -81,7 +81,7 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
   }
 
   @Test
-  public void testScientificNotationConstraints() {
+  void testScientificNotationConstraints() {
     // constraints are so that the significand digits are not ever larger than the regular digit's constraints
     this.getField().setMaximumIntegerDigits(4);
     this.getField().setMaximumFractionDigits(8);
@@ -105,7 +105,7 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
 
   // reported in #358
   @Test
-  public void testDecimalFormatError() {
+  void testDecimalFormatError() {
     final DecimalFormat format = new DecimalFormat("0.####E0");
     // default format symbols are based on the system locale - so enforcing . as decimal separator here
     format.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
@@ -120,7 +120,7 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
 
   // reported in #369
   @Test
-  public void testNoDecimalFormatMoreExponentDigits() {
+  void testNoDecimalFormatMoreExponentDigits() {
     final BigDecimal value = BigDecimal.valueOf(1, 15);
     this.getField().setMaximumFractionDigits(20);
     this.getField().setValue(value);
@@ -129,7 +129,7 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
 
   // reported in #369
   @Test
-  public void testDecimalFormatMoreExponentDigits() {
+  void testDecimalFormatMoreExponentDigits() {
     final BigDecimal value = BigDecimal.valueOf(13, 12);
     final DecimalFormat format = new DecimalFormat("0.0##E0");
     format.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
@@ -139,7 +139,7 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
   }
 
   @Test
-  public void testAlternativeSeparators() throws ParseException {
+  void testAlternativeSeparators() throws ParseException {
     this.getField().setLocale(Locale.FRANCE);
     this.getField().setGroupingSeparatorAlternatives(Set.of('_'));
     this.getField().setDecimalSeparatorAlternatives(Set.of('|'));
@@ -150,7 +150,7 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
   }
 
   @Test
-  public void testAlternativeSeparatorsWithNegativeSign() throws ParseException {
+  void testAlternativeSeparatorsWithNegativeSign() throws ParseException {
     this.getField().setLocale(Locale.GERMANY);
     this.getField().setNegativeSignAlternatives(Set.of('^', '%'));
     this.getField().setDecimalSeparatorAlternatives(Set.of('_'));
@@ -161,7 +161,7 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
   }
 
   @Test
-  public void testOverlappingAlternatives() throws ParseException {
+  void testOverlappingAlternatives() throws ParseException {
     this.getField().withLocale(Locale.ENGLISH)
         .withOverlappingAlternatives()
         .withDecimalSeparatorAlternatives(',');
@@ -170,7 +170,7 @@ public class SuperBigDecimalFieldTest extends BaseTestsForFloatingPointNumbers<B
   }
 
   @Test
-  public void testScientificWithAlternativeSeparatorsWithNegativeSign() throws ParseException {
+  void testScientificWithAlternativeSeparatorsWithNegativeSign() throws ParseException {
     this.getField().withLocale(Locale.GERMANY)
         .withExponentSeparator('e')
         .withMaximumExponentDigits(3)
