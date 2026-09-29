@@ -1,3 +1,10 @@
+# 0.21.0 - Vaadin 25.3 and browserless testing
+## New features and enhancements
+* \#600 - [Upgrade to Vaadin 25.3](https://github.com/vaadin-miki/super-fields/issues/600)
+## Changes to API
+* \#600 - [Upgrade to Vaadin 25.3](https://github.com/vaadin-miki/super-fields/issues/600)
+## Bug fixes
+* \#596 - [SuperFields breaks the whole frontend bundle on Vaadin 25.3](https://github.com/vaadin-miki/super-fields/issues/596)
 # 0.20.3 - Bugfixes
 ## New features and enhancements
 (nothing reported)
