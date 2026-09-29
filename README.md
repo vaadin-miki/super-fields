@@ -16,6 +16,7 @@ this library useful, consider rating it there or leaving a review. Thanks :)
 
 | SuperFields version                   | Vaadin Version | Java version |
 |---------------------------------------| -- | -- |
+| `0.21.0`                              | 25.3.0+ | 21 |
 | `0.20.3`                              | 25.2.6+ | 21 |
 | `0.20.2`                              | 25.1.0+ | 21 |
 | `0.20.1`                              | 25.0.4+ | 21 |

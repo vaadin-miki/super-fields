@@ -14,7 +14,7 @@
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <vaadin.version>25.2.6</vaadin.version>
+    <vaadin.version>25.3.0</vaadin.version>
     <junit.version>6.0.3</junit.version>
     <compiler.plugin.version>3.15.0</compiler.plugin.version>
     <surefire.plugin.version>3.5.6</surefire.plugin.version>
