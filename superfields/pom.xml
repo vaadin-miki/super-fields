@@ -20,6 +20,9 @@
     <surefire.plugin.version>3.5.6</surefire.plugin.version>
     <maven.jar.plugin.version>3.5.0</maven.jar.plugin.version>
     <javadoc.plugin.version>3.12.0</javadoc.plugin.version>
+    <maven.publishing.version>0.11.0</maven.publishing.version>
+    <maven.source.plugin.version>3.4.0</maven.source.plugin.version>
+    <maven.gpg.version>3.2.8</maven.gpg.version>
   </properties>
 
   <licenses>
@@ -157,7 +160,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>3.4.0</version>
+            <version>${maven.source.plugin.version}</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
@@ -186,7 +189,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>3.2.8</version>
+            <version>${maven.gpg.version}</version>
             <configuration>
               <gpgArguments>
                 <arg>--pinentry-mode</arg>
@@ -206,7 +209,7 @@
           <plugin>
             <groupId>org.sonatype.central</groupId>
             <artifactId>central-publishing-maven-plugin</artifactId>
-            <version>0.7.0</version>
+            <version>${maven.publishing.version}</version>
             <extensions>true</extensions>
             <configuration>
               <publishingServerId>central</publishingServerId>
