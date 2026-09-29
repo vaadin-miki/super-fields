@@ -1,54 +1,61 @@
 package org.vaadin.miki.superfields.gridselect;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.vaadin.browserless.BrowserlessUIContext;
 import com.vaadin.flow.component.grid.Grid;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class GridSelectTest {
+class GridSelectTest {
 
-    private GridSelect<String> grid;
+  private BrowserlessUIContext window;
 
-    private int eventCount = 0;
+  private GridSelect<String> grid;
 
-    @Before
-    public void setUp() {
-        MockVaadin.setup();
-        this.grid = new GridSelect<>("this", "is", "a", "test");
-        this.grid.addValueChangeListener(event -> eventCount++);
+  private int eventCount = 0;
+
+  @BeforeEach
+  void setUp() {
+    this.window = BrowserlessUIContext.forComponent(() -> {
+      this.grid = new GridSelect<>("this", "is", "a", "test");
+      return this.grid;
+    });
+    this.grid.addValueChangeListener(event -> eventCount++);
+  }
+
+  @AfterEach
+  void closeWindow() {
+    if (this.window != null) {
+      this.window.close();
     }
+  }
 
-    @After
-    public void tearDown() {
-        MockVaadin.tearDown();
-    }
+  @Test
+  void testDisallowChangingSelectionMode() {
+    final Grid<?> underlyingGrid = this.grid.getGrid();
+    Assertions.assertThrows(IllegalArgumentException.class, () -> underlyingGrid.setSelectionMode(Grid.SelectionMode.MULTI));
+  }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testDisallowChangingSelectionMode() {
-        this.grid.getGrid().setSelectionMode(Grid.SelectionMode.MULTI);
-    }
+  @Test
+  void testAllowedSelectionModes() {
+    Grid<String> underlyingGrid = this.grid.getGrid();
+    Assertions.assertInstanceOf(RestrictedModeGrid.class, underlyingGrid);
+    Assertions.assertSame(Grid.SelectionMode.SINGLE, ((RestrictedModeGrid<String>) underlyingGrid).getAllowedSelectionMode());
 
-    @Test
-    public void testAllowedSelectionModes() {
-        Grid<String> underlyingGrid = this.grid.getGrid();
-        Assert.assertTrue(underlyingGrid instanceof RestrictedModeGrid);
-        Assert.assertSame(Grid.SelectionMode.SINGLE, ((RestrictedModeGrid<String>) underlyingGrid).getAllowedSelectionMode());
+    this.grid.getGrid().setSelectionMode(Grid.SelectionMode.NONE);
+    this.grid.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
+  }
 
-        this.grid.getGrid().setSelectionMode(Grid.SelectionMode.NONE);
-        this.grid.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
-    }
-
-    @Test
-    public void testValueChanges() {
-        Assert.assertNull(this.grid.getValue());
-        Assert.assertTrue(this.grid.getGrid().getSelectedItems().isEmpty());
-        this.grid.setValue("a");
-        Assert.assertEquals(1, this.eventCount);
-        Assert.assertEquals("a", this.grid.getValue());
-        Assert.assertEquals(1, this.grid.getGrid().getSelectedItems().size());
-        Assert.assertEquals("a", this.grid.getGrid().getSelectedItems().iterator().next());
-    }
+  @Test
+  void testValueChanges() {
+    Assertions.assertNull(this.grid.getValue());
+    Assertions.assertTrue(this.grid.getGrid().getSelectedItems().isEmpty());
+    this.grid.setValue("a");
+    Assertions.assertEquals(1, this.eventCount);
+    Assertions.assertEquals("a", this.grid.getValue());
+    Assertions.assertEquals(1, this.grid.getGrid().getSelectedItems().size());
+    Assertions.assertEquals("a", this.grid.getGrid().getSelectedItems().iterator().next());
+  }
 
 }

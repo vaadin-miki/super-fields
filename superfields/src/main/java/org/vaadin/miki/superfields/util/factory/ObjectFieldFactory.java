@@ -212,11 +212,16 @@ public class ObjectFieldFactory {
         .withRegisteredType(BigDecimal.class, SuperBigDecimalField::new)
         .withRegisteredType(LocalDate.class, SuperDatePicker::new)
         .withRegisteredType(LocalDateTime.class, SuperDateTimePicker::new)
-        .withRegisteredBuilder(String.class, def -> def.getMetadata().containsKey(MetadataProperties.MULTILINE_METADATA_PROPERTY)
-            && EXPECTED_BOOLEAN_TYPES.contains(def.getMetadata().get(MetadataProperties.MULTILINE_METADATA_PROPERTY).getValueType())
-            && Objects.equals(Boolean.TRUE, def.getMetadata().get(MetadataProperties.MULTILINE_METADATA_PROPERTY).getValue()) ?
-            new SuperTextArea() :
-            new SuperTextField());
+        .withRegisteredBuilder(String.class, def -> {
+          // note: an "a ? new SuperTextArea() : new SuperTextField()" conditional here makes javac 25
+          // compute lub(SuperTextArea, SuperTextField) and hang; separate returns avoid that
+          if (def.getMetadata().containsKey(MetadataProperties.MULTILINE_METADATA_PROPERTY)
+              && EXPECTED_BOOLEAN_TYPES.contains(def.getMetadata().get(MetadataProperties.MULTILINE_METADATA_PROPERTY).getValueType())
+              && Objects.equals(Boolean.TRUE, def.getMetadata().get(MetadataProperties.MULTILINE_METADATA_PROPERTY).getValue())) {
+            return new SuperTextArea();
+          }
+          return new SuperTextField();
+        });
     result.withRegisteredBuilder(def -> def.getMetadata().containsKey(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY), def -> {
           final Class<?> collectionType = def.getType();
           final Property<?, ?> listDef = (Property<?, ?>) def.getMetadata().get(MetadataProperties.COLLECTION_ELEMENT_TYPE_METADATA_PROPERTY).getValue();
