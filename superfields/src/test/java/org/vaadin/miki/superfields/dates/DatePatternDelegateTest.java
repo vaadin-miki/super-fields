@@ -1,30 +1,36 @@
 package org.vaadin.miki.superfields.dates;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.vaadin.miki.shared.dates.DatePatterns;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
+import com.vaadin.browserless.BrowserlessUIContext;
 
 public class DatePatternDelegateTest {
 
+  private BrowserlessUIContext window;
+
   private SuperDatePicker datePicker;
 
-  @Before
+  @BeforeEach
   public void setUp() {
-    MockVaadin.setup();
-    this.datePicker = new SuperDatePicker().withDatePattern(DatePatterns.YYYY_MM_DD).withLocale(new Locale.Builder().setLanguage("pl").setRegion("PL").build());
+    this.window = BrowserlessUIContext.forComponent(() -> {
+      this.datePicker = new SuperDatePicker().withDatePattern(DatePatterns.YYYY_MM_DD).withLocale(new Locale.Builder().setLanguage("pl").setRegion("PL").build());
+      return this.datePicker;
+    });
   }
 
-  @After
-  public void tearDown() {
-    MockVaadin.tearDown();
+  @AfterEach
+  public void closeWindow() {
+    if (this.window != null) {
+      this.window.close();
+    }
   }
 
   @Test
@@ -32,14 +38,14 @@ public class DatePatternDelegateTest {
     LocalDate expected = LocalDate.of(1999, 5, 3);
     this.datePicker.setValue(expected);
     LocalDate value = this.datePicker.getValue();
-    Assert.assertEquals(expected, value);
+    Assertions.assertEquals(expected, value);
     String raw = this.datePicker.getFormattedValue();
-    Assert.assertEquals("1999-05-03", raw);
+    Assertions.assertEquals("1999-05-03", raw);
 
     // now server-side month formatting
     this.datePicker.setDatePattern(DatePatterns.D_MMMM_YYYY);
     raw = this.datePicker.getFormattedValue();
-    Assert.assertEquals("3 maja 1999", raw);
+    Assertions.assertEquals("3 maja 1999", raw);
 
     this.datePicker.setLocale(new Locale.Builder().setLanguage("pl").setRegion("PL").build());
     this.datePicker.setDatePattern(null);
@@ -47,7 +53,7 @@ public class DatePatternDelegateTest {
     // now formatted according to locale
     raw = this.datePicker.getFormattedValue();
     final String formatted = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(this.datePicker.getLocale()).format(expected);
-    Assert.assertEquals(formatted, raw);
+    Assertions.assertEquals(formatted, raw);
   }
 
 }

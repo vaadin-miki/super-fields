@@ -633,17 +633,4 @@ public class ItemGrid<T>
         return this;
     }
 
-    /**
-     * Simulates clicking a cell at given coordinates (which means it updates the value).
-     * Nothing happens if there is no cell that corresponds to given coordinates.
-     *
-     * This method is For testing purposes only.
-     *
-     * @param row Row the cell is in.
-     * @param col Column the cell is in.
-     */
-    void simulateCellClick(int row, int col) {
-        this.getCellInformation(row, col).ifPresent(this::clickCellAndUpdateValue);
-    }
-
 }

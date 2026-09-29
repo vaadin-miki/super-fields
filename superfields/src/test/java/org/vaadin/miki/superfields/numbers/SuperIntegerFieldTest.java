@@ -1,7 +1,7 @@
 package org.vaadin.miki.superfields.numbers;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.util.Locale;
@@ -55,7 +55,7 @@ public class SuperIntegerFieldTest extends BaseTestsForIntegerNumbers<Integer> {
     this.getField().setGroupingSeparatorAlternatives(Set.of('_'));
     for (String s : new String[]{"123_456", "12_34_56", "12345_6", "_123_456", "_123456_"}) {
       final Integer value = this.getField().parseRawValue(s);
-      Assert.assertEquals(Integer.valueOf(123456), value);
+      Assertions.assertEquals(Integer.valueOf(123456), value);
     }
   }
 
@@ -65,7 +65,7 @@ public class SuperIntegerFieldTest extends BaseTestsForIntegerNumbers<Integer> {
     this.getField().setNegativeSignAlternatives(Set.of('^', '%'));
     for (String s : new String[]{"^123456", "%123456", "-123456"}) {
       final Integer value = this.getField().parseRawValue(s);
-      Assert.assertEquals(Integer.valueOf(-123456), value);
+      Assertions.assertEquals(Integer.valueOf(-123456), value);
     }
   }
 

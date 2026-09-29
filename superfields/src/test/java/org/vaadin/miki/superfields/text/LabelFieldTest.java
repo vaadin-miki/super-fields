@@ -1,46 +1,52 @@
 package org.vaadin.miki.superfields.text;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import com.vaadin.browserless.BrowserlessUIContext;
 
 public class LabelFieldTest {
+
+    private BrowserlessUIContext window;
 
     public static final String STRING_VALUE = "testuję sobie";
 
     private LabelField<String> field;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        MockVaadin.setup();
-        this.field = new LabelField<>();
+        this.window = BrowserlessUIContext.forComponent(() -> {
+            this.field = new LabelField<>();
+            return this.field;
+        });
     }
 
-    @After
-    public void teardown() {
-        MockVaadin.tearDown();
+    @AfterEach
+    public void closeWindow() {
+        if (this.window != null) {
+            this.window.close();
+        }
     }
 
     @Test
     public void testChangingConverterChangesText() {
         this.field.setValue(STRING_VALUE);
-        Assert.assertEquals(STRING_VALUE, this.field.getValue());
-        Assert.assertEquals(STRING_VALUE, this.field.getText().getText());
+        Assertions.assertEquals(STRING_VALUE, this.field.getValue());
+        Assertions.assertEquals(STRING_VALUE, this.field.getText().getText());
         this.field.setConverter(String::toUpperCase);
-        Assert.assertEquals(STRING_VALUE, this.field.getValue());
-        Assert.assertEquals(STRING_VALUE.toUpperCase(), this.field.getText().getText());
+        Assertions.assertEquals(STRING_VALUE, this.field.getValue());
+        Assertions.assertEquals(STRING_VALUE.toUpperCase(), this.field.getText().getText());
     }
 
     @Test
     public void testChangingNullRepresentationWorks() {
         final String newNull = "(null)";
-        Assert.assertNull(this.field.getValue());
-        Assert.assertEquals(LabelField.DEFAULT_NULL_REPRESENTATION, this.field.getText().getText());
+        Assertions.assertNull(this.field.getValue());
+        Assertions.assertEquals(LabelField.DEFAULT_NULL_REPRESENTATION, this.field.getText().getText());
         this.field.setNullRepresentation(newNull);
-        Assert.assertNull(this.field.getValue());
-        Assert.assertEquals(newNull, this.field.getText().getText());
+        Assertions.assertNull(this.field.getValue());
+        Assertions.assertEquals(newNull, this.field.getText().getText());
     }
 
 }

@@ -1,7 +1,7 @@
 package org.vaadin.miki.superfields.numbers;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.util.Locale;
@@ -26,16 +26,16 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
   public void testMinimumFractionDigits() {
     this.getField().setValue(SIX_DIGITS_PLUS_ONE);
     this.getField().setMinimumFractionDigits(3);
-    Assert.assertEquals(FORMATTED_SIX_DIGITS_PLUS_ONE + "00", this.getField().getRawValue());
-    Assert.assertEquals(SIX_DIGITS_PLUS_ONE, this.getField().getValue(), 0.0001d);
+    Assertions.assertEquals(FORMATTED_SIX_DIGITS_PLUS_ONE + "00", this.getField().getRawValue());
+    Assertions.assertEquals(SIX_DIGITS_PLUS_ONE, this.getField().getValue(), 0.0001d);
   }
 
   @Test
   public void testMaximumFractionDigits() {
     this.getField().setValue(1.234d);
     this.getField().setMaximumFractionDigits(1);
-    Assert.assertEquals("1,2", this.getField().getRawValue());
-    Assert.assertEquals(1.234d, this.getField().getValue(), 0);
+    Assertions.assertEquals("1,2", this.getField().getRawValue());
+    Assertions.assertEquals(1.234d, this.getField().getValue(), 0);
   }
 
   @Test
@@ -45,7 +45,7 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
     this.getField().setDecimalSeparatorAlternatives(Set.of('|'));
     for (String s : new String[]{"123_456|78", "12_34_56|78", "12345_6|78", "_123_456|78", "_123456_|78"}) {
       final Double value = this.getField().parseRawValue(s);
-      Assert.assertEquals(Double.valueOf(123456.78), value);
+      Assertions.assertEquals(Double.valueOf(123456.78), value);
     }
   }
 
@@ -56,7 +56,7 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
     this.getField().setDecimalSeparatorAlternatives(Set.of('_'));
     for (String s : new String[]{"^123456_78", "%123456_78", "-123456_78"}) {
       final Double value = this.getField().parseRawValue(s);
-      Assert.assertEquals(Double.valueOf(-123456.78), value);
+      Assertions.assertEquals(Double.valueOf(-123456.78), value);
     }
   }
 
@@ -65,9 +65,9 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
     this.getField().withLocale(Locale.GERMANY)
         .withOverlappingAlternatives()
         .withDecimalSeparatorAlternatives('.');
-    Assert.assertTrue(this.getField().getDecimalSeparatorAlternatives().contains('.'));
+    Assertions.assertTrue(this.getField().getDecimalSeparatorAlternatives().contains('.'));
     final double value = this.getField().parseRawValue("12345.67");
-    Assert.assertEquals(12345.67, value, 0.00001);
+    Assertions.assertEquals(12345.67, value, 0.00001);
   }
 
   @Test
@@ -75,9 +75,9 @@ public class SuperDoubleFieldTest extends BaseTestsForFloatingPointNumbers<Doubl
     this.getField().withLocale(Locale.GERMANY)
         .withDecimalSeparatorAlternatives('.');
     // without explicitly allowing symbols to overlap, the . is ignored and treated as a grouping symbol
-    Assert.assertTrue(this.getField().getDecimalSeparatorAlternatives().isEmpty());
+    Assertions.assertTrue(this.getField().getDecimalSeparatorAlternatives().isEmpty());
     final double value = this.getField().parseRawValue("12345.67");
-    Assert.assertEquals(1234567, value, 0.00001);
+    Assertions.assertEquals(1234567, value, 0.00001);
   }
 
 

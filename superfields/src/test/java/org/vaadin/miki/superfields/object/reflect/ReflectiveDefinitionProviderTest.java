@@ -1,7 +1,7 @@
 package org.vaadin.miki.superfields.object.reflect;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.vaadin.miki.superfields.object.DataObject;
 import org.vaadin.miki.superfields.util.factory.FieldGroup;
 import org.vaadin.miki.superfields.util.factory.FieldOrder;
@@ -21,18 +21,18 @@ import java.util.stream.Collectors;
 public class ReflectiveDefinitionProviderTest {
 
     private static void assertBasicDefinitions(Map<String, Property<DataObject, ?>> definitions) {
-        Assert.assertEquals(8, definitions.size());
+        Assertions.assertEquals(8, definitions.size());
 
         definitions.forEach((name, def) -> {
-            Assert.assertEquals(name, def.getName());
-            Assert.assertTrue(def.getGetter().isPresent());
-            Assert.assertSame(DataObject.class, def.getOwner());
+            Assertions.assertEquals(name, def.getName());
+            Assertions.assertTrue(def.getGetter().isPresent());
+            Assertions.assertSame(DataObject.class, def.getOwner());
         });
 
         // this method is final
-        Assert.assertTrue(definitions.get("fixed").getSetter().isEmpty());
+        Assertions.assertTrue(definitions.get("fixed").getSetter().isEmpty());
 
-        Assert.assertSame(BigDecimal.class, definitions.get("currency").getType());
+        Assertions.assertSame(BigDecimal.class, definitions.get("currency").getType());
     }
 
     private static boolean isNonNegativeNumber(Object object) {
@@ -63,12 +63,11 @@ public class ReflectiveDefinitionProviderTest {
         assertBasicDefinitions(definitions);
         // all fields except "fixed" have an order
         definitions.values().forEach(def ->
-                Assert.assertTrue("property " + def.getName() + " must have an order in metadata " + def.getMetadata().toString(),
-                        "fixed".equals(def.getName()) ^ (def.getMetadata().containsKey("order") && isNonNegativeNumber(def.getMetadata().get("order").getValue())))
+                Assertions.assertTrue("fixed".equals(def.getName()) ^ (def.getMetadata().containsKey("order") && isNonNegativeNumber(def.getMetadata().get("order").getValue())), "property " + def.getName() + " must have an order in metadata " + def.getMetadata().toString())
         );
         // date and number belong to "random-group"
         definitions.values().forEach(def ->
-            Assert.assertTrue(!Set.of("date", "number").contains(def.getName()) ^ (def.getMetadata().containsKey("group") && "random-group".equals(def.getMetadata().get("group").getValue())))
+            Assertions.assertTrue(!Set.of("date", "number").contains(def.getName()) ^ (def.getMetadata().containsKey("group") && "random-group".equals(def.getMetadata().get("group").getValue())))
         );
     }
 

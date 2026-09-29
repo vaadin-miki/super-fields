@@ -1,18 +1,20 @@
 package org.vaadin.miki.superfields.text;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.vaadin.browserless.BrowserlessUIContext;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.vaadin.miki.events.text.TextSelectionNotifier;
 import org.vaadin.miki.markers.CanReceiveSelectionEventsFromClient;
 import org.vaadin.miki.markers.CanSelectText;
 import org.vaadin.miki.shared.text.TextSelectionDelegate;
 
 abstract class AbstractTestForTextSelection<C extends Component & CanSelectText & HasValue<?, String> & CanReceiveSelectionEventsFromClient & TextSelectionNotifier<C>> {
+
+    private BrowserlessUIContext window;
 
     private C textComponent;
 
@@ -22,10 +24,12 @@ abstract class AbstractTestForTextSelection<C extends Component & CanSelectText 
 
     protected abstract C constructComponent();
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        MockVaadin.setup();
-        this.textComponent = this.constructComponent();
+        this.window = BrowserlessUIContext.forComponent(() -> {
+            this.textComponent = this.constructComponent();
+            return this.textComponent;
+        });
         this.textComponent.addTextSelectionListener(event -> {
             eventCounter++;
             lastSelectedText = event.getSelectedText();
@@ -33,33 +37,36 @@ abstract class AbstractTestForTextSelection<C extends Component & CanSelectText 
         this.eventCounter = 0;
     }
 
-    @After
-    public void tearDown() {
-        MockVaadin.tearDown();
+    @AfterEach
+    public void closeWindow() {
+        if (this.window != null) {
+            this.window.close();
+        }
     }
 
-    // note: it is not possible to test client-side with karibu
+    // note: the client-side half of text selection needs a real browser to run its JavaScript,
+    // so only the server-side API is covered here
     @Test
     public void testServerSideSelection() {
         final String helloWorld = "hello, world!";
-        Assert.assertFalse(this.textComponent.isReceivingSelectionEventsFromClient());
+        Assertions.assertFalse(this.textComponent.isReceivingSelectionEventsFromClient());
         this.textComponent.setValue(helloWorld);
         this.textComponent.selectAll();
-        Assert.assertEquals("text-selection should have been fired", 1, this.eventCounter);
-        Assert.assertEquals("all text should be selected in event", helloWorld, this.lastSelectedText);
-        Assert.assertEquals("all text should be selected in attribute", helloWorld, this.textComponent.getElement().getAttribute(TextSelectionDelegate.SELECTED_TEXT_ATTRIBUTE_NAME));
+        Assertions.assertEquals(1, this.eventCounter, "text-selection should have been fired");
+        Assertions.assertEquals(helloWorld, this.lastSelectedText, "all text should be selected in event");
+        Assertions.assertEquals(helloWorld, this.textComponent.getElement().getAttribute(TextSelectionDelegate.SELECTED_TEXT_ATTRIBUTE_NAME), "all text should be selected in attribute");
         this.textComponent.selectNone();
-        Assert.assertEquals("text-selection should have been fired again", 2, this.eventCounter);
-        Assert.assertTrue("no text should be selected in event", this.lastSelectedText.isEmpty());
-        Assert.assertTrue("no text should be selected in attribute", this.textComponent.getElement().getAttribute(TextSelectionDelegate.SELECTED_TEXT_ATTRIBUTE_NAME).isEmpty());
+        Assertions.assertEquals(2, this.eventCounter, "text-selection should have been fired again");
+        Assertions.assertTrue(this.lastSelectedText.isEmpty(), "no text should be selected in event");
+        Assertions.assertTrue(this.textComponent.getElement().getAttribute(TextSelectionDelegate.SELECTED_TEXT_ATTRIBUTE_NAME).isEmpty(), "no text should be selected in attribute");
         this.textComponent.select(7, 12);
-        Assert.assertEquals("text-selection should have been fired again", 3, this.eventCounter);
-        Assert.assertEquals("some text should be selected in event", "world", this.lastSelectedText);
-        Assert.assertEquals("some text should be selected in attribute", "world", this.textComponent.getElement().getAttribute(TextSelectionDelegate.SELECTED_TEXT_ATTRIBUTE_NAME));
+        Assertions.assertEquals(3, this.eventCounter, "text-selection should have been fired again");
+        Assertions.assertEquals("world", this.lastSelectedText, "some text should be selected in event");
+        Assertions.assertEquals("world", this.textComponent.getElement().getAttribute(TextSelectionDelegate.SELECTED_TEXT_ATTRIBUTE_NAME), "some text should be selected in attribute");
         this.textComponent.setValue("clear selection");
-        Assert.assertEquals("text-selection should have been fired again", 4, this.eventCounter);
-        Assert.assertTrue("no text should be selected in event", this.lastSelectedText.isEmpty());
-        Assert.assertTrue("no text should be selected in attribute", this.textComponent.getElement().getAttribute(TextSelectionDelegate.SELECTED_TEXT_ATTRIBUTE_NAME).isEmpty());
+        Assertions.assertEquals(4, this.eventCounter, "text-selection should have been fired again");
+        Assertions.assertTrue(this.lastSelectedText.isEmpty(), "no text should be selected in event");
+        Assertions.assertTrue(this.textComponent.getElement().getAttribute(TextSelectionDelegate.SELECTED_TEXT_ATTRIBUTE_NAME).isEmpty(), "no text should be selected in attribute");
     }
 
 }

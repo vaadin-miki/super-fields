@@ -1,14 +1,14 @@
 package org.vaadin.miki.superfields.object;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.vaadin.browserless.BrowserlessUIContext;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasLabel;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.HasValue;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.vaadin.miki.superfields.util.factory.ObjectFieldFactory;
 
 import java.math.BigDecimal;
@@ -28,6 +28,8 @@ import java.util.stream.Stream;
  */
 public class ObjectFieldTest {
 
+  private BrowserlessUIContext window;
+
   private static final ObjectFieldFactory FACTORY = new ObjectFieldFactory();
 
   private static String extractLabel(Object component) {
@@ -38,46 +40,49 @@ public class ObjectFieldTest {
 
   private ObjectField<DataObject> field;
 
-  @Before
+  @BeforeEach
   public void setup() {
-    MockVaadin.setup();
-    this.field = FACTORY.buildAndConfigureObjectField(DataObject.class, DataObject::new, false);
+    this.window = BrowserlessUIContext.forComponent(() -> {
+      this.field = FACTORY.buildAndConfigureObjectField(DataObject.class, DataObject::new, false);
+      return this.field;
+    });
   }
 
-  @After
-  public void tearDown() {
-    MockVaadin.tearDown();
+  @AfterEach
+  public void closeWindow() {
+    if (this.window != null) {
+      this.window.close();
+    }
   }
 
   @Test
   public void testInitialisedWithAllProperties() {
     // before setting a value there should be nothing
     // note that this field is not repainted when built
-    Assert.assertTrue(this.field.getPropertiesAndComponents().isEmpty());
-    Assert.assertTrue(this.field.getGroupLayouts().isEmpty());
-    Assert.assertTrue(this.field.getComponentsNotInGroups().isEmpty());
+    Assertions.assertTrue(this.field.getPropertiesAndComponents().isEmpty());
+    Assertions.assertTrue(this.field.getGroupLayouts().isEmpty());
+    Assertions.assertTrue(this.field.getComponentsNotInGroups().isEmpty());
 
     // force repaint
     this.field.repaint();
 
     final Map<Property<DataObject, ?>, HasValue<?, ?>> map = this.field.getPropertiesAndComponents();
-    Assert.assertEquals(8, map.size()); // 9 properties, but one is ignored, so 8
+    Assertions.assertEquals(8, map.size()); // 9 properties, but one is ignored, so 8
     // order is defined in annotations
-    Assert.assertArrayEquals(new String[]{"text", "description", "check", "currency", "timestamp", "date", "number", "fixed"},
-        map.keySet().stream().map(Property::getName).toArray(String[]::new));
+    Assertions.assertArrayEquals(new String[]{"text", "description", "check", "currency", "timestamp", "date", "number", "fixed"}, map.keySet().stream().map(Property::getName).toArray(String[]::new));
     // grouping is also defined in annotations
     final Map<String, Component> groupLayouts = this.field.getGroupLayouts();
-    Assert.assertEquals(2, groupLayouts.size());
-    Assert.assertArrayEquals(new String[]{"currency-check", "random-group"}, groupLayouts.keySet().toArray(String[]::new));
+    Assertions.assertEquals(2, groupLayouts.size());
+    Assertions.assertArrayEquals(new String[]{"currency-check", "random-group"}, groupLayouts.keySet().toArray(String[]::new));
     // four components belong to groups, so four should also be outside
     final Set<Component> notGrouped = this.field.getComponentsNotInGroups();
-    Assert.assertEquals(4, notGrouped.size());
+    Assertions.assertEquals(4, notGrouped.size());
     @SuppressWarnings("squid:S6204") // using .toList does not work in this case (double generics)
     final List<HasValue<?, ?>> hasValues = Stream.of("text", "description", "timestamp", "fixed")
         .map(name -> map.keySet().stream().filter(def -> Objects.equals(name, def.getName())).findFirst().orElseThrow())
         .map(map::get)
         .collect(Collectors.toList());
-    Assert.assertEquals(hasValues, new ArrayList<>(notGrouped));
+    Assertions.assertEquals(hasValues, new ArrayList<>(notGrouped));
   }
 
   @Test
@@ -85,19 +90,19 @@ public class ObjectFieldTest {
     this.field.setValue(DataObject.build());
 
     final Map<Property<DataObject, ?>, HasValue<?, ?>> map = this.field.getPropertiesAndComponents();
-    Assert.assertFalse(map.isEmpty());
+    Assertions.assertFalse(map.isEmpty());
     map.forEach((def, component) -> {
-      Assert.assertTrue(String.format("field %s should be type %s, is %s", def.getName(), DataObjectConfiguration.EXPECTED_FIELDS.get(def.getName()).getSimpleName(), component.getClass().getSimpleName()), DataObjectConfiguration.EXPECTED_FIELDS.get(def.getName()).isInstance(component));
-      Assert.assertEquals(String.format("field %s has invalid caption", def.getName()), DataObjectConfiguration.EXPECTED_CAPTIONS.get(def.getName()), extractLabel(component));
+      Assertions.assertTrue(DataObjectConfiguration.EXPECTED_FIELDS.get(def.getName()).isInstance(component), String.format("field %s should be type %s, is %s", def.getName(), DataObjectConfiguration.EXPECTED_FIELDS.get(def.getName()).getSimpleName(), component.getClass().getSimpleName()));
+      Assertions.assertEquals(DataObjectConfiguration.EXPECTED_CAPTIONS.get(def.getName()), extractLabel(component), String.format("field %s has invalid caption", def.getName()));
     });
 
     // field for "fixed" must be read-only (there is no setter for the property
-    Assert.assertTrue(map.keySet().stream().filter(def -> "fixed".equals(def.getName())).findFirst().map(map::get).map(HasValue::isReadOnly).orElse(false));
+    Assertions.assertTrue(map.keySet().stream().filter(def -> "fixed".equals(def.getName())).findFirst().map(map::get).map(HasValue::isReadOnly).orElse(false));
 
     // also check if id and style names are ok
-    Assert.assertTrue(map.keySet().stream().filter(def -> "currency".equals(def.getName())).findFirst().map(map::get).map(HasStyle.class::cast).map(HasStyle::getClassNames).map(list -> list.contains("stylish")).orElse(false));
-    Assert.assertEquals("something", map.keySet().stream().filter(def -> "description".equals(def.getName())).findFirst().map(map::get).map(Component.class::cast).map(Component::getId).flatMap(perhaps -> perhaps).orElse(null));
-    Assert.assertTrue(map.keySet().stream().filter(def -> "timestamp".equals(def.getName())).findFirst().map(map::get).map(HasStyle.class::cast).map(HasStyle::getClassNames).map(Set::isEmpty).orElse(false));
+    Assertions.assertTrue(map.keySet().stream().filter(def -> "currency".equals(def.getName())).findFirst().map(map::get).map(HasStyle.class::cast).map(HasStyle::getClassNames).map(list -> list.contains("stylish")).orElse(false));
+    Assertions.assertEquals("something", map.keySet().stream().filter(def -> "description".equals(def.getName())).findFirst().map(map::get).map(Component.class::cast).map(Component::getId).flatMap(perhaps -> perhaps).orElse(null));
+    Assertions.assertTrue(map.keySet().stream().filter(def -> "timestamp".equals(def.getName())).findFirst().map(map::get).map(HasStyle.class::cast).map(HasStyle::getClassNames).map(Set::isEmpty).orElse(false));
   }
 
   @Test
@@ -114,7 +119,7 @@ public class ObjectFieldTest {
     value.setTimestamp(LocalDateTime.of(2012, 2, 17, 20, 45, 30));
 
     this.field.setValue(value);
-    this.field.getPropertiesAndComponents().forEach((def, component) -> Assert.assertEquals(String.format("value of property %s differs", def.getName()), def.getGetter().get().apply(value), component.getValue()));
+    this.field.getPropertiesAndComponents().forEach((def, component) -> Assertions.assertEquals(def.getGetter().get().apply(value), component.getValue(), String.format("value of property %s differs", def.getName())));
   }
 
 }

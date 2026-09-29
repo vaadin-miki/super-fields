@@ -1,14 +1,16 @@
 package org.vaadin.miki.superfields.buttons;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.vaadin.miki.events.click.ComponentClickEvent;
 import org.vaadin.miki.events.state.StateChangeEvent;
+import com.vaadin.browserless.BrowserlessUIContext;
 
 public class MultiClickButtonTest {
+
+    private BrowserlessUIContext window;
 
     private MultiClickButton button;
 
@@ -24,40 +26,44 @@ public class MultiClickButtonTest {
         this.stateCount++;
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
-        MockVaadin.setup();
-        this.button = new MultiClickButton();
+        this.window = BrowserlessUIContext.forComponent(() -> {
+            this.button = new MultiClickButton();
+            return this.button;
+        });
         this.button.addClickListener(this::eventHandler);
         this.button.addStateChangeListener(this::stateHandler);
     }
 
-    @After
-    public void tearDown() {
-        MockVaadin.tearDown();
+    @AfterEach
+    public void closeWindow() {
+        if (this.window != null) {
+            this.window.close();
+        }
     }
 
     @Test
     public void testNoExtraStates() {
         this.button.click();
-        Assert.assertEquals("by default button should react to clicks normally", 1, this.clickCount);
+        Assertions.assertEquals(1, this.clickCount, "by default button should react to clicks normally");
         this.button.click();
-        Assert.assertEquals("by default button should react to clicks normally", 2, this.clickCount);
-        Assert.assertEquals(0, this.stateCount);
+        Assertions.assertEquals(2, this.clickCount, "by default button should react to clicks normally");
+        Assertions.assertEquals(0, this.stateCount);
     }
 
     @Test
     public void testOneTitle() {
         final String caption = "hello";
         this.button.setStates(SimpleButtonState.forTexts(caption));
-        Assert.assertEquals(caption, this.button.getText());
+        Assertions.assertEquals(caption, this.button.getText());
         this.button.click();
-        Assert.assertEquals("with one title clicks should be normal", 1, this.clickCount);
-        Assert.assertEquals(caption, this.button.getText());
+        Assertions.assertEquals(1, this.clickCount, "with one title clicks should be normal");
+        Assertions.assertEquals(caption, this.button.getText());
         this.button.click();
-        Assert.assertEquals("with one title clicks should be normal", 2, this.clickCount);
-        Assert.assertEquals(caption, this.button.getText());
-        Assert.assertEquals(1, this.stateCount);
+        Assertions.assertEquals(2, this.clickCount, "with one title clicks should be normal");
+        Assertions.assertEquals(caption, this.button.getText());
+        Assertions.assertEquals(1, this.stateCount);
     }
 
     @Test
@@ -68,15 +74,15 @@ public class MultiClickButtonTest {
         final int iterations = 3;
         for(int zmp2=1; zmp2<=iterations; zmp2++)
             for(int zmp1=0; zmp1<captions.length; zmp1++) {
-                Assert.assertEquals(captions[zmp1], this.button.getText());
+                Assertions.assertEquals(captions[zmp1], this.button.getText());
                 this.button.click();
                 // final clicks should happen only on the last item clicked
                 if(zmp1 == captions.length-1)
                     expectedClicks++;
-                Assert.assertEquals("loop executing for "+zmp2+"th time, after click "+zmp1, expectedClicks, this.clickCount);
+                Assertions.assertEquals(expectedClicks, this.clickCount, "loop executing for "+zmp2+"th time, after click "+zmp1);
             }
-        Assert.assertEquals("after final click, first caption in line should be shown", captions[0], this.button.getText());
-        Assert.assertEquals(iterations*captions.length + 1, this.stateCount); // one extra state change (when calling setStates)
+        Assertions.assertEquals(captions[0], this.button.getText(), "after final click, first caption in line should be shown");
+        Assertions.assertEquals(iterations*captions.length + 1, this.stateCount); // one extra state change (when calling setStates)
     }
 
 }

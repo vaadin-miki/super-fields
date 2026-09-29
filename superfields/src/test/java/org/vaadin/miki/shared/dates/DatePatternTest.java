@@ -1,34 +1,34 @@
 package org.vaadin.miki.shared.dates;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class DatePatternTest {
 
     @Test
     public void noSeparatorMeansZeroPrefixedDayAndMonth() {
         final DatePattern pattern = new DatePattern().withZeroPrefixedDay(false).withMonthDisplayMode(DatePattern.MonthDisplayMode.NUMBER);
-        Assert.assertTrue(pattern.hasSeparator());
+        Assertions.assertTrue(pattern.hasSeparator());
         pattern.withoutSeparator();
-        Assert.assertFalse(pattern.hasSeparator());
-        Assert.assertTrue("zero prefixed day must be set when there is no separator", pattern.isZeroPrefixedDay());
-        Assert.assertEquals("zero prefixed month must be set when there is no separator", DatePattern.MonthDisplayMode.ZERO_PREFIXED_NUMBER, pattern.getMonthDisplayMode());
+        Assertions.assertFalse(pattern.hasSeparator());
+        Assertions.assertTrue(pattern.isZeroPrefixedDay(), "zero prefixed day must be set when there is no separator");
+        Assertions.assertEquals(DatePattern.MonthDisplayMode.ZERO_PREFIXED_NUMBER, pattern.getMonthDisplayMode(), "zero prefixed month must be set when there is no separator");
     }
 
     @Test
     public void turningOffZeroPrefixedDaySetsDefaultSeparatorWhenWasNone() {
         final DatePattern pattern = new DatePattern().withoutSeparator();
-        Assert.assertFalse(pattern.hasSeparator());
+        Assertions.assertFalse(pattern.hasSeparator());
         pattern.setZeroPrefixedDay(false);
-        Assert.assertEquals("separator should be reverted to default", DatePattern.DEFAULT_SEPARATOR, pattern.getSeparator());
+        Assertions.assertEquals(DatePattern.DEFAULT_SEPARATOR, pattern.getSeparator(), "separator should be reverted to default");
     }
 
     @Test
     public void turningOffZeroPrefixedMonthSetsDefaultSeparatorWhenWasNone() {
         final DatePattern pattern = new DatePattern().withoutSeparator();
-        Assert.assertFalse(pattern.hasSeparator());
+        Assertions.assertFalse(pattern.hasSeparator());
         pattern.withMonthDisplayMode(DatePattern.MonthDisplayMode.NUMBER);
-        Assert.assertEquals("separator should be reverted to default", DatePattern.DEFAULT_SEPARATOR, pattern.getSeparator());
+        Assertions.assertEquals(DatePattern.DEFAULT_SEPARATOR, pattern.getSeparator(), "separator should be reverted to default");
     }
 
 }

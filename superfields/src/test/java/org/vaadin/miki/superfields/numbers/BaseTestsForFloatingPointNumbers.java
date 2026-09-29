@@ -1,7 +1,7 @@
 package org.vaadin.miki.superfields.numbers;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -130,25 +130,25 @@ class BaseTestsForFloatingPointNumbers<T extends Number> extends BaseTestsForInt
 
     @Test
     public void testValidLimitedFloatingPointInputs() {
-        Assert.assertTrue("no testable limited length floating point inputs that are valid, cannot continue!", this.validLimitedInputs.size() > 0);
+        Assertions.assertTrue(this.validLimitedInputs.size() > 0, "no testable limited length floating point inputs that are valid, cannot continue!");
         this.validLimitedInputs.forEach((limits, inputs) -> {
             this.getField().setMaximumIntegerDigits(limits[0]);
             this.getField().setMinimumFractionDigits(limits[1]);
             this.getField().setMaximumFractionDigits(limits[2]);
             String regexp = this.getField().getRegexp();
-            inputs.forEach(s -> Assert.assertTrue(String.format("input %s must match %s for %s with integer limit %d and decimal limits %d/%d", s, regexp, this.getField().getClass().getSimpleName(), limits[0], limits[1], limits[2]), s.matches(regexp)));
+            inputs.forEach(s -> Assertions.assertTrue(s.matches(regexp), String.format("input %s must match %s for %s with integer limit %d and decimal limits %d/%d", s, regexp, this.getField().getClass().getSimpleName(), limits[0], limits[1], limits[2])));
         });
     }
 
     @Test
     public void testInvalidLimitedFloatingPointInputs() {
-        Assert.assertTrue("no testable limited length floating point inputs that are invalid, cannot continue!", this.invalidLimitedInputs.size() > 0);
+        Assertions.assertTrue(this.invalidLimitedInputs.size() > 0, "no testable limited length floating point inputs that are invalid, cannot continue!");
         this.invalidLimitedInputs.forEach((limits, inputs) -> {
             this.getField().setMaximumIntegerDigits(limits[0]);
             this.getField().setMinimumFractionDigits(limits[1]);
             this.getField().setMaximumFractionDigits(limits[2]);
             String regexp = this.getField().getRegexp();
-            inputs.forEach(s -> Assert.assertFalse(String.format("input %s must not match %s for %s with integer limit %d and decimal limits %d/%d", s, regexp, this.getField().getClass().getSimpleName(), limits[0], limits[1], limits[2]), s.matches(regexp)));
+            inputs.forEach(s -> Assertions.assertFalse(s.matches(regexp), String.format("input %s must not match %s for %s with integer limit %d and decimal limits %d/%d", s, regexp, this.getField().getClass().getSimpleName(), limits[0], limits[1], limits[2])));
         });
     }
 
@@ -165,12 +165,12 @@ class BaseTestsForFloatingPointNumbers<T extends Number> extends BaseTestsForInt
                     // integer part is required by default, so ALL entries should be incorrect
                     String regexp = this.getField().getRegexp();
                     for (String s : onlyWhenNotRequired)
-                        Assert.assertFalse(String.format("input %s must not match %s when integer part (max size %d) is required", s, regexp, maxDigits), s.matches(regexp));
+                        Assertions.assertFalse(s.matches(regexp), String.format("input %s must not match %s when integer part (max size %d) is required", s, regexp, maxDigits));
 
                     this.getField().setIntegerPartOptional(true);
                     regexp = this.getField().getRegexp();
                     for (String s : onlyWhenNotRequired)
-                        Assert.assertTrue(String.format("input %s must match %s when integer part (max size %d) is optional", s, regexp, maxDigits), s.matches(regexp));
+                        Assertions.assertTrue(s.matches(regexp), String.format("input %s must match %s when integer part (max size %d) is optional", s, regexp, maxDigits));
                 }
         );
     }
@@ -180,10 +180,10 @@ class BaseTestsForFloatingPointNumbers<T extends Number> extends BaseTestsForInt
     public void testNoMixingOfDecimalSymbolsAllowed() {
         this.getField().setLocale(Locale.ENGLISH); // this uses . as decimal and , as grouping
         this.getField().setDecimalSeparatorAlternatives(Set.of('.', ',', '-')); // so setting ., should fail (and - is minus, also fail)
-        Assert.assertTrue(this.getField().getDecimalSeparatorAlternatives().isEmpty());
+        Assertions.assertTrue(this.getField().getDecimalSeparatorAlternatives().isEmpty());
         this.getField().setDecimalSeparatorAlternatives(Set.of('|', '@'));
-        Assert.assertEquals(2, this.getField().getDecimalSeparatorAlternatives().size());
-        Assert.assertTrue(this.getField().getDecimalSeparatorAlternatives().containsAll(Set.of('|', '@')));
+        Assertions.assertEquals(2, this.getField().getDecimalSeparatorAlternatives().size());
+        Assertions.assertTrue(this.getField().getDecimalSeparatorAlternatives().containsAll(Set.of('|', '@')));
     }
 
 }

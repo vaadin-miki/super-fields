@@ -1,7 +1,7 @@
 package org.vaadin.miki.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link RegexTools}.
@@ -16,7 +16,7 @@ public class RegexToolsTest {
     final char[] input = new char[]{0, 'a', 'Ą', 160, ':', '?', '!', '-', '6'};
     final String[] expected = new String[]{"\0", "a", "Ą", ""+(char)160, ":", "\\?", "\\!", "\\-", "6"};
     for(int zmp1=0; zmp1<input.length; zmp1++)
-      Assert.assertEquals(expected[zmp1], RegexTools.escaped(input[zmp1], true));
+      Assertions.assertEquals(expected[zmp1], RegexTools.escaped(input[zmp1], true));
   }
 
   @Test
@@ -24,7 +24,7 @@ public class RegexToolsTest {
     final char[] input = new char[]{0, 'a', 'Ą', 160, ':', '?', '!', '-', '6'};
     final String[] expected = new String[]{"\0", "a", "Ą", ""+(char)160, ":", "\\?", "\\!", "-", "6"};
     for(int zmp1=0; zmp1<input.length; zmp1++)
-      Assert.assertEquals(expected[zmp1], RegexTools.escaped(input[zmp1], false));
+      Assertions.assertEquals(expected[zmp1], RegexTools.escaped(input[zmp1], false));
   }
 
   @Test
@@ -34,7 +34,7 @@ public class RegexToolsTest {
     // note the '-' - it should be escaped only inside [...] (see #481)
     final String[] expected = new String[]{"[\0f]", "[\\-\\!_]", "-", "\\.", ",", "[\\?ab\\!]", "[Xą]", "[\\.\\-Ź]"};
     for(int zmp1=0; zmp1<mains.length; zmp1++)
-      Assert.assertEquals("error at position "+zmp1, expected[zmp1], RegexTools.characterSelector(mains[zmp1], alts[zmp1]));
+      Assertions.assertEquals(expected[zmp1], RegexTools.characterSelector(mains[zmp1], alts[zmp1]), "error at position "+zmp1);
   }
 
 }
