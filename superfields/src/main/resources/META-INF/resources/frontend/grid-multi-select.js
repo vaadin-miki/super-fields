@@ -4,9 +4,13 @@ import {CSS_LABEL_POSITIONS_GRIDS} from "./styles/css-label-positions-grid";
 
 class GridMultiSelect extends CustomField {
 
-    static get is() {return 'grid-multi-select'}
+    static get is() {
+        return 'grid-multi-select'
+    }
 
-    static get styles() {return [CSS_LABEL_POSITIONS, CSS_LABEL_POSITIONS_GRIDS]}
+    static get styles() {
+        return [CSS_LABEL_POSITIONS, CSS_LABEL_POSITIONS_GRIDS]
+    }
 
 }
 

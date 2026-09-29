@@ -1,84 +1,92 @@
 package org.vaadin.miki.superfields.object;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.vaadin.browserless.BrowserlessUIContext;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.data.provider.Query;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.vaadin.miki.superfields.util.factory.ObjectFieldFactory;
 
 import java.util.Map;
 import java.util.Set;
 
-public class EnumObjectTest {
+class EnumObjectTest {
 
-    private static final ObjectFieldFactory FACTORY = new ObjectFieldFactory();
+  private BrowserlessUIContext window;
 
-    @BeforeClass
-    public static void setupFactory() {
-        FACTORY.registerInstanceProvider(EnumObject.class, EnumObject::new);
+  private static final ObjectFieldFactory FACTORY = new ObjectFieldFactory();
+
+  @BeforeAll
+  static void setupFactory() {
+    FACTORY.registerInstanceProvider(EnumObject.class, EnumObject::new);
+  }
+
+  private ObjectField<EnumObject> field;
+  private int eventCounter = 0;
+
+  @BeforeEach
+  void setup() {
+    this.eventCounter = 0;
+    this.window = BrowserlessUIContext.forComponent(() -> {
+      this.field = FACTORY.buildAndConfigureObjectField(EnumObject.class, EnumObject::new);
+      return this.field;
+    });
+  }
+
+  @AfterEach
+  void closeWindow() {
+    if (this.window != null) {
+      this.window.close();
     }
+  }
 
-    private ObjectField<EnumObject> field;
-    private int eventCounter = 0;
+  @Test
+  @SuppressWarnings("unchecked")
+  void testEnumFieldIsCombobox() {
+    final Map<Property<EnumObject, ?>, HasValue<?, ?>> map = this.field.getPropertiesAndComponents();
+    final HasValue<?, ?> comboBox = map.keySet().stream().filter(def -> "mode".equals(def.getName())).map(map::get).findFirst().orElse(null);
+    Assertions.assertNotNull(comboBox);
+    Assertions.assertInstanceOf(ComboBox.class, comboBox, String.format("field should be a combobox, not a %s", comboBox.getClass().getSimpleName()));
+    Assertions.assertArrayEquals(TestingMode.values(), ((ComboBox<?>) comboBox).getDataProvider().fetch(new Query<>()).toArray(TestingMode[]::new));
+    this.field.addValueChangeListener(event -> eventCounter++);
+    // set a value
+    final EnumObject data = new EnumObject();
+    data.setMode(TestingMode.MANUAL);
+    this.field.setValue(data);
+    Assertions.assertEquals(1, this.eventCounter);
+    Assertions.assertEquals(TestingMode.MANUAL, comboBox.getValue());
+    // select a value
+    ((ComboBox<TestingMode>) comboBox).setValue(TestingMode.AUTOMATIC);
+    Assertions.assertEquals(2, this.eventCounter);
+    Assertions.assertEquals(TestingMode.AUTOMATIC, field.getValue().getMode());
+  }
 
-    @Before
-    public void setup() {
-        MockVaadin.setup();
-        this.eventCounter = 0;
-        this.field = FACTORY.buildAndConfigureObjectField(EnumObject.class, EnumObject::new);
-    }
-
-    @After
-    public void tearDown() {
-        MockVaadin.tearDown();
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testEnumFieldIsCombobox() {
-        final Map<Property<EnumObject, ?>, HasValue<?, ?>> map = this.field.getPropertiesAndComponents();
-        final HasValue<?, ?> comboBox = map.keySet().stream().filter(def -> "mode".equals(def.getName())).map(map::get).findFirst().orElse(null);
-        Assert.assertNotNull(comboBox);
-        Assert.assertTrue(String.format("field should be a combobox, not a %s", comboBox.getClass().getSimpleName()), comboBox instanceof ComboBox);
-        Assert.assertArrayEquals(TestingMode.values(), ((ComboBox<?>) comboBox).getDataProvider().fetch(new Query<>()).toArray(TestingMode[]::new));
-        this.field.addValueChangeListener(event -> eventCounter++);
-        // set a value
-        final EnumObject data = new EnumObject();
-        data.setMode(TestingMode.MANUAL);
-        this.field.setValue(data);
-        Assert.assertEquals(1, this.eventCounter);
-        Assert.assertEquals(TestingMode.MANUAL, comboBox.getValue());
-        // select a value
-        ((ComboBox<TestingMode>)comboBox).setValue(TestingMode.AUTOMATIC);
-        Assert.assertEquals(2, this.eventCounter);
-        Assert.assertEquals(TestingMode.AUTOMATIC, field.getValue().getMode());
-    }
-
-    @Test
-    public void testEnumListIsMultiselectComboBox() {
-        final Map<Property<EnumObject, ?>, HasValue<?, ?>> map = this.field.getPropertiesAndComponents();
-        final HasValue<?, ?> comboBox = map.keySet().stream().filter(def -> "modes".equals(def.getName())).map(map::get).findFirst().orElse(null);
-        Assert.assertNotNull(comboBox);
-        Assert.assertTrue(String.format("field should be a multi-select combobox, not a %s", comboBox.getClass().getSimpleName()), comboBox instanceof MultiSelectComboBox);
-        Assert.assertArrayEquals(TestingMode.values(), ((MultiSelectComboBox<?>) comboBox).getDataProvider().fetch(new Query<>()).toArray(TestingMode[]::new));
-        this.field.addValueChangeListener(event -> eventCounter++);
-        // set a value
-        final EnumObject data = new EnumObject();
-        final Set<TestingMode> testingModes = Set.of(TestingMode.MANUAL, TestingMode.AUTOMATIC);
-        data.setModes(testingModes);
-        this.field.setValue(data);
-        Assert.assertEquals(1, this.eventCounter);
-        Assert.assertEquals(testingModes, comboBox.getValue());
-        // select a value
-        ((MultiSelectComboBox<TestingMode>)comboBox).setValue(TestingMode.NONE);
-        Assert.assertEquals(2, this.eventCounter);
-        Assert.assertEquals(Set.of(TestingMode.NONE), field.getValue().getModes());
-    }
+  @Test
+  @SuppressWarnings("unchecked")
+    // should be fine
+  void testEnumListIsMultiselectComboBox() {
+    final Map<Property<EnumObject, ?>, HasValue<?, ?>> map = this.field.getPropertiesAndComponents();
+    final HasValue<?, ?> comboBox = map.keySet().stream().filter(def -> "modes".equals(def.getName())).map(map::get).findFirst().orElse(null);
+    Assertions.assertNotNull(comboBox);
+    Assertions.assertInstanceOf(MultiSelectComboBox.class, comboBox, String.format("field should be a multi-select combobox, not a %s", comboBox.getClass().getSimpleName()));
+    Assertions.assertArrayEquals(TestingMode.values(), ((MultiSelectComboBox<?>) comboBox).getDataProvider().fetch(new Query<>()).toArray(TestingMode[]::new));
+    this.field.addValueChangeListener(event -> eventCounter++);
+    // set a value
+    final EnumObject data = new EnumObject();
+    final Set<TestingMode> testingModes = Set.of(TestingMode.MANUAL, TestingMode.AUTOMATIC);
+    data.setModes(testingModes);
+    this.field.setValue(data);
+    Assertions.assertEquals(1, this.eventCounter);
+    Assertions.assertEquals(testingModes, comboBox.getValue());
+    // select a value
+    ((MultiSelectComboBox<TestingMode>) comboBox).setValue(TestingMode.NONE);
+    Assertions.assertEquals(2, this.eventCounter);
+    Assertions.assertEquals(Set.of(TestingMode.NONE), field.getValue().getModes());
+  }
 
 }
