@@ -18,44 +18,45 @@ import java.util.function.Consumer;
 /**
  * Builds content for {@link HasValue}.
  * Reuses {@link ValidatorStorage}.
+ *
  * @author miki
  * @since 2020-11-18
  */
 @Order(20)
 public class HasValueBuilder implements ContentBuilder<HasValue<?, ?>>, NeedsValidatorStorage {
 
-    private ValidatorStorage storage;
+  private ValidatorStorage storage;
 
-    @Override
-    public void setValidatorStorage(ValidatorStorage storage) {
-        this.storage = storage;
-    }
+  @Override
+  public void setValidatorStorage(ValidatorStorage storage) {
+    this.storage = storage;
+  }
 
-    @Override
-    public void buildContent(HasValue<?, ?> component, Consumer<Component[]> callback) {
-        final Checkbox toggle = new Checkbox("Mark component as read only?", event -> component.setReadOnly(event.getValue()));
-        component.addValueChangeListener(this::onAnyValueChanged);
-        callback.accept(new Component[]{toggle});
-        if(this.storage != null && this.storage.isValidatorPresent(component)) {
-            final Span binder = new Span("This component has a validation check.");
-            this.addBinder(component);
-            callback.accept(new Component[]{binder});
-        }
+  @Override
+  public void buildContent(HasValue<?, ?> component, Consumer<Component[]> callback) {
+    final Checkbox toggle = new Checkbox("Mark component as read only?", event -> component.setReadOnly(event.getValue()));
+    component.addValueChangeListener(this::onAnyValueChanged);
+    callback.accept(new Component[]{toggle});
+    if (this.storage != null && this.storage.isValidatorPresent(component)) {
+      final Span binder = new Span("This component has a validation check.");
+      this.addBinder(component);
+      callback.accept(new Component[]{binder});
     }
+  }
 
-    private void onAnyValueChanged(HasValue.ValueChangeEvent<?> valueChangeEvent) {
-        Notification.show(String.format("%s changed value to %s", valueChangeEvent.getHasValue().getClass().getSimpleName(), valueChangeEvent.getValue()));
-    }
+  private void onAnyValueChanged(HasValue.ValueChangeEvent<?> valueChangeEvent) {
+    Notification.show(String.format("%s changed value to %s", valueChangeEvent.getHasValue().getClass().getSimpleName(), valueChangeEvent.getValue()));
+  }
 
-    @SuppressWarnings("unchecked")
-    private <T> void addBinder(HasValue<?, T> component) {
-        final Validator<T> validator = this.storage.getValidator(component);
-        final SampleModel<T> sampleModel = new SampleModel<>();
-        final Binder<SampleModel<T>> binder = new Binder<>((Class<SampleModel<T>>)(Class<?>) SampleModel.class);
-        binder.setBean(sampleModel);
-        binder.forField(component)
-                .withValidator(validator)
-                .bind(SampleModel::getValue, SampleModel::setValue);
-    }
+  @SuppressWarnings("unchecked")
+  private <T> void addBinder(HasValue<?, T> component) {
+    final Validator<T> validator = this.storage.getValidator(component);
+    final SampleModel<T> sampleModel = new SampleModel<>();
+    final Binder<SampleModel<T>> binder = new Binder<>((Class<SampleModel<T>>) (Class<?>) SampleModel.class);
+    binder.setBean(sampleModel);
+    binder.forField(component)
+        .withValidator(validator)
+        .bind(SampleModel::getValue, SampleModel::setValue);
+  }
 
 }

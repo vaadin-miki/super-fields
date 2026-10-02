@@ -7,7 +7,7 @@
   <groupId>pl.unforgiven</groupId>
   <artifactId>superfields</artifactId>
   <name>SuperFields</name>
-  <description>Code for various Vaadin 24 fields and other components.</description>
+  <description>Code for various Vaadin fields and other components.</description>
   <url>https://www.unforgiven.pl/superfields</url>
   <version>0.7.77-SNAPSHOT</version>
 
