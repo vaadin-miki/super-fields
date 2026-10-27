@@ -25,7 +25,7 @@ jobs:
           set -x
           export TIMESTAMP=`date +'%Y'`
           mvn versions:set -DnewVersion=0.0.$TIMESTAMP-SNAPSHOT --file pom.xml -DartifactId=superfields
-          mvn deploy -P deploy-central --file superfields/pom.xml
+          mvn deploy -P deploy-central -s $GITHUB_WORKSPACE/settings.xml --file superfields/pom.xml
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
