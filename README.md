@@ -16,7 +16,7 @@ this library useful, consider rating it there or leaving a review. Thanks :)
 
 | SuperFields version                   | Vaadin Version | Java version |
 |---------------------------------------| -- | -- |
-| `0.21.0`                              | 25.3.0+ | 21 |
+| `0.21.0+`                             | 25.3.0+ | 21 |
 | `0.20.3`                              | 25.2.6+ | 21 |
 | `0.20.2`                              | 25.1.0+ | 21 |
 | `0.20.1`                              | 25.0.4+ | 21 |
@@ -39,7 +39,7 @@ This is the relevant dependency:
 <dependency>
    <groupId>pl.unforgiven</groupId>
    <artifactId>superfields</artifactId>
-   <version>0.21.0</version>
+   <version>0.21.1</version>
 </dependency>
 ```
 
@@ -95,6 +95,7 @@ people - listed in (Finnish) alphabetical order:
 * Matthias Hämmerle
 * Sascha Ißbrücker
 * Jarmo Kemppainen
+* Tadej Klakocer
 * Gerald Koch
 * Sebastian Kühnau
 * Jean-François Lamy
@@ -115,7 +116,7 @@ people - listed in (Finnish) alphabetical order:
 If you like SuperFields, you can support the project in a variety of ways:
 
 * spread the word - the more people know about SuperFields, the better! - if you use social networks, you can tag me on
-  Mastodon (`@miki@the.unforgiven.pl`) or on Twitter (`@mikiolsz`);
+  Mastodon (`@miki@the.unforgiven.pl`);
 * visit [the Vaadin Directory](https://vaadin.com/directory/component/superfields), rate the components and/or leave a
   review;
 * contribute - pick an issue from the list, implement it and make a PR;
