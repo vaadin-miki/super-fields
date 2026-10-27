@@ -109,13 +109,14 @@ people - listed in (Finnish) alphabetical order:
 * Tomi Virkki
 * Martin Vyšný
 * Leif Åstrand
+* scrmtrey91
 
 ## Support
 
 If you like SuperFields, you can support the project in a variety of ways:
 
 * spread the word - the more people know about SuperFields, the better! - if you use social networks, you can tag me on
-  Mastodon (`@miki@the.unforgiven.pl`) or on Twitter (`@mikiolsz`);
+  Mastodon (`@miki@the.unforgiven.pl`);
 * visit [the Vaadin Directory](https://vaadin.com/directory/component/superfields), rate the components and/or leave a
   review;
 * contribute - pick an issue from the list, implement it and make a PR;
