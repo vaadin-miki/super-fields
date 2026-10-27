@@ -1,7 +1,5 @@
 import {html, LitElement} from 'lit';
-import {customElement} from 'lit/decorators.js';
 
-@customElement('super-long-field')
 export class SuperLongField extends LitElement {
 
     render() {
@@ -16,4 +14,8 @@ export class SuperLongField extends LitElement {
         return true;
     }
 
+}
+
+if (!customElements.get('super-long-field')) {
+    customElements.define('super-long-field', SuperLongField);
 }

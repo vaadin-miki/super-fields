@@ -1,7 +1,5 @@
 import {html, LitElement} from 'lit';
-import {customElement} from 'lit/decorators.js';
 
-@customElement('super-double-field')
 export class SuperDoubleField extends LitElement {
 
     render() {
@@ -16,4 +14,8 @@ export class SuperDoubleField extends LitElement {
         return true;
     }
 
+}
+
+if (!customElements.get('super-double-field')) {
+    customElements.define('super-double-field', SuperDoubleField);
 }
