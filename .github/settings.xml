@@ -3,50 +3,50 @@
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
                       http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
-    <activeProfiles>
-        <activeProfile>github</activeProfile>
-    </activeProfiles>
+  <activeProfiles>
+    <activeProfile>github</activeProfile>
+  </activeProfiles>
 
-    <profiles>
-        <profile>
-            <id>github</id>
-            <repositories>
-                <repository>
-                    <id>central</id>
-                    <url>https://repo1.maven.org/maven2</url>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                </repository>
-                <repository>
-                    <id>github</id>
-                    <name>GitHub Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/vaadin-miki/super-fields</url>
-                </repository>
-            </repositories>
-        </profile>
-    </profiles>
+  <profiles>
+    <profile>
+      <id>github</id>
+      <repositories>
+        <repository>
+          <id>central</id>
+          <url>https://central.sonatype.com</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+        </repository>
+        <repository>
+          <id>github</id>
+          <name>GitHub Apache Maven Packages</name>
+          <url>https://maven.pkg.github.com/vaadin-miki/super-fields</url>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
 
-    <servers>
-        <server>
-            <id>github</id>
-            <username>USERNAME</username>
-            <password>GITHUB_TOKEN</password>
-        </server>
-        <server>
-            <id>central</id>
-            <username>${CENTRAL_USERNAME}</username>
-            <password>${CENTRAL_PASSWORD}</password>
-        </server>
-        <server>
-            <id>demo-deployment</id>
-            <configuration>
-                <cargo.hostname>${DEMO_DEPLOY_HOST}</cargo.hostname>
-                <cargo.protocol>${DEMO_DEPLOY_PROTOCOL}</cargo.protocol>
-                <cargo.servlet.port>${DEMO_DEPLOY_PORT}</cargo.servlet.port>
-                <cargo.remote.username>${DEMO_DEPLOY_USER}</cargo.remote.username>
-                <cargo.remote.password>${DEMO_DEPLOY_PASSWORD}</cargo.remote.password>
-            </configuration>
-        </server>
-    </servers>
+  <servers>
+    <server>
+      <id>github</id>
+      <username>USERNAME</username>
+      <password>GITHUB_TOKEN</password>
+    </server>
+    <server>
+      <id>central</id>
+      <username>${CENTRAL_USERNAME}</username>
+      <password>${CENTRAL_PASSWORD}</password>
+    </server>
+    <server>
+      <id>demo-deployment</id>
+      <configuration>
+        <cargo.hostname>${DEMO_DEPLOY_HOST}</cargo.hostname>
+        <cargo.protocol>${DEMO_DEPLOY_PROTOCOL}</cargo.protocol>
+        <cargo.servlet.port>${DEMO_DEPLOY_PORT}</cargo.servlet.port>
+        <cargo.remote.username>${DEMO_DEPLOY_USER}</cargo.remote.username>
+        <cargo.remote.password>${DEMO_DEPLOY_PASSWORD}</cargo.remote.password>
+      </configuration>
+    </server>
+  </servers>
 </settings>
