@@ -1,7 +1,7 @@
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+<settings xmlns="http://maven.apache.org/SETTINGS/1.3.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
-                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.3.0
+                      https://maven.apache.org/xsd/settings-1.3.0.xsd">
 
   <activeProfiles>
     <activeProfile>github</activeProfile>
@@ -13,7 +13,7 @@
       <repositories>
         <repository>
           <id>central</id>
-          <url>https://central.sonatype.com</url>
+          <url>https://repo1.maven.org/maven2</url>
           <releases>
             <enabled>true</enabled>
           </releases>
@@ -32,6 +32,9 @@
       <id>github</id>
       <username>USERNAME</username>
       <password>GITHUB_TOKEN</password>
+      <repositoryOrigins>
+        <repositoryOrigin>https://central.sonatype.com</repositoryOrigin>
+      </repositoryOrigins>
     </server>
     <server>
       <id>central</id>
