@@ -1,3 +1,10 @@
+# 0.21.1 - Fixed hot-deploy
+## New features and enhancements
+(nothing reported)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#595 - [Hot deploy broken due to lit decorators](https://github.com/vaadin-miki/super-fields/issues/595)
 # 0.21.0 - Vaadin 25.3 and browserless testing
 ## New features and enhancements
 * \#600 - [Upgrade to Vaadin 25.3](https://github.com/vaadin-miki/super-fields/issues/600)
