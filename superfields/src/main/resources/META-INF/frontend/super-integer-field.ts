@@ -1,11 +1,10 @@
 import {html, LitElement} from 'lit';
-import {customElement} from 'lit/decorators.js';
 
-@customElement('super-integer-field')
 export class SuperIntegerField extends LitElement {
 
     render() {
-        return html`<slot></slot>`;
+        return html`
+            <slot></slot>`;
     }
 
     /**
@@ -16,4 +15,8 @@ export class SuperIntegerField extends LitElement {
         return true;
     }
 
+}
+
+if (!customElements.get('super-integer-field')) {
+    customElements.define('super-integer-field', SuperIntegerField);
 }
