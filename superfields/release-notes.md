@@ -1,3 +1,10 @@
+# 0.21.2 - Hot-deploy and Maven Central
+## New features and enhancements
+(nothing reported)
+## Changes to API
+(nothing reported)
+## Bug fixes
+* \#613 - [Deployment to central fails due to old plugin](https://github.com/vaadin-miki/super-fields/issues/613)
 # 0.21.1 - Fixed hot-deploy
 ## New features and enhancements
 (nothing reported)
