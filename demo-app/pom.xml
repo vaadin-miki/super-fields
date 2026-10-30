@@ -5,11 +5,11 @@
   <parent>
     <artifactId>superfields-parent</artifactId>
     <groupId>pl.unforgiven</groupId>
-    <version>0.21.1</version>
+    <version>0.21.2</version>
   </parent>
 
   <artifactId>demo-app</artifactId>
-  <version>0.21.1</version>
+  <version>0.21.2</version>
   <name>Demo app for SuperFields</name>
   <description>Showcase application for SuperFields.</description>
   <packaging>war</packaging>
@@ -23,7 +23,7 @@
     <dependency>
       <groupId>pl.unforgiven</groupId>
       <artifactId>superfields</artifactId>
-      <version>0.21.1</version>
+      <version>0.21.2</version>
     </dependency>
     <dependency>
       <groupId>jakarta.servlet</groupId>
@@ -62,23 +62,6 @@
     <repository>
       <id>vaadin-prereleases</id>
       <url>https://maven.vaadin.com/vaadin-prereleases</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-
-    <!-- Main Maven repository -->
-    <repository>
-      <id>central</id>
-      <url>https://repo.maven.apache.org/maven2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <!-- Repository used by many Vaadin add-ons: https://vaadin.com/directory -->
-    <repository>
-      <id>Vaadin Directory</id>
-      <url>https://maven.vaadin.com/vaadin-addons</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
