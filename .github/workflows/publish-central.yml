@@ -21,7 +21,7 @@ jobs:
           gpg-passphrase: GPG_PASSPHRASE
           settings-path: ${{ github.workspace }}
       - name: Publish to Central
-        run: mvn deploy -P deploy-central -s $GITHUB_WORKSPACE/settings.xml --file superfields/pom.xml
+        run: mvn deploy -P deploy-central --file superfields/pom.xml
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
