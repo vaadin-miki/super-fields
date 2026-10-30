@@ -1,6 +1,6 @@
 package org.vaadin.miki.superfields.buttons;
 
-import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -20,27 +20,17 @@ public class ClipboardCopyButton extends Div {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClipboardCopyButton.class);
 
-  private HasValue<?, ?> source;
+  private HasValue<?, String> source;
 
-  public HasValue<?, ?> getSource() {
-    return source;
-  }
-
-  public void setSource(HasValue<?, ?> source) {
+  public void setSource(HasValue<?, String> source) {
     this.source = source;
-    LOGGER.info("set source to {}", source);
-    if(source != null) {
-      this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-          this.getElement().callJsFunction(
-              "setSourceComponent",
-              ((Component)this.source).getElement()
-          )
-      ));
-    }
-    else this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-        this.getElement().callJsFunction(
-            "clearSourceComponent"
-        )
-    ));
   }
+
+  @ClientCallable
+  private void clipboardCopied(String value) {
+    LOGGER.info("copied to clipboard: {}", value);
+    if (this.source != null)
+      this.source.setValue(value);
+  }
+
 }

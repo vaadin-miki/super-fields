@@ -10,35 +10,21 @@ import org.slf4j.LoggerFactory;
 
 @Tag("clipboard-paste-button")
 @JsModule("./clipboard-paste-button.ts")
-public class ClipboardPasteButton extends Div  {
+public class ClipboardPasteButton extends Div {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClipboardPasteButton.class);
 
-  private HasValue<?, ?> target;
+  private HasValue<?, String> target;
 
-  public HasValue<?, ?> getTarget() {
-    return target;
-  }
-
-  public void setTarget(HasValue<?, ?> target) {
+  public void setTarget(HasValue<?, String> target) {
     this.target = target;
-    if(target != null)
-      this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-          this.getElement().callJsFunction(
-              "setTargetComponent",
-              this.target
-          )
-      ));
-    else this.getElement().getNode().runWhenAttached(ui -> ui.beforeClientResponse(this, context ->
-        this.getElement().callJsFunction(
-            "clearTargetComponent"
-        )
-    ));
   }
 
   @ClientCallable
   private void clipboardPasted(String value) {
     LOGGER.info("pasted from clipboard: {}", value);
+    if (this.target != null)
+      this.target.setValue(value);
   }
 
 }

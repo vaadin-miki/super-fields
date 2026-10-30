@@ -1,19 +1,27 @@
 import {html, LitElement} from 'lit';
-import {customElement} from 'lit/decorators.js';
 
-@customElement('clipboard-copy-button')
 export class ClipboardCopyButton extends LitElement {
 
     render() {
-        return html`<vaadin-icon icon="vaadin:copy" role="img" aria-label="Copy"></vaadin-icon>`;
+        return html`
+            <vaadin-icon icon="vaadin:copy" role="img" aria-label="Copy" @click=${this.clicked}></vaadin-icon>`;
     }
 
-    setSourceComponent(source: Element) {
-        console.info("CCB: setting source to " + source);
+    async clicked(event: Event) {
+        const selection = window.getSelection()?.toString() ?? '';
+        if (!selection) {
+            console.log('CCB: nothing selected, so nothing to copy');
+        } else {
+            try {
+                await navigator.clipboard.writeText(selection);
+                this.$server.clipboardCopied(selection);
+            } catch (e) {
+                console.error("cannot write to clipboard", e);
+            }
+        }
     }
+}
 
-    clearSourceComponent() {
-        console.info("CCB: clear source component");
-    }
-
+if (!customElements.get('clipboard-copy-button')) {
+    customElements.define('clipboard-copy-button', ClipboardCopyButton);
 }
