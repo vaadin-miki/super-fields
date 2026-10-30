@@ -15,10 +15,10 @@ jobs:
           java-version: 1.8
           distribution: oracle
           server-id: central
-          server-username: CENTRAL_USERNAME
-          server-password: CENTRAL_PASSWORD
+          server-username-env-var: CENTRAL_USERNAME
+          server-password-env-var: CENTRAL_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+          gpg-passphrase-env-var: GPG_PASSPHRASE
       - name: Publish to Central
         run: mvn deploy -P deploy-central --file superfields/pom.xml
         env:
