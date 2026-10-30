@@ -66,23 +66,6 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-
-    <!-- Main Maven repository -->
-    <repository>
-      <id>central</id>
-      <url>https://repo.maven.apache.org/maven2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <!-- Repository used by many Vaadin add-ons: https://vaadin.com/directory -->
-    <repository>
-      <id>Vaadin Directory</id>
-      <url>https://maven.vaadin.com/vaadin-addons</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
   </repositories>
 
   <build>
