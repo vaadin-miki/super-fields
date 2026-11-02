@@ -1,10 +1,22 @@
 import {html, LitElement} from 'lit';
+import '@vaadin/tooltip';
 
 export class ClipboardCopyButton extends LitElement {
 
+  static properties = {
+    text: {type: String},
+  };
+
+  text = '';
+
   render() {
     return html`
-        <vaadin-icon icon="vaadin:copy" role="img" aria-label="Copy" @click=${this.clicked}></vaadin-icon>`;
+        <button type="button" class="clipboard-copy-button" @click=${this.clicked}>
+            <slot name="icon"></slot>
+            ${this.text}
+        </button>
+        <slot name="tooltip"></slot>
+    `;
   }
 
   async clicked(event: Event) {
@@ -12,7 +24,7 @@ export class ClipboardCopyButton extends LitElement {
     const modified = await this.$server.processText(selection);
     try {
       await navigator.clipboard.writeText(modified);
-      this.dispatchEvent(new CustomEvent('copy-pressed', {
+      this.dispatchEvent(new CustomEvent('button-pressed', {
         detail: {value: modified, raw: selection},
         bubbles: true,
         composed: true

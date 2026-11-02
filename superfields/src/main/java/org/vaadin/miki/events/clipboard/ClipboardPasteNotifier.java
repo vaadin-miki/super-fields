@@ -13,6 +13,12 @@ import com.vaadin.flow.shared.Registration;
 @FunctionalInterface
 public interface ClipboardPasteNotifier<C extends Component> {
 
+  /**
+   * Adds a {@link ClipboardPasteListener}.
+   *
+   * @param listener A listener to add.
+   * @return A {@link Registration}.
+   */
   Registration addClipboardPasteListener(ClipboardPasteListener<C> listener);
 
 }
