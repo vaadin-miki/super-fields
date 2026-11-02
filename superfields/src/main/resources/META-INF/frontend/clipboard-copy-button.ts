@@ -1,25 +1,8 @@
-import {html, LitElement} from 'lit';
-import '@vaadin/tooltip';
+import {AbstractClickableButton} from "./abstract-clickable-button";
 
-export class ClipboardCopyButton extends LitElement {
+export class ClipboardCopyButton extends AbstractClickableButton {
 
-  static properties = {
-    text: {type: String},
-  };
-
-  text = '';
-
-  render() {
-    return html`
-        <button type="button" class="clipboard-copy-button" @click=${this.clicked}>
-            <slot name="icon"></slot>
-            ${this.text}
-        </button>
-        <slot name="tooltip"></slot>
-    `;
-  }
-
-  async clicked(event: Event) {
+  protected async clicked(event: Event): Promise<void> {
     const selection = window.getSelection()?.toString() ?? '';
     const modified = await this.$server.processText(selection);
     try {

@@ -1,20 +1,16 @@
 package org.vaadin.miki.superfields.buttons;
 
 import com.vaadin.flow.component.ClientCallable;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.dom.DisabledUpdateMode;
+import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.events.clipboard.ClipboardCopyEvent;
 import org.vaadin.miki.events.clipboard.ClipboardCopyListener;
 import org.vaadin.miki.events.clipboard.ClipboardCopyNotifier;
-import org.vaadin.miki.markers.WithIconMixin;
-import org.vaadin.miki.markers.WithTextMixin;
-import org.vaadin.miki.markers.WithTooltipMixin;
 import org.vaadin.miki.util.SerializableUnaryOperator;
 
 import java.util.Objects;
@@ -27,17 +23,12 @@ import java.util.Objects;
  */
 @Tag("clipboard-copy-button")
 @JsModule("./clipboard-copy-button.ts")
-public class ClipboardCopyButton extends Component implements ClipboardCopyNotifier<ClipboardCopyButton>,
-    WithTextMixin<ClipboardCopyButton>, WithIconMixin<ClipboardCopyButton>, WithTooltipMixin<ClipboardCopyButton> {
+public class ClipboardCopyButton extends AbstractAlwaysClickableButton implements ClipboardCopyNotifier<ClipboardCopyButton> {
 
-  private static final String EVENT_NAME = "button-pressed";
   private static final String RAW_VALUE_EVENT_PATH = "event.detail.raw";
   private static final String COPIED_VALUE_EVENT_PATH = "event.detail.value";
-  private static final String TEXT_PROPERTY = "text";
-  private static final String ICON_SLOT_NAME = "icon";
 
   private SerializableUnaryOperator<String> clipboardModifierFunction = SerializableUnaryOperator.identity();
-  private Icon icon;
 
   /**
    * Creates the button with no text, no tooltip and a {@link VaadinIcon#COPY} icon.
@@ -154,23 +145,20 @@ public class ClipboardCopyButton extends Component implements ClipboardCopyNotif
    * @param tooltip Tooltip to show.
    */
   public ClipboardCopyButton(String text, Icon icon, String tooltip, SerializableUnaryOperator<String> clipboardModifierFunction) {
-    super();
-    // handle events from client
-    this.getElement()
-        .addEventListener(EVENT_NAME, event -> {
-          this.onValueCopied(
-              event.getEventData().get(RAW_VALUE_EVENT_PATH).asString(),
-              event.getEventData().get(COPIED_VALUE_EVENT_PATH).asString()
-          );
-        })
-        .addEventData(COPIED_VALUE_EVENT_PATH)
-        .addEventData(RAW_VALUE_EVENT_PATH)
-        .setDisabledUpdateMode(DisabledUpdateMode.ALWAYS);
+    super(COPIED_VALUE_EVENT_PATH, RAW_VALUE_EVENT_PATH);
     // set up
     this.setClipboardModifierFunction(clipboardModifierFunction);
     this.setText(text);
     this.setIcon(icon);
     this.setTooltipText(tooltip);
+  }
+
+  @Override
+  protected void handleDomEvent(DomEvent event) {
+    this.onValueCopied(
+        event.getEventData().get(RAW_VALUE_EVENT_PATH).asString(),
+        event.getEventData().get(COPIED_VALUE_EVENT_PATH).asString()
+    );
   }
 
   /**
@@ -224,46 +212,5 @@ public class ClipboardCopyButton extends Component implements ClipboardCopyNotif
   @ClientCallable(DisabledUpdateMode.ALWAYS)
   private String processText(String value) {
     return this.clipboardModifierFunction.apply(value);
-  }
-
-  @Override
-  public void setText(String text) {
-    this.getElement().setProperty(TEXT_PROPERTY, text);
-  }
-
-  @Override
-  public String getText() {
-    return this.getElement().getProperty(TEXT_PROPERTY);
-  }
-
-  @Override
-  public void setIcon(Icon icon) {
-    if (this.icon != null)
-      this.getElement().removeChild(this.icon.getElement());
-    this.icon = icon;
-    if (this.icon != null) {
-      this.icon.getElement().setAttribute("slot", ICON_SLOT_NAME);
-      this.getElement().appendChild(this.icon.getElement());
-    }
-  }
-
-  @Override
-  public Icon getIcon() {
-    return this.icon;
-  }
-
-  @Override
-  public Tooltip setTooltipText(String text) {
-    // without this explicit setup the tooltip is not rendered
-    final Tooltip result = Tooltip.forComponent(this);
-    result.setText(text);
-    return result;
-  }
-
-  @Override
-  public Tooltip setTooltipMarkdown(String markdown) {
-    final Tooltip result = Tooltip.forComponent(this);
-    result.setMarkdown(markdown);
-    return result;
   }
 }

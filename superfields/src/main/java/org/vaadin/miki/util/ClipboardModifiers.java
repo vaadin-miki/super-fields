@@ -1,7 +1,6 @@
-package org.vaadin.miki.superfields.buttons;
+package org.vaadin.miki.util;
 
 import com.vaadin.flow.component.HasValue;
-import org.vaadin.miki.util.SerializableUnaryOperator;
 
 import java.io.Serializable;
 import java.util.function.Function;

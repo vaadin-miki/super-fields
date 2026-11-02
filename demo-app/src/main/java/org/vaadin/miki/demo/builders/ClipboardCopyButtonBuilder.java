@@ -6,10 +6,9 @@ import com.vaadin.flow.component.notification.Notification;
 import org.vaadin.miki.demo.ContentBuilder;
 import org.vaadin.miki.demo.Order;
 import org.vaadin.miki.superfields.buttons.ClipboardCopyButton;
-import org.vaadin.miki.superfields.buttons.ClipboardModifiers;
 import org.vaadin.miki.superfields.buttons.ClipboardPasteButton;
-import org.vaadin.miki.superfields.text.LabelField;
 import org.vaadin.miki.superfields.text.SuperTextField;
+import org.vaadin.miki.util.ClipboardModifiers;
 
 import java.util.function.Consumer;
 
@@ -26,10 +25,12 @@ public class ClipboardCopyButtonBuilder implements ContentBuilder<ClipboardCopyB
     final Checkbox disableSource = new Checkbox("Disable the text field above?", event -> source.setEnabled(!event.getValue()));
 
     final ClipboardPasteButton pasteButton = new ClipboardPasteButton();
-    final LabelField<String> target = new LabelField<String>().withLabel("Click button to paste from clipboard.").withValue("(nothing pasted yet)");
 
+    final SuperTextField target = new SuperTextField().withLabel("Pasted from clipboard").withPlaceholder("(nothing here)");
+    target.setSuffixComponent(pasteButton);
+    target.setEnabled(false);
     pasteButton.addClipboardPasteListener(event -> target.setValue(event.getPastedValue()));
 
-    callback.accept(new Component[]{source, disableSource, pasteButton, target});
+    callback.accept(new Component[]{source, disableSource, target});
   }
 }
