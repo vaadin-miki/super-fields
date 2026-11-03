@@ -3,6 +3,7 @@ import {AbstractClickableButton} from "./abstract-clickable-button";
 export class AlwaysClickableButton extends AbstractClickableButton {
 
   protected async clicked(event: Event): Promise<void> {
+    event.stopPropagation();
     this.dispatchEvent(new CustomEvent('button-pressed', {
       bubbles: true,
       composed: true
