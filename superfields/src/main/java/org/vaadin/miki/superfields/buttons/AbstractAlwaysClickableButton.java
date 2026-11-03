@@ -1,12 +1,15 @@
 package org.vaadin.miki.superfields.buttons;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.dom.DisabledUpdateMode;
 import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.dom.DomListenerRegistration;
 import org.vaadin.miki.markers.WithIconMixin;
+import org.vaadin.miki.markers.WithIdMixin;
 import org.vaadin.miki.markers.WithTextMixin;
 import org.vaadin.miki.markers.WithTooltipMixin;
 
@@ -17,7 +20,8 @@ import org.vaadin.miki.markers.WithTooltipMixin;
  * @author miki
  * @since 2026-11-02
  */
-public abstract class AbstractAlwaysClickableButton extends Component implements WithTextMixin<ClipboardCopyButton>, WithIconMixin<ClipboardCopyButton>, WithTooltipMixin<ClipboardCopyButton> {
+@SuppressWarnings("squid:S119") // SELF is good
+public abstract class AbstractAlwaysClickableButton<SELF extends AbstractAlwaysClickableButton<SELF>> extends Component implements WithTextMixin<SELF>, WithIconMixin<SELF>, WithTooltipMixin<SELF>, WithIdMixin<SELF>, HasStyle, HasSize {
 
   private static final String EVENT_NAME = "button-pressed";
   private static final String TEXT_PROPERTY = "text";

@@ -11,6 +11,7 @@ import com.vaadin.flow.shared.Registration;
 import org.vaadin.miki.events.clipboard.ClipboardCopyEvent;
 import org.vaadin.miki.events.clipboard.ClipboardCopyListener;
 import org.vaadin.miki.events.clipboard.ClipboardCopyNotifier;
+import org.vaadin.miki.util.ClipboardModifiers;
 import org.vaadin.miki.util.SerializableUnaryOperator;
 
 import java.util.Objects;
@@ -23,12 +24,12 @@ import java.util.Objects;
  */
 @Tag("clipboard-copy-button")
 @JsModule("./clipboard-copy-button.ts")
-public class ClipboardCopyButton extends AbstractAlwaysClickableButton implements ClipboardCopyNotifier<ClipboardCopyButton> {
+public class ClipboardCopyButton extends AbstractAlwaysClickableButton<ClipboardCopyButton> implements ClipboardCopyNotifier<ClipboardCopyButton> {
 
   private static final String RAW_VALUE_EVENT_PATH = "event.detail.raw";
   private static final String COPIED_VALUE_EVENT_PATH = "event.detail.value";
 
-  private SerializableUnaryOperator<String> clipboardModifierFunction = SerializableUnaryOperator.identity();
+  private SerializableUnaryOperator<String> clipboardModifierFunction = ClipboardModifiers.NO_CHANGES;
 
   /**
    * Creates the button with no text, no tooltip and a {@link VaadinIcon#COPY} icon.
@@ -52,7 +53,7 @@ public class ClipboardCopyButton extends AbstractAlwaysClickableButton implement
    * @param text Text to show on the button.
    */
   public ClipboardCopyButton(String text) {
-    this(text, null, null, SerializableUnaryOperator.identity());
+    this(text, null, null, ClipboardModifiers.NO_CHANGES);
   }
 
   /**
@@ -71,7 +72,7 @@ public class ClipboardCopyButton extends AbstractAlwaysClickableButton implement
    * @param icon Icon to display.
    */
   public ClipboardCopyButton(Icon icon) {
-    this(null, icon, null, SerializableUnaryOperator.identity());
+    this(null, icon, null, ClipboardModifiers.NO_CHANGES);
   }
 
   /**
@@ -112,7 +113,7 @@ public class ClipboardCopyButton extends AbstractAlwaysClickableButton implement
    * @param icon Icon to display.
    */
   public ClipboardCopyButton(String text, Icon icon) {
-    this(text, icon, null, SerializableUnaryOperator.identity());
+    this(text, icon, null, ClipboardModifiers.NO_CHANGES);
   }
 
   /**
@@ -134,7 +135,7 @@ public class ClipboardCopyButton extends AbstractAlwaysClickableButton implement
    * @param tooltip Tooltip to show.
    */
   public ClipboardCopyButton(String text, Icon icon, String tooltip) {
-    this(text, icon, tooltip, SerializableUnaryOperator.identity());
+    this(text, icon, tooltip, ClipboardModifiers.NO_CHANGES);
   }
 
   /**
@@ -174,16 +175,16 @@ public class ClipboardCopyButton extends AbstractAlwaysClickableButton implement
    * Sets the client modifier function.
    * This function will be applied to the selection and whatever it returns, will be copied to the clipboard.
    *
-   * @param clipboardModifierFunction A non-{@code null} function. If {@code null} is passed, {@link SerializableUnaryOperator#identity()} will be used.
+   * @param clipboardModifierFunction A non-{@code null} function. If {@code null} is passed, {@link ClipboardModifiers#NO_CHANGES} will be used.
    */
   public final void setClipboardModifierFunction(SerializableUnaryOperator<String> clipboardModifierFunction) {
-    this.clipboardModifierFunction = Objects.requireNonNullElseGet(clipboardModifierFunction, SerializableUnaryOperator::identity);
+    this.clipboardModifierFunction = Objects.requireNonNullElse(clipboardModifierFunction, ClipboardModifiers.NO_CHANGES);
   }
 
   /**
    * Chains {@link #setClipboardModifierFunction(SerializableUnaryOperator)} and returns itself.
    *
-   * @param clipboardModifierFunction A non-{@code null} function. If {@code null} is passed, {@link SerializableUnaryOperator#identity()} will be used.
+   * @param clipboardModifierFunction A non-{@code null} function. If {@code null} is passed, {@link ClipboardModifiers#NO_CHANGES} will be used.
    * @return This.
    * @see #setClipboardModifierFunction(SerializableUnaryOperator)
    */

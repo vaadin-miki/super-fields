@@ -1,11 +1,23 @@
-import {html, LitElement} from 'lit';
+import {html, css, LitElement} from 'lit';
 import '@vaadin/tooltip';
 
-export class AbstractClickableButton extends LitElement {
+export abstract class AbstractClickableButton extends LitElement {
 
   static properties = {
     text: {type: String},
   };
+
+  static styles = css`
+      :host {
+          display: block;
+      }
+
+      button {
+          box-sizing: border-box;
+          width: 100%;
+          height: 100%;
+      }
+  `;
 
   text = '';
 

@@ -11,7 +11,7 @@ import org.vaadin.miki.events.clipboard.ClipboardPasteNotifier;
 
 @Tag("clipboard-paste-button")
 @JsModule("./clipboard-paste-button.ts")
-public class ClipboardPasteButton extends AbstractAlwaysClickableButton implements ClipboardPasteNotifier<ClipboardPasteButton> {
+public class ClipboardPasteButton extends AbstractAlwaysClickableButton<ClipboardPasteButton> implements ClipboardPasteNotifier<ClipboardPasteButton> {
 
   private static final String PASTED_VALUE_EVENT_PATH = "event.detail.value";
 
