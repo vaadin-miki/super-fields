@@ -1,0 +1,1 @@
+A custom button that is always enabled, even if placed inside disabled layouts. Two example implementations for clipboard operations are also included.

@@ -174,6 +174,18 @@ A boolean field that changes its value (`true` or `false`) depending on whether 
 
 A button that needs to be clicked many times before it notifies its click listeners. Each transition is stored as a state with text, icon, class names and theme names. 
 
+### `AlwaysClickableButton`, `ClipboardCopyButton` and `ClipboardPasteButton`
+
+These three buttons can always be clicked in the browser, even if placed in a disabled component (which normally prevents all events). An `AbstractAlwaysClickableButton` is provided for both client- and server-side, should you need any further customisation.
+
+Please note that for the copy button a round-trip to the server is made **before** the selection is copied to the clipboard. This may degrade performance.
+
+Please also note that both clipboard buttons broadcast server-side events and **pass the selection to the server-side**. A good rule of thumb is to never log or store any such data.
+
+Finally, the clipboard buttons **cannot** be clicked from the server, as they follow the usual rules for the client-side clipboard API: the action must be initiated by the user in the browser and the site runs either via `https` or is served locally on `localhost`. 
+
+These components are based on [an idea by Egor Vasilyev](https://stackoverflow.com/q/79736104/384484) - thank you!
+
 ### `UnloadObserver`
 
 A component that listens and reacts to browser's `beforeunload` events that happen for example when browser window/tab is closed. The support [varies between browsers](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event), but in general is quite good. This should work with at least the major browsers.
